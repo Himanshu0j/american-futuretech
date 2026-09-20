@@ -5,6 +5,11 @@ import App from './App.jsx';
 import './index.css';
 import axios from 'axios';
 
+// Set global API base URL if provided via environment variable
+if (import.meta.env.VITE_API_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+}
+
 // Automatically inject JWT authorization token across all axios instances
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');

@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
@@ -65,14 +66,25 @@ app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 
-// Serve static assets in production
+// Serve static assets in production if client build exists
 if (process.env.NODE_ENV === 'production') {
   const clientDist = path.join(__dirname, '../client/dist');
-  app.use(express.static(clientDist));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(clientDist, 'index.html'));
-  });
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api')) return next();
+      res.sendFile(path.join(clientDist, 'index.html'));
+    });
+  } else {
+    app.get('/', (req, res) => {
+      res.json({
+        status: 'online',
+        message: 'American FutureTech Enterprise API Core is active',
+        health: '/api/health',
+        docs: '/api/courses',
+      });
+    });
+  }
 }
 
 // Centralized error handling

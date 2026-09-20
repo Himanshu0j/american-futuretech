@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+*/node_modules/
+package-lock.json
+
+# Local MongoDB binaries and data
+data/
+mongodb-win32-x86_64-windows-7.0.24/
+cloudflared.exe
+.cache/
+
+# Build outputs
+client/dist/
+dist/
+
+# Environment and Secrets
+.env
+*/.env
+*.local
+
+# Tunnel and scratch logs
+*.log
+scratch/
+active-*.txt
+keep-*.js
+tunnel.ps1
+live_audit_*.js
+live_audit_*.json
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,22 @@
+{
+  "name": "american-futuretech",
+  "version": "1.0.0",
+  "description": "Production-grade futuristic EdTech platform & enterprise Admin Panel",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js",
+    "build": "npm --prefix client run build",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,cyan\" \"npm run server\" \"npm run client\"",
+    "seed": "node server/seed.js",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "localtunnel": "^2.0.2",
+    "puppeteer-core": "^25.11.0"
+  }
+}

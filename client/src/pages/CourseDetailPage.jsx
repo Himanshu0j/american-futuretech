@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import {
   Clock, Star, Award, CheckCircle2, FileText, ArrowRight, Play,
   ChevronDown, ChevronUp, Shield, Users, Sparkles, Download, PhoneCall,
-  Calendar, Briefcase, Zap, Check, Lock, BookOpen, Layers
+  Calendar, Briefcase, Zap, Check, Lock, BookOpen, Layers, ZoomIn, Eye, ShieldCheck
 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
+import { getAlignedMicrosoftCert } from '../data/microsoftCertificates';
+import CertificateModal from '../components/CertificateModal';
 
 export default function CourseDetailPage() {
   const { slug } = useParams();
@@ -17,6 +19,7 @@ export default function CourseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [openModuleIndex, setOpenModuleIndex] = useState(0);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [selectedModalCert, setSelectedModalCert] = useState(null);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -350,20 +353,70 @@ export default function CourseDetailPage() {
 
             {/* Right Column Value Adds */}
             <div className="lg:col-span-4 space-y-6">
-              {/* Verified Certificate Card */}
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <div className="w-12 h-12 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mb-4">
-                  <Award className="w-6 h-6 text-[#2d5c36]" />
-                </div>
-                <h4 className="text-lg font-display font-bold text-[#1a361d] mb-2">Accredited US Certificate</h4>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                  Earn an officially registered American FutureTech credential with a unique online verification URL that recruiter teams can inspect directly.
-                </p>
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-mono text-[#2d5c36] flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-[#40844e] shrink-0" />
-                  <span>Verified at americanfuturetech.com/certificate/ID</span>
-                </div>
-              </div>
+              {/* Dual Verified Credentials Card */}
+              {(() => {
+                const alignedMs = getAlignedMicrosoftCert(course.slug || course.category || course.title);
+                return (
+                  <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center">
+                        <Award className="w-6 h-6 text-[#2d5c36]" />
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-mono font-bold uppercase">
+                        Dual Certification
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-display font-bold text-[#1a361d] mb-1">
+                        Accredited US & Microsoft Credentials
+                      </h4>
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        Graduates earn dual industry recognition: an accredited American FutureTech US Fellowship Diploma plus official alignment with Microsoft Certified Professional certifications.
+                      </p>
+                    </div>
+
+                    {/* Aligned Microsoft Certificate Preview */}
+                    <div
+                      onClick={() => setSelectedModalCert(alignedMs)}
+                      className="group cursor-pointer rounded-xl overflow-hidden border border-indigo-400/40 bg-slate-50 shadow-xs hover:border-indigo-500 transition-all"
+                      title="Click to inspect certificate in 4K"
+                    >
+                      <div className="relative">
+                        <img
+                          src={alignedMs.image}
+                          alt={alignedMs.title}
+                          className="w-full h-36 object-contain bg-white transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <span className="px-3 py-1 rounded-full bg-white text-slate-900 font-bold text-[11px] flex items-center gap-1 shadow-md">
+                            <ZoomIn className="w-3.5 h-3.5 text-indigo-600" /> Inspect
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-2.5 bg-slate-900 text-white flex items-center justify-between text-[11px] font-mono px-3">
+                        <span className="font-bold text-indigo-300">{alignedMs.code}</span>
+                        <span className="text-slate-400 text-[10px]">Microsoft Certified</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-mono text-[#2d5c36] flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-[#40844e] shrink-0" />
+                        <span className="truncate">Public Registry: americanfuturetech.com/certificate/ID</span>
+                      </div>
+
+                      <Link
+                        to="/certificate/AFT-CERT-AI9821"
+                        className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#1a361d] text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <span>Verify Sample Credential</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Placement Guarantee Guarantee Card */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
@@ -390,6 +443,12 @@ export default function CourseDetailPage() {
           </div>
         </section>
       </main>
+
+      <CertificateModal
+        isOpen={!!selectedModalCert}
+        certificate={selectedModalCert}
+        onClose={() => setSelectedModalCert(null)}
+      />
 
       <Footer onOpenLeadModal={() => setIsLeadModalOpen(true)} />
       <LeadModal

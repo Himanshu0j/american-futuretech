@@ -13,9 +13,13 @@ import {
   Zap,
   Users,
   Terminal,
-  FileText
+  FileText,
+  ZoomIn,
+  Eye
 } from 'lucide-react';
 import api from '../lib/api';
+import { MICROSOFT_CERTIFICATES } from '../data/microsoftCertificates';
+import CertificateModal from './CertificateModal';
 import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
 import dataScienceIllustration from '../assets/illustrations/programs/data-science.svg';
 import cyberIllustration from '../assets/illustrations/programs/cybersecurity.svg';
@@ -115,6 +119,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [activeCertIdx, setActiveCertIdx] = useState(0);
+  const [selectedModalCert, setSelectedModalCert] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -471,47 +477,22 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
         )}
 
         {/* Official Microsoft Partner Credential Showcase */}
-        <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-[#0F172A] to-indigo-950 text-white border border-indigo-500/30 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 text-left">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Official Microsoft Credential Partner</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-black font-heading tracking-tight text-white">
-              Dual US Institutional & Microsoft Certification
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Every American FutureTech fellow graduates with dual industry credentials: our accredited US Fellowship Diploma verified on our Wyoming Registry, plus official alignment with Microsoft Certified Professional certifications.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-emerald-400" />
-                Cryptographically Verifiable
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-emerald-400" />
-                Industry Standard Curriculum
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-emerald-400" />
-                Direct Placement Network
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative rounded-xl overflow-hidden border-2 border-indigo-400/40 shadow-2xl bg-white max-w-[240px]">
-              <img
-                src="/static/images/microsoftcertificate.jpg"
-                alt="Official Microsoft Partner Credential"
-                className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
-              />
-              <div className="p-2 bg-slate-900 text-center text-[10px] font-mono text-indigo-300">
-                Official Microsoft Aligned Partner
+        <div className="mt-12 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-indigo-500/20">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Dual Credential Framework &bull; US Institute + Microsoft Certified</span>
               </div>
+              <h3 className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white">
+                Official Microsoft Certified Partner Credentials
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Every American FutureTech fellow graduates with dual industry credentials: our accredited US Fellowship Diploma verified on our Wyoming Registry, plus official alignment with Microsoft Certified Professional certifications.
+              </p>
             </div>
 
-            <div className="flex flex-col gap-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link
                 to="/certificate/AFT-CERT-AI9821"
                 className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs transition-colors text-center shadow-md flex items-center justify-center gap-1.5"
@@ -527,6 +508,113 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </Link>
             </div>
           </div>
+
+          {/* Certificate Selector Pills */}
+          <div className="pt-6">
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-300 mb-3 flex items-center gap-2">
+              <Award className="w-4 h-4 text-indigo-400" />
+              <span>Select Microsoft Certification to Inspect:</span>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pb-2">
+              {MICROSOFT_CERTIFICATES.map((cert, idx) => (
+                <button
+                  key={cert.id}
+                  onClick={() => setActiveCertIdx(idx)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
+                    activeCertIdx === idx
+                      ? 'bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/40'
+                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700'
+                  }`}
+                >
+                  <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-black/30 text-[10px]">
+                    {cert.code}
+                  </span>
+                  <span>{cert.title.replace('Microsoft Certified: ', '')}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Certificate Spotlight Card */}
+          {MICROSOFT_CERTIFICATES[activeCertIdx] && (
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-950/60 p-6 sm:p-8 rounded-2xl border border-indigo-500/20">
+              {/* Certificate Image with Zoom Lightbox Trigger */}
+              <div className="lg:col-span-5 flex flex-col items-center">
+                <div
+                  onClick={() => setSelectedModalCert(MICROSOFT_CERTIFICATES[activeCertIdx])}
+                  className="group relative cursor-pointer rounded-xl overflow-hidden border-2 border-indigo-400/40 shadow-2xl bg-white w-full max-w-md transition-all duration-300 hover:scale-[1.02] hover:border-indigo-400"
+                >
+                  <img
+                    src={MICROSOFT_CERTIFICATES[activeCertIdx].image}
+                    alt={MICROSOFT_CERTIFICATES[activeCertIdx].title}
+                    className="w-full h-auto object-contain transition-transform duration-300 group-hover:contrast-105"
+                  />
+                  <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
+                    <span className="px-3.5 py-1.5 rounded-full bg-white/90 text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-lg">
+                      <ZoomIn className="w-4 h-4 text-indigo-600" />
+                      <span>Inspect High-Res Certificate</span>
+                    </span>
+                  </div>
+                  <div className="p-2.5 bg-slate-900/95 border-t border-slate-800 text-center flex items-center justify-between text-[11px] font-mono text-indigo-300 px-3">
+                    <span className="font-bold text-white">{MICROSOFT_CERTIFICATES[activeCertIdx].code}</span>
+                    <span className="text-slate-400 flex items-center gap-1">
+                      <Eye className="w-3 h-3 text-indigo-400" /> Click to Enlarge
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Certificate Details */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold uppercase border border-indigo-400/30">
+                    {MICROSOFT_CERTIFICATES[activeCertIdx].badge}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold uppercase border border-emerald-400/30">
+                    {MICROSOFT_CERTIFICATES[activeCertIdx].category}
+                  </span>
+                </div>
+
+                <h4 className="text-xl sm:text-2xl font-bold font-heading text-white">
+                  {MICROSOFT_CERTIFICATES[activeCertIdx].title}
+                </h4>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  {MICROSOFT_CERTIFICATES[activeCertIdx].description}
+                </p>
+
+                {/* Core Competencies Tested */}
+                <div>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2 font-bold">
+                    Core Technical Competencies Validated:
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {MICROSOFT_CERTIFICATES[activeCertIdx].skills.map((skill, sIdx) => (
+                      <span
+                        key={sIdx}
+                        className="px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5"
+                      >
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span>{skill}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-400 border-t border-slate-800">
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    Wyoming Institutional Registry Backed
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-4 h-4 text-indigo-400" />
+                    Direct Verification Endpoint
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Enterprise Group Training Discovery Banner */}
@@ -549,6 +637,12 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           </Link>
         </div>
       </div>
+
+      <CertificateModal
+        isOpen={!!selectedModalCert}
+        certificate={selectedModalCert}
+        onClose={() => setSelectedModalCert(null)}
+      />
     </section>
   );
 }

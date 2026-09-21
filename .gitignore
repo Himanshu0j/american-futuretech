@@ -4,7 +4,7 @@ node_modules/
 package-lock.json
 
 # Local MongoDB binaries and data
-data/
+/data/
 mongodb-win32-x86_64-windows-7.0.24/
 cloudflared.exe
 .cache/

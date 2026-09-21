@@ -33,6 +33,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const heroData = settings?.hero || {};
 
   const [activeTab, setActiveTab] = useState('workspace'); // 'workspace' | 'lms' | 'classroom' | 'credential' | 'admin'
+  const [heroCredView, setHeroCredView] = useState('us'); // 'us' | 'microsoft'
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -516,47 +517,100 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   </div>
                 )}
 
-                {/* VIEW 3: US CREDENTIAL VERIFICATION */}
+                {/* VIEW 3: US CREDENTIAL & MICROSOFT PARTNER VERIFICATION */}
                 {activeTab === 'credential' && (
-                  <div className="space-y-4 animate-in fade-in duration-200">
-                    <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-indigo-950/30 border-2 border-indigo-500/20 text-center relative overflow-hidden shadow-inner">
-                      <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700 pb-3 mb-4">
-                        <div className="text-left">
-                          <div className="text-[10px] font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-widest font-heading">
-                            AMERICAN FUTURETECH
-                          </div>
-                          <div className="text-[9px] text-slate-500 font-mono">Registry of Digital Credentials · Wyoming</div>
-                        </div>
-                        <img
-                          src="/images/gold-seal-medal.webp"
-                          alt="Gold Medal Seal"
-                          className="w-9 h-9 object-contain"
-                        />
-                      </div>
-
-                      <div className="text-xs text-slate-500 uppercase tracking-widest font-mono">
-                        This Certifies That
-                      </div>
-                      <div className="text-lg font-bold text-slate-900 dark:text-white font-heading mt-1">
-                        Ethan Hunt
-                      </div>
-                      <div className="text-[11px] text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-1 leading-relaxed">
-                        has successfully completed the 24-week (6-month) professional fellowship in
-                      </div>
-                      <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-heading mt-1">
-                        Applied Artificial Intelligence & Machine Learning Systems
-                      </div>
-
-                      <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-[9px] font-mono text-slate-500">
-                        <span>ID: AFT-CERT-AI9821</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">STATUS: ACCREDITED</span>
-                        <span>ISSUED: 2026</span>
-                      </div>
+                  <div className="space-y-3 animate-in fade-in duration-200">
+                    {/* View Switcher Bar */}
+                    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setHeroCredView('us')}
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
+                          heroCredView === 'us'
+                            ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <span>US Institute Diploma</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setHeroCredView('microsoft')}
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
+                          heroCredView === 'microsoft'
+                            ? 'bg-indigo-600 text-white shadow-xs'
+                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Microsoft Certified</span>
+                      </button>
                     </div>
+
+                    {heroCredView === 'us' ? (
+                      <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-indigo-950/30 border-2 border-indigo-500/20 text-center relative overflow-hidden shadow-inner">
+                        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700 pb-2.5 mb-3">
+                          <div className="text-left">
+                            <div className="text-[10px] font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-widest font-heading">
+                              AMERICAN FUTURETECH
+                            </div>
+                            <div className="text-[9px] text-slate-500 font-mono">Registry of Digital Credentials · Wyoming</div>
+                          </div>
+                          <img
+                            src="/images/gold-seal-medal.webp"
+                            alt="Gold Medal Seal"
+                            className="w-8 h-8 object-contain"
+                          />
+                        </div>
+
+                        <div className="text-[11px] text-slate-500 uppercase tracking-widest font-mono">
+                          This Certifies That
+                        </div>
+                        <div className="text-base font-bold text-slate-900 dark:text-white font-heading mt-0.5">
+                          Ethan Hunt
+                        </div>
+                        <div className="text-[10px] text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-0.5 leading-relaxed">
+                          has successfully completed the 24-week (6-month) professional fellowship in
+                        </div>
+                        <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-heading mt-0.5">
+                          Applied Artificial Intelligence & Machine Learning Systems
+                        </div>
+
+                        <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-[9px] font-mono text-slate-500">
+                          <span>ID: AFT-CERT-AI9821</span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">STATUS: ACCREDITED</span>
+                          <span>ISSUED: 2026</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-2xl bg-slate-900 border-2 border-indigo-500/30 text-center relative overflow-hidden shadow-inner space-y-2.5">
+                        <div className="relative rounded-xl overflow-hidden border border-indigo-400/40 bg-white max-h-40 flex items-center justify-center">
+                          <img
+                            src="/images/certificates/ms-cert-sc100.png"
+                            alt="Microsoft Certified SC-100"
+                            className="w-full h-auto max-h-36 object-contain"
+                          />
+                          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-indigo-900/90 text-indigo-200 text-[9px] font-mono font-bold">
+                            SC-100 EXPERT
+                          </div>
+                        </div>
+
+                        <div className="text-left space-y-0.5 px-1">
+                          <div className="text-xs font-bold text-white font-heading truncate">
+                            Microsoft Certified: Cybersecurity Architect Expert
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                            <span>Conferred to: Ethan Hunt</span>
+                            <span className="text-emerald-400 font-bold">VERIFIED ACTIVE</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <Link
                       to="/certificate/AFT-CERT-AI9821"
-                      className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
                     >
                       <span>Open Cryptographic Registry Record</span>
                       <ExternalLink className="w-3.5 h-3.5" />

@@ -83,7 +83,7 @@ export default function MetricsStrip() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
+    <section id="curriculum-metrics" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-12">
         
         {/* ============================================================

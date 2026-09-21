@@ -173,27 +173,27 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   const secondaryCourses = filteredCourses.length > 1 ? filteredCourses.slice(1) : [];
 
   return (
-    <section id="courses" className="py-20 sm:py-28 relative z-10 bg-[#fffff2] text-[#1b1b1b]">
+    <section id="courses" className="py-20 sm:py-28 relative z-10 bg-white dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6 text-left">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#10b981]/30 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
-              <Award className="w-3.5 h-3.5 text-[#10b981]" />
-              <span>Editorial Program Showcase</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
+              <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+              <span>6-Month Career Training Programs · Dual US & Microsoft Credentials</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-[#1a361d] tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-slate-900 dark:text-white tracking-tight leading-tight">
               Fellowship Specializations
             </h2>
 
-            <p className="mt-3 text-sm sm:text-base text-gray-600 leading-relaxed">
-              Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support.
+            <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+              Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for $99.
             </p>
           </div>
 
           {/* Track Filter Tabs (Refined Pill Style) */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-white border border-gray-200 shadow-sm">
+          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-xs">
             {filterCategories.map((cat) => {
               const isSelected = activeFilter === cat || (cat === 'All Programs' && activeFilter === 'All');
               return (
@@ -202,8 +202,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   onClick={() => setActiveFilter(cat)}
                   className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-[#1a361d] text-[#fffff2] shadow-sm'
-                      : 'text-gray-600 hover:text-[#1a361d] hover:bg-gray-100'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-white dark:hover:bg-slate-700'
                   }`}
                 >
                   {cat}
@@ -215,35 +215,35 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
         {/* FLAGSHIP HERO SHOWCASE CARD (Stanford/Wharton Executive Style) */}
         {flagship && (
-          <div className="mb-12 rounded-3xl bg-white border-2 border-[#1a361d]/20 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group">
+          <div className="mb-12 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
-              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[280px] lg:min-h-[420px] overflow-hidden bg-gray-950">
+              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[280px] lg:min-h-[420px] overflow-hidden bg-slate-950">
                 <img
                   src={getCourseImage(flagship)}
                   alt={flagship.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f1b11] via-[#0f1b11]/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-[#0f1b11]/40 lg:to-[#0f1b11]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-slate-950/40 lg:to-slate-950" />
 
                 {/* Floating Top Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-10">
-                  <span className="px-3 py-1 rounded-full bg-[#1a361d] text-[#76ff8a] text-[10px] font-mono font-bold uppercase tracking-wider border border-[#76ff8a]/30 shadow-md">
-                    {flagship.badge || 'Flagship Track'}
+                  <span className="px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider border border-indigo-400/30 shadow-md">
+                    6-Month Career Training
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono font-medium">
-                    {flagship.duration || '6 Months · Weekend Masterclasses'}
+                    {flagship.duration || '6 Months · Weekend Masterclasses + Labs'}
                   </span>
                 </div>
 
                 {/* Bottom Left Overlay Info */}
                 <div className="absolute bottom-4 left-4 right-4 z-10 text-white space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-[#76ff8a] font-mono font-semibold">
+                  <div className="flex items-center gap-1.5 text-xs text-indigo-300 font-mono font-semibold">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{flagship.cohort || 'Next Cohort: Oct 15, 2026'}</span>
                   </div>
-                  <div className="text-xs text-gray-300 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-gray-400" />
+                  <div className="text-xs text-slate-300 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-slate-400" />
                     <span>{flagship.faculty || 'Silicon Valley & Fortune 500 Faculty'}</span>
                   </div>
                 </div>
@@ -256,27 +256,27 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                 </div>
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-2 pr-0 sm:pr-24">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#10b981]">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                       {flagship.category || 'Executive Engineering Track'}
                     </span>
-                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold">
-                      Limited Cohort Cap: 30 Fellows
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
+                      Admissions Open · Capped at 30 Fellows
                     </span>
                   </div>
 
                   <Link to={`/courses/${flagship.slug}`}>
-                    <h3 className="text-2xl sm:text-3xl font-black text-[#1a361d] font-heading tracking-tight group-hover:text-[#2d5c36] transition-colors leading-tight">
+                    <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
                       {flagship.title}
                     </h3>
                   </Link>
 
-                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     {flagship.shortDescription || flagship.description}
                   </p>
 
                   {/* 3 Structured Curriculum Highlights */}
-                  <div className="mt-5 space-y-2.5 border-t border-b border-gray-100 py-4">
-                    <div className="text-xs font-bold uppercase tracking-wider text-gray-500 font-mono">
+                  <div className="mt-5 space-y-2.5 border-t border-b border-slate-100 dark:border-slate-800 py-4">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
                       Curriculum Highlights
                     </div>
                     {(
@@ -286,8 +286,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                         'Full enterprise capstone defense evaluated by external tech leaders'
                       ]
                     ).map((highlight, hIdx) => (
-                      <div key={hIdx} className="flex items-start gap-2.5 text-xs text-gray-700">
-                        <div className="w-4 h-4 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                      <div key={hIdx} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+                        <div className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
                           <Check className="w-3 h-3 stroke-[2.5]" />
                         </div>
                         <span className="font-medium leading-normal">{highlight}</span>
@@ -297,12 +297,12 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                   {/* Tech Stack Pills */}
                   <div className="mt-4 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] font-mono text-gray-500 mr-1">Stack:</span>
+                    <span className="text-[11px] font-mono text-slate-500 mr-1">Stack:</span>
                     {(flagship.skills?.slice(0, 6) || ['Python 3.12', 'PyTorch', 'Docker', 'LangChain', 'AWS']).map(
                       (skill, sIdx) => (
                         <span
                           key={sIdx}
-                          className="text-[11px] font-mono bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-md font-medium"
+                          className="text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2.5 py-0.5 rounded-md font-medium border border-slate-200/50 dark:border-slate-700/50"
                         >
                           {skill}
                         </span>
@@ -312,40 +312,44 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                 </div>
 
                 {/* Bottom Pricing and Actions */}
-                <div className="pt-4 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <div className="text-[11px] font-mono text-gray-500 uppercase tracking-wider font-semibold">
+                    <div className="text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
                       Tuition & Reservation
                     </div>
                     <div className="flex items-baseline gap-2 mt-0.5">
-                      <span className="text-2xl font-black text-[#1a361d] font-mono">
+                      <span className="text-2xl font-black text-slate-900 dark:text-white font-mono">
                         ${flagship.pricing?.discountedPrice || 499}
                       </span>
-                      <span className="text-sm text-gray-400 line-through font-mono">
+                      <span className="text-sm text-slate-400 line-through font-mono">
                         ${flagship.pricing?.originalPrice || 1299}
                       </span>
-                      <span className="text-xs font-bold text-emerald-700 font-mono bg-[#d8ffd2] px-2 py-0.5 rounded">
+                      <Link
+                        to={`/checkout?tier=deposit&courseId=${flagship._id}`}
+                        className="text-xs font-bold text-indigo-700 dark:text-indigo-300 font-mono bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded hover:underline"
+                      >
                         Reserve with $99
-                      </span>
+                      </Link>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <button
+                      type="button"
                       onClick={() => (onOpenSyllabusModal ? onOpenSyllabusModal(flagship) : null)}
-                      className="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#1a361d] text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       <span>Download Syllabus</span>
                     </button>
 
-                    <button
-                      onClick={() => (onSelectCourse ? onSelectCourse(flagship) : null)}
+                    <Link
+                      to={`/checkout?tier=deposit&courseId=${flagship._id}`}
                       className="elms-btn-primary group"
                     >
-                      <span>Apply Now</span>
+                      <span>Reserve Seat — $99</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -363,64 +367,62 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               return (
                 <div
                   key={course._id || course.slug}
-                  className="elms-card flex flex-col justify-between group bg-white border border-gray-200 rounded-2xl hover:border-[#1a361d]/40 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden"
+                  className="elms-card flex flex-col justify-between group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-indigo-500/40 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden"
                 >
                   <div>
                     {/* Visual Thumbnail Header */}
-                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-950">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950">
                       <img
                         src={getCourseImage(course)}
                         alt={course.title}
                         loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a361d]/90 via-transparent to-black/30" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/30" />
 
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-[#d8ffd2]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#76ff8a] pulse-mint-dot" />
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-emerald-300 border border-emerald-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-mint-dot" />
                         <span>Admissions Open</span>
                       </div>
 
                       <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
-                        <span className="text-[10px] font-mono font-bold text-white bg-black/60 backdrop-blur-xs px-2.5 py-0.5 rounded-full">
-                          {course.duration || '6 Months'}
+                        <span className="text-[10px] font-mono font-bold text-white bg-indigo-600/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full">
+                          {course.duration || '6-Month Career Training'}
                         </span>
 
-                        {course.badge && (
-                          <span className="text-[10px] font-bold text-[#fffff2] bg-[#9e4f8f] px-2.5 py-0.5 rounded-full shadow-sm">
-                            {course.badge}
-                          </span>
-                        )}
+                        <span className="text-[10px] font-bold text-white bg-indigo-900/80 px-2.5 py-0.5 rounded-full shadow-sm border border-indigo-500/30">
+                          {course.badge || '6-Month Track'}
+                        </span>
                       </div>
                     </div>
 
                     <div className="p-6 relative">
                       <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#10b981]">
+                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                           {course.category || 'Specialization Track'}
                         </div>
-                        <div className="w-9 h-9 p-1 rounded-xl bg-[#f0fdf4] border border-emerald-100 shrink-0">
+                        <div className="w-9 h-9 p-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 shrink-0">
                           <img src={getCourseIllustration(course)} alt="" className="w-full h-full object-contain" />
                         </div>
                       </div>
 
-                      <Link to={`/courses/${course.slug}`} className="block group-hover:text-[#2d5c36] transition-colors">
-                        <h4 className="text-lg font-bold text-[#1a361d] font-heading tracking-tight leading-snug">
+                      <Link to={`/courses/${course.slug}`} className="block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        <h4 className="text-lg font-bold text-slate-900 dark:text-white font-heading tracking-tight leading-snug">
                           {course.title}
                         </h4>
                       </Link>
 
-                      <p className="text-xs text-gray-600 mt-2.5 line-clamp-2 leading-relaxed font-normal">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-2.5 line-clamp-2 leading-relaxed font-normal">
                         {course.shortDescription || course.description}
                       </p>
 
                       {/* Tech Stack Strip */}
-                      <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">
+                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-1.5">
                         {(course.skills?.slice(0, 4) || ['Kali Linux', 'Metasploit', 'Burp Suite', 'Python']).map(
                           (skill, sIdx) => (
                             <span
                               key={sIdx}
-                              className="text-[10px] font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded font-medium"
+                              className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-medium border border-slate-200/50 dark:border-slate-700/50"
                             >
                               {skill}
                             </span>
@@ -432,32 +434,33 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                   {/* Bottom Tuition & CTAs */}
                   <div className="p-6 pt-0">
-                    <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
                       <div>
-                        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-wider font-semibold">
+                        <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
                           Reserve with $99
                         </div>
                         <div className="flex items-baseline gap-1.5 mt-0.5">
-                          <span className="text-lg font-black text-[#1a361d] font-mono">${tuition}</span>
-                          <span className="text-xs text-gray-400 line-through font-mono">${originalTuition}</span>
+                          <span className="text-lg font-black text-slate-900 dark:text-white font-mono">${tuition}</span>
+                          <span className="text-xs text-slate-400 line-through font-mono">${originalTuition}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <button
+                          type="button"
                           onClick={() => (onOpenSyllabusModal ? onOpenSyllabusModal(course) : null)}
-                          className="px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-[#1a361d] text-xs font-bold transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
                         >
                           Syllabus
                         </button>
 
-                        <button
-                          onClick={() => (onSelectCourse ? onSelectCourse(course) : null)}
-                          className="elms-btn-primary !text-xs !py-1.5 !px-4 cursor-pointer"
+                        <Link
+                          to={`/checkout?tier=deposit&courseId=${course._id}`}
+                          className="elms-btn-primary !text-xs !py-1.5 !px-4 cursor-pointer flex items-center gap-1"
                         >
-                          <span>Apply</span>
+                          <span>Reserve $99</span>
                           <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -467,13 +470,72 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           </div>
         )}
 
+        {/* Official Microsoft Partner Credential Showcase */}
+        <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-[#0F172A] to-indigo-950 text-white border border-indigo-500/30 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-8 text-left">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">
+              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Official Microsoft Credential Partner</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black font-heading tracking-tight text-white">
+              Dual US Institutional & Microsoft Certification
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Every American FutureTech fellow graduates with dual industry credentials: our accredited US Fellowship Diploma verified on our Wyoming Registry, plus official alignment with Microsoft Certified Professional certifications.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400" />
+                Cryptographically Verifiable
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400" />
+                Industry Standard Curriculum
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Check className="w-4 h-4 text-emerald-400" />
+                Direct Placement Network
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-auto shrink-0 flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative rounded-xl overflow-hidden border-2 border-indigo-400/40 shadow-2xl bg-white max-w-[240px]">
+              <img
+                src="/static/images/microsoftcertificate.jpg"
+                alt="Official Microsoft Partner Credential"
+                className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
+              />
+              <div className="p-2 bg-slate-900 text-center text-[10px] font-mono text-indigo-300">
+                Official Microsoft Aligned Partner
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <Link
+                to="/certificate/AFT-CERT-AI9821"
+                className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs transition-colors text-center shadow-md flex items-center justify-center gap-1.5"
+              >
+                <span>Verify Sample Credential</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <Link
+                to="/checkout?tier=deposit"
+                className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors text-center shadow-md"
+              >
+                Reserve Seat — $99
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Enterprise Group Training Discovery Banner */}
-        <div className="mt-12 p-6 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+        <div className="mt-8 p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
           <div>
-            <div className="text-sm font-bold text-[#1a361d] font-heading">
+            <div className="text-sm font-bold text-slate-900 dark:text-white font-heading">
               Looking for corporate group training or customized enterprise cohorts?
             </div>
-            <div className="text-xs text-gray-600 mt-0.5">
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
               We provide private cohorts with customized AI red teaming and LLM infrastructure curriculums for engineering teams.
             </div>
           </div>

@@ -57,15 +57,15 @@ export default function FaqAccordion({
       {/* Optional Header */}
       {title && (
         <div className="text-left space-y-2 mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold">
-            <HelpCircle className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
+            <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>KNOWLEDGEBASE & DISCLOSURES</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-[#1a361d] tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
               {subtitle}
             </p>
           )}
@@ -82,10 +82,10 @@ export default function FaqAccordion({
                 setActiveCategory(cat);
                 setOpenIndex(0);
               }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 activeCategory === cat
-                  ? 'bg-[#1a361d] text-white font-bold shadow-xs'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
+                  : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               {cat}
@@ -98,11 +98,11 @@ export default function FaqAccordion({
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="h-16 rounded-2xl bg-white border border-slate-200 animate-pulse" />
+            <div key={n} className="h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
       ) : faqs.length === 0 ? (
-        <div className="p-8 rounded-2xl bg-white border border-slate-200 text-center text-xs text-slate-500">
+        <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
           No FAQs currently listed under this category.
         </div>
       ) : (
@@ -115,8 +115,8 @@ export default function FaqAccordion({
                 key={faq._id || idx}
                 className={`rounded-2xl transition-all duration-200 border ${
                   isOpen
-                    ? 'bg-white border-[#1a361d]/40 shadow-sm'
-                    : 'bg-white border-slate-200 hover:border-slate-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 border-indigo-500/50 dark:border-indigo-500/60 shadow-md ring-1 ring-indigo-500/20'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs'
                 } overflow-hidden text-left`}
               >
                 <button
@@ -124,10 +124,10 @@ export default function FaqAccordion({
                   className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 transition-colors cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-[#d8ffd2] text-[#1a361d] font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+                    <span className="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
                       Q
                     </span>
-                    <span className="text-sm sm:text-base font-display font-bold text-[#1a361d] leading-snug">
+                    <span className="text-sm sm:text-base font-display font-bold text-slate-900 dark:text-white leading-snug">
                       {faq.question}
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export default function FaqAccordion({
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                     className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                      isOpen ? 'bg-[#1a361d] text-[#76ff8a]' : 'bg-slate-100 text-slate-500'
+                      isOpen ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                     }`}
                   >
                     <ChevronDown className="w-4 h-4" />
@@ -152,7 +152,7 @@ export default function FaqAccordion({
                       transition={{ duration: 0.25, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-600 border-t border-slate-100/80">
+                      <div className="px-5 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800">
                         <BulletContent content={faq.answer} as="auto" bulletType="check" />
                       </div>
                     </motion.div>

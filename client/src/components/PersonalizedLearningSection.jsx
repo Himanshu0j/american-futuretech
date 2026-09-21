@@ -1,210 +1,215 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Sparkles,
+import { 
+  Sparkles, 
+  UserCheck, 
+  Target, 
+  Compass, 
+  ShieldCheck, 
+  ArrowRight, 
+  CheckCircle2, 
   Award,
-  CheckCircle2,
-  Calendar,
-  Clock,
-  ShieldCheck,
-  ArrowRight,
-  UserCheck,
-  Code2,
-  Cpu,
-  Layers,
   Zap,
-  DollarSign
+  Clock,
+  Briefcase
 } from 'lucide-react';
-import { useSiteSettings } from '../context/SiteSettingsContext';
-import BulletContent from './common/BulletContent';
 
-export default function PersonalizedLearningSection() {
-  const { settings } = useSiteSettings();
-  const pl = settings?.personalizedLearning || {};
+export default function PersonalizedLearningSection({ onOpenLeadModal }) {
+  const personalizedFee = "$2,199";
+  const originalFee = "$2,999";
+  const depositFee = "$99";
 
-  if (pl.enabled === false) return null;
-
-  const defaultFeatures = [
-    'Dedicated 1-on-1 weekly sessions with Principal FAANG / Fortune 500 Engineers',
-    'Custom tailored curriculum matching your background, schedule, and target role',
-    'Private GitHub repository code reviews, architectural defenses, and CI/CD setup',
-    'Production-grade Capstone deployed live on AWS cloud infrastructure',
-    'Algorithmic ATS resume overhaul and unlimited high-pressure mock interviews',
-    'Direct executive referrals to 100+ vetted enterprise hiring partners across the US'
+  const features = [
+    {
+      title: "1-on-1 Dedicated Industry Mentor",
+      description: "Weekly 60-minute private sessions with a Principal Engineer or Tech Lead from Microsoft, IBM, or Accenture.",
+      icon: UserCheck
+    },
+    {
+      title: "Custom Tailored Curriculum",
+      description: "Bespoke syllabus created specifically around your current experience, target roles, and chosen tech stack.",
+      icon: Target
+    },
+    {
+      title: "Bespoke Production Capstone",
+      description: "Build an end-to-end enterprise system with automated CI/CD, cloud deployment, and architectural review.",
+      icon: Compass
+    },
+    {
+      title: "Executive Placement & Mock Interviews",
+      description: "Private interview coaching, system design drills, resume rebuild, and direct introduction to our hiring network.",
+      icon: Briefcase
+    }
   ];
 
-  const features = (pl.features && pl.features.length > 0) ? pl.features : defaultFeatures;
-  const tools = (pl.tools && pl.tools.length > 0) ? pl.tools : ['Python', 'Docker', 'AWS', 'Kubernetes', 'PyTorch', 'PostgreSQL'];
-  const price = pl.price || pl.fee || 2199;
-  const originalPrice = pl.originalPrice || pl.originalFee || 3499;
-  const depositPrice = pl.depositPrice || 99;
-  const duration = pl.duration || '6 Months (Extended Track)';
-  const headline = pl.headline || pl.title || 'Personalized Learning Track';
-  const subheadline = pl.subheadline || pl.description || 'Accelerate your transition into high-growth tech roles with bespoke curriculum pacing, dedicated principal engineer mentorship, and personalized portfolio development.';
-  const badgeText = pl.badgeText || pl.subtitle || '1-ON-1 VIP MENTORSHIP & EXTENDED CAREER TRACK';
-
   return (
-    <section id="personalized-learning" className="py-16 sm:py-20 bg-gradient-to-b from-[#fffff2] via-white to-[#fffff2] relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none -z-10" />
+    <section className="relative py-24 bg-gradient-to-b from-slate-900 via-[#0B132B] to-slate-950 text-white overflow-hidden" id="personalized-learning">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-1/4 left-10 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
+      </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Header Eyebrow */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ffe6fa] border border-[#9e4f8f]/30 text-[#9e4f8f] text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#9e4f8f]" />
-            <span>{badgeText}</span>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Eyebrow */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-wide uppercase mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Exclusive 1-on-1 Mentorship Track</span>
           </div>
-
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-[#1a361d] tracking-tight leading-[1.15] mb-4">
-            {headline}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Personalized Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">Accelerator</span>
           </h2>
-
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-            {subheadline}
+          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
+            A standalone premium offering designed for professionals requiring a custom syllabus, flexible schedule, and direct 1-on-1 guidance from top Silicon Valley mentors.
           </p>
         </div>
 
-        {/* Bento Grid Presentation */}
+        {/* 2-Column Comparison Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left Column (7 cols): Curriculum, Duration & Core Deliverables */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-[#1a361d]/15 shadow-xl flex flex-col justify-between space-y-6">
-            <div className="space-y-6 text-left">
-              {/* Duration and Program Tag */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#10b981]" />
-                  <span className="text-xs font-mono font-bold text-[#1a361d] uppercase">Track Duration:</span>
-                  <span className="text-xs font-bold text-[#2d5c36] bg-[#d8ffd2] px-2.5 py-0.5 rounded-full">
-                    {duration}
+          {/* Left Column: Visual & Mentorship Overview */}
+          <div className="lg:col-span-7 flex flex-col justify-between rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                <div>
+                  <span className="text-xs font-mono uppercase tracking-widest text-indigo-400">Pacing & Structure</span>
+                  <p className="text-xl font-bold text-white mt-1">4 to 12 Weeks • Self-Paced or Intensive</p>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>100% Placement Support</span>
+                </div>
+              </div>
+
+              {/* Sourced Image Showcase */}
+              <div className="relative my-8 rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl group">
+                <img
+                  src="/static/images/oneonone.png"
+                  alt="Personalized 1-on-1 Mentorship Session at American FutureTech"
+                  className="w-full h-56 sm:h-72 object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                  onError={(e) => {
+                    // Fallback to about-hero if oneonone.png is not loaded
+                    e.target.src = "/static/images/industry.png";
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-slate-200">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <UserCheck className="w-4 h-4 text-amber-400" />
+                    Private 1-on-1 Live Room
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700 text-amber-300 font-mono">
+                    Weekly Code Reviews
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-                  <UserCheck className="w-3.5 h-3.5 text-[#9e4f8f]" />
-                  <span>Only 10 Fellows Per Quarter</span>
-                </div>
               </div>
 
-              <div>
-                <h3 className="text-xl font-bold font-heading text-[#1a361d] mb-3">
-                  Tailored 1-on-1 Engineering Mentorship
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Unlike traditional cohort models where everyone moves at the exact same pace, Personalized Learning matches you with a dedicated Senior Staff / Principal Engineer who customizes each week's deliverables to your target salary and job profile.
-                </p>
-              </div>
-
-              {/* Bullet Features with intelligent BulletContent parser */}
-              <div>
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-3">
-                  What's Included in the 6-Month Intensive
-                </h4>
-                <div className="space-y-2.5">
-                  {features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 hover:bg-[#fffff2] border border-slate-100 transition-colors">
-                      <CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0 mt-0.5" />
-                      <div className="text-xs sm:text-sm text-slate-700 font-medium">
-                        <BulletContent content={feature} />
+              {/* 4 Core Pillars Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {features.map((feat, idx) => {
+                  const Icon = feat.icon;
+                  return (
+                    <div key={idx} className="rounded-xl border border-slate-800/80 bg-slate-950/50 p-4 hover:border-slate-700 transition-colors">
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <h4 className="text-sm font-bold text-white">{feat.title}</h4>
                       </div>
+                      <p className="text-xs text-slate-400 leading-relaxed">{feat.description}</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tools Chips */}
-              <div>
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Featured Core Tech Stack
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {tools.map((tool, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-slate-100 text-[#1a361d] text-xs font-mono font-bold border border-slate-200"
-                    >
-                      <Zap className="w-3 h-3 text-[#10b981]" />
-                      {tool}
-                    </span>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
-              <span>* Includes US Accredited Professional Credential</span>
-              <span>100% Verifiable Registry</span>
+            {/* Bottom Guarantee Banner */}
+            <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-indigo-400" />
+                <span>Includes Verified Microsoft Certificate Preparation</span>
+              </span>
+              <span className="font-mono text-indigo-300">Limited to 15 Fellows/Cohort</span>
             </div>
           </div>
 
-          {/* Right Column (5 cols): Investment & Direct Reservation Card */}
-          <div className="lg:col-span-5 bg-[#1a361d] text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#2d5c36] flex flex-col justify-between relative overflow-hidden text-left">
-            {/* Ambient Background Graphic */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#76ff8a]/10 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="relative z-10 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2]/10 border border-[#76ff8a]/30 text-[#76ff8a] text-[11px] font-mono font-bold uppercase">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Guaranteed Career Placement
-              </div>
-
-              <div>
-                <div className="text-xs font-mono text-slate-400 uppercase">Independent Tuition</div>
-                <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-4xl sm:text-5xl font-black font-mono text-[#fffff2] tracking-tight">
-                    ${price}
-                  </span>
-                  <span className="text-sm font-mono text-slate-400 line-through">
-                    ${originalPrice}
-                  </span>
-                </div>
-                <div className="text-xs text-[#76ff8a] font-medium mt-1">
-                  Flexible financing available · Save ${(originalPrice - price).toLocaleString()} today
-                </div>
-              </div>
-
-              {/* Deposit Callout */}
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase text-slate-300 font-bold">Seat Reservation</span>
-                  <span className="text-xs font-mono font-black text-[#76ff8a] bg-[#76ff8a]/15 px-2 py-0.5 rounded">
-                    ${depositPrice} Deposit
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  Lock your spot in the upcoming intake with a risk-free ${depositPrice} deposit. Balance is only payable upon mentor pairing and schedule confirmation.
-                </p>
-              </div>
-
-              {/* Trust highlights */}
-              <div className="space-y-2 text-xs text-slate-200">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                  <span>Direct 1-on-1 Faculty Matching</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                  <span>Full Lifetime Access to LMS Labs & Materials</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                  <span>Interview Readiness Guarantee or Full Refund</span>
-                </div>
+          {/* Right Column: Pricing & Direct Enrollment Card */}
+          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-slate-900 via-slate-900 to-[#0F172A] p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+            {/* Top Ribbon */}
+            <div className="absolute top-0 right-0">
+              <div className="bg-gradient-to-l from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] tracking-wider uppercase py-1.5 px-6 rounded-bl-xl shadow-lg">
+                Independent Offering
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="relative z-10 pt-6 space-y-3">
+            <div>
+              <div className="mb-6">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Separate Tuition</span>
+                <div className="flex items-baseline gap-3 mt-2">
+                  <span className="text-4xl sm:text-5xl font-black text-white">{personalizedFee}</span>
+                  <span className="text-lg text-slate-500 line-through">{originalFee}</span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Full upfront tuition or flexible interest-free monthly installments.
+                </p>
+              </div>
+
+              {/* $99 Reservation Box */}
+              <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 p-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-amber-300 uppercase tracking-wide">
+                      Reserve Your Seat Today
+                    </p>
+                    <p className="text-sm font-extrabold text-white mt-0.5">
+                      Pay only {depositFee} Deposit Now
+                    </p>
+                  </div>
+                  <span className="text-2xl font-black text-amber-400">{depositFee}</span>
+                </div>
+                <p className="text-[11px] text-slate-300 mt-2">
+                  Lock in your dedicated mentor match and syllabus consultation today. Remainder due upon cohort confirmation.
+                </p>
+              </div>
+
+              {/* What's Included Checklist */}
+              <div className="space-y-3 mb-8">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Included in Tuition:</p>
+                {[
+                  "Dedicated 1-on-1 Senior Mentor with weekly private calls",
+                  "Fully customized curriculum designed around your background",
+                  "Dedicated Capstone with code reviews and GitHub architecture",
+                  "Unlimited portfolio, resume, and LinkedIn optimization",
+                  "Direct referrals to our 200+ hiring partner network",
+                  "Microsoft & American FutureTech Verified Credentials"
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTAs */}
+            <div className="space-y-3 pt-6 border-t border-slate-800">
               <Link
-                to={pl.ctaLink || `/checkout?plan=personalized&tier=deposit`}
-                className="w-full py-4 px-6 rounded-xl bg-[#76ff8a] hover:bg-[#5ce872] text-[#1a361d] font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 text-center group"
+                to="/checkout?tier=deposit&program=personalized"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-6 py-4 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-500 hover:shadow-xl hover:shadow-amber-500/30 active:scale-[0.98] transition-all"
               >
-                <span>{pl.ctaText || `Reserve Your Seat — $${depositPrice}`}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>Reserve Personalized Seat — {depositFee}</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
 
-              <div className="text-center text-[11px] text-slate-400 font-mono">
-                Admissions reviewed in 24 hours · Money-back satisfaction guarantee
-              </div>
+              <button
+                type="button"
+                onClick={() => onOpenLeadModal?.({ title: "Personalized Learning Accelerator", price: 2199 })}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-6 py-3 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors"
+              >
+                <span>Request 1-on-1 Syllabus & Consultation</span>
+              </button>
             </div>
           </div>
         </div>

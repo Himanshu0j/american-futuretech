@@ -58,30 +58,48 @@ const DEFAULT_TOOLS = [
     active: true
   },
   {
+    name: 'Kubernetes',
+    category: 'Cloud & Container Systems',
+    description: 'Automated container orchestration, self-healing deployments, and auto-scaling microservice infrastructure.',
+    badge: 'Enterprise Infra',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg',
+    order: 5,
+    active: true
+  },
+  {
+    name: 'React',
+    category: 'Software Engineering',
+    description: 'Modern front-end user interface framework powering mission-critical interactive dashboards and SaaS cockpits.',
+    badge: 'Frontend Core',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    order: 6,
+    active: true
+  },
+  {
+    name: 'MongoDB',
+    category: 'Data Science & Analytics',
+    description: 'Distributed document and vector-enabled database engineered for real-time scale, JSON pipelines, and rapid queries.',
+    badge: 'Modern NoSQL',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+    order: 7,
+    active: true
+  },
+  {
     name: 'Git & GitHub',
     category: 'Software Engineering',
     description: 'Distributed version control, automated CI/CD GitHub Actions, and production peer code review workflows.',
     badge: 'Dev Standard',
     logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
-    order: 5,
+    order: 8,
     active: true
   },
   {
-    name: 'Jupyter',
-    category: 'Data Science & Analytics',
-    description: 'Interactive computational notebooks for exploratory data analysis, statistical modeling, and ML experimentation.',
-    badge: 'Data Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
-    order: 6,
-    active: true
-  },
-  {
-    name: 'Hugging Face',
-    category: 'Data & AI',
-    description: 'Global transformer model hub, tokenizer pipelines, and fine-tuning ecosystem for open-weight foundation models.',
-    badge: 'GenAI Hub',
-    logo: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
-    order: 7,
+    name: 'Figma',
+    category: 'Design & Architecture',
+    description: 'Collaborative UI/UX design and design system architecture used for high-fidelity capstone spec definitions.',
+    badge: 'Design Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+    order: 9,
     active: true
   },
   {
@@ -90,7 +108,25 @@ const DEFAULT_TOOLS = [
     description: 'Enterprise relational database management system supporting advanced analytics, indexing, and pgvector extensions.',
     badge: 'Database Standard',
     logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
-    order: 8,
+    order: 10,
+    active: true
+  },
+  {
+    name: 'Hugging Face',
+    category: 'Data & AI',
+    description: 'Global transformer model hub, tokenizer pipelines, and fine-tuning ecosystem for open-weight foundation models.',
+    badge: 'GenAI Hub',
+    logo: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
+    order: 11,
+    active: true
+  },
+  {
+    name: 'Jupyter',
+    category: 'Data Science & Analytics',
+    description: 'Interactive computational notebooks for exploratory data analysis, statistical modeling, and ML experimentation.',
+    badge: 'Data Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
+    order: 12,
     active: true
   },
 ];
@@ -129,20 +165,20 @@ export default function ToolsSection() {
   ];
 
   return (
-    <section id="tools" className="py-20 bg-[#fffff2] border-t border-[#1a361d]/10 relative">
+    <section id="tools" className="py-20 bg-slate-50 dark:bg-[#0B132B] border-t border-slate-200/60 dark:border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="max-w-2xl text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-3">
-              <Terminal className="w-3.5 h-3.5 text-[#2d5c36]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-3">
+              <Terminal className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
               <span>{capstone.title || 'CAPSTONE DEFENSES & TOOLSTACK'}</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
               {capstone.subtitle || 'Master the Exact Tools Used by Tier-1 Tech Teams'}
             </h2>
-            <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base mt-3 leading-relaxed">
               {capstone.description ||
                 'Every fellowship track culminates in an enterprise capstone project engineered around real production tooling—no synthetic toy simulations. Build, test, and deploy code reviewed by external tech leaders.'}
             </p>
@@ -151,7 +187,7 @@ export default function ToolsSection() {
           <div className="flex items-center gap-3">
             <Link
               to={capstone.ctaLink || '/checkout?tier=deposit'}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-xs font-bold transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-md hover:shadow-lg cursor-pointer"
             >
               <span>{capstone.ctaText || 'Reserve Capstone Seat — $99'}</span>
               <ArrowRight className="w-4 h-4 text-white" />
@@ -159,10 +195,10 @@ export default function ToolsSection() {
 
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] text-xs font-bold transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
-              <span>View All Tools</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#76ff8a]" />
+              <span>View All 12+ Tools</span>
+              <ExternalLink className="w-3.5 h-3.5 text-indigo-500" />
             </button>
           </div>
         </div>
@@ -172,12 +208,12 @@ export default function ToolsSection() {
           {featuredTools.map((tool, idx) => (
             <div
               key={tool.name || idx}
-              className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-[#1a361d]/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
+              className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-left group relative"
             >
               <div className="space-y-4">
                 {/* Logo & Category Badge */}
                 <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 p-2.5 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
                     {tool.logo ? (
                       <img
                         src={tool.logo}
@@ -194,45 +230,45 @@ export default function ToolsSection() {
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] border border-[#76ff8a]/40">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                     {tool.badge || 'Core Standard'}
                   </span>
                 </div>
 
                 <div>
-                  <div className="text-[11px] font-bold text-[#40844e] uppercase tracking-wider mb-1">
+                  <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
                     {tool.category || 'Production Tool'}
                   </div>
-                  <h3 className="text-xl font-display font-bold text-[#1a361d] group-hover:text-[#40844e] transition-colors">
+                  <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {tool.name}
                   </h3>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
                   {tool.description || 'Enterprise platform deployed in student production laboratory environments.'}
                 </p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                 <span className="text-[11px] font-medium text-slate-500 font-mono">Verified in Cohorts</span>
-                <CheckCircle2 className="w-4 h-4 text-[#40844e]" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Capstone Real-World Outcomes Banner */}
-        <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
+        <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-2 flex-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#2d5c36] uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-[#40844e]" />
+              <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-indigo-500" />
                 <span>Capstone Engineering Benchmark</span>
               </div>
-              <h4 className="text-lg sm:text-xl font-display font-extrabold text-[#1a361d]">
+              <h4 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 dark:text-white">
                 What You Build & Defend in Capstone Defense
               </h4>
-              <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
                 Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.
               </p>
             </div>
@@ -240,7 +276,7 @@ export default function ToolsSection() {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 to="/checkout?tier=deposit"
-                className="py-2.5 px-6 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#76ff8a] font-bold text-xs flex items-center gap-2 transition-all shadow-sm"
+                className="py-2.5 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md"
               >
                 <span>Enroll in Next Cohort — $99</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -248,13 +284,13 @@ export default function ToolsSection() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 mt-6 border-t border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
             {outcomes.map((outcome, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                <div className="w-5 h-5 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                <div className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   ✓
                 </div>
-                <span className="text-xs text-slate-700 leading-relaxed font-medium">{outcome}</span>
+                <span className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{outcome}</span>
               </div>
             ))}
           </div>
@@ -265,26 +301,26 @@ export default function ToolsSection() {
       {/* Complete Tools Catalog Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl rounded-3xl bg-white border border-slate-200 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-hidden flex flex-col text-left">
+          <div className="relative w-full max-w-4xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-hidden flex flex-col text-left">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
               <div>
-                <div className="flex items-center gap-2 text-xs font-bold text-[#2d5c36] uppercase tracking-wider mb-1">
-                  <Sparkles className="w-3.5 h-3.5 text-[#40844e]" />
+                <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
                   <span>Curriculum Toolchain Catalog</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d]">
+                <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white">
                   Production Toolstack & Technologies
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Administered directly across American FutureTech laboratory and capstone defense environments.
                 </p>
               </div>
 
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
                 aria-label="Close Modal"
               >
                 <X className="w-5 h-5" />
@@ -292,15 +328,15 @@ export default function ToolsSection() {
             </div>
 
             {/* Search and Filters */}
-            <div className="py-4 space-y-3 shrink-0 border-b border-slate-100">
+            <div className="py-4 space-y-3 shrink-0 border-b border-slate-100 dark:border-slate-800">
               <div className="relative">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search tool by name or keyword (e.g. Docker, Python, AWS)..."
+                  placeholder="Search tool by name or keyword (e.g. Docker, Python, AWS, React, Kubernetes)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d]"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -311,8 +347,8 @@ export default function ToolsSection() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                       selectedCategory === cat
-                        ? 'bg-[#1a361d] text-white font-bold'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-indigo-600 text-white font-bold'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
                     {cat}
@@ -327,25 +363,25 @@ export default function ToolsSection() {
                 {filteredTools.map((tool, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-[#1a361d]/30 hover:shadow-xs transition-all flex flex-col justify-between"
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 hover:border-indigo-500/30 hover:shadow-xs transition-all flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                      <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-1 flex items-center justify-center overflow-hidden">
                         {tool.logo ? (
                           <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" />
                         ) : (
-                          <span className="text-[10px] font-bold text-[#1a361d]">{tool.name?.slice(0, 2)}</span>
+                          <span className="text-[10px] font-bold text-indigo-600">{tool.name?.slice(0, 2)}</span>
                         )}
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
                         {tool.badge || 'Core'}
                       </span>
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-[#1a361d] truncate">
+                      <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
                         {tool.name}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-mono">
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                         {tool.category}
                       </div>
                     </div>
@@ -361,13 +397,13 @@ export default function ToolsSection() {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs shrink-0">
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs shrink-0">
               <span className="text-slate-500 font-mono">
                 Showing {filteredTools.length} of {activeTools.length} verified program tools
               </span>
               <button
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold transition-colors cursor-pointer"
               >
                 Close Catalog
               </button>

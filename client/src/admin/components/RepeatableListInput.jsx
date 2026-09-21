@@ -1,216 +1,169 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, ArrowUp, ArrowDown, Clipboard, X, Check, Sparkles } from 'lucide-react';
+import { Plus, X, ArrowUp, ArrowDown, ClipboardPaste } from 'lucide-react';
 import { parseBulletPoints } from '../../components/common/BulletContent';
 
+/**
+ * RepeatableListInput with Multi-Line Paste Auto-Split
+ * 
+ * Allows admins to:
+ * - Enter individual items with Enter
+ * - Paste multi-line bullet blocks (e.g. from job descriptions or syllabus)
+ *   and automatically split them into distinct list items
+ * - Reorder items up/down
+ * - Remove individual items
+ */
 export default function RepeatableListInput({
   label,
-  description,
-  items = [],
+  values = [],
   onChange,
-  placeholder = 'Enter item...',
-  minItems = 0,
-  maxItems = 50,
-  allowImport = true,
-  badgeColor = 'cyan',
+  placeholder = 'Add an item and press Enter or paste a list...',
+  helperText,
 }) {
-  const [importOpen, setImportOpen] = useState(false);
-  const [pasteText, setPasteText] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
-  const handleItemChange = (index, value) => {
-    // If admin pastes multiple lines into an individual field, auto-split!
-    if (value.includes('\n') || value.includes(';') || /[•*–—]/.test(value)) {
-      const parsed = parseBulletPoints(value);
-      if (parsed.length > 1) {
-        const next = [...items];
-        next.splice(index, 1, ...parsed);
-        onChange(next);
-        return;
+  const list = Array.isArray(values) ? values : [];
+
+  const addItem = (item) => {
+    const trimmed = item.trim();
+    if (trimmed && !list.includes(trimmed)) {
+      onChange([...list, trimmed]);
+    }
+  };
+
+  const addMultiple = (items) => {
+    const next = [...list];
+    items.forEach((it) => {
+      const trimmed = it.trim();
+      if (trimmed && !next.includes(trimmed)) {
+        next.push(trimmed);
+      }
+    });
+    onChange(next);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (inputValue.trim()) {
+        addItem(inputValue);
+        setInputValue('');
       }
     }
-
-    const next = [...items];
-    next[index] = value;
-    onChange(next);
   };
 
-  const handleAddItem = () => {
-    if (items.length >= maxItems) return;
-    onChange([...items, '']);
-  };
+  const handlePaste = (e) => {
+    const pastedText = e.clipboardData?.getData('text');
+    if (!pastedText) return;
 
-  const handleRemoveItem = (index) => {
-    if (items.length <= minItems) return;
-    const next = items.filter((_, i) => i !== index);
-    onChange(next);
-  };
-
-  const handleMoveItem = (index, direction) => {
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= items.length) return;
-    const next = [...items];
-    const temp = next[index];
-    next[index] = next[targetIndex];
-    next[targetIndex] = temp;
-    onChange(next);
-  };
-
-  const handleExecuteImport = () => {
-    if (!pasteText.trim()) return;
-    const parsed = parseBulletPoints(pasteText);
-    if (parsed.length > 0) {
-      // Append parsed items to existing items
-      const cleaned = items.filter(Boolean);
-      onChange([...cleaned, ...parsed]);
-      setPasteText('');
-      setImportOpen(false);
+    const parsed = parseBulletPoints(pastedText);
+    if (parsed.length > 1) {
+      e.preventDefault();
+      addMultiple(parsed);
+      setInputValue('');
     }
+  };
+
+  const removeItem = (idx) => {
+    onChange(list.filter((_, i) => i !== idx));
+  };
+
+  const moveItem = (idx, direction) => {
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const next = [...list];
+    const temp = next[idx];
+    next[idx] = next[targetIdx];
+    next[targetIdx] = temp;
+    onChange(next);
   };
 
   return (
-    <div className="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
-      {/* Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold font-heading uppercase text-white tracking-wider">
-              {label}
-            </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-400">
-              {items.length} items
-            </span>
-          </div>
-          {description && (
-            <p className="text-[11px] text-slate-400 mt-0.5">{description}</p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {allowImport && (
-            <button
-              type="button"
-              onClick={() => setImportOpen(!importOpen)}
-              className="inline-flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 font-mono px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors cursor-pointer"
-              title="Paste a multi-line list to auto-split into individual items"
-            >
-              <Clipboard className="w-3 h-3" />
-              <span>Paste Multi-Line Block</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={handleAddItem}
-            className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 font-mono px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors cursor-pointer"
-          >
-            <Plus className="w-3 h-3" />
-            <span>Add Item</span>
-          </button>
-        </div>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+          {label} ({list.length})
+        </label>
+        {helperText && (
+          <span className="text-[11px] text-slate-500">{helperText}</span>
+        )}
       </div>
 
-      {/* Multi-Line Import Dropdown / Drawer */}
-      {importOpen && (
-        <div className="p-3 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-2.5 animate-in fade-in duration-150">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-cyan-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              Quick Multi-Line Paste Splitter
-            </span>
-            <button
-              type="button"
-              onClick={() => setImportOpen(false)}
-              className="text-slate-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-[11px] text-slate-400">
-            Paste multiple lines with bullets (•, -, *), numbers (1., 2.), or semicolons. They will be automatically split into individual fields.
-          </p>
-          <textarea
-            rows={4}
-            value={pasteText}
-            onChange={(e) => setPasteText(e.target.value)}
-            placeholder={`Example paste:\n• Build scalable applications\n• Work with APIs\n• Collaborate with team\n• Maintain production systems`}
-            className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white placeholder:text-slate-600 font-mono focus:outline-none focus:border-cyan-500 resize-none"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setImportOpen(false)}
-              className="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs hover:bg-slate-700"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleExecuteImport}
-              className="px-3 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-colors flex items-center gap-1"
-            >
-              <Check className="w-3.5 h-3.5" />
-              <span>Convert & Add to List</span>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Input row with paste hint */}
+      <div className="relative flex items-center gap-2">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          placeholder={placeholder}
+          className="w-full rounded-lg border border-slate-700 bg-slate-900/90 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            if (inputValue.trim()) {
+              addItem(inputValue);
+              setInputValue('');
+            }
+          }}
+          className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors shrink-0"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add
+        </button>
+      </div>
+
+      <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
+        <ClipboardPaste className="w-3 h-3 text-indigo-400" />
+        <span>Tip: Paste multi-line text to auto-split into individual bullet items.</span>
+      </p>
 
       {/* Item List */}
-      {items.length === 0 ? (
-        <div className="py-4 text-center text-xs text-slate-500 font-mono border border-dashed border-slate-800 rounded-xl">
-          No items yet. Click &quot;Add Item&quot; or &quot;Paste Multi-Line Block&quot; to insert entries.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {items.map((item, idx) => (
-            <div
+      {list.length > 0 && (
+        <ul className="space-y-1.5 pt-1 max-h-60 overflow-y-auto pr-1">
+          {list.map((item, idx) => (
+            <li
               key={idx}
-              className="flex items-center gap-2 group bg-slate-900/80 p-1.5 rounded-xl border border-slate-800/80 hover:border-slate-700 transition-colors"
+              className="group flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-xs text-slate-200 hover:border-slate-700 transition-colors"
             >
-              <span className="w-6 text-center text-[10px] font-mono text-slate-500 shrink-0 select-none">
-                #{idx + 1}
-              </span>
-
-              <input
-                type="text"
-                value={item}
-                onChange={(e) => handleItemChange(idx, e.target.value)}
-                placeholder={`${placeholder} #${idx + 1}`}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-              />
-
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-start gap-2 flex-1 min-w-0">
+                <span className="w-4 h-4 rounded bg-slate-800 text-slate-400 text-[10px] font-mono flex items-center justify-center shrink-0 mt-0.5">
+                  {idx + 1}
+                </span>
+                <span className="break-words leading-relaxed">{item}</span>
+              </div>
+              <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 shrink-0">
                 <button
                   type="button"
                   disabled={idx === 0}
-                  onClick={() => handleMoveItem(idx, -1)}
-                  className="p-1 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800 disabled:opacity-20 disabled:hover:bg-transparent cursor-pointer"
+                  onClick={() => moveItem(idx, -1)}
+                  className="p-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 transition-colors"
                   title="Move Up"
                 >
-                  <ArrowUp className="w-3.5 h-3.5" />
+                  <ArrowUp className="w-3 h-3" />
                 </button>
-
                 <button
                   type="button"
-                  disabled={idx === items.length - 1}
-                  onClick={() => handleMoveItem(idx, 1)}
-                  className="p-1 rounded text-slate-500 hover:text-slate-300 hover:bg-slate-800 disabled:opacity-20 disabled:hover:bg-transparent cursor-pointer"
+                  disabled={idx === list.length - 1}
+                  onClick={() => moveItem(idx, 1)}
+                  className="p-1 rounded text-slate-400 hover:text-slate-200 disabled:opacity-30 transition-colors"
                   title="Move Down"
                 >
-                  <ArrowDown className="w-3.5 h-3.5" />
+                  <ArrowDown className="w-3 h-3" />
                 </button>
-
                 <button
                   type="button"
-                  onClick={() => handleRemoveItem(idx)}
-                  className="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 cursor-pointer ml-1"
-                  title="Remove Item"
+                  onClick={() => removeItem(idx)}
+                  className="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors ml-1"
+                  title="Remove item"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <X className="w-3 h-3" />
                 </button>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

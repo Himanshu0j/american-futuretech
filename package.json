@@ -13,10 +13,10 @@
     "install:all": "npm install && cd server && npm install && cd ../client && npm install"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "puppeteer-core": "^25.11.0"
   },
   "dependencies": {
-    "localtunnel": "^2.0.2",
-    "puppeteer-core": "^25.11.0"
+    "localtunnel": "^2.0.2"
   }
 }

@@ -15,6 +15,7 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import PageSkeleton from './components/PageSkeleton';
 import ToolsSection from './components/ToolsSection';
 import PlacementRoadmap from './components/PlacementRoadmap';
+import PersonalizedLearningSection from './components/PersonalizedLearningSection';
 import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
@@ -118,7 +119,7 @@ function LandingPage() {
   const { isCyber } = useThemeMode();
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-[#1b1b1b] font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative overflow-x-hidden pt-16 md:pt-24">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-indigo-600 selection:text-white relative overflow-x-hidden pt-16 md:pt-24">
       {/* Subtle Premium Ambient Canvas */}
       <AmbientBackground />
 
@@ -149,6 +150,9 @@ function LandingPage() {
           onSelectCourse={(course) => handleOpenLeadModal(course)}
           onOpenSyllabusModal={handleOpenSyllabusModal}
         />
+
+        {/* Dedicated 1-on-1 Personalized Learning Track ($2,199 Independent Offering) */}
+        <PersonalizedLearningSection onOpenLeadModal={() => handleOpenLeadModal(null)} />
 
         {/* 40+ Industry Tools & Technologies Showcase (Real Database Data) */}
         <ToolsSection />
@@ -202,6 +206,8 @@ export default function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/jobs" element={<CareersPage />} />
               <Route path="/jobs/:id" element={<JobDetailPage />} />
+              <Route path="/jobscourse" element={<CareersPage />} />
+              <Route path="/jobscourse/:id" element={<JobDetailPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/careers/:id" element={<JobDetailPage />} />
               <Route path="/privacy" element={<PrivacyPolicyPage />} />

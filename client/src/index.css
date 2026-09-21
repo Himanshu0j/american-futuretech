@@ -9,48 +9,48 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --color-brand-beige: #fffff2;
-  --color-brand-green-900: #1a361d;
-  --color-brand-green-700: #2d5c36;
-  --color-brand-green-500: #40844e;
-  --color-brand-green-300: #76ff8a;
-  --color-brand-green-100: #d8ffd2;
-  --color-brand-purple-900: #582c50;
-  --color-brand-purple-500: #9e4f8f;
-  --color-brand-purple-100: #ffe6fa;
-  --color-foreground: #1b1b1b;
-  --color-heading: #1a361d;
-  --color-muted: #4b5563;
-  --color-border: #e5e7eb;
+  --color-brand-beige: #0B132B;
+  --color-brand-green-900: #0F172A;
+  --color-brand-green-700: #1E293B;
+  --color-brand-green-500: #334155;
+  --color-brand-green-300: #6366F1;
+  --color-brand-green-100: #EEF2FF;
+  --color-brand-purple-900: #1E1B4B;
+  --color-brand-purple-500: #4F46E5;
+  --color-brand-purple-100: #E0E7FF;
+  --color-foreground: #0F172A;
+  --color-heading: #0B132B;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
 
-  /* Backward-compatible variables */
-  --aft-canvas: #fffff2;
-  --aft-surface-subtle: #f8fafc;
-  --aft-surface-card: #ffffff;
-  --aft-surface-elevated: #f1f5f9;
-  --aft-border-subtle: #e5e7eb;
-  --aft-border-strong: rgba(26, 54, 29, 0.2);
-  --aft-specular-top: rgba(26, 54, 29, 0.08);
+  /* Executive Design System Variables */
+  --aft-canvas: #FAFAFA;
+  --aft-surface-subtle: #F8FAFC;
+  --aft-surface-card: #FFFFFF;
+  --aft-surface-elevated: #FFFFFF;
+  --aft-border-subtle: #E2E8F0;
+  --aft-border-strong: #CBD5E1;
+  --aft-specular-top: rgba(15, 23, 42, 0.05);
 
-  --aft-text-primary: #1b1b1b;
-  --aft-text-secondary: #4b5563;
-  --aft-text-muted: #6b7280;
+  --aft-text-primary: #0F172A;
+  --aft-text-secondary: #475569;
+  --aft-text-muted: #64748B;
 
-  --aft-brand-blue: #1a361d;
-  --aft-brand-blue-hover: #2d5c36;
-  --aft-brand-sky: #40844e;
-  --aft-brand-emerald: #76ff8a;
+  --aft-brand-blue: #0F172A;
+  --aft-brand-blue-hover: #1E293B;
+  --aft-brand-sky: #2563EB;
+  --aft-brand-emerald: #10B981;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: var(--color-brand-beige);
+    background-color: #FAFAFA;
     color: var(--color-foreground);
     font-family: "Inter", system-ui, sans-serif;
   }
   body {
-    background-color: var(--color-brand-beige);
+    background-color: #FAFAFA;
     color: var(--color-foreground);
     overflow-x: hidden;
     font-family: "Inter", system-ui, sans-serif;
@@ -59,159 +59,161 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Plus Jakarta Sans", "Rubik", system-ui, sans-serif;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
     color: var(--color-heading);
     letter-spacing: -0.025em;
   }
 
   /* Accessible focus rings */
   :focus-visible {
-    outline: 2px solid var(--color-brand-green-700);
+    outline: 2px solid #4F46E5;
     outline-offset: 2px;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   EASY LMS DISTINCTIVE HIGHLIGHT & ACCENT UTILITIES
+   DISTINCTIVE HIGHLIGHT & ACCENT UTILITIES
    ═══════════════════════════════════════════════════════════════ */
 
 .highlight {
-  background-color: #76ff8a;
-  color: #1a361d;
-  font-family: "Rubik", sans-serif;
-  font-weight: 700;
-  padding: 0.1em 0.35em;
-  border-radius: 4px;
+  background-color: #EEF2FF;
+  color: #4338CA;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
   display: inline-block;
   line-height: 1.2;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SURFACES & CARDS (12px Radius, 1px Subtle Border, Calm Elevation)
+   SURFACES & CARDS (Executive Radius & Calm Elevation)
    ═══════════════════════════════════════════════════════════════ */
 
 .elms-card, .aft-card, .apple-card, .glass-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 24px -6px rgba(0, 0, 0, 0.02);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.2s ease,
               box-shadow 0.2s ease;
 }
 
 .elms-card:hover, .aft-card:hover, .apple-card:hover, .glass-card:hover {
-  border-color: rgba(26, 54, 29, 0.25);
+  border-color: #CBD5E1;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 12px 30px -8px rgba(15, 23, 42, 0.08);
 }
 
 .elms-card-dark {
-  background-color: #1a361d;
-  color: #fffff2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #0F172A;
+  color: #F8FAFC;
+  border: 1px solid #1E293B;
   border-radius: 16px;
 }
 
 .glass-nav {
-  background: rgba(255, 255, 242, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(26, 54, 29, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .glass-input {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  color: #1b1b1b;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  color: #0F172A;
   transition: all 0.2s ease;
 }
 .glass-input:focus {
-  border-color: #2d5c36;
-  box-shadow: 0 0 0 3px rgba(45, 92, 54, 0.15);
+  border-color: #4F46E5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
   outline: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BUTTON HIERARCHY (Easy LMS Rounded Pill Buttons)
+   BUTTON HIERARCHY (Executive EdTech Standards)
    ═══════════════════════════════════════════════════════════════ */
 
-/* Primary Action Button (Rich Berry / Purple Pill - Exact Easy LMS Style) */
+/* Primary Action Button (Electric Indigo / Sapphire Pill) */
 .elms-btn-primary, .aft-btn-primary, .apple-btn-primary {
-  background-color: #9e4f8f;
-  color: #fffff2;
-  font-family: "Rubik", "Roboto", sans-serif;
+  background-color: #4F46E5;
+  color: #FFFFFF;
+  font-family: "Inter", system-ui, sans-serif;
   font-weight: 700;
   font-size: 14px;
-  padding: 11px 26px;
-  border-radius: 9999px;
+  padding: 12px 28px;
+  border-radius: 12px;
   letter-spacing: -0.01em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(158, 79, 143, 0.25);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
 .elms-btn-primary:hover, .aft-btn-primary:hover, .apple-btn-primary:hover {
-  background-color: #582c50;
-  color: #fffff2;
+  background-color: #4338CA;
+  color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(88, 44, 80, 0.3);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
 }
 .elms-btn-primary:active, .aft-btn-primary:active, .apple-btn-primary:active {
   transform: translateY(0);
 }
 
-/* Secondary Action Button (Deep Green Outline / Solid) */
+/* Secondary Action Button (Executive Clean Outline) */
 .elms-btn-secondary, .aft-btn-secondary, .apple-btn-secondary {
-  background: transparent;
-  color: #1a361d;
-  font-family: "Rubik", "Roboto", sans-serif;
-  font-weight: 700;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
   font-size: 14px;
-  padding: 10px 24px;
-  border-radius: 9999px;
-  border: 2px solid #1a361d;
+  padding: 11px 24px;
+  border-radius: 12px;
+  border: 1px solid #CBD5E1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
 .elms-btn-secondary:hover, .aft-btn-secondary:hover, .apple-btn-secondary:hover {
-  background: #1a361d;
-  color: #fffff2;
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0F172A;
   transform: translateY(-1px);
 }
 .elms-btn-secondary:active, .aft-btn-secondary:active, .apple-btn-secondary:active {
   transform: translateY(0);
 }
 
-/* Deep Green Solid Button */
+/* Executive Solid Slate Button */
 .elms-btn-green {
-  background-color: #2d5c36;
-  color: #fffff2;
-  font-family: "Rubik", "Roboto", sans-serif;
-  font-weight: 700;
+  background-color: #0F172A;
+  color: #FFFFFF;
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
   font-size: 14px;
-  padding: 11px 26px;
-  border-radius: 9999px;
+  padding: 12px 26px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 .elms-btn-green:hover {
-  background-color: #1a361d;
-  color: #fffff2;
+  background-color: #1E293B;
+  color: #FFFFFF;
   transform: translateY(-1px);
 }
 

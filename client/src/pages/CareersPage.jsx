@@ -22,7 +22,10 @@ import {
   FileText,
   Zap,
   Star,
-  Globe2
+  Globe2,
+  GraduationCap,
+  Filter,
+  RotateCcw
 } from 'lucide-react';
 import axios from 'axios';
 import { Lottie } from 'lottie-react';
@@ -36,12 +39,20 @@ import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.sv
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
+import BulletContent from '../components/common/BulletContent';
+import FaqAccordion from '../components/common/FaqAccordion';
 
 export default function CareersPage() {
   const [jobs, setJobs] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Search and Working Filters state
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDept, setSelectedDept] = useState('All');
+  const [selectedJobType, setSelectedJobType] = useState('All');
+  const [selectedExp, setSelectedExp] = useState('All');
+  const [selectedLocation, setSelectedLocation] = useState('All');
+  const [selectedCourse, setSelectedCourse] = useState('All');
 
   // Modals state
   const [selectedJobForDetails, setSelectedJobForDetails] = useState(null);
@@ -72,11 +83,13 @@ export default function CareersPage() {
 
   useEffect(() => {
     fetchJobs();
+    fetchCourses();
     window.scrollTo(0, 0);
   }, []);
 
   const fetchJobs = async () => {
     try {
+      setLoading(true);
       const res = await axios.get('/api/jobs');
       setJobs(res.data.jobs || []);
     } catch (err) {
@@ -86,23 +99,60 @@ export default function CareersPage() {
     }
   };
 
-  const departments = [
-    'All',
-    'AI Research & Deployment',
-    'Security Operations',
-    'Infrastructure & SRE',
-    'Engineering & Technology'
-  ];
+  const fetchCourses = async () => {
+    try {
+      const res = await axios.get('/api/courses');
+      setCourses(res.data.courses || []);
+    } catch (err) {
+      console.error('Failed to load courses for job filtering', err);
+    }
+  };
+
+  const jobTypes = ['All', 'Full-time', 'Contract', 'Part-time', 'Internship'];
+  const experienceLevels = ['All', 'Entry', 'Mid', 'Senior'];
+  const locations = ['All', 'Remote', 'On-site', 'Hybrid'];
 
   const filteredJobs = jobs.filter((job) => {
-    const matchesSearch =
-      job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.skills?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = !term ||
+      job.title?.toLowerCase().includes(term) ||
+      job.company?.toLowerCase().includes(term) ||
+      job.location?.toLowerCase().includes(term) ||
+      job.experienceLevel?.toLowerCase().includes(term) ||
+      job.skills?.some(s => s.toLowerCase().includes(term)) ||
+      job.technicalSkills?.some(s => s.toLowerCase().includes(term));
 
-    const matchesDept = selectedDept === 'All' || job.department === selectedDept;
-    return matchesSearch && matchesDept;
+    const jobType = job.employmentType || job.type || 'Full-time';
+    const matchesType = selectedJobType === 'All' || jobType === selectedJobType;
+
+    const matchesExp = selectedExp === 'All' ||
+      job.experienceLevel?.toLowerCase().includes(selectedExp.toLowerCase());
+
+    const matchesLocation = selectedLocation === 'All' ||
+      job.location?.toLowerCase().includes(selectedLocation.toLowerCase());
+
+    const matchesCourse = selectedCourse === 'All' ||
+      job.recommendedCourseTitle === selectedCourse ||
+      job.recommendedCourse?._id === selectedCourse ||
+      job.recommendedCourse?.title === selectedCourse;
+
+    return matchesSearch && matchesType && matchesExp && matchesLocation && matchesCourse;
   });
+
+  const hasActiveFilters =
+    searchTerm !== '' ||
+    selectedJobType !== 'All' ||
+    selectedExp !== 'All' ||
+    selectedLocation !== 'All' ||
+    selectedCourse !== 'All';
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedJobType('All');
+    setSelectedExp('All');
+    setSelectedLocation('All');
+    setSelectedCourse('All');
+  };
 
   const handleOpenDetails = (job) => {
     setSelectedJobForDetails(job);
@@ -113,7 +163,6 @@ export default function CareersPage() {
     setSelectedJobForApply(job);
     setApplyModalOpen(true);
     setApplySuccess(false);
-    // If details modal was open, close it
     setDetailsModalOpen(false);
   };
 
@@ -135,7 +184,7 @@ export default function CareersPage() {
         coverNote,
       });
       setApplySuccess(true);
-      fetchJobs(); // refresh applicant counts
+      fetchJobs();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to submit application. Please try again.');
     } finally {
@@ -179,122 +228,84 @@ export default function CareersPage() {
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}
         {/* ========================================================================= */}
         <section className="mb-14 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-6 sm:p-10 lg:p-12 relative overflow-hidden">
-          {/* Subtle Ambient Radial Glows */}
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#76ff8a]/20 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#9e4f8f]/10 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
-            {/* Left Column: Epic Copy & Direct Telemetry */}
+            {/* Left Column */}
             <div className="lg:col-span-7 space-y-6 text-left">
-              {/* Trust Badge with Live Pulse */}
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/60 text-[#1a361d] text-xs font-bold tracking-wide shadow-xs">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2d5c36]"></span>
                 </span>
-                <span>Verified Employer Hiring Network • Spring 2027 Placements Active</span>
+                <span>Corporate Employer Hiring Network • Active Placements</span>
               </div>
 
-              {/* Majestic Headline */}
               <h1 className="text-3xl sm:text-5xl lg:text-5xl font-display font-extrabold tracking-tight text-[#1a361d] leading-[1.15]">
                 Where Elite Tech Employers Hire{' '}
-                <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#1a361d] via-[#2d5c36] to-[#40844e]">
-                  American FutureTech
-                </span>{' '}
-                Graduates.
+                <span className="highlight">Verified Graduate Talent</span>
               </h1>
 
-              {/* Subheading */}
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl">
-                Direct introductions to vetted Fortune 500 enterprises, AI research labs, and cybersecurity defense contractors. Zero job boards, zero cold applying — verified alumni enter direct hiring pipelines.
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
+                Direct hiring partnerships connecting American FutureTech certified fellows with high-growth technology enterprises, defense contractors, and AI engineering studios.
               </p>
 
-              {/* Institutional Telemetry Strip */}
-              <div className="grid grid-cols-3 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Median Salary</span>
-                  </div>
-                  <div className="text-xl sm:text-2xl font-display font-black text-[#1a361d] mt-1">
-                    $118,500
-                  </div>
-                  <div className="text-[11px] font-semibold text-emerald-700 font-mono mt-0.5">
-                    +24% vs industry avg
-                  </div>
+              <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
+                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">$128K</div>
+                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Avg Placement Comp</div>
                 </div>
-
-                <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                    <Building2 className="w-3.5 h-3.5 text-[#2d5c36]" />
-                    <span>Vetted Partners</span>
-                  </div>
-                  <div className="text-xl sm:text-2xl font-display font-black text-[#1a361d] mt-1">
-                    140+
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                    US & Global Remote
-                  </div>
+                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">140+</div>
+                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Corporate Partners</div>
                 </div>
-
-                <div className="p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Hire Velocity</span>
-                  </div>
-                  <div className="text-xl sm:text-2xl font-display font-black text-[#1a361d] mt-1">
-                    89%
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                    Within 90 Days
-                  </div>
+                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">94%</div>
+                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Placement Rate</div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="#openings"
-                  className="px-6 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer hover:shadow-lg"
+                  className="py-3 px-7 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer hover:shadow-lg"
                 >
-                  <span>Browse {jobs.length || 3} Active Openings</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <span>Explore Open Positions</span>
+                  <ChevronRight className="w-4 h-4 text-[#76ff8a]" />
                 </a>
-
                 <a
                   href="#fast-track"
-                  className="px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-300 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                  className="py-3 px-6 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200 shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 text-[#9e4f8f]" />
-                  <span>Fast-Track General Application</span>
+                  <span>Join Talent Pool</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                 </a>
               </div>
             </div>
 
-            {/* Right Column: Hero Visual Graphic with Floating Glassmorphism Telemetry Cards */}
-            <div className="lg:col-span-5 relative flex justify-center items-center">
-              <div className="relative w-full max-w-md lg:max-w-none">
-                {/* Main Visual Card with Sourced Vector Job Hunt & Live Radar Lottie */}
-                <div className="relative rounded-3xl overflow-hidden border-2 border-white/80 shadow-2xl bg-gradient-to-br from-[#1a361d] via-[#152a17] to-[#2d5c36] p-6 text-white flex flex-col justify-between min-h-[340px]">
+            {/* Right Column: Visual Showcase */}
+            <div className="lg:col-span-5 relative flex justify-center">
+              <div className="relative w-full max-w-sm">
+                <div className="p-6 sm:p-8 rounded-3xl bg-[#1a361d] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#2d5c36]">
                   <div className="flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#76ff8a] animate-ping" />
                       <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#76ff8a]">Partner Network Active</span>
                     </div>
-                    <div className="w-12 h-12">
-                      <Lottie src={liveRadarLottie} loop autoplay className="w-12 h-12" />
+                    <div className="w-10 h-10">
+                      <Lottie animationData={liveRadarLottie} loop autoplay className="w-10 h-10" />
                     </div>
                   </div>
 
                   <div className="my-auto py-3 flex justify-center z-10">
                     <img
                       src={jobHuntSvg}
-                      alt="American FutureTech Career Placement Network"
-                      className="w-full max-w-[260px] h-auto object-contain transform hover:scale-105 transition-transform duration-500"
+                      alt="Career Placement"
+                      className="w-full max-w-[240px] h-auto object-contain transform hover:scale-105 transition-transform duration-500"
                     />
                   </div>
 
-                  {/* Bottom Caption Pill */}
                   <div className="p-3 rounded-2xl bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-[#76ff8a] text-[#1a361d] font-bold text-xs flex items-center justify-center">
@@ -305,35 +316,6 @@ export default function CareersPage() {
                         <div className="text-[10px] text-slate-300 font-mono">140+ Partner Tech Employers</div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/40">
-                      Live Portal
-                    </span>
-                  </div>
-                </div>
-
-                {/* Floating Telemetry Card 1 (Top Left) */}
-                <div className="absolute -top-5 -left-5 sm:-left-7 p-3 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl hidden sm:flex items-center gap-3 animate-bounce" style={{ animationDuration: '4s' }}>
-                  <div className="w-10 h-10 rounded-xl bg-[#d8ffd2] border border-[#76ff8a] flex items-center justify-center text-[#1a361d]">
-                    <Award className="w-5 h-5 text-[#2d5c36]" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Direct Offer Extended</div>
-                    <div className="text-xs font-black text-[#1a361d]">$145,000 / year • Apex AI Labs</div>
-                    <div className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Signed by AFT Graduate
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Telemetry Card 2 (Bottom Right) */}
-                <div className="absolute -bottom-4 -right-4 sm:-right-6 p-3 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl hidden sm:flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#ffe6fa] border border-[#9e4f8f]/30 flex items-center justify-center text-[#582c50]">
-                    <ShieldCheck className="w-5 h-5 text-[#9e4f8f]" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pre-Vetted Candidate Match</div>
-                    <div className="text-xs font-black text-[#1a361d]">98% Syllabus Verification</div>
-                    <div className="text-[10px] text-slate-500 font-mono">SOC & Cloud SRE Cohorts</div>
                   </div>
                 </div>
               </div>
@@ -342,70 +324,121 @@ export default function CareersPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 2-COLUMN BALANCED WORKSPACE (JOB LISTINGS + STICKY FAST-TRACK SIDEBAR)     */}
+        {/* 2-COLUMN WORKSPACE: JOB SEARCH, FILTERS & LISTINGS + STICKY SIDEBAR        */}
         {/* ========================================================================= */}
         <div id="openings" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* ----------------------------------------------------------------------- */}
-          {/* LEFT / MAIN COLUMN (8 COLS): SEARCH, FILTERS & PREMIUM JOB CARDS        */}
-          {/* ----------------------------------------------------------------------- */}
+          {/* MAIN COLUMN (8 COLS): SEARCH, WORKING FILTERS, 8+ JOB GRID */}
           <div className="lg:col-span-8 space-y-6">
             
-            {/* Search & Department Filters Box */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+            {/* Search and Filters Bar */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 text-left">
+              {/* Prominent Search */}
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search roles by title, partner employer, or key skill (e.g. AWS, Splunk, PyTorch)..."
+                  placeholder="Search jobs by title, company, location, or skills (e.g. AWS, Python, Docker)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
                 />
               </div>
 
-              {/* Department Pills */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
-                <span className="text-[11px] font-mono text-slate-400 mr-2 uppercase">Domain:</span>
-                {departments.map((dept) => {
-                  const isSelected = selectedDept === dept;
-                  return (
-                    <button
-                      key={dept}
-                      onClick={() => setSelectedDept(dept)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#1a361d] text-white shadow-xs'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                      }`}
-                    >
-                      {dept}
-                    </button>
-                  );
-                })}
+              {/* Working Filters Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                {/* 1. Job Type */}
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Job Type</label>
+                  <select
+                    value={selectedJobType}
+                    onChange={(e) => setSelectedJobType(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                  >
+                    {jobTypes.map(t => <option key={t} value={t}>{t === 'All' ? 'All Types' : t}</option>)}
+                  </select>
+                </div>
+
+                {/* 2. Experience Level */}
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Experience</label>
+                  <select
+                    value={selectedExp}
+                    onChange={(e) => setSelectedExp(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                  >
+                    {experienceLevels.map(exp => <option key={exp} value={exp}>{exp === 'All' ? 'All Experience' : `${exp} Level`}</option>)}
+                  </select>
+                </div>
+
+                {/* 3. Location */}
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Location</label>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                  >
+                    {locations.map(loc => <option key={loc} value={loc}>{loc === 'All' ? 'All Locations' : loc}</option>)}
+                  </select>
+                </div>
+
+                {/* 4. Recommended Course */}
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Course Track</label>
+                  <select
+                    value={selectedCourse}
+                    onChange={(e) => setSelectedCourse(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d] truncate"
+                  >
+                    <option value="All">All Tracks</option>
+                    {courses.map(c => (
+                      <option key={c._id} value={c.title}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Filter Telemetry & Clear Filters Button */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                <div className="text-slate-500 font-mono">
+                  Showing <strong className="text-slate-900">{filteredJobs.length}</strong> of {jobs.length} total partner positions
+                </div>
+
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Clear Filters</span>
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Job Listings List */}
+            {/* Job Listings (Supports 8+ Jobs naturally in desktop/mobile) */}
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200 shadow-xs">
                 <div className="w-10 h-10 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin mb-3" />
-                <div className="text-xs font-mono text-slate-500">Loading verified career opportunities...</div>
+                <div className="text-xs font-mono text-slate-500">Loading career network opportunities...</div>
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs space-y-4">
                 <div className="w-36 h-36 mx-auto">
                   <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-base font-display font-bold text-[#1a361d]">No openings found matching filter</h3>
+                <h3 className="text-base font-display font-bold text-[#1a361d]">No job openings match your criteria</h3>
                 <p className="text-slate-500 text-xs max-w-sm mx-auto">
-                  Try resetting search terms, selecting 'All' departments, or use the fast-track application form on the right.
+                  Try adjusting your search terms, resetting filters, or submit your resume directly to our Corporate Talent Pool on the right.
                 </p>
                 <button
-                  onClick={() => { setSearchTerm(''); setSelectedDept('All'); }}
-                  className="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold cursor-pointer"
+                  onClick={handleClearFilters}
+                  className="px-5 py-2 rounded-full bg-[#1a361d] text-white text-xs font-bold cursor-pointer hover:bg-[#2d5c36]"
                 >
-                  Reset Filters
+                  Reset All Filters
                 </button>
               </div>
             ) : (
@@ -420,11 +453,18 @@ export default function CareersPage() {
                 ))}
               </div>
             )}
+
+            {/* Live Jobs FAQ Section */}
+            <div className="pt-8">
+              <FaqAccordion
+                category="Live Jobs"
+                title="Corporate Placement & Jobs FAQ"
+                subtitle="Common questions regarding hiring partner interviews, compensation standards, and employer referrals."
+              />
+            </div>
           </div>
 
-          {/* ----------------------------------------------------------------------- */}
-          {/* RIGHT SIDEBAR (4 COLS): FAST-TRACK APPLICATION & LIVE HIRING TELEMETRY  */}
-          {/* ----------------------------------------------------------------------- */}
+          {/* RIGHT SIDEBAR (4 COLS): FAST-TRACK APPLICATION & VETTED NETWORK */}
           <div id="fast-track" className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
             
             {/* Widget 1: Fast-Track Direct Referral Application Form */}
@@ -440,7 +480,7 @@ export default function CareersPage() {
                 Don't See Your Exact Role?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                Submit your profile directly to our Corporate Placement Office. We match your portfolio with private, unlisted opportunities across 140+ tech partners.
+                Submit your profile directly to our Corporate Placement Office. We match your portfolio with unlisted opportunities across 140+ tech partners.
               </p>
 
               {fastTrackSuccess ? (
@@ -465,106 +505,106 @@ export default function CareersPage() {
                     <img src={interviewPrepSvg} alt="Fast-Track Concierge" className="w-32 h-20 object-contain" />
                   </div>
                   <form onSubmit={handleFastTrackSubmit} className="space-y-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Full Legal Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Alex Morgan"
-                      value={fastTrackName}
-                      onChange={(e) => setFastTrackName(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="alex@example.com"
-                      value={fastTrackEmail}
-                      onChange={(e) => setFastTrackEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+1 (555) 019-2834"
-                      value={fastTrackPhone}
-                      onChange={(e) => setFastTrackPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Target Track</label>
-                      <select
-                        value={fastTrackDomain}
-                        onChange={(e) => setFastTrackDomain(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
-                      >
-                        <option value="AI & Machine Learning">AI & Machine Learning</option>
-                        <option value="Cyber Defense & SOC">Cyber Defense & SOC</option>
-                        <option value="DevOps & Cloud SRE">DevOps & Cloud SRE</option>
-                        <option value="AI Product Management">AI Product Management</option>
-                      </select>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Full Legal Name *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Alex Morgan"
+                        value={fastTrackName}
+                        onChange={(e) => setFastTrackName(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Experience</label>
-                      <select
-                        value={fastTrackExp}
-                        onChange={(e) => setFastTrackExp(e.target.value)}
-                        className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
-                      >
-                        <option value="Entry Level (0-2 Yrs)">Entry Level (0-2 Yrs)</option>
-                        <option value="Mid-Level (2-5 Yrs)">Mid-Level (2-5 Yrs)</option>
-                        <option value="Senior (5+ Yrs)">Senior (5+ Yrs)</option>
-                      </select>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="alex@example.com"
+                        value={fastTrackEmail}
+                        onChange={(e) => setFastTrackEmail(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      />
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">LinkedIn / Portfolio URL</label>
-                    <input
-                      type="url"
-                      placeholder="https://linkedin.com/in/alexmorgan"
-                      value={fastTrackLinkedin}
-                      onChange={(e) => setFastTrackLinkedin(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Phone Number *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="+1 (555) 019-2834"
+                        value={fastTrackPhone}
+                        onChange={(e) => setFastTrackPhone(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Resume Link (PDF / Cloud Drive)</label>
-                    <input
-                      type="url"
-                      placeholder="https://drive.google.com/resume.pdf"
-                      value={fastTrackResume}
-                      onChange={(e) => setFastTrackResume(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
-                    />
-                  </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1">Target Track</label>
+                        <select
+                          value={fastTrackDomain}
+                          onChange={(e) => setFastTrackDomain(e.target.value)}
+                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
+                        >
+                          <option value="AI & Machine Learning">AI & Machine Learning</option>
+                          <option value="Cyber Defense & SOC">Cyber Defense & SOC</option>
+                          <option value="DevOps & Cloud SRE">DevOps & Cloud SRE</option>
+                          <option value="AI Product Management">AI Product Management</option>
+                        </select>
+                      </div>
 
-                  <button
-                    type="submit"
-                    disabled={fastTrackSubmitting}
-                    className="w-full py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer hover:shadow-lg"
-                  >
-                    {fastTrackSubmitting ? 'Transmitting Profile...' : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Submit to 140+ Partner Network</span>
-                      </>
-                    )}
-                  </button>
-                </form>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 mb-1">Experience</label>
+                        <select
+                          value={fastTrackExp}
+                          onChange={(e) => setFastTrackExp(e.target.value)}
+                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
+                        >
+                          <option value="Entry Level (0-2 Yrs)">Entry Level (0-2 Yrs)</option>
+                          <option value="Mid-Level (2-5 Yrs)">Mid-Level (2-5 Yrs)</option>
+                          <option value="Senior (5+ Yrs)">Senior (5+ Yrs)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">LinkedIn / Portfolio URL</label>
+                      <input
+                        type="url"
+                        placeholder="https://linkedin.com/in/alexmorgan"
+                        value={fastTrackLinkedin}
+                        onChange={(e) => setFastTrackLinkedin(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-700 mb-1">Resume Link (PDF / Cloud Drive)</label>
+                      <input
+                        type="url"
+                        placeholder="https://drive.google.com/resume.pdf"
+                        value={fastTrackResume}
+                        onChange={(e) => setFastTrackResume(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={fastTrackSubmitting}
+                      className="w-full py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer hover:shadow-lg"
+                    >
+                      {fastTrackSubmitting ? 'Transmitting Profile...' : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Submit to 140+ Partner Network</span>
+                        </>
+                      )}
+                    </button>
+                  </form>
                 </>
               )}
             </div>
@@ -584,26 +624,16 @@ export default function CareersPage() {
               <div className="space-y-2 text-xs">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Direct interview scheduling with Principal Architects & CISOs</span>
+                  <span className="text-slate-300">Direct interview scheduling with Tech Leads & CISOs</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
-                  <span className="text-slate-300">Verified institutional accreditation on student graduation records</span>
+                  <span className="text-slate-300">Verified institutional accreditation on graduation records</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
                   <span className="text-slate-300">Salary transparency policy: All roles disclose minimum compensation</span>
                 </div>
-              </div>
-
-              {/* Partner Logo Monogram Ticker */}
-              <div className="pt-2 border-t border-white/10 flex flex-wrap items-center gap-2">
-                <span className="text-[10px] text-slate-400 uppercase font-mono mr-1">Active Hires At:</span>
-                {['AWS Partners', 'Datadog', 'CrowdStrike', 'Snowflake', 'Apex AI'].map((partner, idx) => (
-                  <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300">
-                    {partner}
-                  </span>
-                ))}
               </div>
             </div>
 
@@ -612,13 +642,12 @@ export default function CareersPage() {
       </main>
 
       {/* ========================================================================= */}
-      {/* 1. VIEW DETAILS MODAL: RICH OVERVIEW, RESPONSIBILITIES, REQUIREMENTS, PERKS */}
+      {/* 1. VIEW DETAILS MODAL: RICH OVERVIEW WITH BULLETCONTENT                   */}
       {/* ========================================================================= */}
       {detailsModalOpen && selectedJobForDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
           <div className="relative w-full max-w-2xl rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto text-left space-y-5">
             
-            {/* Close Button */}
             <button
               onClick={() => setDetailsModalOpen(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
@@ -643,13 +672,7 @@ export default function CareersPage() {
               </div>
 
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900">{selectedJobForDetails.company}</span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Verified Employer Partner
-                  </span>
-                </div>
+                <div className="text-sm font-bold text-slate-900">{selectedJobForDetails.company}</div>
                 <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] mt-1">
                   {selectedJobForDetails.title}
                 </h2>
@@ -676,41 +699,37 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Role Overview */}
+            {/* Role Overview with BulletContent */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Role Overview</h4>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                {selectedJobForDetails.description}
-              </p>
+              <BulletContent
+                content={selectedJobForDetails.description}
+                as="auto"
+                paragraphClassName="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line"
+              />
             </div>
 
             {/* Key Responsibilities */}
             {selectedJobForDetails.responsibilities && selectedJobForDetails.responsibilities.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Key Responsibilities</h4>
-                <ul className="space-y-1.5 text-xs text-slate-700">
-                  {selectedJobForDetails.responsibilities.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={selectedJobForDetails.responsibilities}
+                  as="list"
+                  bulletType="check"
+                />
               </div>
             )}
 
             {/* Candidate Requirements */}
-            {selectedJobForDetails.requirements && selectedJobForDetails.requirements.length > 0 && (
+            {(selectedJobForDetails.keyRequirements || selectedJobForDetails.requirements) && (
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Candidate Qualifications & Skills</h4>
-                <ul className="space-y-1.5 text-xs text-slate-700">
-                  {selectedJobForDetails.requirements.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <ChevronRight className="w-3.5 h-3.5 text-[#9e4f8f] shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={selectedJobForDetails.keyRequirements || selectedJobForDetails.requirements}
+                  as="list"
+                  bulletType="chevron"
+                />
               </div>
             )}
 
@@ -721,14 +740,11 @@ export default function CareersPage() {
                   <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
                   Perks, Equity & Benefits
                 </h4>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-emerald-950">
-                  {selectedJobForDetails.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={selectedJobForDetails.benefits}
+                  as="list"
+                  bulletType="check"
+                />
               </div>
             )}
 

@@ -19,6 +19,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
 // Lazy-loaded Public Subpages
 const CoursesPage = lazy(() => import('./pages/CoursesPage'));
@@ -186,98 +187,100 @@ export default function App() {
   return (
     <ThemeModeProvider>
       <AuthProvider>
-        <Suspense fallback={<PageSkeleton />}>
-          <Routes>
-            {/* Public Homepage & Dedicated Theme URLs */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/old-ui" element={<LandingPage />} />
-            <Route path="/cyber" element={<LandingPage />} />
-            <Route path="/apple-ui" element={<LandingPage />} />
+        <SiteSettingsProvider>
+          <Suspense fallback={<PageSkeleton />}>
+            <Routes>
+              {/* Public Homepage & Dedicated Theme URLs */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/old-ui" element={<LandingPage />} />
+              <Route path="/cyber" element={<LandingPage />} />
+              <Route path="/apple-ui" element={<LandingPage />} />
 
-            {/* Public Subpages */}
-            <Route path="/courses" element={<CoursesPage />} />
-            <Route path="/courses/:slug" element={<CourseDetailPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/jobs" element={<CareersPage />} />
-            <Route path="/jobs/:id" element={<JobDetailPage />} />
-            <Route path="/careers" element={<CareersPage />} />
-            <Route path="/careers/:id" element={<JobDetailPage />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/refund-policy" element={<RefundPolicyPage />} />
-            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/career-support" element={<CareerSupportPage />} />
-            <Route path="/success-stories" element={<SuccessStoriesPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogDetailPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/certificate/:certificateId" element={<CertificateVerificationPage />} />
+              {/* Public Subpages */}
+              <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/courses/:slug" element={<CourseDetailPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/jobs" element={<CareersPage />} />
+              <Route path="/jobs/:id" element={<JobDetailPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/careers/:id" element={<JobDetailPage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/career-support" element={<CareerSupportPage />} />
+              <Route path="/success-stories" element={<SuccessStoriesPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogDetailPage />} />
+              <Route path="/faq" element={<FaqPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/certificate/:certificateId" element={<CertificateVerificationPage />} />
 
-            {/* Student LMS Authentication */}
-            <Route path="/student/login" element={<StudentLogin />} />
-            <Route path="/student/register" element={<StudentRegister />} />
+              {/* Student LMS Authentication */}
+              <Route path="/student/login" element={<StudentLogin />} />
+              <Route path="/student/register" element={<StudentRegister />} />
 
-            {/* Student LMS Portal */}
-            <Route
-              path="/student"
-              element={
-                <StudentProtectedRoute>
-                  <StudentLayout />
-                </StudentProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/student/dashboard" replace />} />
-              <Route path="dashboard" element={<StudentDashboard />} />
-              <Route path="courses" element={<MyCourses />} />
-              <Route path="courses/:courseId/learn" element={<LessonPlayer />} />
-              <Route path="learn/:courseId" element={<LessonPlayer />} />
-              <Route path="certificates" element={<MyCertificates />} />
-              <Route path="payments" element={<StudentPayments />} />
-              <Route path="support" element={<StudentSupport />} />
-              <Route path="profile" element={<StudentProfile />} />
-            </Route>
+              {/* Student LMS Portal */}
+              <Route
+                path="/student"
+                element={
+                  <StudentProtectedRoute>
+                    <StudentLayout />
+                  </StudentProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/student/dashboard" replace />} />
+                <Route path="dashboard" element={<StudentDashboard />} />
+                <Route path="courses" element={<MyCourses />} />
+                <Route path="courses/:courseId/learn" element={<LessonPlayer />} />
+                <Route path="learn/:courseId" element={<LessonPlayer />} />
+                <Route path="certificates" element={<MyCertificates />} />
+                <Route path="payments" element={<StudentPayments />} />
+                <Route path="support" element={<StudentSupport />} />
+                <Route path="profile" element={<StudentProfile />} />
+              </Route>
 
-            {/* Admin Authentication */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+              {/* Admin Authentication */}
+              <Route path="/admin/login" element={<AdminLogin />} />
 
-            {/* Enterprise SaaS Admin Panel */}
-            <Route
-              path="/admin"
-              element={
-                <AdminProtectedRoute>
-                  <AdminLayout />
-                </AdminProtectedRoute>
-              }
-            >
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="leads" element={<LeadsCRM />} />
-              <Route path="courses" element={<CoursesCMS />} />
-              <Route path="batches" element={<BatchesManager />} />
-              <Route path="students" element={<StudentsManager />} />
-              <Route path="payments" element={<PaymentsManager />} />
-              <Route path="jobs" element={<JobsManager />} />
-              <Route path="content" element={<ContentCMS />} />
-              <Route path="support" element={<SupportManager />} />
-              <Route path="settings" element={<SettingsCMS />} />
-              <Route path="users" element={<StaffRBAC />} />
-            </Route>
+              {/* Enterprise SaaS Admin Panel */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminProtectedRoute>
+                    <AdminLayout />
+                  </AdminProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="leads" element={<LeadsCRM />} />
+                <Route path="courses" element={<CoursesCMS />} />
+                <Route path="batches" element={<BatchesManager />} />
+                <Route path="students" element={<StudentsManager />} />
+                <Route path="payments" element={<PaymentsManager />} />
+                <Route path="jobs" element={<JobsManager />} />
+                <Route path="content" element={<ContentCMS />} />
+                <Route path="support" element={<SupportManager />} />
+                <Route path="settings" element={<SettingsCMS />} />
+                <Route path="users" element={<StaffRBAC />} />
+              </Route>
 
-            {/* Universal Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
+              {/* Universal Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
 
-        {/* Global Floating Admissions & Support Widgets */}
-        <WhatsAppButton />
-        <AIChatbox />
+          {/* Global Floating Admissions & Support Widgets */}
+          <WhatsAppButton />
+          <AIChatbox />
 
-        {/* Global Floating Interactive Design Switcher (Hidden in production client view) */}
-        {typeof window !== 'undefined' && window.location.search.includes('showSwitcher=1') && (
-          <ThemeSwitcher />
-        )}
+          {/* Global Floating Interactive Design Switcher (Hidden in production client view) */}
+          {typeof window !== 'undefined' && window.location.search.includes('showSwitcher=1') && (
+            <ThemeSwitcher />
+          )}
+        </SiteSettingsProvider>
       </AuthProvider>
     </ThemeModeProvider>
   );

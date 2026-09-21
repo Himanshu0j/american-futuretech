@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Search, Clock, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
@@ -7,6 +7,8 @@ import Footer from '../components/Footer';
 import CyberParticles from '../components/CyberParticles';
 import LeadModal from '../components/LeadModal';
 import SyllabusModal from '../components/SyllabusModal';
+import PersonalizedLearningSection from '../components/PersonalizedLearningSection';
+import FaqAccordion from '../components/common/FaqAccordion';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -15,12 +17,24 @@ export default function CoursesPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
   const [selectedCourseForModal, setSelectedCourseForModal] = useState(null);
+  const location = useLocation();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  useEffect(() => {
+    if (location.hash) {
+      const elem = document.querySelector(location.hash);
+      if (elem) {
+        setTimeout(() => {
+          elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+  }, [location.hash]);
 
   const fetchCourses = async () => {
     try {
@@ -234,6 +248,17 @@ export default function CoursesPage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* Personalized Learning Extended 1-on-1 Track */}
+        <PersonalizedLearningSection />
+
+        {/* Program and Admissions FAQ Section */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl pt-8 pb-12">
+          <FaqAccordion
+            initialCategory="All"
+            title="Frequently Asked Program & Admissions Questions"
+          />
         </section>
       </main>
 

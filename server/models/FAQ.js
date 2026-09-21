@@ -12,7 +12,7 @@ const FAQSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Admissions & Fees', 'Curriculum & Projects', 'Career & Placement', 'Certifications', 'General'],
+    trim: true,
     default: 'General',
   },
   order: {

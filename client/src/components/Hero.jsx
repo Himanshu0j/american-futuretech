@@ -25,7 +25,12 @@ import { Lottie } from 'lottie-react';
 import heroOnlineLearningSvg from '../assets/illustrations/hero/hero-online-learning.svg';
 import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json';
 
+import { useSiteSettings } from '../context/SiteSettingsContext';
+
 export default function Hero({ onOpenLeadModal, onExploreCourses }) {
+  const { settings } = useSiteSettings();
+  const heroData = settings?.hero || {};
+
   const [activeTab, setActiveTab] = useState('lms'); // 'lms' | 'classroom' | 'credential' | 'admin'
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -71,23 +76,29 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#2d5c36]/20 shadow-xs text-xs font-semibold text-[#1a361d]">
                 <span className="w-2 h-2 rounded-full bg-[#10b981] pulse-mint-dot" />
                 <span className="tracking-widest uppercase font-mono text-[11px] font-bold">
-                  AMERICAN FUTURETECH · US ACCREDITED TECHNOLOGY FELLOWSHIPS
+                  {heroData.eyebrowBadgeText || heroData.eyebrow || 'AMERICAN FUTURETECH · US ACCREDITED TECHNOLOGY FELLOWSHIPS'}
                 </span>
               </div>
             </div>
 
             {/* Editorial Agency-Grade Headline */}
             <div className="anim-hero-heading space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-black text-[#1a361d] tracking-tight leading-[1.08] font-heading">
-                BUILD SKILLS.<br />
-                <span className="text-[#10b981]">GET CERTIFIED.</span><br />
-                SHAPE YOUR FUTURE.
+              <h1 className="text-4xl sm:text-5xl lg:text-[58px] font-black text-[#1a361d] tracking-tight leading-[1.08] font-heading whitespace-pre-line">
+                {heroData.headline ? (
+                  heroData.headline
+                ) : (
+                  <>
+                    BUILD SKILLS.<br />
+                    <span className="text-[#10b981]">GET CERTIFIED.</span><br />
+                    SHAPE YOUR FUTURE.
+                  </>
+                )}
               </h1>
             </div>
 
             {/* Supporting Editorial Paragraph */}
             <p className="anim-hero-body text-base sm:text-lg text-slate-700 max-w-xl font-normal leading-relaxed">
-              Rigorous, mentor-guided technology fellowships engineered for serious learners. Master production-grade AI systems, offensive cyber operations, and cloud architectures through live faculty labs, verifiable US credentials, and direct corporate career placement.
+              {heroData.subheadline || 'Rigorous, mentor-guided technology fellowships engineered for serious learners. Master production-grade AI systems, offensive cyber operations, and cloud architectures through live faculty labs, verifiable US credentials, and direct corporate career placement.'}
             </p>
 
             {/* Social Proof Alumni Avatars with real images */}
@@ -114,7 +125,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               </div>
               <div className="text-left text-xs font-semibold text-slate-700">
                 <div className="flex items-center gap-1.5 font-bold text-[#1a361d]">
-                  <span>1,200+ Fellows Placed</span>
+                  <span>{heroData.statsBadgeText || '1,200+ Fellows Placed'}</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 </div>
                 <div className="text-[11px] text-slate-500 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
@@ -123,20 +134,30 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
             {/* Dual High-Impact Action Buttons */}
             <div className="anim-hero-cta flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 w-full sm:w-auto">
-              <button
-                onClick={onExploreCourses}
-                className="elms-btn-primary !py-4 !px-8 !text-sm cursor-pointer group shadow-lg flex items-center justify-center gap-2"
-              >
-                <span>Explore Career Programs</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-              </button>
+              {onExploreCourses ? (
+                <button
+                  onClick={onExploreCourses}
+                  className="elms-btn-primary !py-4 !px-8 !text-sm cursor-pointer group shadow-lg flex items-center justify-center gap-2"
+                >
+                  <span>{heroData.primaryCtaText || 'Explore Career Programs'}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
+              ) : (
+                <Link
+                  to={heroData.primaryCtaLink || '/courses'}
+                  className="elms-btn-primary !py-4 !px-8 !text-sm cursor-pointer group shadow-lg flex items-center justify-center gap-2"
+                >
+                  <span>{heroData.primaryCtaText || 'Explore Career Programs'}</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </Link>
+              )}
 
               <Link
-                to="/jobs"
+                to={heroData.secondaryCtaLink || '/jobs'}
                 className="elms-btn-secondary !py-3.5 !px-7 !text-sm cursor-pointer shadow-xs flex items-center justify-center gap-2 group hover:border-[#1a361d]/40"
               >
                 <Briefcase className="w-4 h-4 text-[#2d5c36] group-hover:scale-110 transition-transform" />
-                <span>Explore Live Jobs</span>
+                <span>{heroData.secondaryCtaText || 'Explore Live Jobs'}</span>
               </Link>
             </div>
 

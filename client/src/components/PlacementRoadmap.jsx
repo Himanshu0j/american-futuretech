@@ -12,52 +12,73 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import BulletContent from './common/BulletContent';
+
+const DEFAULT_STEPS = [
+  {
+    number: '01',
+    title: 'Choose Your Program',
+    description: 'Explore our industry-aligned programs and select the track that matches your career aspirations.',
+    icon: 'Compass',
+    tag: 'Orientation & Advisory'
+  },
+  {
+    number: '02',
+    title: 'Learn & Build',
+    description: 'Gain hands-on experience through live mentor-led classes, real-world projects, and industry tools.',
+    icon: 'Code2',
+    tag: 'Hands-on Labs'
+  },
+  {
+    number: '03',
+    title: 'Practice & Assess',
+    description: 'Validate your skills with quizzes, coding challenges, and capstone projects reviewed by experts.',
+    icon: 'CheckSquare',
+    tag: 'Peer & Expert Review'
+  },
+  {
+    number: '04',
+    title: 'Get Certified',
+    description: 'Earn a globally recognized certificate from American FutureTech to showcase your expertise to employers.',
+    icon: 'Award',
+    tag: 'US Digital Credential'
+  },
+  {
+    number: '05',
+    title: 'Get Job Ready',
+    description: 'Receive 1-on-1 resume reviews, LinkedIn optimization, mock interviews, and career coaching.',
+    icon: 'UserCheck',
+    tag: 'Career Architecture'
+  },
+  {
+    number: '06',
+    title: 'Launch Your Career',
+    description: 'Access our exclusive hiring partner network, attend placement drives, and land your dream tech job.',
+    icon: 'Rocket',
+    tag: 'Direct Introductions'
+  }
+];
+
+const ICON_MAP = {
+  Compass,
+  Code2,
+  CheckSquare,
+  Award,
+  UserCheck,
+  Rocket,
+  ShieldCheck,
+  Sparkles
+};
 
 export default function PlacementRoadmap({ onOpenLeadModal }) {
-  const steps = [
-    {
-      num: '01',
-      title: 'Choose Your Program',
-      description: 'Explore our industry-aligned programs and select the track that matches your career aspirations.',
-      icon: Compass,
-      tag: 'Orientation & Advisory'
-    },
-    {
-      num: '02',
-      title: 'Learn & Build',
-      description: 'Gain hands-on experience through live mentor-led classes, real-world projects, and industry tools.',
-      icon: Code2,
-      tag: 'Hands-on Labs'
-    },
-    {
-      num: '03',
-      title: 'Practice & Assess',
-      description: 'Validate your skills with quizzes, coding challenges, and capstone projects reviewed by experts.',
-      icon: CheckSquare,
-      tag: 'Peer & Expert Review'
-    },
-    {
-      num: '04',
-      title: 'Get Certified',
-      description: 'Earn a globally recognized certificate from American FutureTech to showcase your expertise to employers.',
-      icon: Award,
-      tag: 'US Digital Credential'
-    },
-    {
-      num: '05',
-      title: 'Get Job Ready',
-      description: 'Receive 1-on-1 resume reviews, LinkedIn optimization, mock interviews, and career coaching.',
-      icon: UserCheck,
-      tag: 'Career Architecture'
-    },
-    {
-      num: '06',
-      title: 'Launch Your Career',
-      description: 'Access our exclusive hiring partner network, attend placement drives, and land your dream tech job.',
-      icon: Rocket,
-      tag: 'Direct Introductions'
-    }
-  ];
+  const { settings } = useSiteSettings();
+  const roadmap = settings?.roadmap || {};
+
+  const activeSteps = (roadmap.steps && roadmap.steps.length > 0
+    ? roadmap.steps.filter(s => s.active !== false)
+    : DEFAULT_STEPS
+  ).sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <section id="placement-roadmap" className="py-20 bg-white border-t border-slate-200 relative overflow-hidden">
@@ -75,31 +96,33 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-[#1a361d] tracking-tight">
-            6-Step Roadmap to Your Dream Job
+            {roadmap.title || `${activeSteps.length}-Step Roadmap to Your Dream Job`}
           </h2>
 
           <p className="text-lg sm:text-xl font-display font-semibold text-[#2d5c36]">
-            Follow 6 Proven Steps to Career Transformation
+            {roadmap.subtitle || `Follow ${activeSteps.length} Proven Steps to Career Transformation`}
           </p>
 
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed pt-1">
-            Our structured 6-phase pedagogical framework accelerates your trajectory from foundational mastery to corporate tech placement.
+            Our structured {activeSteps.length}-phase pedagogical framework accelerates your trajectory from foundational mastery to corporate tech placement.
           </p>
         </div>
 
-        {/* 6-Step Visual Cards Grid */}
+        {/* Dynamic Step Visual Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-          {steps.map((step) => {
-            const Icon = step.icon;
+          {activeSteps.map((step, idx) => {
+            const Icon = ICON_MAP[step.icon] || Compass;
+            const stepNumber = step.number || String(idx + 1).padStart(2, '0');
+
             return (
               <div
-                key={step.num}
+                key={step._id || idx}
                 className="p-6 sm:p-7 rounded-3xl bg-[#fffff2] border border-slate-200/90 hover:border-[#1a361d]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] border border-[#76ff8a]/40">
-                      Step {step.num}
+                      Step {stepNumber}
                     </span>
                     <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 p-2 flex items-center justify-center text-[#1a361d] group-hover:scale-110 transition-transform shadow-2xs">
                       <Icon className="w-5 h-5 text-[#2d5c36]" />
@@ -107,20 +130,22 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
                   </div>
 
                   <div className="text-[11px] font-bold text-[#40844e] uppercase tracking-wider mb-1">
-                    {step.tag}
+                    {step.tag || 'Phase Milestone'}
                   </div>
 
                   <h3 className="text-lg sm:text-xl font-display font-bold text-[#1a361d] mb-2">
                     {step.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    {step.description}
-                  </p>
+                  <BulletContent
+                    content={step.description}
+                    as="auto"
+                    paragraphClassName="text-xs sm:text-sm text-slate-600 leading-relaxed"
+                  />
                 </div>
 
                 <div className="pt-4 mt-6 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500 font-medium">
-                  <span>Phase {step.num} Deliverable</span>
+                  <span>Phase {stepNumber} Deliverable</span>
                   <CheckCircle2 className="w-4 h-4 text-[#40844e]" />
                 </div>
               </div>
@@ -138,22 +163,22 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
               Ready to Accelerate Your Career Transformation?
             </h4>
             <p className="text-xs text-[#d8ffd2]/80 leading-relaxed">
-              Explore open positions on our Live Jobs Board or consult with an admissions advisor for cohort scheduling.
+              Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only $99 deposit.
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <Link
-              to="/careers"
+              to="/checkout?tier=deposit"
               className="px-5 py-2.5 rounded-full bg-[#76ff8a] hover:bg-[#5be26f] text-[#1a361d] text-xs font-bold transition-colors shadow-sm"
             >
-              Browse Live Jobs
+              Reserve Seat with $99
             </Link>
             <Link
-              to="/courses"
+              to="/careers"
               className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors border border-white/20"
             >
-              Explore Programs
+              Browse Live Jobs
             </Link>
           </div>
         </div>

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import BulletContent from '../components/common/BulletContent';
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -63,11 +64,9 @@ export default function JobDetailPage() {
   };
 
   const handleApplyClick = () => {
-    // If job has a validated external apply link (http/https), open safely
     if (job?.applyLink && (job.applyLink.startsWith('http://') || job.applyLink.startsWith('https://'))) {
       window.open(job.applyLink, '_blank', 'noopener,noreferrer');
     } else {
-      // Fallback to internal application form
       setApplyModalOpen(true);
       setApplySuccess(false);
     }
@@ -174,7 +173,7 @@ export default function JobDetailPage() {
           </Link>
         </div>
 
-        {/* Hero Header Card */}
+        {/* Hero Header Card (Department & Verified Partner REMOVED) */}
         <div className="p-6 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#76ff8a]/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -195,13 +194,9 @@ export default function JobDetailPage() {
                 )}
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-sm sm:text-base font-bold text-slate-900">{job.company}</span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Verified Employer Partner
-                  </span>
                 </div>
 
                 <h1 className="text-2xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight">
@@ -209,15 +204,11 @@ export default function JobDetailPage() {
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-600">
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-[#1a361d] bg-[#d8ffd2] px-2.5 py-0.5 rounded-full">
-                    <Building2 className="w-3 h-3 text-[#2d5c36]" />
-                    {job.department}
-                  </span>
                   <span className="inline-flex items-center gap-1.5 font-medium text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">
                     {job.employmentType || job.type || 'Full-time'}
                   </span>
                   <span className="text-slate-400">•</span>
-                  <span className="text-slate-500 font-mono">Posted by Admissions Placement Office</span>
+                  <span className="text-slate-500 font-mono">{job.location}</span>
                 </div>
               </div>
             </div>
@@ -274,20 +265,22 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        {/* 2-Column Body: Detailed Specification + Recommended Course & Employer Card */}
+        {/* 2-Column Body: Detailed Specification + Recommended Course & Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Main Specification Body (8 cols) */}
           <div className="lg:col-span-8 space-y-8 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs text-slate-700">
             
-            {/* 1. Job Description */}
+            {/* 1. Job Description with Intelligent BulletContent parser */}
             <section className="space-y-3">
               <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                 <span>Job Description</span>
               </h3>
-              <p className="text-xs sm:text-sm leading-relaxed text-slate-700 whitespace-pre-line">
-                {job.description}
-              </p>
+              <BulletContent
+                content={job.description}
+                as="auto"
+                paragraphClassName="text-xs sm:text-sm leading-relaxed text-slate-700 whitespace-pre-line"
+              />
             </section>
 
             {/* 2. Role & Responsibilities */}
@@ -296,14 +289,11 @@ export default function JobDetailPage() {
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Role & Responsibilities</span>
                 </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
-                  {job.responsibilities.map((resp, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-full bg-[#d8ffd2] text-[#2d5c36] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">✓</span>
-                      <span className="leading-normal">{resp}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.responsibilities}
+                  as="list"
+                  bulletType="check"
+                />
               </section>
             )}
 
@@ -313,14 +303,11 @@ export default function JobDetailPage() {
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Preferred Qualifications</span>
                 </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
-                  {job.preferredQualifications.map((qual, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <ChevronRight className="w-4 h-4 text-[#2d5c36] shrink-0 mt-0.5" />
-                      <span className="leading-normal">{qual}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.preferredQualifications}
+                  as="list"
+                  bulletType="chevron"
+                />
               </section>
             )}
 
@@ -330,32 +317,26 @@ export default function JobDetailPage() {
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Key Requirements</span>
                 </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
-                  {(job.keyRequirements || job.requirements || []).map((req, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <ChevronRight className="w-4 h-4 text-[#9e4f8f] shrink-0 mt-0.5" />
-                      <span className="leading-normal">{req}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.keyRequirements || job.requirements}
+                  as="list"
+                  bulletType="checkCircle"
+                />
               </section>
             )}
 
-            {/* 5. Required Certificate */}
+            {/* 5. Required Certificates */}
             {(job.requiredCertificates && job.requiredCertificates.length > 0) && (
               <section className="space-y-3 p-4 rounded-2xl bg-[#d8ffd2]/30 border border-[#76ff8a]/60">
                 <h3 className="text-xs sm:text-sm font-display font-bold text-[#1a361d] flex items-center gap-2">
                   <Award className="w-4 h-4 text-[#2d5c36]" />
                   <span>Required / Preferred Institutional Credentials</span>
                 </h3>
-                <ul className="space-y-1.5 text-xs text-slate-700">
-                  {job.requiredCertificates.map((cert, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span className="font-semibold text-slate-800">{cert}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.requiredCertificates}
+                  as="list"
+                  bulletType="check"
+                />
               </section>
             )}
 
@@ -365,16 +346,10 @@ export default function JobDetailPage() {
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Technical Skills & Technologies</span>
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {(job.technicalSkills || job.skills || []).map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <BulletContent
+                  content={job.technicalSkills || job.skills}
+                  as="chips"
+                />
               </section>
             )}
 
@@ -384,51 +359,47 @@ export default function JobDetailPage() {
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Professional & Soft Skills</span>
                 </h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
-                  {job.softSkills.map((soft, idx) => (
-                    <li key={idx} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#9e4f8f]" />
-                      <span>{soft}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.softSkills}
+                  as="list"
+                  bulletType="dot"
+                />
               </section>
             )}
 
-            {/* 8. Career Growth & Opportunities */}
+            {/* 8. Career Growth */}
             {job.careerGrowth && (
               <section className="space-y-3 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60">
                 <h3 className="text-xs sm:text-sm font-display font-bold text-amber-950 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-600" />
                   <span>Career Growth & Promotion Pathway</span>
                 </h3>
-                <p className="text-xs text-amber-900 leading-relaxed">
-                  {job.careerGrowth}
-                </p>
+                <BulletContent
+                  content={job.careerGrowth}
+                  as="auto"
+                  paragraphClassName="text-xs text-amber-900 leading-relaxed"
+                />
               </section>
             )}
 
-            {/* Perks & Benefits (if present) */}
+            {/* 9. Benefits */}
             {(job.benefits && job.benefits.length > 0) && (
               <section className="space-y-3">
                 <h3 className="text-base sm:text-lg font-display font-bold text-[#1a361d] flex items-center gap-2 border-b border-slate-100 pb-2">
                   <span>Benefits, Perks & Equity</span>
                 </h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
-                  {job.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
+                <BulletContent
+                  content={job.benefits}
+                  as="list"
+                  bulletType="check"
+                />
               </section>
             )}
 
             {/* Bottom Apply Bar */}
             <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-slate-500">
-                Interested in this opening? Submit your credentials directly to the partner employer.
+                Ready to take the next step in your technology career?
               </div>
               <button
                 onClick={handleApplyClick}
@@ -443,7 +414,7 @@ export default function JobDetailPage() {
           {/* Right Column: Recommended Course & Institutional Guarantee (4 cols) */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
             
-            {/* Recommended Course Card */}
+            {/* Recommended Course Card with $99 CTA */}
             {(job.recommendedCourse || job.recommendedCourseTitle) && (
               <div className="p-6 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white shadow-xl space-y-4 text-left relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#76ff8a]/20 rounded-full blur-2xl pointer-events-none" />
@@ -461,36 +432,44 @@ export default function JobDetailPage() {
                   Completing this accredited program fulfills 100% of the technical prerequisites and capstone requirements for this role.
                 </p>
 
-                {job.recommendedCourse && (
-                  <div className="pt-2">
+                <div className="space-y-2 pt-2">
+                  {job.recommendedCourse?.slug && (
                     <Link
                       to={`/courses/${job.recommendedCourse.slug}`}
-                      className="w-full py-2.5 px-4 rounded-full bg-[#76ff8a] hover:bg-[#5ce671] text-[#1a361d] font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+                      className="w-full py-2.5 px-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all border border-white/20"
                     >
                       <span>Explore Course Syllabus</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
-                  </div>
-                )}
+                  )}
+
+                  <Link
+                    to={job.recommendedCourse?._id ? `/checkout?courseId=${job.recommendedCourse._id}&tier=deposit` : '/checkout?tier=deposit'}
+                    className="w-full py-2.5 px-4 rounded-full bg-[#76ff8a] hover:bg-[#5ce671] text-[#1a361d] font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+                  >
+                    <span>Reserve Seat with $99</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             )}
 
-            {/* Verified Partner Employer Badge */}
+            {/* Placement Network Card */}
             <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs text-left space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
                 <ShieldCheck className="w-4 h-4 text-[#2d5c36]" />
-                <span>Verified Direct Placement</span>
+                <span>Corporate Hiring Network</span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                This position is offered through the American FutureTech Corporate Hiring Network. Certified alumni receive expedited technical review and interview priority.
+                Positions on this board are offered through American FutureTech hiring partner relationships. Certified fellows receive expedited technical review.
               </p>
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
                 <span>Location</span>
                 <span className="font-semibold text-slate-800">{job.location}</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
-                <span>Total Applicants</span>
-                <span className="font-semibold text-slate-800">{job.applicantCount || 0}</span>
+                <span>Status</span>
+                <span className="font-semibold text-emerald-600">Actively Interviewing</span>
               </div>
             </div>
 
@@ -512,7 +491,7 @@ export default function JobDetailPage() {
         </div>
       </main>
 
-      {/* Internal Application Form Modal (Fallback if external link not supplied) */}
+      {/* Internal Application Form Modal */}
       {applyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
           <div className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto text-left">

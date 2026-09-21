@@ -27,8 +27,12 @@ import {
   MissionIllustration,
   VisionIllustration
 } from '../components/illustrations/VectorIllustrations';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import FaqAccordion from '../components/common/FaqAccordion';
 
 export default function AboutPage() {
+  const { settings } = useSiteSettings();
+  const about = settings?.aboutCMS || {};
   const pillars = [
     {
       num: '01',
@@ -158,20 +162,28 @@ export default function AboutPage() {
                     <span>ABOUT AMERICAN FUTURETECH</span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] mb-4">
-                    Bridging the Divide Between Academia and Global Industry
+                    {about.headline || 'Bridging the Divide Between Academia and Global Industry'}
                   </h3>
                   
-                  {/* CLIENT VERBATIM TEXT - 100% EXACT PRESERVATION */}
+                  {/* CLIENT VERBATIM TEXT - CMS BACKED WITH 100% PRESERVATION FALLBACK */}
                   <div className="space-y-4 text-sm sm:text-base text-gray-700 leading-relaxed font-sans">
-                    <p>
-                      American FutureTech is a globally recognized professional education and workforce development institute offering industry-aligned certification programs designed to bridge the gap between academic learning and industry demands.
-                    </p>
-                    <p>
-                      We partner with leading corporate enterprises, subject-matter experts, and top educators to deliver practical, career-defining learning experiences in high-growth domains including Data Science, Cybersecurity, Cloud & DevOps, Artificial Intelligence, and Product Management.
-                    </p>
-                    <p>
-                      Our mission is to democratize high-quality, outcome-oriented tech education and empower individuals worldwide with verified job-ready skills, recognized certifications, and comprehensive placement support.
-                    </p>
+                    {about.bodyParagraphs && about.bodyParagraphs.length > 0 ? (
+                      about.bodyParagraphs.map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))
+                    ) : (
+                      <>
+                        <p>
+                          American FutureTech is a globally recognized professional education and workforce development institute offering industry-aligned certification programs designed to bridge the gap between academic learning and industry demands.
+                        </p>
+                        <p>
+                          We partner with leading corporate enterprises, subject-matter experts, and top educators to deliver practical, career-defining learning experiences in high-growth domains including Data Science, Cybersecurity, Cloud & DevOps, Artificial Intelligence, and Product Management.
+                        </p>
+                        <p>
+                          Our mission is to democratize high-quality, outcome-oriented tech education and empower individuals worldwide with verified job-ready skills, recognized certifications, and comprehensive placement support.
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -194,14 +206,14 @@ export default function AboutPage() {
                         </div>
                       </div>
                       <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
-                        Our Institutional Mission
+                        {about.missionTitle || 'Our Institutional Mission'}
                       </h4>
                       <p className="text-xs text-gray-600 leading-relaxed">
-                        To empower 100,000+ students, professionals, and career changers worldwide with hands-on technical skills, industry-recognized certifications, and direct pathways to high-paying tech careers by delivering affordable, practical, and mentor-guided education.
+                        {about.missionText || 'To empower 100,000+ students, professionals, and career changers worldwide with hands-on technical skills, industry-recognized certifications, and direct pathways to high-paying tech careers by delivering affordable, practical, and mentor-guided education.'}
                       </p>
                     </div>
                     <div className="text-[11px] font-mono text-[#2d5c36] font-bold pt-2 border-t border-[#2d5c36]/10">
-                      Target: 100,000+ Certified Tech Leaders
+                      {about.missionTarget || 'Target: 100,000+ Certified Tech Leaders'}
                     </div>
                   </div>
 
@@ -222,14 +234,14 @@ export default function AboutPage() {
                         </div>
                       </div>
                       <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
-                        Our Global Vision
+                        {about.visionTitle || 'Our Global Vision'}
                       </h4>
                       <p className="text-xs text-gray-600 leading-relaxed">
-                        To be the world's most trusted workforce transformation institute, bridging the gap between talent and technology, creating equal opportunities for global learners, and driving the future of work.
+                        {about.visionText || "To be the world's most trusted workforce transformation institute, bridging the gap between talent and technology, creating equal opportunities for global learners, and driving the future of work."}
                       </p>
                     </div>
                     <div className="text-[11px] font-mono text-[#9e4f8f] font-bold pt-2 border-t border-[#9e4f8f]/10">
-                      Global Workforce Transformation Standard
+                      {about.visionTagline || 'Global Workforce Transformation Standard'}
                     </div>
                   </div>
                 </div>
@@ -315,6 +327,14 @@ export default function AboutPage() {
               <img src={engineeringTeamSvg} alt="Worldwide Tech Engineering Cohort" className="w-full max-w-md h-auto object-contain drop-shadow-xl" />
             </div>
           </div>
+        </section>
+
+        {/* Institutional & Admissions FAQ */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-16">
+          <FaqAccordion
+            initialCategory="Admissions"
+            title="Institutional & Admissions Questions"
+          />
         </section>
       </main>
 

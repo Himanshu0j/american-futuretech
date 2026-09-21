@@ -50,7 +50,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     { name: 'Home', path: '/' },
     { name: 'Live Jobs', path: '/jobs' },
     { name: 'Career Programs', path: '/courses', hasDropdown: true },
-    { name: 'Personalized Learning', path: '/courses' },
+    { name: 'Personalized Learning', path: '/courses#personalized-learning' },
     { name: 'Certifications', path: '/certificate/AFT-CERT-AI9821' },
     { name: 'About Us', path: '/about' },
   ];
@@ -82,6 +82,14 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         navigate('/');
+      }
+    } else if (path.includes('#')) {
+      const [targetPath, hash] = path.split('#');
+      if (location.pathname === targetPath) {
+        const elem = document.getElementById(hash);
+        if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate(path);
       }
     } else {
       navigate(path);

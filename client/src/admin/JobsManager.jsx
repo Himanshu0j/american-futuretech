@@ -28,6 +28,7 @@ import {
   Minus,
   Link as LinkIcon
 } from 'lucide-react';
+import RepeatableListInput from './components/RepeatableListInput';
 
 const LOGO_PRESETS = [
   { name: 'AWS / Cloud', url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&auto=format&fit=crop&q=80' },
@@ -800,172 +801,67 @@ export default function JobsManager() {
                   />
                 </div>
 
-                {/* Repeatable List Sections: Responsibilities, Qualifications, Requirements */}
+                {/* Repeatable List Sections with Multi-Line Paste Splitter */}
                 <div className="space-y-4 pt-2 border-t border-slate-800">
-                  <div className="text-slate-300 font-bold uppercase text-[11px]">
-                    Detailed Repeatable Bullet Lists
+                  <div className="text-slate-300 font-bold uppercase text-[11px] flex items-center justify-between">
+                    <span>Structured Role Qualifications & Bullets</span>
+                    <span className="text-cyan-400 font-mono text-[10px]">Multi-Line Paste Split Enabled</span>
                   </div>
 
                   {/* Responsibilities */}
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300 text-xs font-bold">Key Responsibilities</span>
-                      <button
-                        type="button"
-                        onClick={() => handleAddListItem('responsibilities')}
-                        className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" /> Add Item
-                      </button>
-                    </div>
-                    {(jobForm.responsibilities || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={item}
-                          onChange={(e) => handleUpdateListItem('responsibilities', idx, e.target.value)}
-                          placeholder={`Responsibility #${idx + 1}`}
-                          className="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveListItem('responsibilities', idx)}
-                          className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <RepeatableListInput
+                    label="Key Responsibilities"
+                    description="Paste lines or bullet points to auto-split into distinct items."
+                    items={jobForm.responsibilities || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, responsibilities: items }))}
+                    placeholder="Enter responsibility..."
+                    badgeColor="cyan"
+                  />
 
                   {/* Preferred Qualifications */}
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300 text-xs font-bold">Preferred Qualifications</span>
-                      <button
-                        type="button"
-                        onClick={() => handleAddListItem('preferredQualifications')}
-                        className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" /> Add Item
-                      </button>
-                    </div>
-                    {(jobForm.preferredQualifications || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={item}
-                          onChange={(e) => handleUpdateListItem('preferredQualifications', idx, e.target.value)}
-                          placeholder={`Preferred Qualification #${idx + 1}`}
-                          className="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveListItem('preferredQualifications', idx)}
-                          className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <RepeatableListInput
+                    label="Preferred Qualifications"
+                    items={jobForm.preferredQualifications || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, preferredQualifications: items }))}
+                    placeholder="Enter qualification..."
+                    badgeColor="emerald"
+                  />
 
                   {/* Key Requirements */}
-                  <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-300 text-xs font-bold">Key Requirements</span>
-                      <button
-                        type="button"
-                        onClick={() => handleAddListItem('keyRequirements')}
-                        className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" /> Add Item
-                      </button>
-                    </div>
-                    {(jobForm.keyRequirements || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={item}
-                          onChange={(e) => handleUpdateListItem('keyRequirements', idx, e.target.value)}
-                          placeholder={`Key Requirement #${idx + 1}`}
-                          className="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveListItem('keyRequirements', idx)}
-                          className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <RepeatableListInput
+                    label="Key Requirements"
+                    items={jobForm.keyRequirements || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, keyRequirements: items }))}
+                    placeholder="Enter key requirement..."
+                    badgeColor="cyan"
+                  />
 
-                  {/* Technical & Soft Skills */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-300 text-xs font-bold">Technical Skills</span>
-                        <button
-                          type="button"
-                          onClick={() => handleAddListItem('technicalSkills')}
-                          className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                        >
-                          <Plus className="w-3.5 h-3.5" /> Add
-                        </button>
-                      </div>
-                      {(jobForm.technicalSkills || []).map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={item}
-                            onChange={(e) => handleUpdateListItem('technicalSkills', idx, e.target.value)}
-                            placeholder={`e.g. Docker`}
-                            className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveListItem('technicalSkills', idx)}
-                            className="p-1 text-rose-400 hover:text-rose-300"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Required Certificates */}
+                  <RepeatableListInput
+                    label="Required Certificates & Credentials"
+                    items={jobForm.requiredCertificates || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, requiredCertificates: items }))}
+                    placeholder="e.g. AWS Certified Solutions Architect..."
+                    badgeColor="fuchsia"
+                  />
 
-                    <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-300 text-xs font-bold">Soft Skills</span>
-                        <button
-                          type="button"
-                          onClick={() => handleAddListItem('softSkills')}
-                          className="flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 cursor-pointer"
-                        >
-                          <Plus className="w-3.5 h-3.5" /> Add
-                        </button>
-                      </div>
-                      {(jobForm.softSkills || []).map((item, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={item}
-                            onChange={(e) => handleUpdateListItem('softSkills', idx, e.target.value)}
-                            placeholder={`e.g. Communication`}
-                            className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveListItem('softSkills', idx)}
-                            className="p-1 text-rose-400 hover:text-rose-300"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  {/* Technical Skills */}
+                  <RepeatableListInput
+                    label="Technical Skills (Keywords / Chips)"
+                    items={jobForm.technicalSkills || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, technicalSkills: items }))}
+                    placeholder="e.g. Docker, Python, AWS..."
+                    badgeColor="emerald"
+                  />
+
+                  {/* Soft Skills */}
+                  <RepeatableListInput
+                    label="Soft Skills"
+                    items={jobForm.softSkills || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, softSkills: items }))}
+                    placeholder="e.g. System Design, Communication..."
+                    badgeColor="cyan"
+                  />
                 </div>
 
                 {/* Published / Active Toggle */}

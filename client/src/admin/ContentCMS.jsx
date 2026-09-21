@@ -515,10 +515,15 @@ export default function ContentCMS() {
                           className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                         >
                           <option value="General">General</option>
+                          <option value="Career Programs">Career Programs</option>
+                          <option value="Personalized Learning">Personalized Learning</option>
+                          <option value="Capstone">Capstone Engineering</option>
+                          <option value="Live Jobs">Live Jobs & Placement</option>
                           <option value="Admissions">Admissions & Eligibility</option>
                           <option value="Curriculum">Curriculum & Accreditation</option>
                           <option value="Placement">Job Placement & Mentorship</option>
                           <option value="Financing">Tuition & Financing</option>
+                          <option value="$99 Reservation">$99 Seat Reservation</option>
                         </select>
                       </div>
                       <div>

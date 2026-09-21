@@ -12,101 +12,121 @@ import {
   Cpu,
   Terminal,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Code2,
+  Check
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import BulletContent from './common/BulletContent';
 
-const TOP_4_TOOLS = [
+const DEFAULT_TOOLS = [
   {
-    name: 'Jupyter',
-    category: 'Data Science & Analytics',
-    description: 'Interactive computational environments for data munging, exploratory modeling, and statistical inference.',
-    badge: 'Core Data Standard',
-    color: 'from-amber-500/10 to-orange-500/10 text-amber-700 border-amber-200',
-    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg'
-  },
-  {
-    name: 'PyTorch',
-    category: 'Deep Learning & Neural Nets',
-    description: 'State-of-the-art deep learning framework powering computer vision, speech synthesis, and foundation models.',
-    badge: 'Production AI Standard',
-    color: 'from-rose-500/10 to-red-500/10 text-rose-700 border-rose-200',
-    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg'
-  },
-  {
-    name: 'HuggingFace',
-    category: 'Generative AI & LLMs',
-    description: 'The world open source ecosystem for state-of-the-art transformer weights, tokenizers, and model hubs.',
-    badge: 'GenAI & Transformers',
-    color: 'from-yellow-500/10 to-amber-500/10 text-yellow-800 border-yellow-200',
-    iconUrl: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg'
+    name: 'Python',
+    category: 'Data & AI',
+    description: 'Core programming language powering modern generative AI, machine learning architectures, and data engineering pipelines.',
+    badge: 'Core Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    order: 1,
+    active: true
   },
   {
     name: 'Docker',
     category: 'Cloud & Container Systems',
-    description: 'Enterprise container virtualization platform ensuring immutable deployment across distributed multi-cloud nodes.',
-    badge: 'DevOps & SRE Standard',
-    color: 'from-blue-500/10 to-sky-500/10 text-sky-700 border-sky-200',
-    iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg'
-  }
-];
-
-// All 41 tools extracted directly from the MongoDB Course collection
-const ALL_41_TOOLS = [
-  { name: 'Jupyter', category: 'Data & AI', level: 'Fundamental' },
-  { name: 'PyTorch', category: 'Data & AI', level: 'Advanced' },
-  { name: 'HuggingFace', category: 'Data & AI', level: 'Advanced' },
-  { name: 'Docker', category: 'DevOps & Cloud', level: 'Core' },
-  { name: 'Tableau', category: 'Data & Analytics', level: 'Core' },
-  { name: 'Snowflake', category: 'Data & Analytics', level: 'Advanced' },
-  { name: 'PostgreSQL', category: 'Data & Analytics', level: 'Core' },
-  { name: 'Kali Linux', category: 'Cyber Security', level: 'Core' },
-  { name: 'Burp Suite Pro', category: 'Cyber Security', level: 'Advanced' },
-  { name: 'Nmap', category: 'Cyber Security', level: 'Core' },
-  { name: 'Metasploit', category: 'Cyber Security', level: 'Advanced' },
-  { name: 'Snort', category: 'Cyber Security', level: 'Core' },
-  { name: 'Splunk', category: 'Cyber Security', level: 'Advanced' },
-  { name: 'Wireshark', category: 'Cyber Security', level: 'Core' },
-  { name: 'TensorFlow', category: 'Data & AI', level: 'Advanced' },
-  { name: 'Zeek', category: 'Cyber Security', level: 'Advanced' },
-  { name: 'Wazuh', category: 'Cyber Security', level: 'Core' },
-  { name: 'YARA', category: 'Cyber Security', level: 'Core' },
-  { name: 'LangChain', category: 'Data & AI', level: 'Advanced' },
-  { name: 'CrewAI', category: 'Data & AI', level: 'Advanced' },
-  { name: 'Ollama', category: 'Data & AI', level: 'Core' },
-  { name: 'Pinecone', category: 'Data & AI', level: 'Advanced' },
-  { name: 'vLLM', category: 'Data & AI', level: 'Advanced' },
-  { name: 'Weights & Biases', category: 'Data & AI', level: 'Core' },
-  { name: 'AWS EKS', category: 'DevOps & Cloud', level: 'Advanced' },
-  { name: 'Terraform', category: 'DevOps & Cloud', level: 'Advanced' },
-  { name: 'ArgoCD', category: 'DevOps & Cloud', level: 'Advanced' },
-  { name: 'Prometheus', category: 'DevOps & Cloud', level: 'Core' },
-  { name: 'Grafana', category: 'DevOps & Cloud', level: 'Core' },
-  { name: 'Ansible', category: 'DevOps & Cloud', level: 'Core' },
-  { name: 'Figma', category: 'Product & Ops', level: 'Core' },
-  { name: 'Jira', category: 'Product & Ops', level: 'Core' },
-  { name: 'Postman', category: 'Product & Ops', level: 'Core' },
-  { name: 'Notion', category: 'Product & Ops', level: 'Core' },
-  { name: 'LangSmith', category: 'Data & AI', level: 'Advanced' },
-  { name: 'Mixpanel', category: 'Product & Ops', level: 'Core' },
-  { name: 'Vanta', category: 'GRC & Security', level: 'Advanced' },
-  { name: 'Drata', category: 'GRC & Security', level: 'Advanced' },
-  { name: 'ServiceNow', category: 'GRC & Security', level: 'Advanced' },
-  { name: 'Excel', category: 'Data & Analytics', level: 'Fundamental' },
-  { name: 'OneTrust', category: 'GRC & Security', level: 'Advanced' }
+    description: 'Enterprise container virtualization ensuring immutable multi-cloud deployment and reproducible runtime environments.',
+    badge: 'DevOps Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+    order: 2,
+    active: true
+  },
+  {
+    name: 'AWS',
+    category: 'Cloud & Container Systems',
+    description: 'Premier hyperscale cloud platform utilizing EKS, ECS, Lambda, and IAM for resilient production infrastructure.',
+    badge: 'Cloud Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+    order: 3,
+    active: true
+  },
+  {
+    name: 'PyTorch',
+    category: 'Data & AI',
+    description: 'State-of-the-art deep learning and tensor computation framework powering modern computer vision and transformer LLMs.',
+    badge: 'Production AI',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
+    order: 4,
+    active: true
+  },
+  {
+    name: 'Git & GitHub',
+    category: 'Software Engineering',
+    description: 'Distributed version control, automated CI/CD GitHub Actions, and production peer code review workflows.',
+    badge: 'Dev Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+    order: 5,
+    active: true
+  },
+  {
+    name: 'Jupyter',
+    category: 'Data Science & Analytics',
+    description: 'Interactive computational notebooks for exploratory data analysis, statistical modeling, and ML experimentation.',
+    badge: 'Data Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
+    order: 6,
+    active: true
+  },
+  {
+    name: 'Hugging Face',
+    category: 'Data & AI',
+    description: 'Global transformer model hub, tokenizer pipelines, and fine-tuning ecosystem for open-weight foundation models.',
+    badge: 'GenAI Hub',
+    logo: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
+    order: 7,
+    active: true
+  },
+  {
+    name: 'PostgreSQL',
+    category: 'Data Science & Analytics',
+    description: 'Enterprise relational database management system supporting advanced analytics, indexing, and pgvector extensions.',
+    badge: 'Database Standard',
+    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+    order: 8,
+    active: true
+  },
 ];
 
 export default function ToolsSection() {
+  const { settings } = useSiteSettings();
+  const capstone = settings?.capstone || {};
+
   const [modalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', 'Data & AI', 'Cyber Security', 'DevOps & Cloud', 'Data & Analytics', 'GRC & Security', 'Product & Ops'];
+  // Load tools from admin settings if available, else fallback to defaults
+  const activeTools = (capstone.tools && capstone.tools.length > 0
+    ? capstone.tools.filter(t => t.active !== false)
+    : DEFAULT_TOOLS
+  ).sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  const filteredTools = ALL_41_TOOLS.filter((t) => {
-    const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
+  // Extract unique categories dynamically
+  const categories = ['All', ...new Set(activeTools.map(t => t.category).filter(Boolean))];
+
+  const filteredTools = activeTools.filter((t) => {
+    const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (t.description && t.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCat = selectedCategory === 'All' || t.category === selectedCategory;
     return matchesSearch && matchesCat;
   });
+
+  const featuredTools = activeTools.slice(0, 8);
+
+  const outcomes = capstone.outcomes?.length ? capstone.outcomes : [
+    'Deploy low-latency production inference pipelines on AWS / GCP',
+    'Architect end-to-end containerized microservices with Docker & Kubernetes',
+    'Conduct ethical penetration tests with Kali Linux and defend against live CVEs',
+    'Live architectural defense panel evaluated by Silicon Valley engineering leads'
+  ];
 
   return (
     <section id="tools" className="py-20 bg-[#fffff2] border-t border-[#1a361d]/10 relative">
@@ -117,100 +137,132 @@ export default function ToolsSection() {
           <div className="max-w-2xl text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-3">
               <Terminal className="w-3.5 h-3.5 text-[#2d5c36]" />
-              <span>INDUSTRY-STANDARD TOOLSTACK</span>
+              <span>{capstone.title || 'CAPSTONE DEFENSES & TOOLSTACK'}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight">
-              Master the Exact Tools Used by <span className="highlight">Tier-1 Tech Teams</span>
+              {capstone.subtitle || 'Master the Exact Tools Used by Tier-1 Tech Teams'}
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-              Every fellowship track is engineered around real production tooling—no synthetic toy simulations. You build, test, and deploy using the same command lines and platforms powering Fortune 500 infrastructure.
+              {capstone.description ||
+                'Every fellowship track culminates in an enterprise capstone project engineered around real production tooling—no synthetic toy simulations. Build, test, and deploy code reviewed by external tech leaders.'}
             </p>
           </div>
 
-          <div>
+          <div className="flex items-center gap-3">
+            <Link
+              to={capstone.ctaLink || '/checkout?tier=deposit'}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-xs font-bold transition-all shadow-sm hover:shadow-md cursor-pointer"
+            >
+              <span>{capstone.ctaText || 'Reserve Capstone Seat — $99'}</span>
+              <ArrowRight className="w-4 h-4 text-white" />
+            </Link>
+
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] text-xs font-bold transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] text-xs font-bold transition-all shadow-sm hover:shadow-md cursor-pointer"
             >
-              <span>Explore All 40+ Real Tools</span>
-              <ArrowRight className="w-4 h-4 text-[#76ff8a]" />
+              <span>View All Tools</span>
+              <ExternalLink className="w-3.5 h-3.5 text-[#76ff8a]" />
             </button>
           </div>
         </div>
 
-        {/* Top 4 Real Tools Featured Cards Grid */}
+        {/* Featured Capstone Tools Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TOP_4_TOOLS.map((tool, idx) => (
+          {featuredTools.map((tool, idx) => (
             <div
-              key={tool.name}
+              key={tool.name || idx}
               className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-[#1a361d]/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
             >
               <div className="space-y-4">
-                {/* Icon & Badge */}
+                {/* Logo & Category Badge */}
                 <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 p-2.5 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <img
-                      src={tool.iconUrl}
-                      alt={tool.name}
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div className="hidden w-full h-full rounded-xl bg-slate-900 text-white font-bold text-xs items-center justify-center">
-                      {tool.name.slice(0, 2).toUpperCase()}
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 p-2.5 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+                    {tool.logo ? (
+                      <img
+                        src={tool.logo}
+                        alt={tool.name}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`w-full h-full rounded-xl bg-slate-900 text-white font-bold text-xs items-center justify-center ${tool.logo ? 'hidden' : 'flex'}`}>
+                      {tool.name?.slice(0, 2).toUpperCase() || 'TL'}
                     </div>
                   </div>
 
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] border border-[#76ff8a]/40">
-                    #{idx + 1} Flagship
+                    {tool.badge || 'Core Standard'}
                   </span>
                 </div>
 
                 <div>
                   <div className="text-[11px] font-bold text-[#40844e] uppercase tracking-wider mb-1">
-                    {tool.category}
+                    {tool.category || 'Production Tool'}
                   </div>
                   <h3 className="text-xl font-display font-bold text-[#1a361d] group-hover:text-[#40844e] transition-colors">
                     {tool.name}
                   </h3>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {tool.description}
+                <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                  {tool.description || 'Enterprise platform deployed in student production laboratory environments.'}
                 </p>
               </div>
 
               <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-[11px] font-medium text-slate-500">{tool.badge}</span>
+                <span className="text-[11px] font-medium text-slate-500 font-mono">Verified in Cohorts</span>
                 <CheckCircle2 className="w-4 h-4 text-[#40844e]" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom Banner Trigger */}
-        <div className="mt-8 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 shadow-2xs">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-xs shrink-0">
-              41
+        {/* Capstone Real-World Outcomes Banner */}
+        <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-2 flex-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#2d5c36] uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-[#40844e]" />
+                <span>Capstone Engineering Benchmark</span>
+              </div>
+              <h4 className="text-lg sm:text-xl font-display font-extrabold text-[#1a361d]">
+                What You Build & Defend in Capstone Defense
+              </h4>
+              <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+                Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.
+              </p>
             </div>
-            <span>
-              <strong>Full Curriculum Toolchain:</strong> From PyTorch & LangChain to Splunk, Kali Linux, Docker, and AWS EKS—all integrated across student lab environments.
-            </span>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <Link
+                to="/checkout?tier=deposit"
+                className="py-2.5 px-6 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#76ff8a] font-bold text-xs flex items-center gap-2 transition-all shadow-sm"
+              >
+                <span>Enroll in Next Cohort — $99</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
-          <button
-            onClick={() => setModalOpen(true)}
-            className="text-xs font-bold text-[#1a361d] hover:text-[#40844e] underline underline-offset-4 shrink-0 cursor-pointer"
-          >
-            View Complete 41 Tools Matrix →
-          </button>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 mt-6 border-t border-slate-100">
+            {outcomes.map((outcome, idx) => (
+              <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <div className="w-5 h-5 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  ✓
+                </div>
+                <span className="text-xs text-slate-700 leading-relaxed font-medium">{outcome}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
 
-      {/* Complete 41 Tools Modal */}
+      {/* Complete Tools Catalog Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-4xl rounded-3xl bg-white border border-slate-200 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-hidden flex flex-col text-left">
@@ -220,13 +272,13 @@ export default function ToolsSection() {
               <div>
                 <div className="flex items-center gap-2 text-xs font-bold text-[#2d5c36] uppercase tracking-wider mb-1">
                   <Sparkles className="w-3.5 h-3.5 text-[#40844e]" />
-                  <span>Curriculum Architecture</span>
+                  <span>Curriculum Toolchain Catalog</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d]">
-                  Complete 41+ Enterprise Tools Catalog
+                  Production Toolstack & Technologies
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Extracted directly from American FutureTech real syllabus cohorts & laboratory environments.
+                  Administered directly across American FutureTech laboratory and capstone defense environments.
                 </p>
               </div>
 
@@ -245,7 +297,7 @@ export default function ToolsSection() {
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Search tool by name (e.g. PyTorch, Docker, Splunk, Terraform)..."
+                  placeholder="Search tool by name or keyword (e.g. Docker, Python, AWS)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d]"
@@ -275,18 +327,27 @@ export default function ToolsSection() {
                 {filteredTools.map((tool, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-[#1a361d]/30 hover:shadow-xs transition-all flex flex-col justify-between"
+                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-[#1a361d]/30 hover:shadow-xs transition-all flex flex-col justify-between"
                   >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-bold text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
-                        {tool.category}
-                      </span>
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {tool.level}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center overflow-hidden">
+                        {tool.logo ? (
+                          <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <span className="text-[10px] font-bold text-[#1a361d]">{tool.name?.slice(0, 2)}</span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-mono font-bold text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
+                        {tool.badge || 'Core'}
                       </span>
                     </div>
-                    <div className="text-sm font-bold text-[#1a361d] truncate">
-                      {tool.name}
+                    <div>
+                      <div className="text-sm font-bold text-[#1a361d] truncate">
+                        {tool.name}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-mono">
+                        {tool.category}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -302,7 +363,7 @@ export default function ToolsSection() {
             {/* Modal Footer */}
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs shrink-0">
               <span className="text-slate-500 font-mono">
-                Showing {filteredTools.length} of {ALL_41_TOOLS.length} total verified tools
+                Showing {filteredTools.length} of {activeTools.length} verified program tools
               </span>
               <button
                 onClick={() => setModalOpen(false)}

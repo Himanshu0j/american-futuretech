@@ -20,6 +20,9 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
+import engineeringTeamSvg from '../assets/illustrations/about/engineering-team.svg';
+import missionGrowthSvg from '../assets/illustrations/about/mission-growth.svg';
+import visionGlobalSvg from '../assets/illustrations/about/vision-global.svg';
 import {
   MissionIllustration,
   VisionIllustration
@@ -130,9 +133,9 @@ export default function AboutPage() {
                   </p>
                 </div>
 
-                {/* Custom Vector Illustration: Mission & Transformation */}
+                {/* Sourced Vector Illustration: Mission & Transformation */}
                 <div className="p-4 rounded-2xl bg-[#fffff2] border border-[#2d5c36]/20 flex items-center justify-center">
-                  <MissionIllustration className="w-full max-w-xs h-auto" />
+                  <img src={missionGrowthSvg} alt="American FutureTech Mission & Growth" className="w-full max-w-xs h-auto object-contain" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -172,18 +175,23 @@ export default function AboutPage() {
                   </div>
                 </div>
 
-                {/* Mission & Vision Bento Cards with Custom Vector SVGs */}
+                {/* Mission & Vision Bento Cards with Sourced Vector SVGs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
                   {/* Mission Card */}
                   <div className="p-6 rounded-2xl bg-[#fffff2] border border-[#2d5c36]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-xs">
-                          <Target className="w-4 h-4 text-[#2d5c36]" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-xs">
+                            <Target className="w-4 h-4 text-[#2d5c36]" />
+                          </div>
+                          <span className="text-[10px] font-mono font-bold uppercase text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
+                            Charter Goal
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono font-bold uppercase text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
-                          Charter Goal
-                        </span>
+                        <div className="w-8 h-8 opacity-80">
+                          <img src={missionGrowthSvg} alt="Mission Goal" className="w-full h-full object-contain" />
+                        </div>
                       </div>
                       <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
                         Our Institutional Mission
@@ -201,12 +209,17 @@ export default function AboutPage() {
                   <div className="p-6 rounded-2xl bg-[#fdf8fc] border border-[#9e4f8f]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <div className="w-9 h-9 rounded-xl bg-[#ffe6fa] text-[#582c50] flex items-center justify-center font-bold text-xs">
-                          <Sparkles className="w-4 h-4 text-[#9e4f8f]" />
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-xl bg-[#ffe6fa] text-[#582c50] flex items-center justify-center font-bold text-xs">
+                            <Sparkles className="w-4 h-4 text-[#9e4f8f]" />
+                          </div>
+                          <span className="text-[10px] font-mono font-bold uppercase text-[#9e4f8f] bg-[#ffe6fa] px-2 py-0.5 rounded-full">
+                            Global Standard
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono font-bold uppercase text-[#9e4f8f] bg-[#ffe6fa] px-2 py-0.5 rounded-full">
-                          Global Standard
-                        </span>
+                        <div className="w-8 h-8 opacity-80">
+                          <img src={visionGlobalSvg} alt="Global Vision" className="w-full h-full object-contain" />
+                        </div>
                       </div>
                       <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
                         Our Global Vision
@@ -298,8 +311,8 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="mt-8 flex justify-center opacity-80">
-              <VisionIllustration className="w-full max-w-md h-auto" />
+            <div className="mt-8 flex justify-center">
+              <img src={engineeringTeamSvg} alt="Worldwide Tech Engineering Cohort" className="w-full max-w-md h-auto object-contain drop-shadow-xl" />
             </div>
           </div>
         </section>

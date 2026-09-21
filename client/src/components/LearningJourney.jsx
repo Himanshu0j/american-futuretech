@@ -23,6 +23,13 @@ import {
   CertifyIllustration,
   CareerReadyIllustration
 } from './illustrations/VectorIllustrations';
+import { Lottie } from 'lottie-react';
+import successLottie from '../assets/animations/learning/success-celebration.json';
+import assessSvg from '../assets/illustrations/learning/01-assess-diagnostic.svg';
+import learnSvg from '../assets/illustrations/learning/02-learn-masterclass.svg';
+import practiceSvg from '../assets/illustrations/learning/03-practice-sandbox.svg';
+import certifySvg from '../assets/illustrations/learning/04-certify-credential.svg';
+import careerReadySvg from '../assets/illustrations/learning/05-job-ready-career.svg';
 
 export default function LearningJourney() {
   const [activeStep, setActiveStep] = useState(0);
@@ -43,6 +50,7 @@ export default function LearningJourney() {
       ],
       tag: 'Step 01 · Diagnostic',
       Illustration: AssessIllustration,
+      sourcedSvg: assessSvg,
       ctaText: 'Explore Syllabus Tracks',
       ctaLink: '/courses'
     },
@@ -61,6 +69,7 @@ export default function LearningJourney() {
       ],
       tag: 'Step 02 · Mastery',
       Illustration: LearnIllustration,
+      sourcedSvg: learnSvg,
       ctaText: 'View All Programs',
       ctaLink: '/courses'
     },
@@ -79,6 +88,7 @@ export default function LearningJourney() {
       ],
       tag: 'Step 03 · Execution',
       Illustration: PracticeIllustration,
+      sourcedSvg: practiceSvg,
       ctaText: 'Inspect Capstone Scope',
       ctaLink: '/courses'
     },
@@ -97,6 +107,7 @@ export default function LearningJourney() {
       ],
       tag: 'Step 04 · Credential',
       Illustration: CertifyIllustration,
+      sourcedSvg: certifySvg,
       ctaText: 'Inspect Live Certificate',
       ctaLink: '/certificate/AFT-CERT-AI9821'
     },
@@ -115,6 +126,7 @@ export default function LearningJourney() {
       ],
       tag: 'Step 05 · Placement',
       Illustration: CareerReadyIllustration,
+      sourcedSvg: careerReadySvg,
       ctaText: 'View Career Placement',
       ctaLink: '/career-support'
     }
@@ -195,8 +207,12 @@ export default function LearningJourney() {
                   </div>
 
                   {/* Custom Vector SVG Thumbnail */}
-                  <div className="w-12 h-12 mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1 group-hover:scale-105 transition-transform">
-                    <StepSvg className="w-full h-full object-contain" />
+                  <div className="w-12 h-12 mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform overflow-hidden">
+                    {step.sourcedSvg ? (
+                      <img src={step.sourcedSvg} alt={step.title} className="w-full h-full object-contain" />
+                    ) : (
+                      <StepSvg className="w-full h-full object-contain" />
+                    )}
                   </div>
 
                   {/* Title & Short Tag */}
@@ -286,8 +302,8 @@ export default function LearningJourney() {
 
                   {/* Diagnostic Radar Graphic + Score Bars */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                    <div className="flex justify-center p-2 bg-white rounded-xl border border-gray-200">
-                      <AssessIllustration className="w-36 h-36" />
+                    <div className="flex justify-center p-3 bg-white rounded-xl border border-gray-200">
+                      <img src={assessSvg} alt="Skills Diagnostic" className="w-36 h-36 object-contain" />
                     </div>
                     <div className="space-y-2.5 text-xs">
                       <div>
@@ -486,22 +502,27 @@ export default function LearningJourney() {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-4 pt-2">
-                      <img
-                        src="/images/gold-seal-medal.webp"
-                        alt="Gold Seal Medal"
-                        className="w-14 h-14 object-contain drop-shadow-md shrink-0 animate-float-slow"
-                      />
-                      <div className="text-left">
-                        <div className="text-xl sm:text-2xl font-black font-heading text-[#1a361d]">
-                          Ethan Hunt
+                    <div className="flex items-center justify-between gap-4 pt-2">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src="/images/gold-seal-medal.webp"
+                          alt="Gold Seal Medal"
+                          className="w-14 h-14 object-contain drop-shadow-md shrink-0 animate-float-slow"
+                        />
+                        <div className="text-left">
+                          <div className="text-xl sm:text-2xl font-black font-heading text-[#1a361d]">
+                            Ethan Hunt
+                          </div>
+                          <div className="text-xs text-gray-600 font-medium">
+                            6-Month Comprehensive Fellowship in Applied AI
+                          </div>
+                          <div className="text-xs font-bold text-[#10b981]">
+                            Conferred with Highest Academic Honors · GPA 3.96
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-600 font-medium">
-                          6-Month Comprehensive Fellowship in Applied AI
-                        </div>
-                        <div className="text-xs font-bold text-[#10b981]">
-                          Conferred with Highest Academic Honors · GPA 3.96
-                        </div>
+                      </div>
+                      <div className="w-16 h-16 shrink-0 hidden sm:block">
+                        <Lottie src={successLottie} loop autoplay className="w-16 h-16" />
                       </div>
                     </div>
 
@@ -535,24 +556,20 @@ export default function LearningJourney() {
                   </div>
 
                   <div className="p-6 rounded-2xl bg-[#f8fafc] border border-gray-200/90 shadow-sm space-y-4 relative z-10">
-                    <div className="relative rounded-xl overflow-hidden h-24 border border-gray-200 group">
-                      <img
-                        src="/images/career-acceleration.jpg"
-                        alt="Career Acceleration & Tech Leadership"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#1a361d]/85 via-[#1a361d]/60 to-transparent flex items-center p-3.5">
-                        <div className="text-white space-y-0.5">
-                          <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
-                            Phase 05: Placement
-                          </span>
-                          <div className="text-sm font-bold font-heading">
-                            High-Impact Technical Career Outcomes
-                          </div>
-                          <div className="text-[#d8ffd2] text-[10px]">
-                            Direct introductions across 200+ partner network
-                          </div>
+                    <div className="relative rounded-xl overflow-hidden min-h-[6rem] border border-gray-200 group flex items-center bg-gradient-to-r from-[#1a361d] via-[#152a17] to-[#2d5c36] p-4">
+                      <div className="flex-1 text-white space-y-0.5">
+                        <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
+                          Phase 05: Placement
+                        </span>
+                        <div className="text-sm font-bold font-heading">
+                          High-Impact Technical Career Outcomes
                         </div>
+                        <div className="text-[#d8ffd2] text-[10px]">
+                          Direct introductions across 200+ partner network
+                        </div>
+                      </div>
+                      <div className="w-20 h-20 shrink-0 ml-3">
+                        <img src={careerReadySvg} alt="Career Ready" className="w-full h-full object-contain" />
                       </div>
                     </div>
 

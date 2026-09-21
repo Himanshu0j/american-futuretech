@@ -16,6 +16,23 @@ import {
   FileText
 } from 'lucide-react';
 import api from '../lib/api';
+import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
+import dataScienceIllustration from '../assets/illustrations/programs/data-science.svg';
+import cyberIllustration from '../assets/illustrations/programs/cybersecurity.svg';
+import cloudIllustration from '../assets/illustrations/programs/cloud-infrastructure.svg';
+import devopsIllustration from '../assets/illustrations/programs/devops-engineering.svg';
+import agenticIllustration from '../assets/illustrations/programs/agentic-ai.svg';
+
+function getCourseIllustration(course) {
+  if (!course) return aiIllustration;
+  const text = ((course.slug || '') + ' ' + (course.title || '') + ' ' + (course.category || '')).toLowerCase();
+  if (text.includes('agentic') || text.includes('generative')) return agenticIllustration;
+  if (text.includes('cyber') || text.includes('security') || text.includes('hacking')) return cyberIllustration;
+  if (text.includes('cloud') || text.includes('infrastructure')) return cloudIllustration;
+  if (text.includes('devops') || text.includes('deployment')) return devopsIllustration;
+  if (text.includes('data') || text.includes('analytics')) return dataScienceIllustration;
+  return aiIllustration;
+}
 
 const defaultCoursesFallback = [
   {
@@ -233,9 +250,12 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </div>
 
               {/* Right Content Column */}
-              <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6 relative">
+                <div className="hidden sm:block absolute top-6 right-6 w-20 h-20 opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <img src={getCourseIllustration(flagship)} alt="" className="w-full h-full object-contain" />
+                </div>
                 <div>
-                  <div className="flex items-center justify-between gap-4 mb-2">
+                  <div className="flex items-center justify-between gap-4 mb-2 pr-0 sm:pr-24">
                     <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#10b981]">
                       {flagship.category || 'Executive Engineering Track'}
                     </span>
@@ -374,9 +394,14 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </div>
                     </div>
 
-                    <div className="p-6">
-                      <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#10b981] mb-1.5">
-                        {course.category || 'Specialization Track'}
+                    <div className="p-6 relative">
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#10b981]">
+                          {course.category || 'Specialization Track'}
+                        </div>
+                        <div className="w-9 h-9 p-1 rounded-xl bg-[#f0fdf4] border border-emerald-100 shrink-0">
+                          <img src={getCourseIllustration(course)} alt="" className="w-full h-full object-contain" />
+                        </div>
                       </div>
 
                       <Link to={`/courses/${course.slug}`} className="block group-hover:text-[#2d5c36] transition-colors">

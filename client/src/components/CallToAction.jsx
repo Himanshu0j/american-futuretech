@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, ShieldCheck, PhoneCall, CheckCircle2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ctaLaunchSvg from '../assets/illustrations/misc/cta-launch.svg';
 import { CTAIllustration } from './illustrations/VectorIllustrations';
 
 export default function CallToAction({ onOpenLeadModal }) {
@@ -64,10 +65,14 @@ export default function CallToAction({ onOpenLeadModal }) {
               </div>
             </div>
 
-            {/* Visual Column (5 cols): Custom Vector CTA Rocket Illustration */}
+            {/* Visual Column (5 cols): Sourced Vector CTA Rocket Launch Illustration */}
             <div className="lg:col-span-5 flex justify-center items-center">
-              <div className="w-full max-w-sm relative">
-                <CTAIllustration className="w-full h-auto drop-shadow-2xl" />
+              <div className="w-full max-w-sm relative group">
+                <img
+                  src={ctaLaunchSvg}
+                  alt="Launch Your Tech Career"
+                  className="w-full h-auto drop-shadow-2xl animate-float-slow group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
             </div>
           </div>

@@ -19,6 +19,10 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import lmsDashboardSvg from '../assets/illustrations/lms/lms-dashboard.svg';
+import lmsCodeReviewSvg from '../assets/illustrations/lms/lms-code-review.svg';
+import lmsProgressDataSvg from '../assets/illustrations/lms/lms-progress-data.svg';
+import lmsCertificateSvg from '../assets/illustrations/lms/lms-certificate.svg';
 
 export default function WhyChooseUs() {
   return (
@@ -94,21 +98,17 @@ export default function WhyChooseUs() {
           <div className="lg:col-span-6">
             <div className="rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden text-left p-6 space-y-4">
               
-              {/* Contextual Academy Photo Banner */}
-              <div className="relative rounded-xl overflow-hidden h-28 border border-gray-100 group">
-                <img
-                  src="/images/classroom-lab.jpg"
-                  alt="Modern Applied Tech Academy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1a361d]/85 via-[#1a361d]/60 to-transparent flex items-center p-3.5">
-                  <div className="space-y-0.5 text-white">
-                    <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
-                      Dedicated Student Cockpit
-                    </span>
-                    <div className="text-sm font-bold font-heading">American FutureTech Academy Space</div>
-                    <div className="text-[#d8ffd2] text-[10px]">Real-time lesson synchronization & cloud notebooks</div>
-                  </div>
+              {/* Contextual Academy Banner with Sourced Vector LMS Dashboard Illustration */}
+              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#1a361d] via-[#152a17] to-[#2d5c36] p-4">
+                <div className="flex-1 space-y-1 text-white z-10">
+                  <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
+                    Dedicated Student Cockpit
+                  </span>
+                  <div className="text-sm font-bold font-heading">American FutureTech Academy Space</div>
+                  <div className="text-[#d8ffd2] text-[10px]">Real-time lesson synchronization & cloud notebooks</div>
+                </div>
+                <div className="w-20 h-20 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
+                  <img src={lmsDashboardSvg} alt="Dedicated Academy Portal" className="w-full h-full object-contain" />
                 </div>
               </div>
 
@@ -191,6 +191,17 @@ export default function WhyChooseUs() {
               </div>
 
               <div className="p-4 space-y-3">
+                {/* Sourced Vector SVG: Code Review Engine */}
+                <div className="flex items-center gap-3.5 p-3 rounded-xl bg-[#142617] border border-[#2d5c36]/50">
+                  <div className="w-12 h-12 shrink-0 p-1 bg-black/40 rounded-lg border border-[#2d5c36]/40">
+                    <img src={lmsCodeReviewSvg} alt="Code Review Engine" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-[#76ff8a]">Automated Code Review Engine</div>
+                    <div className="text-[10px] text-gray-300">Live linting, containerized tests, and instant faculty annotations.</div>
+                  </div>
+                </div>
+
                 {/* Terminal / Code Editor Mockup */}
                 <div className="p-3.5 rounded-xl bg-black/60 border border-[#2d5c36]/50 font-mono text-xs space-y-1.5 text-[#d8ffd2]">
                   <div className="text-[10px] text-gray-500">// production_agent.py</div>
@@ -336,8 +347,13 @@ export default function WhyChooseUs() {
               <div className="border border-amber-400/40 p-6 rounded-xl space-y-3 bg-[#fffdfa]">
                 
                 <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-lg bg-[#1a361d] text-[#fffff2] flex items-center justify-center font-bold text-xs font-heading">
-                    AF
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-[#1a361d] text-[#fffff2] flex items-center justify-center font-bold text-xs font-heading">
+                      AF
+                    </div>
+                    <div className="w-9 h-9 hidden sm:block">
+                      <img src={lmsCertificateSvg} alt="Verified Certificate" className="w-full h-full object-contain" />
+                    </div>
                   </div>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#d8ffd2] text-[#1a361d] font-bold">
                     VERIFIED AUTHENTIC
@@ -392,21 +408,17 @@ export default function WhyChooseUs() {
             </div>
 
             <div className="p-6 rounded-2xl bg-white border border-gray-200 shadow-xl space-y-4 text-left relative z-10">
-              {/* Contextual Mentorship Photo Banner */}
-              <div className="relative rounded-xl overflow-hidden h-28 border border-gray-100 group">
-                <img
-                  src="/images/mentorship-session.jpg"
-                  alt="Faculty 1-on-1 Mentorship and Career Strategy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1a361d]/85 via-[#1a361d]/60 to-transparent flex items-center p-3.5">
-                  <div className="space-y-0.5 text-white">
-                    <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
-                      Dedicated Advisory Desk
-                    </span>
-                    <div className="text-sm font-bold font-heading">1-on-1 Faculty Interview Defense</div>
-                    <div className="text-[#d8ffd2] text-[10px]">Mock panels, whiteboarding & direct partner referrals</div>
-                  </div>
+              {/* Contextual Mentorship Banner with Sourced Vector LMS Progress Illustration */}
+              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#1a361d] via-[#152a17] to-[#2d5c36] p-4">
+                <div className="flex-1 space-y-1 text-white z-10">
+                  <span className="px-2 py-0.5 rounded-full bg-[#76ff8a] text-[#1a361d] text-[9px] font-mono font-bold uppercase">
+                    Dedicated Advisory Desk
+                  </span>
+                  <div className="text-sm font-bold font-heading">1-on-1 Faculty Interview Defense</div>
+                  <div className="text-[#d8ffd2] text-[10px]">Mock panels, whiteboarding & direct partner referrals</div>
+                </div>
+                <div className="w-20 h-20 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
+                  <img src={lmsProgressDataSvg} alt="Career Acceleration Pipeline" className="w-full h-full object-contain" />
                 </div>
               </div>
 

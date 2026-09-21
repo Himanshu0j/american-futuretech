@@ -25,6 +25,14 @@ import {
   Globe2
 } from 'lucide-react';
 import axios from 'axios';
+import { Lottie } from 'lottie-react';
+import liveRadarLottie from '../assets/animations/careers/live-radar.json';
+import jobHuntSvg from '../assets/illustrations/careers/job-hunt.svg';
+import interviewPrepSvg from '../assets/illustrations/careers/interview-prep.svg';
+import resumeEngineeringSvg from '../assets/illustrations/careers/resume-engineering.svg';
+import jobOffersSvg from '../assets/illustrations/careers/job-offers.svg';
+import noDataSvg from '../assets/illustrations/misc/no-data.svg';
+import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.svg';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
@@ -266,20 +274,28 @@ export default function CareersPage() {
             {/* Right Column: Hero Visual Graphic with Floating Glassmorphism Telemetry Cards */}
             <div className="lg:col-span-5 relative flex justify-center items-center">
               <div className="relative w-full max-w-md lg:max-w-none">
-                {/* Main Visual Image Card with Glassmorphic Border */}
-                <div className="relative rounded-3xl overflow-hidden border-2 border-white/80 shadow-2xl bg-white">
-                  <img
-                    src="/images/career-network-hero.webp"
-                    alt="American FutureTech Career Placement Network"
-                    className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
-                    onError={(e) => {
-                      e.target.src = '/images/career-acceleration.jpg';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                  
+                {/* Main Visual Card with Sourced Vector Job Hunt & Live Radar Lottie */}
+                <div className="relative rounded-3xl overflow-hidden border-2 border-white/80 shadow-2xl bg-gradient-to-br from-[#1a361d] via-[#152a17] to-[#2d5c36] p-6 text-white flex flex-col justify-between min-h-[340px]">
+                  <div className="flex items-center justify-between z-10">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#76ff8a] animate-ping" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#76ff8a]">Partner Network Active</span>
+                    </div>
+                    <div className="w-12 h-12">
+                      <Lottie src={liveRadarLottie} loop autoplay className="w-12 h-12" />
+                    </div>
+                  </div>
+
+                  <div className="my-auto py-3 flex justify-center z-10">
+                    <img
+                      src={jobHuntSvg}
+                      alt="American FutureTech Career Placement Network"
+                      className="w-full max-w-[260px] h-auto object-contain transform hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+
                   {/* Bottom Caption Pill */}
-                  <div className="absolute bottom-4 left-4 right-4 p-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-between">
+                  <div className="p-3 rounded-2xl bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-[#76ff8a] text-[#1a361d] font-bold text-xs flex items-center justify-center">
                         <Check className="w-4 h-4" />
@@ -349,32 +365,25 @@ export default function CareersPage() {
               </div>
 
               {/* Department Pills */}
-              <div className="flex flex-wrap gap-2 items-center pt-1">
-                {departments.map((dept) => (
-                  <button
-                    key={dept}
-                    onClick={() => setSelectedDept(dept)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                      selectedDept === dept
-                        ? 'bg-[#1a361d] text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    {dept}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
+                <span className="text-[11px] font-mono text-slate-400 mr-2 uppercase">Domain:</span>
+                {departments.map((dept) => {
+                  const isSelected = selectedDept === dept;
+                  return (
+                    <button
+                      key={dept}
+                      onClick={() => setSelectedDept(dept)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#1a361d] text-white shadow-xs'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                      }`}
+                    >
+                      {dept}
+                    </button>
+                  );
+                })}
               </div>
-            </div>
-
-            {/* Results Count Header */}
-            <div className="flex items-center justify-between px-1">
-              <div className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-[#2d5c36]" />
-                <span>Verified Positions Available: <strong className="text-slate-900">{filteredJobs.length}</strong></span>
-              </div>
-              <span className="text-[11px] font-mono text-emerald-700 bg-[#d8ffd2] px-2.5 py-0.5 rounded-full font-bold">
-                100% Guaranteed Employer Response
-              </span>
             </div>
 
             {/* Job Listings List */}
@@ -384,8 +393,10 @@ export default function CareersPage() {
                 <div className="text-xs font-mono text-slate-500">Loading verified career opportunities...</div>
               </div>
             ) : filteredJobs.length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs space-y-3">
-                <Briefcase className="w-12 h-12 text-slate-300 mx-auto" />
+              <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs space-y-4">
+                <div className="w-36 h-36 mx-auto">
+                  <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
+                </div>
                 <h3 className="text-base font-display font-bold text-[#1a361d]">No openings found matching filter</h3>
                 <p className="text-slate-500 text-xs max-w-sm mx-auto">
                   Try resetting search terms, selecting 'All' departments, or use the fast-track application form on the right.
@@ -433,9 +444,9 @@ export default function CareersPage() {
               </p>
 
               {fastTrackSuccess ? (
-                <div className="p-5 rounded-2xl bg-[#d8ffd2]/50 border border-[#76ff8a] text-center space-y-2.5 animate-fadeIn">
-                  <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto border border-[#76ff8a]">
-                    <CheckCircle2 className="w-6 h-6 text-[#2d5c36]" />
+                <div className="p-5 rounded-2xl bg-[#d8ffd2]/50 border border-[#76ff8a] text-center space-y-3 animate-fadeIn">
+                  <div className="w-24 h-24 mx-auto">
+                    <img src={approvedSuccessSvg} alt="Profile Submitted" className="w-full h-full object-contain" />
                   </div>
                   <h4 className="text-sm font-display font-bold text-[#1a361d]">Profile Submitted to Talent Pool!</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -449,7 +460,11 @@ export default function CareersPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleFastTrackSubmit} className="space-y-3">
+                <>
+                  <div className="mb-4 p-2 bg-[#fffff2] rounded-xl border border-gray-100 flex justify-center">
+                    <img src={interviewPrepSvg} alt="Fast-Track Concierge" className="w-32 h-20 object-contain" />
+                  </div>
+                  <form onSubmit={handleFastTrackSubmit} className="space-y-3">
                   <div>
                     <label className="block text-[11px] font-bold text-slate-700 mb-1">Full Legal Name *</label>
                     <input
@@ -550,6 +565,7 @@ export default function CareersPage() {
                     )}
                   </button>
                 </form>
+                </>
               )}
             </div>
 
@@ -750,12 +766,12 @@ export default function CareersPage() {
             </button>
 
             {applySuccess ? (
-              <div className="text-center py-6">
-                <div className="w-14 h-14 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
-                  <CheckCircle2 className="w-8 h-8 text-[#2d5c36]" />
+              <div className="text-center py-6 space-y-3">
+                <div className="w-28 h-28 mx-auto">
+                  <img src={jobOffersSvg} alt="Application Transmitted" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-[#1a361d] mb-2">Application Transmitted!</h3>
-                <p className="text-xs text-slate-600 leading-relaxed mb-6">
+                <h3 className="text-xl font-display font-bold text-[#1a361d]">Application Transmitted!</h3>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4 max-w-sm mx-auto">
                   Your application for <strong className="text-slate-900">{selectedJobForApply.title}</strong> at <strong className="text-slate-900">{selectedJobForApply.company}</strong> has been received. Our Enterprise Placement Officer will contact you within 24 hours.
                 </p>
                 <button

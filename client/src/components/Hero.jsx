@@ -20,6 +20,10 @@ import {
   FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Lottie } from 'lottie-react';
+import heroOnlineLearningSvg from '../assets/illustrations/hero/hero-online-learning.svg';
+import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json';
 
 export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const [activeTab, setActiveTab] = useState('lms'); // 'lms' | 'classroom' | 'credential' | 'admin'
@@ -170,14 +174,14 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               RIGHT COLUMN: Layered Visual Composition & Real LMS Product Cockpit
               ============================================================ */}
           <div
-            className="lg:col-span-6 anim-hero-preview w-full relative parallax-layer"
+            className="lg:col-span-6 anim-hero-preview w-full relative parallax-layer pt-7"
             style={{ transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)` }}
           >
             {/* Ambient Radial Backlight Glow */}
             <div className="absolute -inset-4 bg-gradient-to-tr from-[#76ff8a]/25 via-[#10b981]/15 to-transparent rounded-3xl blur-2xl -z-10 pointer-events-none" />
 
             {/* Top-Left Floating Mentor Status Badge */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#2d5c36]/20 shadow-lg absolute -top-4 -left-3 z-20 animate-float-slow">
+            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#2d5c36]/20 shadow-lg absolute -top-1 -left-3 z-20 animate-float-slow">
               <div className="w-8 h-8 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-xs shrink-0">
                 <Users className="w-4 h-4 text-[#2d5c36]" />
               </div>
@@ -191,7 +195,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             </div>
 
             {/* Top-Right Floating Velocity Metric Badge */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/95 backdrop-blur-md border border-[#2d5c36]/20 shadow-lg absolute -top-3 -right-3 z-20 animate-float-drift">
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/95 backdrop-blur-md border border-[#2d5c36]/20 shadow-lg absolute -top-1 -right-3 z-20 animate-float-drift">
               <div className="w-6 h-6 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-[11px]">
                 ⚡
               </div>
@@ -231,6 +235,41 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 <div className="text-[10px] font-mono text-slate-500">PyTorch & Agentic RAG</div>
               </div>
             </div>
+
+            {/* Sourced unDraw Hero Illustration Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="mt-6 mb-3 flex items-center justify-between p-3 rounded-2xl bg-white/90 backdrop-blur-md border border-[#2d5c36]/20 shadow-md relative z-10"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[#d8ffd2]/60 p-1 flex items-center justify-center shrink-0 border border-[#10b981]/30">
+                  <img
+                    src={heroOnlineLearningSvg}
+                    alt="Online Learning Fellowship"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black font-heading text-[#1a361d]">
+                      Interactive Silicon Valley Fellowship
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] text-[10px] font-mono font-bold">
+                      Cohort 2026
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-gray-500 font-medium">
+                    Masterclasses · Production Code Reviews · Cloud Sandbox
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+                <Lottie src={heroCodingLottie} loop autoplay className="w-[26px] h-[26px]" />
+              </div>
+            </motion.div>
 
             <div className="rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden text-left transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] relative z-10">
               

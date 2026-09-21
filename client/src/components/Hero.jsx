@@ -16,7 +16,8 @@ import {
   Laptop,
   GraduationCap,
   BarChart3,
-  Flame
+  Flame,
+  FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -85,6 +86,37 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               Rigorous, 6-month engineering fellowships designed for serious technologists. Master production-grade AI systems, offensive cyber operations, and cloud architecture through live faculty labs, GitHub codebases, and verifiable US credentials.
             </p>
 
+            {/* Social Proof Alumni Avatars with real images */}
+            <div className="anim-hero-body flex items-center gap-3 pt-1">
+              <div className="flex -space-x-2.5 overflow-hidden">
+                <img
+                  className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-2xs"
+                  src="/images/hero-technologist.jpg"
+                  alt="Alum"
+                />
+                <img
+                  className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-2xs"
+                  src="/images/fellows-collaborating.jpg"
+                  alt="Alum"
+                />
+                <img
+                  className="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-2xs"
+                  src="/images/mentorship-session.jpg"
+                  alt="Alum"
+                />
+                <div className="inline-flex h-8 w-8 rounded-full ring-2 ring-white bg-[#1a361d] text-[#76ff8a] font-bold text-[10px] items-center justify-center shadow-2xs font-mono">
+                  +1.2K
+                </div>
+              </div>
+              <div className="text-left text-xs font-semibold text-slate-700">
+                <div className="flex items-center gap-1.5 font-bold text-[#1a361d]">
+                  <span>1,200+ Fellows Placed</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <div className="text-[11px] text-slate-500 font-normal">Hired at Google, Microsoft, AWS & Top Tech</div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="anim-hero-cta flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1 w-full sm:w-auto">
               <button
@@ -97,10 +129,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
               <button
                 onClick={onOpenLeadModal}
-                className="elms-btn-secondary !py-3 !px-6 !text-sm cursor-pointer shadow-xs"
+                className="elms-btn-secondary !py-3.5 !px-6 !text-sm cursor-pointer shadow-xs flex items-center justify-center gap-2 group hover:border-[#1a361d]/40"
               >
-                <PhoneCall className="w-4 h-4 text-[#2d5c36]" />
-                <span>Book 30-Min Consultation</span>
+                <FileText className="w-4 h-4 text-[#2d5c36] group-hover:scale-110 transition-transform" />
+                <span>Download Curriculum & Syllabus</span>
               </button>
             </div>
 
@@ -179,6 +211,24 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               <div className="text-left">
                 <div className="text-xs font-bold text-[#1a361d]">Accredited US Diploma</div>
                 <div className="text-[10px] font-mono text-[#40844e] font-bold">AFT-CERT-AI9821 Verified</div>
+              </div>
+            </div>
+
+            {/* Bottom-Left Floating Interactive Cloud Lab Visual Asset */}
+            <div className="hidden sm:flex items-center gap-2.5 px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-[#2d5c36]/20 shadow-xl absolute -bottom-4 -left-3 z-20 animate-float-slow">
+              <div className="w-10 h-9 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-slate-700 shadow-inner">
+                <img
+                  src="/images/floating-laptop-code.webp"
+                  alt="Live Code Lab"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-left">
+                <div className="text-xs font-bold text-[#1a361d] flex items-center gap-1.5">
+                  <span>Cloud GPU Lab</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                </div>
+                <div className="text-[10px] font-mono text-slate-500">PyTorch & Agentic RAG</div>
               </div>
             </div>
 

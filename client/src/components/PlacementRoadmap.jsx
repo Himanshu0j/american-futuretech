@@ -75,11 +75,11 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-[#1a361d] tracking-tight">
-            8-Step Roadmap to Your Dream Job
+            6-Step Roadmap to Your Dream Job
           </h2>
 
           <p className="text-lg sm:text-xl font-display font-semibold text-[#2d5c36]">
-            Follow 5 Proven Steps to Career Transformation
+            Follow 6 Proven Steps to Career Transformation
           </p>
 
           <p className="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed pt-1">

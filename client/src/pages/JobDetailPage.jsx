@@ -132,10 +132,22 @@ export default function JobDetailPage() {
     );
   }
 
-  // Determine formatted salary string
-  const salaryText = (job.salaryMin && job.salaryMax)
-    ? `$${job.salaryMin.toLocaleString()} – $${job.salaryMax.toLocaleString()} / year`
-    : job.salaryRange || '$95,000 – $135,000 / year';
+  // Determine formatted salary string ($110K - $140K / yr)
+  const salaryText = (() => {
+    const min = Number(job.salaryMin);
+    const max = Number(job.salaryMax);
+    if (!isNaN(min) && !isNaN(max) && min > 0 && max > 0) {
+      const minK = min >= 1000 ? `${Math.round(min / 1000)}K` : min;
+      const maxK = max >= 1000 ? `${Math.round(max / 1000)}K` : max;
+      return `$${minK} - $${maxK} / yr`;
+    }
+    if (job.salaryRange) {
+      let s = String(job.salaryRange).trim().replace(/^\$\s*\$?\s*/, '$');
+      s = s.replace(/(\d{2,3}),000/g, '$1K');
+      return s;
+    }
+    return '$110K - $140K / yr';
+  })();
 
   return (
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">

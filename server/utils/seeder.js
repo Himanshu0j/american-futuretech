@@ -843,6 +843,42 @@ const autoSeedIfEmpty = async () => {
         category: 'Certifications',
         order: 5,
       },
+      {
+        question: 'How does the corporate placement referral process work?',
+        answer: 'Once you complete 70% of your program curriculum and pass your capstone review, our Corporate Placement Office directly introduces your vetted portfolio and ATS-optimized resume to verified hiring partners across our network of 140+ technology companies.',
+        category: 'Live Jobs',
+        order: 6,
+      },
+      {
+        question: 'What types of roles and companies hire American FutureTech graduates?',
+        answer: 'Graduates are hired into high-growth engineering roles including Data Scientist, Machine Learning Engineer, SOC Analyst, Penetration Tester, Cloud DevOps Engineer, and AI Product Manager across Fortune 500 enterprises and high-growth technology companies.',
+        category: 'Live Jobs',
+        order: 7,
+      },
+      {
+        question: 'Are these positions open to international candidates or US-only?',
+        answer: 'We list a mix of on-site US, hybrid, and global remote opportunities. Each job card clearly outlines work authorization requirements, OPT/CPT eligibility, and visa sponsorship availability (e.g. H1B transfer support or international contractor agreements).',
+        category: 'Live Jobs',
+        order: 8,
+      },
+      {
+        question: 'What compensation ranges can I expect for these partner roles?',
+        answer: 'Entry-level engineering packages typically range from $85,000 to $115,000 base. Mid-to-senior specialized roles in Applied AI, Cybersecurity, and Cloud Architecture command $130,000 to $185,000+ total compensation.',
+        category: 'Live Jobs',
+        order: 9,
+      },
+      {
+        question: 'How does the Fast-Track Placement Concierge work if I do not see my exact role?',
+        answer: 'Submit your resume through the Fast-Track Application form on the sidebar. Our placement directors conduct an unlisted partner scan and pair your background directly with upcoming openings within 48 to 72 business hours.',
+        category: 'Live Jobs',
+        order: 10,
+      },
+      {
+        question: 'Do hiring partners directly review American FutureTech capstone projects?',
+        answer: 'Yes! Our curriculum capstones are built to enterprise production specifications. Hiring partner engineering leads review your GitHub repositories, architecture documentation, and live demo recordings during technical evaluation.',
+        category: 'Live Jobs',
+        order: 11,
+      },
     ];
 
     for (const f of faqsData) {

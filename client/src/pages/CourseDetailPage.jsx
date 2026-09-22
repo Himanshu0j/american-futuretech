@@ -323,7 +323,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* 3. Why Get Certification From American FutureTech (6 Feature Cards) */}
-        <section className="bg-slate-50/70 border-y border-slate-200/70 py-18">
+        <section className="bg-slate-50/70 border-y border-slate-200/70 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-3">
@@ -370,7 +370,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* 4. Who Can Apply for this Course */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-18">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             {/* Left: Numbered Criteria */}
             <div className="lg:col-span-7">
@@ -451,7 +451,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* Detailed Curriculum Section (Preserved & Enhanced) */}
-        <section className="bg-[#f7f9f6] border-y border-slate-200/70 py-18">
+        <section className="bg-[#f7f9f6] border-y border-slate-200/70 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-200">
               <div>
@@ -552,7 +552,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* 5. Capstone Projects (8 Real Production Builds) */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-18">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-100 text-teal-900 text-xs font-bold uppercase tracking-wider mb-3">
               <Layers className="w-3.5 h-3.5 text-teal-700" />
@@ -609,7 +609,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* 6. Unlock Your Potential - What Can You Become? */}
-        <section className="bg-gradient-to-b from-white via-slate-50 to-white border-y border-slate-200/80 py-18">
+        <section className="bg-gradient-to-b from-white via-slate-50 to-white border-y border-slate-200/80 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-900 text-xs font-bold uppercase tracking-wider mb-3">
@@ -643,7 +643,7 @@ export default function CourseDetailPage() {
         </section>
 
         {/* 7. American FutureTech Certificate & Microsoft Certification Showcase */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-18">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 mb-16 lg:mb-20">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-900 text-xs font-bold uppercase tracking-wider mb-3">
               <Award className="w-3.5 h-3.5 text-indigo-700" />

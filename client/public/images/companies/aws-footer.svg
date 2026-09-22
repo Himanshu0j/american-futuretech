@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <path fill="#FF9900" d="M14 36c7.5 4 19.5 4 27 0 .5-.3 1 .2.6.7-5.5 5.5-16.5 6-27 1-.6-.3-.3-.9.2-.9z"/>
+  <polygon points="41,35 44,38 41,40" fill="#FF9900"/>
+  <text x="14" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" letter-spacing="1">aws</text>
+  <text x="56" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-size="15" font-weight="700" fill="#E2E8F0">Amazon AWS</text>
+</svg>

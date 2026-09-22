@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <path fill="#FF3621" d="M20 12l10 5.5-10 5.5-10-5.5 10-5.5z"/>
+  <path fill="#FF5A36" d="M10 20.5l10 5.5 10-5.5v5.5l-10 5.5-10-5.5v-5.5z"/>
+  <path fill="#E02200" d="M10 29.5l10 5.5 10-5.5v5.5l-10 5.5-10-5.5v-5.5z"/>
+  <text x="42" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF">Databricks</text>
+</svg>

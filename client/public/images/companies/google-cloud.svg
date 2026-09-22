@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" width="200" height="48">
+  <path fill="#EA4335" d="M24 16c-3.1 0-5.8 1.8-7.1 4.5A8 8 0 0 0 8 28c0 4.4 3.6 8 8 8h16c3.9 0 7-3.1 7-7 0-3.6-2.7-6.5-6.2-6.9A8 8 0 0 0 24 16z"/>
+  <path fill="#4285F4" d="M16 36h16c3.9 0 7-3.1 7-7 0-3.6-2.7-6.5-6.2-6.9-.2-.7-.5-1.4-.9-2.1L24 28l-8 8z"/>
+  <path fill="#FBBC05" d="M8 28c0 4.4 3.6 8 8 8l8-8-7.1-7.5C12.4 21.3 8 24.2 8 28z"/>
+  <path fill="#34A853" d="M16.9 20.5A8 8 0 0 1 24 16c4 0 7.3 2.9 7.9 6.8l-7.9 5.2-7.1-7.5z"/>
+  <text x="46" y="30" font-family="'Plus Jakarta Sans', Inter, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF">Google Cloud</text>
+</svg>

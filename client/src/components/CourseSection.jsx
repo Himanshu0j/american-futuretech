@@ -179,10 +179,10 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   const secondaryCourses = filteredCourses.length > 1 ? filteredCourses.slice(1) : [];
 
   return (
-    <section id="courses" className="py-20 sm:py-28 relative z-10 bg-white dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
+    <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-6 text-left">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-10 gap-6 text-left">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
               <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -256,7 +256,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </div>
 
               {/* Right Content Column */}
-              <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6 relative">
+              <div className="lg:col-span-7 p-5 sm:p-8 flex flex-col justify-between space-y-6 relative">
                 <div className="hidden sm:block absolute top-6 right-6 w-20 h-20 opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <img src={getCourseIllustration(flagship)} alt="" className="w-full h-full object-contain" />
                 </div>
@@ -477,7 +477,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
         )}
 
         {/* Official Microsoft Partner Credential Showcase */}
-        <div className="mt-12 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
+        <div className="mt-12 p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-indigo-500/20">
             <div className="space-y-2 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">

@@ -83,8 +83,8 @@ export default function MetricsStrip() {
   ];
 
   return (
-    <section id="curriculum-metrics" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <section id="curriculum-metrics" className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
+      <div className="max-w-7xl mx-auto space-y-10">
         
         {/* ============================================================
             SECTION A: 3 DISTINCT VALUE PROPOSITION CARDS (Separated UI)

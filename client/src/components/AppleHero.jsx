@@ -17,12 +17,12 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
   const [activeTab, setActiveTab] = useState('terminal'); // 'terminal' | 'curriculum'
 
   return (
-    <section id="home" className="relative pt-24 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-black">
+    <section id="home" className="relative pt-24 pb-10 md:pt-32 md:pb-20 overflow-hidden bg-black">
       {/* Apple Subtle Ambient Lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(41,151,255,0.15),transparent_70%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           
           {/* Left Column: Apple Copywriting & Restrained Affordances */}
           <div className="lg:col-span-7 flex flex-col items-start space-y-6 text-left">

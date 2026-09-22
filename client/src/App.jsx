@@ -182,7 +182,7 @@ function LandingPage() {
 
         {/* Comprehensive Academic & Program FAQs */}
         {visibility.faqs !== false && (
-          <section id="faqs" className="py-20 md:py-28 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
+          <section id="faqs" className="py-12 sm:py-16 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
               <FaqAccordion
                 showCategoryFilter={true}

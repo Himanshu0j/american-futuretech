@@ -42,9 +42,9 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
+      <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
 
-        <CompanyMarquee />        <div className="max-w-3xl mx-auto text-center mb-12">
+        <CompanyMarquee />        <div className="max-w-3xl mx-auto text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <BookOpen className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>Engineering Research & Briefings</span>
@@ -88,11 +88,11 @@ export default function BlogPage() {
 
         {/* Blog Grid */}
         {loading ? (
-          <div className="flex justify-center py-24">
+          <div className="flex justify-center py-16">
             <div className="w-8 h-8 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
           </div>
         ) : filteredBlogs.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8 shadow-xs">
+          <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-8 shadow-xs">
             <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-display font-bold text-[#1a361d] mb-1">No articles found matching filters</h3>
             <p className="text-slate-500 text-xs">Try selecting 'All' or searching for another topic.</p>

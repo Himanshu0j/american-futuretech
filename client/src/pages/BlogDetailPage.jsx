@@ -50,7 +50,7 @@ export default function BlogDetailPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
+      <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
         <CompanyMarquee />        <Link
           to="/blog"
@@ -60,7 +60,7 @@ export default function BlogDetailPage() {
           Back to all papers
         </Link>
 
-        <article className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
+        <article className="p-6 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="text-xs font-bold text-[#1a361d] bg-[#d8ffd2] px-3 py-1 rounded-full">
               {blog.category}

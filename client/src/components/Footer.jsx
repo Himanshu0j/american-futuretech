@@ -37,7 +37,7 @@ export default function Footer({ onOpenLeadModal }) {
         </div>
 
         {/* 4-Column Directory Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 py-12 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 text-left">
           {/* Col 1: Institutional Brand */}
           <div className="space-y-4 md:col-span-1">
             <Link to="/" className="inline-block mb-1">

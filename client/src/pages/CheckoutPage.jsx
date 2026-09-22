@@ -120,10 +120,10 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+      <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
 
         <CompanyMarquee />        {/* Header */}
-        <div className="max-w-2xl mx-auto text-center mb-12">
+        <div className="max-w-2xl mx-auto text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-3">
             <Lock className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>256-Bit SSL Encrypted Enrollment Portal</span>
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
 
         {checkoutSuccess ? (
           /* Success Screen */
-          <div className="max-w-2xl mx-auto p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 text-center shadow-xl relative overflow-hidden">
+          <div className="max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl relative overflow-hidden">
             <div className="w-16 h-16 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-6 border border-[#76ff8a]">
               <CheckCircle2 className="w-9 h-9 text-[#2d5c36]" />
             </div>

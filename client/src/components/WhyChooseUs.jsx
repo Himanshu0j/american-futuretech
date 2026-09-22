@@ -26,8 +26,8 @@ import lmsCertificateSvg from '../assets/illustrations/lms/lms-certificate.svg';
 
 export default function WhyChooseUs() {
   return (
-    <section id="why-us" className="py-16 sm:py-24 bg-[#fffff2] text-[#1b1b1b]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 sm:space-y-32">
+    <section id="why-us" className="py-12 sm:py-16 bg-[#fffff2] text-[#1b1b1b]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14 sm:space-y-20">
         
         {/* Intro Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
@@ -43,7 +43,7 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 1: Dedicated Academy Portal (TEXT Left | PRODUCT UI Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-6">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
@@ -165,7 +165,7 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 2: Distraction-Free Classroom (PRODUCT UI Left | TEXT Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
           
           {/* Product UI Mockup: Video Classroom & Code Lab */}
           <div className="lg:col-span-6 order-2 lg:order-1 relative">
@@ -281,7 +281,7 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 3: Verifiable US Digital Credentials (TEXT Left | PRODUCT UI Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-6">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
@@ -394,7 +394,7 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 4: Career Acceleration & 1-on-1 Mentorship (PRODUCT UI Left | TEXT Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
           
           {/* Product UI Mockup: Career Pipeline */}
           <div className="lg:col-span-6 order-2 lg:order-1 relative">

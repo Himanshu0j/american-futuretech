@@ -30,7 +30,7 @@ export default function SuccessStoriesPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 pb-20">
+      <main className="pt-28 pb-10">
 
         <CompanyMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
@@ -48,7 +48,7 @@ export default function SuccessStoriesPage() {
         </section>
 
         {/* Proof Ledger */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-16">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-10">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-left divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
               <div className="pt-4 lg:pt-0 lg:px-4 first:px-0">
@@ -76,9 +76,9 @@ export default function SuccessStoriesPage() {
         </section>
 
         {/* Stories Grid */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-20">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-12">
           {loading ? (
-            <div className="flex justify-center py-20">
+            <div className="flex justify-center py-12">
               <div className="w-10 h-10 border-4 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
             </div>
           ) : (
@@ -125,7 +125,7 @@ export default function SuccessStoriesPage() {
 
         {/* Bottom CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="bg-[#1a361d] text-white border border-[#2d5c36] rounded-3xl p-8 sm:p-12 text-center shadow-lg">
+          <div className="bg-[#1a361d] text-white border border-[#2d5c36] rounded-3xl p-6 sm:p-10 text-center shadow-lg">
             <span className="text-xs font-semibold text-[#76ff8a] uppercase tracking-wider block mb-2">
               ADMISSIONS ARE OPEN
             </span>

@@ -274,17 +274,17 @@ export default function CareersPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-24 sm:pt-28 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+      <main className="pt-24 sm:pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
         <CompanyMarquee />
 
         {/* ========================================================================= */}
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}
         {/* ========================================================================= */}
-        <section className="mb-14 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+        <section className="mb-10 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-5 sm:p-8 lg:p-10 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#76ff8a]/20 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#9e4f8f]/10 blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
             {/* Left Column */}
             <div className="lg:col-span-7 space-y-6 text-left">
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/60 text-[#1a361d] text-xs font-bold tracking-wide shadow-xs">
@@ -573,7 +573,7 @@ export default function CareersPage() {
 
             {/* Job Listings (Supports 8+ Jobs naturally in desktop/mobile) */}
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200 shadow-xs">
+              <div className="flex flex-col items-center justify-center py-12 bg-white rounded-3xl border border-slate-200 shadow-xs">
                 <div className="w-10 h-10 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin mb-3" />
                 <div className="text-xs font-mono text-slate-500">Loading career network opportunities...</div>
               </div>

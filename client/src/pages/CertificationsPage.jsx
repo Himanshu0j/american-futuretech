@@ -74,7 +74,7 @@ export default function CertificationsPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
-      <main className="pt-28 pb-20">
+      <main className="pt-28 pb-10">
         <CompanyMarquee />
 
         {/* Hero */}
@@ -149,7 +149,7 @@ export default function CertificationsPage() {
 
         {/* Overview + competencies */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-12">
-          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 sm:p-10">
+          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-8">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2d5c36] mb-3">
               <BookOpen className="w-3.5 h-3.5" /> Comprehensive Overview
             </div>
@@ -190,7 +190,7 @@ export default function CertificationsPage() {
 
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-8 sm:p-12 text-center shadow-2xl border border-[#2d5c36]">
+          <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-10 text-center shadow-2xl border border-[#2d5c36]">
             <h3 className="text-2xl sm:text-3xl font-black font-heading mb-3">
               Advance Your Career with American FutureTech
             </h3>

@@ -135,14 +135,14 @@ export default function LearningJourney() {
   const current = steps[activeStep];
 
   return (
-    <section id="journey" className="py-20 sm:py-28 bg-[#fffff2] text-[#1b1b1b] relative z-10 overflow-hidden">
+    <section id="journey" className="py-12 sm:py-16 bg-[#fffff2] text-[#1b1b1b] relative z-10 overflow-hidden">
       {/* Subtle Background Accent */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#9e4f8f]/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
+        <div className="max-w-3xl mx-auto text-center space-y-4 mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#10b981]/30 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-[#10b981]" />
             <span>Interactive 5-Step Story</span>
@@ -158,7 +158,7 @@ export default function LearningJourney() {
         </div>
 
         {/* 5-Step Interactive Stepper Bar with SVG Illustrations */}
-        <div className="relative mb-14">
+        <div className="relative mb-10">
           {/* Connecting Track Line */}
           <div className="hidden lg:block absolute top-16 left-12 right-12 h-1 bg-gray-200 rounded-full z-0">
             <div
@@ -235,8 +235,8 @@ export default function LearningJourney() {
         </div>
 
         {/* Active Step Detailed Showcase Box */}
-        <div className="rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-6 sm:p-10 lg:p-12 text-left relative overflow-hidden transition-all duration-500">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-5 sm:p-8 lg:p-10 text-left relative overflow-hidden transition-all duration-500">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Left Narrative Column */}
             <div className="lg:col-span-6 space-y-6">
               <div className="flex items-center gap-3">

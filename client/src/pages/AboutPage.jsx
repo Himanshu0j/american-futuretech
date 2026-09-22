@@ -101,7 +101,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 pb-20">
+      <main className="pt-28 pb-10">
 
         <CompanyMarquee />
 
@@ -112,7 +112,7 @@ export default function AboutPage() {
             <span>US REGISTERED ACADEMIC INSTITUTE</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <div className="lg:col-span-8 space-y-4">
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-[#1a361d] leading-[1.1]">
                 Pioneering Applied <span className="highlight">Emerging Tech</span> Education for the Global Workforce.
@@ -143,9 +143,9 @@ export default function AboutPage() {
         {/* ========================================================================= */}
         {/* EDITORIAL 2-COLUMN STORY: STATEMENT (40%) vs CLIENT VERBATIM COPY (60%)     */}
         {/* ========================================================================= */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
+          <div className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
               
               {/* Left Column (40% - 5 cols): Bold Manifesto & Mission Visual */}
               <div className="lg:col-span-5 space-y-6">
@@ -277,8 +277,8 @@ export default function AboutPage() {
         </section>
 
         {/* Institutional 4-Pillar Academic Charter */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-20 text-left">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-12 text-left">
+          <div className="text-center max-w-2xl mx-auto mb-8">
             <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight">
               Our Academic & Engineering Charter
             </h2>
@@ -325,8 +325,8 @@ export default function AboutPage() {
 
         {/* ── Build-First Pedagogy + Institutional Stats ─────────────────── */}
         {pedagogy.enabled !== false && (
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
-            <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-6 sm:p-10">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
+            <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-5 sm:p-8">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-7">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
@@ -382,7 +382,7 @@ export default function AboutPage() {
 
         {/* ── Leadership & Faculty ──────────────────────────────────────── */}
         {leadership.length > 0 && (
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
                 <Users className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -457,8 +457,8 @@ export default function AboutPage() {
 
         {/* ── Sister Company / Staffing Alliance ────────────────────────── */}
         {sisterCompany.enabled !== false && (
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
-            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-10 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
+            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-5 sm:p-8 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
               <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#76ff8a]/10 blur-3xl" />
 
               <div className="relative z-10">
@@ -536,8 +536,8 @@ export default function AboutPage() {
         )}
 
         {/* Global Vision Visual Banner */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-center">
-          <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-center">
+          <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4 relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#76ff8a] text-xs font-mono font-bold uppercase">
                 Worldwide Impact
@@ -566,7 +566,7 @@ export default function AboutPage() {
         </section>
 
         {/* Institutional & Admissions FAQ */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-16">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-10">
           <FaqAccordion
             initialCategory="Admissions"
             title="Institutional & Admissions Questions"

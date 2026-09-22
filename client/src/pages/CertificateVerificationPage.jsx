@@ -113,7 +113,7 @@ export default function CertificateVerificationPage() {
     <div className="min-h-screen bg-[#fffff2] text-[#1b1b1b] font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 pb-20 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
+      <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
         <CompanyMarquee />        {/* Navigation & Action Bar */}
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
@@ -149,12 +149,12 @@ export default function CertificateVerificationPage() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+          <div className="flex flex-col items-center justify-center py-16 space-y-4">
             <div className="w-10 h-10 border-4 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
             <div className="text-xs font-mono text-gray-500">Querying Cryptographic Credential Registry...</div>
           </div>
         ) : error ? (
-          <div className="p-8 sm:p-12 rounded-3xl bg-white border border-rose-200 text-center max-w-lg mx-auto shadow-md">
+          <div className="p-6 sm:p-10 rounded-3xl bg-white border border-rose-200 text-center max-w-lg mx-auto shadow-md">
             <div className="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-200 shadow-xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
@@ -262,7 +262,7 @@ export default function CertificateVerificationPage() {
                 </div>
 
                 {/* Diploma Body */}
-                <div className="py-12 sm:py-16 text-center space-y-6">
+                <div className="py-12 sm:py-12 text-center space-y-6">
                   <div className="text-xs font-mono uppercase tracking-widest text-gray-500 font-bold">
                     By the authority of the academic faculty and Board of Trustees
                   </div>
@@ -339,7 +339,7 @@ export default function CertificateVerificationPage() {
                 </div>
 
                 {/* Cryptographic Hash Strip */}
-                <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-gray-500 bg-gray-50/80 -mx-6 -mb-6 sm:-mx-14 sm:-mb-14 p-4 px-6 sm:px-14">
+                <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-gray-500 bg-gray-50/80 -mx-6 -mb-6 sm:-mx-14 sm:-mb-10 p-4 px-6 sm:px-14">
                   <div className="flex items-center gap-1.5">
                     <Lock className="w-3 h-3 text-[#10b981]" />
                     <span className="text-gray-600">SHA-256 Ledger Hash:</span>

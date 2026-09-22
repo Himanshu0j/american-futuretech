@@ -79,7 +79,7 @@ export default function CoursesPage() {
     <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
-      <main className="pt-28 pb-20 relative z-10">
+      <main className="pt-28 pb-10 relative z-10">
         <CompanyMarquee />
 
         {/* Header Hero Section */}
@@ -158,7 +158,7 @@ export default function CoursesPage() {
               ))}
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-8 shadow-sm">
+            <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-8 shadow-sm">
               <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
               <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">No Specializations Found</h3>
               <p className="text-slate-500 text-xs mb-4">Try clearing filters or search terms.</p>
@@ -254,7 +254,7 @@ export default function CoursesPage() {
         </section>
 
         {/* ── Enterprise Tools & Technologies (grouped by discipline) ───── */}
-        <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 py-12 mt-16">
+        <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 py-12 mt-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
             <div className="text-center max-w-3xl mx-auto mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider mb-4">

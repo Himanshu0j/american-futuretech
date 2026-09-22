@@ -22,7 +22,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
   }, []);
 
   return (
-    <section id="home" className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-[#070b14]">
+    <section id="home" className="relative pt-32 pb-14 md:pt-36 md:pb-20 overflow-hidden bg-[#070b14]">
       {/* Dynamic Animated Background Ambient Glows */}
       <div className="absolute top-10 left-1/4 w-[450px] h-[450px] bg-sky-500/15 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
       <div className="absolute top-40 right-10 w-[550px] h-[550px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
@@ -38,7 +38,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           
           {/* Left Column: Copywriting & High-Converting CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start space-y-7 text-left">

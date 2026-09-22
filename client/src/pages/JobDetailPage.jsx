@@ -103,7 +103,7 @@ export default function JobDetailPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0B132B] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
-        <div className="pt-40 pb-32 flex flex-col items-center justify-center space-y-4">
+        <div className="pt-40 pb-20 flex flex-col items-center justify-center space-y-4">
           <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
           <div className="text-xs font-mono text-slate-500">Retrieving official position dossier...</div>
         </div>
@@ -116,7 +116,7 @@ export default function JobDetailPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0B132B] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
-        <div className="pt-40 pb-32 container mx-auto px-4 text-center max-w-lg space-y-4">
+        <div className="pt-40 pb-20 container mx-auto px-4 text-center max-w-lg space-y-4">
           <Briefcase className="w-12 h-12 text-slate-400 mx-auto" />
           <h2 className="text-2xl font-display font-bold text-slate-900 dark:text-white">Position Not Found</h2>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{error || 'This career opening may have been filled or unpublished.'}</p>
@@ -155,7 +155,7 @@ export default function JobDetailPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
+      <main className="pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
 
         <CompanyMarquee />        
         {/* Back Link Breadcrumb */}
@@ -178,7 +178,7 @@ export default function JobDetailPage() {
         </div>
 
         {/* Hero Header Card (Department & Verified Partner REMOVED) */}
-        <div className="p-6 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
+        <div className="p-5 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#76ff8a]/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">

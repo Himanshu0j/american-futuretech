@@ -44,9 +44,9 @@ export default function FaqPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
-      <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
+      <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
-        <CompanyMarquee />        <div className="text-center max-w-3xl mx-auto mb-12">
+        <CompanyMarquee />        <div className="text-center max-w-3xl mx-auto mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <HelpCircle className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>Academic Disclosures & FAQs</span>
@@ -91,7 +91,7 @@ export default function FaqPage() {
 
         {/* FAQs Accordion */}
         {loading ? (
-          <div className="flex justify-center py-20">
+          <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
           </div>
         ) : filteredFaqs.length === 0 ? (
@@ -100,7 +100,7 @@ export default function FaqPage() {
             <p className="text-slate-500 text-xs">Try an alternate search query or speak with our admissions officers directly.</p>
           </div>
         ) : (
-          <div className="space-y-3 mb-14">
+          <div className="space-y-3 mb-10">
             {filteredFaqs.map((faq, index) => {
               const isOpen = openIndex === index;
               return (
@@ -138,7 +138,7 @@ export default function FaqPage() {
         )}
 
         {/* Academic Callback Card */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-[#1a361d] text-white border border-[#2d5c36] text-center shadow-lg">
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#1a361d] text-white border border-[#2d5c36] text-center shadow-lg">
           <h3 className="text-xl font-display font-bold text-white mb-2">Need direct guidance on tracks?</h3>
           <p className="text-xs sm:text-sm text-emerald-100 mb-6 max-w-md mx-auto leading-relaxed">
             Our admissions directors in Sheridan, Wyoming and online faculty provide personalized curriculum reviews.

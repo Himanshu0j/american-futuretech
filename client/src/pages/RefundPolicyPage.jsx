@@ -13,7 +13,7 @@ export default function RefundPolicyPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar />
 
-      <main className="pt-28 pb-20 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-left">
+      <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-left">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-mono text-slate-500 mb-6">
           <Link to="/" className="hover:text-[#1a361d] transition-colors">Home</Link>

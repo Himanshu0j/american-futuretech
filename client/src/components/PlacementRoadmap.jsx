@@ -81,7 +81,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
   ).sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
-    <section id="placement-roadmap" className="py-20 bg-white border-t border-slate-200 relative overflow-hidden">
+    <section id="placement-roadmap" className="py-12 bg-white border-t border-slate-200 relative overflow-hidden">
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 -left-48 w-96 h-96 bg-[#d8ffd2]/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/3 -right-48 w-96 h-96 bg-[#ffe6fa]/40 rounded-full blur-3xl pointer-events-none" />
@@ -89,7 +89,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Headers as specified by client */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+        <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>PROVEN CAREER TRANSFORMATION SYSTEM</span>

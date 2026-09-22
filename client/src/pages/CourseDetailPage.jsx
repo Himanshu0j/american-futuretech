@@ -132,7 +132,7 @@ export default function CourseDetailPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased relative selection:bg-[#76ff8a] selection:text-[#1a361d]">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
-      <main className="pt-24 pb-20">
+      <main className="pt-24 pb-10">
         {/* Breadcrumb strip */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6">
           <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium">
@@ -145,13 +145,13 @@ export default function CourseDetailPage() {
         </div>
 
         {/* 1. Course Hero Banner Container */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-          <div className="rounded-3xl bg-[#1a361d] text-white p-8 sm:p-12 lg:p-14 shadow-xl border border-[#2d5c36] relative overflow-hidden">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+          <div className="rounded-3xl bg-[#1a361d] text-white p-6 sm:p-10 lg:p-12 shadow-xl border border-[#2d5c36] relative overflow-hidden">
             {/* Background ambient glow */}
-            <div className="absolute top-0 right-0 -mt-16 -mr-16 w-96 h-96 bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-96 h-96 bg-[#9e4f8f]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#9e4f8f]/20 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start relative z-10">
               {/* Left Column: Course Header Info */}
               <div className="lg:col-span-8">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
@@ -375,7 +375,7 @@ export default function CourseDetailPage() {
 
         {/* 4. Who Can Apply for this Course */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Left: Numbered Criteria */}
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-900 text-xs font-bold uppercase tracking-wider mb-3">
@@ -660,7 +660,7 @@ export default function CourseDetailPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-8 max-w-5xl mx-auto">
             {/* Card 1: American FutureTech Certificate */}
             <div className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
               <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
@@ -783,12 +783,12 @@ export default function CourseDetailPage() {
 
         {/* 8. Register Now Bottom Cockpit (Matching user request: Register now ka niche option) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-8 sm:p-12 lg:p-16 shadow-2xl border border-[#2d5c36]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-8 lg:p-12 shadow-2xl border border-[#2d5c36]">
             {/* Ambient background orbs */}
             <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#76ff8a]/15 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#9e4f8f]/25 blur-3xl" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
               {/* Left Column: Register Now Details & Checklist */}
               <div className="lg:col-span-7">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] text-xs font-bold uppercase tracking-wider mb-5">

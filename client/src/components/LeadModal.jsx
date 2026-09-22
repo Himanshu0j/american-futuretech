@@ -90,7 +90,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
 
         {isSuccess ? (
           /* Thank You / Confetti State */
-          <div className="p-8 sm:p-10 text-center space-y-6">
+          <div className="p-6 sm:p-8 text-center space-y-6">
             <div className="w-16 h-16 rounded-full bg-[#d8ffd2] border border-[#76ff8a] flex items-center justify-center text-[#1a361d] mx-auto shadow-md animate-bounce">
               <CheckCircle className="w-8 h-8 text-[#2d5c36]" />
             </div>
@@ -124,7 +124,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
           </div>
         ) : (
           /* Lead Capture Form */
-          <div className="p-8 sm:p-10 text-left">
+          <div className="p-6 sm:p-8 text-left">
             <div className="mb-6">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-3">
                 <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />

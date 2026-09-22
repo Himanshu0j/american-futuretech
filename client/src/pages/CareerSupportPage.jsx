@@ -50,7 +50,7 @@ export default function CareerSupportPage() {
     <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
-      <main className="pt-28 pb-20">
+      <main className="pt-28 pb-10">
 
         <CompanyMarquee />
 
@@ -86,7 +86,7 @@ export default function CareerSupportPage() {
         </section>
 
         {/* 4 Pillars of Career Placement */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-20">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {pillars.map((p) => (
               <div
@@ -119,7 +119,7 @@ export default function CareerSupportPage() {
         </section>
 
         {/* ── Six-Stage Career Acceleration Framework ───────────────────── */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
               <CheckCircle2 className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -163,8 +163,8 @@ export default function CareerSupportPage() {
         </section>
 
         {/* ── Transparency: What Placement Assistance Actually Means ────── */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-16">
-          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 sm:p-10 text-left">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-10">
+          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-8 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
               <Shield className="w-3.5 h-3.5 text-[#2d5c36]" />
               <span>Transparency First</span>
@@ -212,7 +212,7 @@ export default function CareerSupportPage() {
 
         {/* ── Student Transitions ──────────────────────────────────────── */}
         {(career.transitions || []).length > 0 && (
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-16">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-10">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
                 <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -243,7 +243,7 @@ export default function CareerSupportPage() {
 
         {/* Hiring Partners Showcase */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 text-center shadow-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 text-center shadow-xs">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">
               EMPLOYER NETWORK
             </span>

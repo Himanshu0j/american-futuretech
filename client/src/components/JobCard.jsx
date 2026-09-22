@@ -8,11 +8,13 @@ import {
   ExternalLink,
   GraduationCap,
   Eye,
-  Building2
+  Building2,
+  Sparkles
 } from 'lucide-react';
 
 export default function JobCard({
   job,
+  onOpenDetails,
   onOpenApply
 }) {
   // Format salary cleanly into $110K - $140K / yr
@@ -33,10 +35,18 @@ export default function JobCard({
   };
 
   const handleApplyClick = (e) => {
+    e.stopPropagation();
     if (job.applyLink && (job.applyLink.startsWith('http://') || job.applyLink.startsWith('https://'))) {
       window.open(job.applyLink, '_blank', 'noopener,noreferrer');
     } else if (onOpenApply) {
       onOpenApply(job);
+    }
+  };
+
+  const handleDetailsClick = (e) => {
+    if (onOpenDetails) {
+      // If modal detail handler is provided, we can allow direct navigation or modal
+      // We will provide a direct Link button to /jobs/${jobId} for dedicated page
     }
   };
 
@@ -45,58 +55,83 @@ export default function JobCard({
   const remainingSkillsCount = (job.technicalSkills?.length ? job.technicalSkills : (job.skills || [])).length - visibleSkills.length;
 
   const jobId = job.id || job._id;
+  const employmentType = job.employmentType || job.type || 'Full-time';
+  const experience = job.experienceLevel || 'Entry to Mid Level';
+  const locationText = job.location || 'Remote (US & Global)';
 
   return (
-    <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
+    <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
       
-      {/* 1. TOP ROW: Job Title on Top Left + Salary & Status on Top Right */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-        <div className="space-y-1.5 flex-1">
-          <Link
-            to={`/jobs/${jobId}`}
-            className="text-xl sm:text-2xl font-display font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight block"
-          >
-            {job.title}
-          </Link>
-
-          {/* Subheader: Company Logo + Company Name + Employment Type (Department and Verified Partner REMOVED) */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-1">
-            {/* Company Logo Avatar */}
-            <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
-              {job.companyLogo ? (
-                <img
-                  src={job.companyLogo}
-                  alt={job.company}
-                  className="w-full h-full object-contain rounded-lg"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <div
-                className={`w-full h-full rounded-lg bg-gradient-to-br from-indigo-600 to-slate-900 text-white font-bold text-xs flex items-center justify-center ${
-                  job.companyLogo ? 'hidden' : 'flex'
-                }`}
-              >
-                {job.company?.slice(0, 2).toUpperCase() || 'CP'}
-              </div>
+      {/* 1. TOP ROW: Prominent Company Logo (w-12 h-12 / w-14 h-14) + Title & Key Metadata Tags */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div className="flex items-start gap-4 flex-1">
+          {/* Company Logo Avatar: Size w-12 h-12 sm:w-14 sm:h-14 */}
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2 flex items-center justify-center overflow-hidden shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200">
+            {job.companyLogo ? (
+              <img
+                src={job.companyLogo}
+                alt={job.company}
+                className="w-full h-full object-contain rounded-xl"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div
+              className={`w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center ${
+                job.companyLogo ? 'hidden' : 'flex'
+              }`}
+            >
+              {job.company?.slice(0, 2).toUpperCase() || 'FT'}
             </div>
+          </div>
 
-            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{job.company}</span>
+          {/* Job Title & Structured Tags Row */}
+          <div className="space-y-2 flex-1">
+            <Link
+              to={`/jobs/${jobId}`}
+              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#1a361d] dark:group-hover:text-[#76ff8a] transition-colors leading-snug block"
+            >
+              {job.title}
+            </Link>
 
-            <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
-              {job.employmentType || job.type || 'Full-time'}
-            </span>
+            {/* Structure Tags: Company Name • Full-time • Remote • Entry Level to Mid Level */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-slate-500" />
+                {job.company}
+              </span>
+
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80">
+                {employmentType}
+              </span>
+
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                <MapPin className="w-3 h-3 text-rose-500" />
+                {locationText}
+              </span>
+
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                <Clock className="w-3 h-3 text-amber-500" />
+                {experience}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Right: Salary badge + Actively Reviewing indicator */}
-        <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-start gap-1.5 shrink-0 pt-1 sm:pt-0">
-          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-indigo-700 dark:text-indigo-300 font-mono tracking-tight bg-indigo-50 dark:bg-indigo-950/60 px-3 py-1 rounded-xl border border-indigo-200 dark:border-indigo-800 shadow-2xs">
+        {/* Right: Compensation & Actively Reviewing Badge */}
+        <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
+          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#1a361d] dark:text-[#76ff8a] font-mono tracking-tight bg-[#d8ffd2]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#76ff8a]/60 dark:border-emerald-800 shadow-2xs">
             {formatSalary()}
           </div>
-          <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
+          <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
             <span>Actively Interviewing</span>
           </div>
@@ -106,12 +141,12 @@ export default function JobCard({
       {/* 2. Recommended Course Track Banner */}
       {(job.recommendedCourseTitle || (job.recommendedCourse && job.recommendedCourse.title) || job.course) && (
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200">
-          <GraduationCap className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+          <GraduationCap className="w-4 h-4 text-[#2d5c36] dark:text-[#76ff8a] shrink-0" />
           <span className="font-semibold text-slate-500 dark:text-slate-400">Recommended Track:</span>
           {job.recommendedCourse?.slug ? (
             <Link
               to={`/courses/${job.recommendedCourse.slug}`}
-              className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline truncate"
+              className="font-bold text-[#1a361d] dark:text-[#76ff8a] hover:underline truncate"
             >
               {job.recommendedCourse.title || job.recommendedCourseTitle}
             </Link>
@@ -128,20 +163,8 @@ export default function JobCard({
         {job.description}
       </p>
 
-      {/* 4. Key Attributes Row (Location & Experience Level) */}
-      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-1.5">
-          <MapPin className="w-3.5 h-3.5 text-rose-500" />
-          <span>{job.location}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5 text-amber-500" />
-          <span>{job.experienceLevel}</span>
-        </div>
-      </div>
-
-      {/* 5. Filtered Tools & Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-1">
+      {/* 4. Filtered Skills & Action Buttons Row */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
         {/* Skills: Showing 4 to 5 tools */}
         <div className="flex flex-wrap items-center gap-1.5 flex-1">
           {visibleSkills.map((skill, i) => (
@@ -159,25 +182,25 @@ export default function JobCard({
           )}
         </div>
 
-        {/* Action Buttons (View Details + Apply Now) */}
+        {/* Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}
         <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
           <Link
             to={`/jobs/${jobId}`}
             className="flex-1 sm:flex-none py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-slate-200 dark:border-slate-700 shadow-2xs"
           >
             <Eye className="w-3.5 h-3.5 text-slate-500" />
-            <span>View Details</span>
+            <span>VIEW DETAILS</span>
           </Link>
 
           <button
             onClick={handleApplyClick}
-            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <span>Apply Now</span>
+            <span>APPLY NOW</span>
             {job.applyLink ? (
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#76ff8a]" />
             ) : (
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-3.5 h-3.5 text-[#76ff8a]" />
             )}
           </button>
         </div>

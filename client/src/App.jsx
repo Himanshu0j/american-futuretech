@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import MetricsStrip from './components/MetricsStrip';
+import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
 import WhyChooseUs from './components/WhyChooseUs';
 import CallToAction from './components/CallToAction';
@@ -139,6 +140,9 @@ function LandingPage() {
           onExploreCourses={scrollToCourses}
         />
 
+        {/* Global Enterprise Brand & Logo Marquee */}
+        <TrustMarquee />
+
         {/* 3-Pillar Value Metrics Strip & Institutional Telemetry */}
         <MetricsStrip />
 
@@ -222,6 +226,10 @@ export default function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/certificate/:certificateId" element={<CertificateVerificationPage />} />
+
+              {/* Route Aliases */}
+              <Route path="/login" element={<Navigate to="/student/login" replace />} />
+              <Route path="/register" element={<Navigate to="/student/register" replace />} />
 
               {/* Student LMS Authentication */}
               <Route path="/student/login" element={<StudentLogin />} />

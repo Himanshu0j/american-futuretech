@@ -12,7 +12,7 @@ const getSiteSettings = async (req, res) => {
     } else {
       let modified = false;
       const schemaDefaults = new SiteSettings().toObject();
-      const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas'];
+      const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies'];
       
       for (const key of keysToCheck) {
         if (!settings[key] || (typeof settings[key] === 'object' && Object.keys(settings[key].toObject ? settings[key].toObject() : settings[key]).length === 0)) {
@@ -21,7 +21,7 @@ const getSiteSettings = async (req, res) => {
         }
       }
 
-      // Check specifically if capstone.tools or roadmap.steps are empty
+      // Check specifically if capstone.tools or roadmap.steps or trustedCompanies.companies are empty
       if (!settings.capstone?.tools || settings.capstone.tools.length === 0) {
         if (!settings.capstone) settings.capstone = {};
         settings.capstone.tools = schemaDefaults.capstone.tools;
@@ -30,6 +30,11 @@ const getSiteSettings = async (req, res) => {
       if (!settings.roadmap?.steps || settings.roadmap.steps.length === 0) {
         if (!settings.roadmap) settings.roadmap = {};
         settings.roadmap.steps = schemaDefaults.roadmap.steps;
+        modified = true;
+      }
+      if (!settings.trustedCompanies?.companies || settings.trustedCompanies.companies.length === 0) {
+        if (!settings.trustedCompanies) settings.trustedCompanies = {};
+        settings.trustedCompanies.companies = schemaDefaults.trustedCompanies.companies;
         modified = true;
       }
 

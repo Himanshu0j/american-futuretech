@@ -63,6 +63,20 @@ export default function SettingsCMS() {
       secondaryCtaLink: '/jobs',
       statsBadgeText: '1,200+ Fellows Placed'
     },
+    trustedCompanies: {
+      heading: 'TRUSTED BY LEARNERS FROM LEADING GLOBAL COMPANIES',
+      subheading: 'Our alumni engineer mission-critical systems across Fortune 500 technology leaders',
+      companies: [
+        { name: 'Google', logoUrl: '/images/companies/google.svg', order: 1, active: true },
+        { name: 'Microsoft', logoUrl: '/images/companies/microsoft.svg', order: 2, active: true },
+        { name: 'Amazon Web Services', logoUrl: '/images/companies/aws.svg', order: 3, active: true },
+        { name: 'IBM', logoUrl: '/images/companies/ibm.svg', order: 4, active: true },
+        { name: 'Infosys', logoUrl: '/images/companies/infosys.svg', order: 5, active: true },
+        { name: 'Accenture', logoUrl: '/images/companies/accenture.svg', order: 6, active: true },
+        { name: 'Intel', logoUrl: '/images/companies/intel.svg', order: 7, active: true },
+        { name: 'Meta', logoUrl: '/images/companies/meta.svg', order: 8, active: true }
+      ]
+    },
     personalizedLearning: {
       enabled: true,
       badgeText: '1-ON-1 VIP MENTORSHIP & EXTENDED CAREER TRACK',
@@ -289,9 +303,49 @@ export default function SettingsCMS() {
     }));
   };
 
+  // Company logo helpers
+  const handleAddCompany = () => {
+    const nextOrder = (settings.trustedCompanies?.companies?.length || 0) + 1;
+    const newComp = {
+      name: 'New Global Enterprise',
+      logoUrl: '/images/companies/google.svg',
+      order: nextOrder,
+      active: true
+    };
+    setSettings(prev => ({
+      ...prev,
+      trustedCompanies: {
+        ...prev.trustedCompanies,
+        companies: [...(prev.trustedCompanies?.companies || []), newComp]
+      }
+    }));
+  };
+
+  const handleUpdateCompany = (index, field, value) => {
+    setSettings(prev => {
+      const list = [...(prev.trustedCompanies?.companies || [])];
+      list[index] = { ...list[index], [field]: value };
+      return {
+        ...prev,
+        trustedCompanies: { ...prev.trustedCompanies, companies: list }
+      };
+    });
+  };
+
+  const handleDeleteCompany = (index) => {
+    setSettings(prev => ({
+      ...prev,
+      trustedCompanies: {
+        ...prev.trustedCompanies,
+        companies: (prev.trustedCompanies?.companies || []).filter((_, i) => i !== index)
+      }
+    }));
+  };
+
   const tabs = [
     { id: 'general', label: 'General & Identity', icon: Building },
     { id: 'hero', label: 'Homepage Hero', icon: Sparkles },
+    { id: 'companies', label: 'Company Logos Marquee', icon: Award },
     { id: 'personalized', label: 'Personalized ($2,199)', icon: DollarSign },
     { id: 'capstone', label: 'Capstone & Tools', icon: Cpu },
     { id: 'roadmap', label: 'Roadmap Steps', icon: Target },
@@ -584,6 +638,125 @@ export default function SettingsCMS() {
                     })}
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: BRAND & COMPANY LOGOS MARQUEE CMS */}
+          {/* ========================================================================= */}
+          {activeTab === 'companies' && (
+            <div className="space-y-6">
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                    <Award className="w-4 h-4 text-cyan-400" />
+                    Global Enterprise Brand & Company Logos Marquee
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleAddCompany}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Company</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Marquee Headline</label>
+                    <input
+                      type="text"
+                      value={settings.trustedCompanies?.heading || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        trustedCompanies: { ...settings.trustedCompanies, heading: e.target.value }
+                      })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Marquee Subtitle</label>
+                    <input
+                      type="text"
+                      value={settings.trustedCompanies?.subheading || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        trustedCompanies: { ...settings.trustedCompanies, subheading: e.target.value }
+                      })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-slate-800">
+                  <div className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
+                    Configured Employer Logos ({(settings.trustedCompanies?.companies || []).length})
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(settings.trustedCompanies?.companies || []).map((comp, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-start gap-3 relative group"
+                      >
+                        {/* Logo Preview */}
+                        <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                          {comp.logoUrl ? (
+                            <img
+                              src={comp.logoUrl}
+                              alt={comp.name}
+                              className="w-full h-full object-contain"
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          ) : (
+                            <Building className="w-5 h-5 text-slate-400" />
+                          )}
+                        </div>
+
+                        {/* Fields */}
+                        <div className="flex-1 space-y-1.5 text-xs font-mono">
+                          <input
+                            type="text"
+                            value={comp.name || ''}
+                            onChange={(e) => handleUpdateCompany(idx, 'name', e.target.value)}
+                            placeholder="Company Name"
+                            className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-800 text-white font-sans font-bold text-xs focus:outline-none focus:border-cyan-500"
+                          />
+                          <input
+                            type="text"
+                            value={comp.logoUrl || ''}
+                            onChange={(e) => handleUpdateCompany(idx, 'logoUrl', e.target.value)}
+                            placeholder="Logo URL (/images/companies/google.svg)"
+                            className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[11px] focus:outline-none focus:border-cyan-500"
+                          />
+                          <div className="flex items-center justify-between pt-1">
+                            <label className="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={comp.active !== false}
+                                onChange={(e) => handleUpdateCompany(idx, 'active', e.target.checked)}
+                                className="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0"
+                              />
+                              <span>Active</span>
+                            </label>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCompany(idx)}
+                              className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer transition-colors"
+                              title="Delete Logo"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

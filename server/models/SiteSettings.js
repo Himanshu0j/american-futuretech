@@ -21,6 +21,14 @@ const RoadmapStepSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true });
 
+const CompanyLogoSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  logoUrl: { type: String, default: '' },
+  website: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: true });
+
 const SiteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
@@ -171,6 +179,25 @@ const SiteSettingsSchema = new mongoose.Schema({
     enrollButtonText: { type: String, default: 'Enroll Now — $99' },
     seatsUrgencyText: { type: String, default: 'Spring 2026 Cohort • Limited to 25 Seats per Track' },
     careerAssistanceNotice: { type: String, default: '100% Placement Support & Direct Partner Introductions' },
+  },
+
+  // 🌟 BRAND & COMPANY LOGOS CMS
+  trustedCompanies: {
+    heading: { type: String, default: 'TRUSTED BY LEARNERS FROM LEADING GLOBAL COMPANIES' },
+    subheading: { type: String, default: 'Our alumni engineer mission-critical systems across Fortune 500 tech leaders' },
+    companies: {
+      type: [CompanyLogoSchema],
+      default: [
+        { name: 'Google', logoUrl: '/images/companies/google.svg', order: 1, active: true },
+        { name: 'Microsoft', logoUrl: '/images/companies/microsoft.svg', order: 2, active: true },
+        { name: 'Amazon Web Services', logoUrl: '/images/companies/aws.svg', order: 3, active: true },
+        { name: 'IBM', logoUrl: '/images/companies/ibm.svg', order: 4, active: true },
+        { name: 'Infosys', logoUrl: '/images/companies/infosys.svg', order: 5, active: true },
+        { name: 'Accenture', logoUrl: '/images/companies/accenture.svg', order: 6, active: true },
+        { name: 'Intel', logoUrl: '/images/companies/intel.svg', order: 7, active: true },
+        { name: 'Meta', logoUrl: '/images/companies/meta.svg', order: 8, active: true }
+      ]
+    }
   },
 }, {
   timestamps: true,

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <text x="5" y="42" font-family="'Helvetica Neue', Arial, sans-serif" font-size="34" font-weight="700" fill="#000000" letter-spacing="-0.5">accenture</text>
+  <path d="M68 12l10 7-10 7v-4l5-3-5-3z" fill="#A100FF"/>
+</svg>

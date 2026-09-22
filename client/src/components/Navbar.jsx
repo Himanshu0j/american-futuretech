@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Menu,
   X,
@@ -15,14 +16,26 @@ import {
   BookOpen,
   FileText,
   Lock,
-  Compass
+  Compass,
+  DollarSign
 } from 'lucide-react';
+
+const DEFAULT_7_PROGRAMS = [
+  { title: 'Data Science with AI Integration', slug: 'data-science-with-ai-integration', badge: 'High Demand', duration: '6 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
+  { title: 'Cyber Security with Ethical Hacking', slug: 'cyber-security-with-ethical-hacking', badge: 'Top Rated', duration: '6 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
+  { title: 'Cyber Security & AI Hybrid', slug: 'cyber-security-and-artificial-intelligence', badge: 'Flagship', duration: '6 Months', color: 'text-purple-700 bg-purple-50 dark:bg-purple-950/60 dark:text-purple-300' },
+  { title: 'Advanced Generative & Agentic AI', slug: 'advanced-generative-and-agentic-ai-master-program', badge: 'Cutting-Edge', duration: '6 Months', color: 'text-amber-700 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300' },
+  { title: 'DevOps, Kubernetes & Cloud with AI', slug: 'devops-and-cloud-with-ai', badge: 'Enterprise Standard', duration: '6 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
+  { title: 'AI Product Manager with Agentic AI', slug: 'ai-product-manager', badge: 'High Impact', duration: '4 Months', color: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300' },
+  { title: 'Governance, Risk, and Compliance (GRC)', slug: 'governance-risk-and-compliance-grc-with-ai', badge: 'Enterprise Security', duration: '4 Months', color: 'text-cyan-700 bg-cyan-50 dark:bg-cyan-950/60 dark:text-cyan-300' },
+];
 
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [coursesDropdown, setCoursesDropdown] = useState(false);
   const [moreDropdown, setMoreDropdown] = useState(false);
+  const [dbCourses, setDbCourses] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,6 +45,21 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch real database courses for Career Programs dropdown
+  useEffect(() => {
+    let isMounted = true;
+    axios.get('/api/courses')
+      .then(res => {
+        if (isMounted && res.data?.courses?.length > 0) {
+          setDbCourses(res.data.courses);
+        }
+      })
+      .catch(() => {
+        // Fallback to default programs if network is offline
+      });
+    return () => { isMounted = false; };
   }, []);
 
   // Lock body scroll when mobile drawer is open
@@ -47,12 +75,12 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Live Jobs', path: '/jobs' },
-    { name: 'Career Programs', path: '/courses', hasDropdown: true },
-    { name: 'Personalized Learning', path: '/courses#personalized-learning' },
-    { name: 'Certifications', path: '/certificate/AFT-CERT-AI9821' },
-    { name: 'About Us', path: '/about' },
+    { name: 'HOME', path: '/' },
+    { name: 'LIVE JOBS', path: '/jobs' },
+    { name: 'CAREER PROGRAMS', path: '/courses', hasDropdown: true },
+    { name: 'PERSONALIZED LEARNING', path: '/courses#personalized-learning' },
+    { name: 'CERTIFICATIONS', path: '/certificate/AFT-CERT-AI9821' },
+    { name: 'ABOUT US', path: '/about' },
   ];
 
   const moreLinks = [
@@ -66,12 +94,18 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     { name: 'Admissions FAQ', path: '/faq' },
   ];
 
-  const flagshipPrograms = [
-    { title: 'Data Science with AI Integration', slug: 'data-science-with-ai-integration', tag: 'High Demand', duration: '6 Months', color: 'text-emerald-700 bg-emerald-50' },
-    { title: 'Cyber Security with Ethical Hacking', slug: 'cyber-security-with-ethical-hacking', tag: 'Accredited', duration: '6 Months', color: 'text-blue-700 bg-blue-50' },
-    { title: 'Cyber Security & AI Hybrid', slug: 'cyber-security-and-artificial-intelligence', tag: 'Flagship', duration: '6 Months', color: 'text-purple-700 bg-purple-50' },
-    { title: 'Advanced Generative & Agentic AI', slug: 'advanced-generative-and-agentic-ai-master-program', tag: 'Specialization', duration: '4 Months', color: 'text-amber-700 bg-amber-50' },
-  ];
+  // Merge DB courses with formatting
+  const programList = dbCourses.length > 0
+    ? dbCourses.map((c, i) => ({
+        title: c.title,
+        slug: c.slug,
+        badge: c.badge || (i === 0 ? 'High Demand' : i === 1 ? 'Top Rated' : 'Enterprise'),
+        duration: c.duration || '6 Months',
+        color: i % 2 === 0
+          ? 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300'
+          : 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300'
+      }))
+    : DEFAULT_7_PROGRAMS;
 
   const handleNavClick = (path) => {
     setMobileMenuOpen(false);
@@ -164,8 +198,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             />
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6">
+          {/* Desktop Navigation Links: HOME, LIVE JOBS, CAREER PROGRAMS ▼, PERSONALIZED LEARNING, CERTIFICATIONS, ABOUT US, MORE ▼ */}
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path || (link.path === '/jobs' && location.pathname === '/careers');
 
@@ -177,9 +211,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     onMouseEnter={() => setCoursesDropdown(true)}
                     onMouseLeave={() => setCoursesDropdown(false)}
                   >
-                    <Link
-                      to="/courses"
-                      className={`text-[13px] font-bold flex items-center gap-1 transition-colors py-1 ${
+                    <button
+                      type="button"
+                      onClick={() => setCoursesDropdown(!coursesDropdown)}
+                      className={`text-[12px] xl:text-[13px] font-bold flex items-center gap-1 transition-colors py-1 cursor-pointer ${
                         location.pathname.startsWith('/courses')
                           ? 'text-[#1a361d]'
                           : 'text-slate-600 hover:text-[#1a361d]'
@@ -187,43 +222,54 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     >
                       <span>{link.name}</span>
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-                    </Link>
+                    </button>
 
-                    {/* Programs Dropdown */}
-                    {coursesDropdown && (
-                      <div className="absolute top-full left-0 w-88 p-2 rounded-2xl bg-white border border-slate-200 shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
-                        <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] tracking-widest border-b border-slate-100 flex items-center justify-between">
-                          <span>Flagship Engineering Fellowships</span>
-                          <span className="text-emerald-600">Spring 2026</span>
-                        </div>
-                        {flagshipPrograms.map((prog) => (
-                          <Link
-                            key={prog.slug}
-                            to={`/courses/${prog.slug}`}
-                            onClick={() => setCoursesDropdown(false)}
-                            className="block p-2.5 rounded-xl hover:bg-slate-50 transition-colors group/item"
-                          >
-                            <div className="flex items-center justify-between text-xs font-bold text-[#1a361d] group-hover/item:text-[#2d5c36]">
-                              <span className="truncate pr-2">{prog.title}</span>
-                              <span className="text-[10px] text-slate-500 shrink-0 font-mono font-normal">{prog.duration}</span>
-                            </div>
-                            <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md mt-1 ${prog.color}`}>
-                              {prog.tag}
-                            </span>
-                          </Link>
-                        ))}
-                        <div className="pt-2 border-t border-slate-100">
-                          <Link
-                            to="/courses"
-                            onClick={() => setCoursesDropdown(false)}
-                            className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 hover:bg-[#d8ffd2]/50 text-[#1a361d] text-xs font-bold transition-colors"
-                          >
-                            <span>Explore All 7 Specializations</span>
-                            <ArrowRight className="w-3.5 h-3.5 text-[#2d5c36]" />
-                          </Link>
-                        </div>
+                    {/* Career Programs Mega-Menu Dropdown (fetching real DB courses) */}
+                    <div
+                      id="career-programs-dropdown"
+                      data-testid="career-programs-dropdown"
+                      className={`absolute top-full left-0 w-96 p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-1.5 transition-all duration-200 z-50 max-h-[85vh] overflow-y-auto ${
+                        coursesDropdown ? 'block' : 'hidden group-hover:block'
+                      }`}
+                    >
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] dark:text-[#76ff8a] tracking-widest border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span>Flagship Career Programs</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-sans font-bold text-[10px]">All with $99 Deposit</span>
                       </div>
-                    )}
+                      
+                      {programList.map((prog) => (
+                        <Link
+                          key={prog.slug}
+                          to={`/courses/${prog.slug}`}
+                          onClick={() => setCoursesDropdown(false)}
+                          className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group/item"
+                        >
+                          <div className="flex items-center justify-between text-xs font-bold text-[#1a361d] dark:text-slate-100 group-hover/item:text-[#2d5c36] dark:group-hover/item:text-[#76ff8a]">
+                            <span className="truncate pr-2">{prog.title}</span>
+                            <span className="text-[10px] text-slate-500 shrink-0 font-mono font-normal">{prog.duration}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 mt-1">
+                            <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md ${prog.color}`}>
+                              {prog.badge}
+                            </span>
+                            <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 font-mono bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                              $99 Deposit
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <Link
+                          to="/courses"
+                          onClick={() => setCoursesDropdown(false)}
+                          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-[#d8ffd2]/60 dark:hover:bg-slate-700 text-[#1a361d] dark:text-white text-xs font-bold transition-colors"
+                        >
+                          <span>Explore All 7 Programs</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#2d5c36] dark:text-[#76ff8a]" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 );
               }
@@ -232,7 +278,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`text-[13px] font-bold transition-colors py-1 relative ${
+                  className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 relative ${
                     isActive
                       ? 'text-[#1a361d]'
                       : 'text-slate-600 hover:text-[#1a361d]'
@@ -253,15 +299,15 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               onMouseLeave={() => setMoreDropdown(false)}
             >
               <button
-                className="text-[13px] font-bold text-slate-600 hover:text-[#1a361d] flex items-center gap-1 transition-colors py-1 cursor-pointer"
+                className="text-[12px] xl:text-[13px] font-bold text-slate-600 hover:text-[#1a361d] flex items-center gap-1 transition-colors py-1 cursor-pointer"
               >
-                <span>More</span>
+                <span>MORE</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
               </button>
 
               {moreDropdown && (
-                <div className="absolute top-full right-0 w-64 p-2 rounded-2xl bg-white border border-slate-200 shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
-                  <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] tracking-widest border-b border-slate-100">
+                <div className="absolute top-full right-0 w-64 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+                  <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] dark:text-[#76ff8a] tracking-widest border-b border-slate-100 dark:border-slate-800">
                     Institutional Governance
                   </div>
                   {moreLinks.map((item) => (
@@ -269,7 +315,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                       key={item.name}
                       to={item.path}
                       onClick={() => setMoreDropdown(false)}
-                      className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#1a361d] transition-colors"
+                      className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#1a361d] transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -279,22 +325,22 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             </div>
           </nav>
 
-          {/* Desktop Right CTAs */}
+          {/* Desktop Right CTAs: LMS LOGIN and REGISTER NOW */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
               to="/student/login"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#1a361d] bg-white hover:bg-slate-100 border border-slate-200/90 shadow-2xs transition-all hover:shadow-xs"
             >
               <GraduationCap className="w-4 h-4 text-[#2d5c36]" />
-              <span>LMS Login</span>
+              <span>LMS LOGIN</span>
             </Link>
 
             <Link
-              to="/checkout"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#1a361d] via-[#2d5c36] to-[#1a361d] hover:brightness-110 shadow-sm transition-all hover:shadow-md"
+              to="/student/register"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#d8ffd2] bg-gradient-to-r from-[#1a361d] via-[#2d5c36] to-[#1a361d] hover:brightness-110 shadow-sm transition-all hover:shadow-md"
             >
-              <span>Reserve Seat ($99)</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>REGISTER NOW</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#76ff8a]" />
             </Link>
           </div>
 
@@ -319,10 +365,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           />
 
           {/* Slide-in Drawer Container */}
-          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white shadow-2xl flex flex-col justify-between p-6 z-10 animate-in slide-in-from-right duration-300 overflow-y-auto">
+          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl flex flex-col justify-between p-6 z-10 animate-in slide-in-from-right duration-300 overflow-y-auto">
             <div className="space-y-6">
               {/* Drawer Top Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                 <img
                   src="/images/logo-horizontal.webp"
                   alt="American FutureTech"
@@ -330,7 +376,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 />
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                  className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -342,7 +388,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                   <button
                     key={link.name}
                     onClick={() => handleNavClick(link.path)}
-                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50 transition-colors text-left"
+                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
                   >
                     <span>{link.name}</span>
                     <ArrowRight className="w-4 h-4 text-slate-400" />
@@ -350,34 +396,35 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 ))}
               </div>
 
-              {/* Programs Quick List */}
-              <div className="pt-2 border-t border-slate-100 space-y-2">
-                <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3">
-                  Flagship Tracks
+              {/* Programs Quick List (All 7 Programs with $99 Deposit Badge) */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3 flex items-center justify-between">
+                  <span>Flagship Tracks</span>
+                  <span className="text-[#2d5c36] dark:text-[#76ff8a] font-bold">7 Programs</span>
                 </div>
-                {flagshipPrograms.map((prog) => (
+                {programList.map((prog) => (
                   <button
                     key={prog.slug}
                     onClick={() => handleNavClick(`/courses/${prog.slug}`)}
-                    className="w-full flex items-center justify-between p-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 text-left"
+                    className="w-full flex items-center justify-between p-2 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-left"
                   >
                     <span className="truncate pr-2">{prog.title}</span>
-                    <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded shrink-0">{prog.duration}</span>
+                    <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300 px-2 py-0.5 rounded shrink-0">{prog.duration}</span>
                   </button>
                 ))}
               </div>
 
               {/* Legal & More Links */}
-              <div className="pt-2 border-t border-slate-100 space-y-1">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3">
                   Policies & Governance
                 </div>
                 <div className="grid grid-cols-2 gap-1 px-1">
-                  {moreLinks.slice(0, 4).map((item) => (
+                  {moreLinks.slice(0, 6).map((item) => (
                     <button
                       key={item.name}
                       onClick={() => handleNavClick(item.path)}
-                      className="text-left text-[11px] py-1.5 px-2 rounded text-slate-600 hover:text-[#1a361d] hover:bg-slate-50"
+                      className="text-left text-[11px] py-1.5 px-2 rounded text-slate-600 dark:text-slate-400 hover:text-[#1a361d] hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       {item.name}
                     </button>
@@ -386,24 +433,24 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               </div>
             </div>
 
-            {/* Bottom Actions in Drawer */}
-            <div className="pt-6 border-t border-slate-100 space-y-3">
+            {/* Bottom Actions in Drawer: LMS LOGIN and REGISTER NOW */}
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <Link
                 to="/student/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-3 rounded-xl bg-slate-100 text-[#1a361d] font-bold text-xs flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#1a361d] dark:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
               >
-                <GraduationCap className="w-4 h-4" />
-                <span>Student LMS Portal</span>
+                <GraduationCap className="w-4 h-4 text-[#2d5c36]" />
+                <span>LMS LOGIN</span>
               </Link>
 
               <Link
-                to="/checkout"
+                to="/student/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-3 rounded-xl bg-[#1a361d] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md"
+                className="w-full py-3 rounded-xl bg-[#1a361d] text-[#d8ffd2] font-bold text-xs flex items-center justify-center gap-2 shadow-md"
               >
-                <span>Reserve Seat ($99 Deposit)</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>REGISTER NOW</span>
+                <ArrowRight className="w-4 h-4 text-[#76ff8a]" />
               </Link>
             </div>
           </div>

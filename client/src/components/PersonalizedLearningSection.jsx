@@ -13,37 +13,35 @@ import {
   Clock,
   Briefcase
 } from 'lucide-react';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function PersonalizedLearningSection({ onOpenLeadModal }) {
-  const personalizedFee = "$2,199";
-  const originalFee = "$2,999";
-  const depositFee = "$99";
+  const { settings } = useSiteSettings();
+  const pl = settings?.personalizedLearning || {};
 
-  const features = [
-    {
-      title: "1-on-1 Dedicated Industry Mentor",
-      description: "Weekly 60-minute private sessions with a Principal Engineer or Tech Lead from Microsoft, IBM, or Accenture.",
-      icon: UserCheck
-    },
-    {
-      title: "Custom Tailored Curriculum",
-      description: "Bespoke syllabus created specifically around your current experience, target roles, and chosen tech stack.",
-      icon: Target
-    },
-    {
-      title: "Bespoke Production Capstone",
-      description: "Build an end-to-end enterprise system with automated CI/CD, cloud deployment, and architectural review.",
-      icon: Compass
-    },
-    {
-      title: "Executive Placement & Mock Interviews",
-      description: "Private interview coaching, system design drills, resume rebuild, and direct introduction to our hiring network.",
-      icon: Briefcase
-    }
+  const personalizedFee = pl.price ? `$${pl.price.toLocaleString()}` : "$5,499";
+  const originalFee = pl.originalPrice ? `$${pl.originalPrice.toLocaleString()}` : "$6,999";
+  const depositFee = pl.depositPrice ? `$${pl.depositPrice.toLocaleString()}` : "$99";
+
+  const DEFAULT_FEATURES = [
+    { title: "Everything in Group Programs", description: "All live cohort classes, HD session recordings, and lifetime LMS access included.", icon: Sparkles },
+    { title: "1-on-1 Dedicated Industry Mentor", description: "Weekly 60-minute private sessions with a Principal Engineer or Tech Lead from Microsoft, IBM, or Accenture.", icon: UserCheck },
+    { title: "Custom Tailored Curriculum", description: "Bespoke syllabus created specifically around your current experience, target roles, and chosen tech stack.", icon: Target },
+    { title: "Bespoke Production Capstone", description: "Build an end-to-end enterprise system with automated CI/CD, cloud deployment, and architectural review.", icon: Compass },
+    { title: "Executive Placement & Mock Interviews", description: "Private interview coaching, system design drills, resume rebuild, and direct introduction to our hiring network.", icon: Briefcase }
   ];
 
+  const featureIconMap = { UserCheck, Target, Compass, Briefcase, ShieldCheck, Award, Zap, Clock, Sparkles };
+  const features = (pl.features && pl.features.length > 0)
+    ? pl.features.map((f, i) => ({
+        title: typeof f === 'string' ? f : (f.title || f),
+        description: typeof f === 'string' ? '' : (f.description || ''),
+        icon: DEFAULT_FEATURES[i % DEFAULT_FEATURES.length]?.icon || Sparkles
+      }))
+    : DEFAULT_FEATURES;
+
   return (
-    <section className="relative py-24 bg-gradient-to-b from-slate-900 via-[#0B132B] to-slate-950 text-white overflow-hidden" id="personalized-learning">
+    <section className="relative py-14 bg-gradient-to-b from-slate-900 via-[#0B132B] to-slate-950 text-white overflow-hidden" id="personalized-learning">
       {/* Ambient background glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/4 left-10 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
@@ -53,16 +51,16 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Eyebrow */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-wide uppercase mb-4">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Exclusive 1-on-1 Mentorship Track</span>
+            <span>{pl.badgeText || 'Exclusive 1-on-1 Mentorship Track'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            Personalized Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">Accelerator</span>
+            {pl.headline ? pl.headline : <>Personalized Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">Accelerator</span></>}
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-            A standalone premium offering designed for professionals requiring a custom syllabus, flexible schedule, and direct 1-on-1 guidance from top Silicon Valley mentors.
+            {pl.subheadline || 'A standalone premium offering designed for professionals requiring a custom syllabus, flexible schedule, and direct 1-on-1 guidance from top Silicon Valley mentors.'}
           </p>
         </div>
 
@@ -205,7 +203,7 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
 
               <button
                 type="button"
-                onClick={() => onOpenLeadModal?.({ title: "Personalized Learning Accelerator", price: 2199 })}
+                onClick={() => onOpenLeadModal?.({ title: "Personalized Learning Accelerator", price: pl.price || 5499 })}
                 className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-6 py-3 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition-colors"
               >
                 <span>Request 1-on-1 Syllabus & Consultation</span>

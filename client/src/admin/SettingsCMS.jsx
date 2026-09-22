@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Clock,
   User,
+  Users,
   RefreshCw,
   Sparkles,
   DollarSign,
@@ -29,8 +30,11 @@ import {
   Award,
   ChevronRight,
   Compass,
-  Eye
+  Eye,
+  Handshake,
+  GraduationCap
 } from 'lucide-react';
+import { DEFAULT_LEADERSHIP, DEFAULT_SISTER_COMPANY, DEFAULT_PEDAGOGY } from '../data/siteContent';
 import RepeatableListInput from './components/RepeatableListInput';
 import ImageUploadInput from './components/ImageUploadInput';
 
@@ -45,8 +49,8 @@ export default function SettingsCMS() {
   // Full Settings State
   const [settings, setSettings] = useState({
     brandName: 'American FutureTech LLC',
-    phone: '+1 (307) 201-9494',
-    email: 'admissions@americanfuturetech.com',
+    phone: '+1 (816) 846-6717',
+    email: 'info@americantechgloballlc.com',
     address: '30 N Gould St Ste R, Sheridan, WY 82801, United States',
     announcementBanner: {
       active: true,
@@ -84,10 +88,14 @@ export default function SettingsCMS() {
       headline: 'Personalized Learning Track',
       subheadline: 'Accelerate your transition into high-growth tech roles with bespoke curriculum pacing, dedicated principal engineer mentorship, and personalized portfolio development.',
       duration: '6 Months (Extended Track)',
-      price: 2199,
-      originalPrice: 3499,
+      price: 5499,
+      originalPrice: 6999,
       depositPrice: 99,
       features: [
+        'Everything in the group programs (all live cohorts + recordings)',
+        'Weekly private 1-on-1 mentorship with a senior industry practitioner',
+        'Personalized interview preparation, system design and mock interviews',
+        'Salary negotiation coaching and dedicated career support',
         'Dedicated 1-on-1 weekly sessions with Principal FAANG / Fortune 500 Engineers',
         'Custom tailored curriculum matching your background, schedule, and target role',
         'Private GitHub repository code reviews, architectural defenses, and CI/CD setup',
@@ -115,6 +123,9 @@ export default function SettingsCMS() {
       subtitle: 'From foundational engineering to corporate technical interview defense, our roadmap leaves zero room for chance.',
       steps: []
     },
+    leadership: DEFAULT_LEADERSHIP,
+    sisterCompany: DEFAULT_SISTER_COMPANY,
+    pedagogy: DEFAULT_PEDAGOGY,
     aboutCMS: {
       headline: 'Bridging the Divide Between Academia and Global Industry',
       bodyParagraphs: [
@@ -134,6 +145,11 @@ export default function SettingsCMS() {
       reserveSeatPrice: 99,
       reserveSeatUrl: '/checkout?tier=deposit',
       urgencyBannerText: 'Spring 2026 Admissions Open · Capped at 25 Fellows Per Cohort'
+    },
+    courses: {
+      badgeText: '6-Month Career Training Programs · Dual US & Microsoft Credentials',
+      headline: 'Fellowship Specializations',
+      subheadline: 'Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for $99.',
     }
   });
 
@@ -172,13 +188,17 @@ export default function SettingsCMS() {
               ...prev.capstone,
               ...(res.data.settings.capstone || {}),
               outcomes: res.data.settings.capstone?.outcomes || prev.capstone.outcomes,
-              tools: res.data.settings.capstone?.tools || prev.capstone.tools
+              tools: res.data.settings.capstone?.tools || prev.capstone.tools,
+              projects: res.data.settings.capstone?.projects || prev.capstone.projects || []
             },
             roadmap: {
               ...prev.roadmap,
               ...(res.data.settings.roadmap || {}),
               steps: res.data.settings.roadmap?.steps || prev.roadmap.steps
             },
+            leadership: res.data.settings.leadership?.length ? res.data.settings.leadership : prev.leadership,
+            sisterCompany: { ...prev.sisterCompany, ...(res.data.settings.sisterCompany || {}) },
+            pedagogy: { ...prev.pedagogy, ...(res.data.settings.pedagogy || {}) },
             aboutCMS: {
               ...prev.aboutCMS,
               ...(res.data.settings.aboutCMS || {}),
@@ -187,6 +207,10 @@ export default function SettingsCMS() {
             globalCtas: {
               ...prev.globalCtas,
               ...(res.data.settings.globalCtas || {})
+            },
+            courses: {
+              ...prev.courses,
+              ...(res.data.settings.courses || {})
             }
           }));
         }
@@ -263,6 +287,46 @@ export default function SettingsCMS() {
     }));
   };
 
+  // Capstone Projects helpers
+  const handleAddCapstoneProject = () => {
+    const newProject = {
+      tag: 'Machine Learning',
+      title: 'New Capstone Project',
+      desc: 'Describe what students will build in this project.',
+      stack: ['Python', 'TensorFlow'],
+      color: 'from-indigo-500 to-blue-500'
+    };
+    setSettings(prev => ({
+      ...prev,
+      capstone: {
+        ...prev.capstone,
+        projects: [...(prev.capstone?.projects || []), newProject]
+      }
+    }));
+  };
+
+  const handleUpdateCapstoneProject = (index, field, value) => {
+    setSettings(prev => {
+      const updated = [...(prev.capstone?.projects || [])];
+      if (field === 'stack') {
+        updated[index] = { ...updated[index], stack: value.split(',').map(s => s.trim()).filter(Boolean) };
+      } else {
+        updated[index] = { ...updated[index], [field]: value };
+      }
+      return { ...prev, capstone: { ...prev.capstone, projects: updated } };
+    });
+  };
+
+  const handleDeleteCapstoneProject = (index) => {
+    setSettings(prev => ({
+      ...prev,
+      capstone: {
+        ...prev.capstone,
+        projects: (prev.capstone?.projects || []).filter((_, i) => i !== index)
+      }
+    }));
+  };
+
   // Roadmap step helpers
   const handleAddRoadmapStep = () => {
     const nextNum = (settings.roadmap?.steps?.length || 0) + 1;
@@ -302,6 +366,84 @@ export default function SettingsCMS() {
         steps: (prev.roadmap?.steps || []).filter((_, i) => i !== index)
       }
     }));
+  };
+
+  // ── Leadership team helpers ──
+  const handleAddLeader = () => {
+    setSettings(prev => ({
+      ...prev,
+      leadership: [...(prev.leadership || []), {
+        name: 'New Team Member', role: 'Faculty Lead', badge: 'Faculty Lead',
+        experience: 'X+ Years', bio: 'Short professional bio...',
+        skills: ['Skill One', 'Skill Two'], linkedin: '', image: '', order: (prev.leadership?.length || 0) + 1, active: true,
+      }],
+    }));
+  };
+
+  const handleUpdateLeader = (idx, field, value) => {
+    setSettings(prev => {
+      const list = [...(prev.leadership || [])];
+      if (field === 'skills') {
+        list[idx] = { ...list[idx], skills: String(value).split(',').map(s => s.trim()).filter(Boolean) };
+      } else {
+        list[idx] = { ...list[idx], [field]: value };
+      }
+      return { ...prev, leadership: list };
+    });
+  };
+
+  const handleDeleteLeader = (idx) => {
+    setSettings(prev => ({ ...prev, leadership: (prev.leadership || []).filter((_, i) => i !== idx) }));
+  };
+
+  const handleUpdateSister = (field, value) => {
+    setSettings(prev => ({ ...prev, sisterCompany: { ...prev.sisterCompany, [field]: value } }));
+  };
+
+  const handleUpdateSisterStat = (field, value) => {
+    setSettings(prev => ({ ...prev, sisterCompany: { ...prev.sisterCompany, stats: { ...(prev.sisterCompany?.stats || {}), [field]: value } } }));
+  };
+
+  const handleUpdateSisterService = (idx, field, value) => {
+    setSettings(prev => {
+      const services = [...(prev.sisterCompany?.services || [])];
+      services[idx] = { ...services[idx], [field]: value };
+      return { ...prev, sisterCompany: { ...prev.sisterCompany, services } };
+    });
+  };
+
+  const handleAddSisterService = () => {
+    setSettings(prev => ({
+      ...prev,
+      sisterCompany: { ...prev.sisterCompany, services: [...(prev.sisterCompany?.services || []), { title: 'New Service', desc: 'Describe this staffing service...' }] },
+    }));
+  };
+
+  const handleDeleteSisterService = (idx) => {
+    setSettings(prev => ({
+      ...prev,
+      sisterCompany: { ...prev.sisterCompany, services: (prev.sisterCompany?.services || []).filter((_, i) => i !== idx) },
+    }));
+  };
+
+  const handleUpdatePedagogy = (field, value) => {
+    setSettings(prev => ({ ...prev, pedagogy: { ...prev.pedagogy, [field]: value } }));
+  };
+
+  const handleUpdatePedagogyPillar = (idx, field, value) => {
+    setSettings(prev => {
+      const pillars = [...(prev.pedagogy?.pillars || [])];
+      pillars[idx] = { ...pillars[idx], [field]: value };
+      return { ...prev, pedagogy: { ...prev.pedagogy, pillars } };
+    });
+  };
+
+  const handleUpdatePedagogyStat = (idx, field, value) => {
+    setSettings(prev => {
+      const stats = [...(prev.pedagogy?.stats || [])];
+      stats[idx] = { ...stats[idx], [field]: value };
+      return { ...prev, pedagogy: { ...prev.pedagogy, stats } };
+    });
   };
 
   // Company logo helpers
@@ -347,12 +489,14 @@ export default function SettingsCMS() {
     { id: 'general', label: 'General & Identity', icon: Building },
     { id: 'sections', label: 'Homepage Sections', icon: Eye },
     { id: 'hero', label: 'Homepage Hero', icon: Sparkles },
-    { id: 'companies', label: 'Company Logos Marquee', icon: Award },
-    { id: 'personalized', label: 'Personalized ($2,199)', icon: DollarSign },
+    { id: 'companies', label: 'Company Logos', icon: Award },
+    { id: 'courses', label: 'Career Programs', icon: Award },
+    { id: 'personalized', label: 'Personalized ($5,499)', icon: DollarSign },
+    { id: 'team', label: 'Team & Alliances', icon: Users },
     { id: 'capstone', label: 'Capstone & Tools', icon: Cpu },
     { id: 'roadmap', label: 'Roadmap Steps', icon: Target },
     { id: 'about', label: 'About & Mission', icon: Globe },
-    { id: 'globalCtas', label: 'Global CTAs & Urgency', icon: Zap },
+    { id: 'globalCtas', label: 'Global CTAs', icon: Zap },
     { id: 'audit', label: 'Audit Trail', icon: Shield },
   ];
 
@@ -860,6 +1004,63 @@ export default function SettingsCMS() {
           )}
 
           {/* ========================================================================= */}
+          {/* TAB: CAREER PROGRAMS CONTENT CMS */}
+          {/* ========================================================================= */}
+          {activeTab === 'courses' && (
+            <div className="space-y-6">
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                  <Award className="w-4 h-4 text-cyan-400" />
+                  Career Programs Section — Homepage Content
+                </h3>
+                <p className="text-xs text-slate-400 font-mono">
+                  Edit the section badge, headline and subheadline shown above the course cards on the homepage.
+                </p>
+
+                <div className="space-y-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Section Badge Text</label>
+                    <input
+                      type="text"
+                      value={settings.courses?.badgeText || ''}
+                      onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, badgeText: e.target.value } })}
+                      placeholder="e.g. 6-Month Career Training Programs · Dual US & Microsoft Credentials"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Section Headline</label>
+                    <input
+                      type="text"
+                      value={settings.courses?.headline || ''}
+                      onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, headline: e.target.value } })}
+                      placeholder="e.g. Fellowship Specializations"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Section Subheadline / Description</label>
+                    <textarea
+                      rows={3}
+                      value={settings.courses?.subheadline || ''}
+                      onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, subheadline: e.target.value } })}
+                      placeholder="Short description shown below the headline..."
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-slate-800">
+                  <div className="text-xs text-slate-400 font-mono bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <span className="font-bold text-cyan-400">ℹ Course Cards Management:</span> Individual course cards (title, price, duration, curriculum) are managed in the{' '}
+                    <span className="font-bold text-white">Admin → Courses</span> section.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
           {/* TAB 3: PERSONALIZED LEARNING CMS ($2,199) */}
           {/* ========================================================================= */}
           {activeTab === 'personalized' && (
@@ -1192,6 +1393,85 @@ export default function SettingsCMS() {
                   ))}
                 </div>
               </div>
+
+              {/* ── Capstone Projects Editor ── */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-cyan-400" />
+                      Capstone Project Showcase Cards
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      When saved, these override the default course-specific projects on all course pages.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddCapstoneProject}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Project
+                  </button>
+                </div>
+
+                {(settings.capstone?.projects || []).length === 0 && (
+                  <div className="text-xs text-slate-500 font-mono py-4 text-center border border-dashed border-slate-700 rounded-xl">
+                    No admin projects set — course pages use their built-in default projects.
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {(settings.capstone?.projects || []).map((proj, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">{proj.title || `Project #${idx + 1}`}</span>
+                          <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">{proj.tag || 'Category'}</span>
+                        </div>
+                        <button type="button" onClick={() => handleDeleteCapstoneProject(idx)}
+                          className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Category Tag</label>
+                          <input type="text" value={proj.tag || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'tag', e.target.value)}
+                            placeholder="e.g. Computer Vision"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Project Title</label>
+                          <input type="text" value={proj.title || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'title', e.target.value)}
+                            placeholder="e.g. US Health Care Analysis"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Description</label>
+                        <textarea rows={2} value={proj.desc || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'desc', e.target.value)}
+                          placeholder="What do students build?"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Tech Stack (comma-separated)</label>
+                          <input type="text" value={(proj.stack || []).join(', ')} onChange={(e) => handleUpdateCapstoneProject(idx, 'stack', e.target.value)}
+                            placeholder="e.g. Python, TensorFlow, OpenCV"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Gradient Color</label>
+                          <input type="text" value={proj.color || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'color', e.target.value)}
+                            placeholder="from-blue-500 to-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -1459,6 +1739,246 @@ export default function SettingsCMS() {
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: TEAM & ALLIANCES (Leadership, Sister Company, Pedagogy)              */}
+          {/* ========================================================================= */}
+          {activeTab === 'team' && (
+            <div className="space-y-6">
+              {/* Leadership & Faculty */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                      <Users className="w-4 h-4 text-cyan-400" />
+                      Leadership &amp; Faculty Roster (About Page)
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      Team members shown on the public About page. Skills are comma-separated.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddLeader}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Member
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {(settings.leadership || []).map((person, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">{person.name || `Member #${idx + 1}`}</span>
+                        <div className="flex items-center gap-3">
+                          <label className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={person.active !== false}
+                              onChange={(e) => handleUpdateLeader(idx, 'active', e.target.checked)}
+                              className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+                            />
+                            <span>Active</span>
+                          </label>
+                          <button type="button" onClick={() => handleDeleteLeader(idx)} className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Full Name</label>
+                          <input type="text" value={person.name || ''} onChange={(e) => handleUpdateLeader(idx, 'name', e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Role / Title</label>
+                          <input type="text" value={person.role || ''} onChange={(e) => handleUpdateLeader(idx, 'role', e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">Experience Badge</label>
+                          <input type="text" value={person.experience || ''} onChange={(e) => handleUpdateLeader(idx, 'experience', e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Bio</label>
+                        <textarea rows={3} value={person.bio || ''} onChange={(e) => handleUpdateLeader(idx, 'bio', e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                        <div className="sm:col-span-2">
+                          <label className="block text-slate-500 uppercase mb-1">Skills (comma-separated)</label>
+                          <input type="text" value={(person.skills || []).join(', ')} onChange={(e) => handleUpdateLeader(idx, 'skills', e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-slate-500 uppercase mb-1">LinkedIn URL</label>
+                          <input type="url" value={person.linkedin || ''} onChange={(e) => handleUpdateLeader(idx, 'linkedin', e.target.value)}
+                            placeholder="https://linkedin.com/in/..."
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sister Company */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                    <Handshake className="w-4 h-4 text-cyan-400" />
+                    Sister Staffing Company / Strategic Alliance
+                  </h3>
+                  <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
+                    <input type="checkbox" checked={settings.sisterCompany?.enabled !== false}
+                      onChange={(e) => handleUpdateSister('enabled', e.target.checked)}
+                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0" />
+                    <span>Show Section</span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Company Name</label>
+                    <input type="text" value={settings.sisterCompany?.name || ''} onChange={(e) => handleUpdateSister('name', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Location Line</label>
+                    <input type="text" value={settings.sisterCompany?.location || ''} onChange={(e) => handleUpdateSister('location', e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                  </div>
+                </div>
+
+                <div className="text-xs font-mono">
+                  <label className="block text-slate-400 uppercase mb-1.5">Headline</label>
+                  <input type="text" value={settings.sisterCompany?.headline || ''} onChange={(e) => handleUpdateSister('headline', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                </div>
+
+                <div className="text-xs font-mono">
+                  <label className="block text-slate-400 uppercase mb-1.5">Tagline (quote)</label>
+                  <input type="text" value={settings.sisterCompany?.tagline || ''} onChange={(e) => handleUpdateSister('tagline', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                </div>
+
+                <div className="text-xs font-mono">
+                  <label className="block text-slate-400 uppercase mb-1.5">Description</label>
+                  <textarea rows={3} value={settings.sisterCompany?.description || ''} onChange={(e) => handleUpdateSister('description', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-mono">
+                  {[
+                    ['shortlistHours', 'shortlistLabel'],
+                    ['vetted', 'vettedLabel'],
+                    ['placement', 'placementLabel'],
+                  ].map(([vKey, lKey]) => (
+                    <div key={vKey} className="space-y-2">
+                      <input type="text" value={settings.sisterCompany?.stats?.[vKey] || ''} onChange={(e) => handleUpdateSisterStat(vKey, e.target.value)}
+                        placeholder="Value" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs" />
+                      <input type="text" value={settings.sisterCompany?.stats?.[lKey] || ''} onChange={(e) => handleUpdateSisterStat(lKey, e.target.value)}
+                        placeholder="Label" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Staffing Services ({(settings.sisterCompany?.services || []).length})</span>
+                    <button type="button" onClick={handleAddSisterService}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold cursor-pointer hover:bg-cyan-500/30">
+                      <Plus className="w-3.5 h-3.5" /> Add Service
+                    </button>
+                  </div>
+
+                  {(settings.sisterCompany?.services || []).map((svc, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input type="text" value={svc.title || ''} onChange={(e) => handleUpdateSisterService(idx, 'title', e.target.value)}
+                          placeholder="Service title" className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
+                        <button type="button" onClick={() => handleDeleteSisterService(idx)} className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <textarea rows={2} value={svc.desc || ''} onChange={(e) => handleUpdateSisterService(idx, 'desc', e.target.value)}
+                        placeholder="Service description" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-sans text-xs" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Build-First Pedagogy */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-cyan-400" />
+                    "Build-First" Pedagogy &amp; Institutional Stats
+                  </h3>
+                  <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
+                    <input type="checkbox" checked={settings.pedagogy?.enabled !== false}
+                      onChange={(e) => handleUpdatePedagogy('enabled', e.target.checked)}
+                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0" />
+                    <span>Show Section</span>
+                  </label>
+                </div>
+
+                <div className="text-xs font-mono">
+                  <label className="block text-slate-400 uppercase mb-1.5">Section Title</label>
+                  <input type="text" value={settings.pedagogy?.title || ''} onChange={(e) => handleUpdatePedagogy('title', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                </div>
+
+                <div className="text-xs font-mono">
+                  <label className="block text-slate-400 uppercase mb-1.5">Description</label>
+                  <textarea rows={3} value={settings.pedagogy?.description || ''} onChange={(e) => handleUpdatePedagogy('description', e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Hands-On %</label>
+                    <input type="number" value={settings.pedagogy?.handsOnPercent || 70} onChange={(e) => handleUpdatePedagogy('handsOnPercent', Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Theory %</label>
+                    <input type="number" value={settings.pedagogy?.theoryPercent || 30} onChange={(e) => handleUpdatePedagogy('theoryPercent', Number(e.target.value))}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                  {(settings.pedagogy?.pillars || []).map((pil, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
+                      <input type="text" value={pil.title || ''} onChange={(e) => handleUpdatePedagogyPillar(idx, 'title', e.target.value)}
+                        placeholder="Pillar title" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
+                      <textarea rows={3} value={pil.desc || ''} onChange={(e) => handleUpdatePedagogyPillar(idx, 'desc', e.target.value)}
+                        placeholder="Pillar description" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 font-sans text-xs" />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                  {(settings.pedagogy?.stats || []).map((st, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
+                      <input type="text" value={st.value || ''} onChange={(e) => handleUpdatePedagogyStat(idx, 'value', e.target.value)}
+                        placeholder="2,000+" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs" />
+                      <input type="text" value={st.label || ''} onChange={(e) => handleUpdatePedagogyStat(idx, 'label', e.target.value)}
+                        placeholder="Students Trained" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

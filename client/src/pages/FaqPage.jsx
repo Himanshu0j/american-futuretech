@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, Search, PhoneCall } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
 
@@ -44,7 +45,8 @@ export default function FaqPage() {
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-12">
+
+        <CompanyMarquee />        <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <HelpCircle className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>Academic Disclosures & FAQs</span>

@@ -632,7 +632,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             to="/courses"
             className="elms-btn-secondary !text-xs !py-2.5 !px-5 whitespace-nowrap shrink-0"
           >
-            <span>Browse Complete Catalog (7 Programs)</span>
+            <span>Browse Complete Catalog (8 Programs)</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

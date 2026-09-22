@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import { MICROSOFT_CERTIFICATES, getAlignedMicrosoftCert } from '../data/microsoftCertificates';
 import CertificateModal from '../components/CertificateModal';
@@ -113,7 +114,8 @@ export default function CertificateVerificationPage() {
       <Navbar />
 
       <main className="pt-28 pb-20 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
-        {/* Navigation & Action Bar */}
+
+        <CompanyMarquee />        {/* Navigation & Action Bar */}
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
           <Link
             to="/"

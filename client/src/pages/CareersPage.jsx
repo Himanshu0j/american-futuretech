@@ -39,6 +39,7 @@ import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.sv
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
+import CompanyMarquee from '../components/CompanyMarquee';
 import BulletContent from '../components/common/BulletContent';
 import FaqAccordion from '../components/common/FaqAccordion';
 
@@ -53,6 +54,10 @@ export default function CareersPage() {
   const [selectedExp, setSelectedExp] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [selectedCourse, setSelectedCourse] = useState('All');
+  const [selectedDepartment, setSelectedDepartment] = useState('All');
+  const [selectedSalary, setSelectedSalary] = useState('All');
+  const [remoteOnly, setRemoteOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
 
   // Modals state
   const [selectedJobForDetails, setSelectedJobForDetails] = useState(null);
@@ -111,6 +116,27 @@ export default function CareersPage() {
   const jobTypes = ['All', 'Full-time', 'Contract', 'Part-time', 'Internship'];
   const experienceLevels = ['All', 'Entry', 'Mid', 'Senior'];
   const locations = ['All', 'Remote', 'New York, NY', 'Austin, TX', 'Dallas, TX', 'Washington, DC', 'On-site', 'Hybrid'];
+  const salaryBands = [
+    { label: 'All Salaries', value: 'All', min: 0 },
+    { label: '$80K+', value: '80', min: 80000 },
+    { label: '$120K+', value: '120', min: 120000 },
+    { label: '$160K+', value: '160', min: 160000 },
+    { label: '$200K+', value: '200', min: 200000 },
+  ];
+
+  // Departments discovered from live job postings
+  const departments = ['All', ...Array.from(new Set(jobs.map(j => j.department).filter(Boolean)))];
+
+  const jobAnnualSalary = (job) => {
+    const min = Number(job.salaryMin);
+    if (!isNaN(min) && min > 0) return min;
+    const match = String(job.salaryRange || '').replace(/,/g, '').match(/(\d{2,3})\s*K/i) || String(job.salaryRange || '').replace(/,/g, '').match(/(\d{5,6})/);
+    if (match) {
+      const raw = Number(match[1]);
+      return raw < 1000 ? raw * 1000 : raw;
+    }
+    return 0;
+  };
 
   const filteredJobs = jobs.filter((job) => {
     const term = searchTerm.trim().toLowerCase();
@@ -140,7 +166,22 @@ export default function CareersPage() {
       job.recommendedCourse?._id === selectedCourse ||
       job.recommendedCourse?.title === selectedCourse;
 
-    return matchesSearch && matchesType && matchesExp && matchesLocation && matchesCourse;
+    const matchesDepartment = selectedDepartment === 'All' ||
+      job.department === selectedDepartment;
+
+    const salaryBand = salaryBands.find(b => b.value === selectedSalary);
+    const matchesSalary = !salaryBand || salaryBand.min === 0 ||
+      jobAnnualSalary(job) >= salaryBand.min;
+
+    const matchesRemote = !remoteOnly ||
+      String(job.location || '').toLowerCase().includes('remote');
+
+    return matchesSearch && matchesType && matchesExp && matchesLocation && matchesCourse
+      && matchesDepartment && matchesSalary && matchesRemote;
+  }).sort((a, b) => {
+    if (sortBy === 'salary') return jobAnnualSalary(b) - jobAnnualSalary(a);
+    if (sortBy === 'oldest') return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
   });
 
   const hasActiveFilters =
@@ -148,7 +189,10 @@ export default function CareersPage() {
     selectedJobType !== 'All' ||
     selectedExp !== 'All' ||
     selectedLocation !== 'All' ||
-    selectedCourse !== 'All';
+    selectedCourse !== 'All' ||
+    selectedDepartment !== 'All' ||
+    selectedSalary !== 'All' ||
+    remoteOnly;
 
   const handleClearFilters = () => {
     setSearchTerm('');
@@ -156,6 +200,10 @@ export default function CareersPage() {
     setSelectedExp('All');
     setSelectedLocation('All');
     setSelectedCourse('All');
+    setSelectedDepartment('All');
+    setSelectedSalary('All');
+    setRemoteOnly(false);
+    setSortBy('newest');
   };
 
   const handleOpenDetails = (job) => {
@@ -227,7 +275,8 @@ export default function CareersPage() {
       <Navbar />
 
       <main className="pt-24 sm:pt-28 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-        
+        <CompanyMarquee />
+
         {/* ========================================================================= */}
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}
         {/* ========================================================================= */}
@@ -402,6 +451,58 @@ export default function CareersPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              {/* Secondary Filters: Department, Salary, Remote, Sort */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Department</label>
+                  <select
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d] truncate"
+                  >
+                    {departments.map(d => <option key={d} value={d}>{d === 'All' ? 'All Departments' : d}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Salary</label>
+                  <select
+                    value={selectedSalary}
+                    onChange={(e) => setSelectedSalary(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                  >
+                    {salaryBands.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                  >
+                    <option value="newest">Recently Added</option>
+                    <option value="salary">Highest Salary</option>
+                    <option value="oldest">Oldest First</option>
+                  </select>
+                </div>
+
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={() => setRemoteOnly(!remoteOnly)}
+                    className={`w-full px-2.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                      remoteOnly
+                        ? 'bg-[#1a361d] text-[#d8ffd2] border-[#1a361d]'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {remoteOnly ? '✓ Remote Only' : 'Remote Only'}
+                  </button>
                 </div>
               </div>
 
@@ -734,7 +835,7 @@ export default function CareersPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
               <div>
                 <span className="text-slate-400 font-mono text-[10px] block">COMPENSATION</span>
-                <span className="font-bold text-[#2d5c36]">{selectedJobForDetails.salaryRange}</span>
+                <span className="font-bold text-[#2d5c36]">{String(selectedJobForDetails.salaryRange || 'Salary on request').trim().replace(/\$\s*(\$\s*)+/, '$ ').replace(/(\d{1,3}),000\b/g, '$1K')}</span>
               </div>
               <div>
                 <span className="text-slate-400 font-mono text-[10px] block">LOCATION</span>
@@ -856,7 +957,7 @@ export default function CareersPage() {
                   </div>
                   <h3 className="text-lg font-display font-bold text-[#1a361d]">{selectedJobForApply.title}</h3>
                   <div className="text-xs text-slate-500 font-medium">
-                    {selectedJobForApply.company} • {selectedJobForApply.location} • {selectedJobForApply.salaryRange}
+                    {selectedJobForApply.company} • {selectedJobForApply.location} • {String(selectedJobForApply.salaryRange || '').trim().replace(/\$\s*(\$\s*)+/, '$ ').replace(/(\d{1,3}),000\b/g, '$1K')}
                   </div>
                 </div>
 

@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
-import { Briefcase, CheckCircle2, Award, Users, Calendar, ArrowRight, Shield, Sparkles, PhoneCall, Check, FileText } from 'lucide-react';
+import {
+  Briefcase, CheckCircle2, Award, Users, Calendar, ArrowRight, Shield, Sparkles,
+  PhoneCall, Check, FileText, Info, Quote, Linkedin, MessagesSquare, Code2, Zap, Compass
+} from 'lucide-react';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
 import { Link } from 'react-router-dom';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { DEFAULT_CAREER_SUPPORT } from '../data/siteContent';
 
 export default function CareerSupportPage() {
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const { settings } = useSiteSettings();
+
+  // Six-stage career framework + transparency (admin override, static fallback)
+  const career = { ...DEFAULT_CAREER_SUPPORT, ...(settings?.careerSupport || {}) };
+  const stageIcons = { FileText, Linkedin, MessagesSquare, Code2, Zap, Compass };
 
   const pillars = [
     {
@@ -40,6 +51,9 @@ export default function CareerSupportPage() {
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-20">
+
+        <CompanyMarquee />
+
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <Award className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -103,6 +117,129 @@ export default function CareerSupportPage() {
             ))}
           </div>
         </section>
+
+        {/* ── Six-Stage Career Acceleration Framework ───────────────────── */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <span>Our 6-Stage Framework</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight">
+              {career.title}
+            </h2>
+            <p className="text-sm text-slate-600 mt-2">{career.subtitle}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {(career.stages || []).map((st, idx) => {
+              const Icon = stageIcons[st.icon] || FileText;
+              return (
+                <div key={idx} className="rounded-3xl bg-white border border-slate-200 p-6 shadow-xs hover:shadow-lg hover:border-[#1a361d]/25 transition-all flex flex-col">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-[#1a361d] text-[#76ff8a] flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] tracking-wider">
+                      {st.stage}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-bold font-heading text-[#1a361d] leading-tight">{st.title}</h3>
+                  <p className="text-[11px] font-semibold text-[#2d5c36] mb-3">{st.tagline}</p>
+
+                  <div className="space-y-2 pt-3 border-t border-slate-100 flex-1">
+                    {(st.points || []).map((pt, pi) => (
+                      <div key={pi} className="flex items-start gap-2 text-[11px] text-slate-700 leading-relaxed">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981] shrink-0 mt-0.5" />
+                        <span>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── Transparency: What Placement Assistance Actually Means ────── */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-16">
+          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-6 sm:p-10 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+              <Shield className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <span>Transparency First</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] tracking-tight mb-2">
+              {career.transparency?.title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed mb-8">
+              {career.transparency?.description}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 rounded-2xl bg-[#f7f9f6] border border-slate-200">
+                <div className="flex items-center gap-2 text-sm font-bold text-[#1a361d] mb-4">
+                  <CheckCircle2 className="w-4 h-4 text-[#10b981]" />
+                  What We Provide
+                </div>
+                <div className="space-y-3">
+                  {(career.transparency?.whatWeProvide || []).map((item, i) => (
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] shrink-0 mt-1.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200">
+                <div className="flex items-center gap-2 text-sm font-bold text-amber-900 mb-4">
+                  <Info className="w-4 h-4 text-amber-600" />
+                  Student Accountability
+                </div>
+                <div className="space-y-3">
+                  {(career.transparency?.studentAccountability || []).map((item, i) => (
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-amber-900/90 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Student Transitions ──────────────────────────────────────── */}
+        {(career.transitions || []).length > 0 && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-16">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
+                <span>Student Transitions</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] tracking-tight">
+                Learners Who Reached Their Target Roles
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {career.transitions.map((t, idx) => (
+                <div key={idx} className="rounded-3xl bg-white border border-slate-200 p-6 shadow-xs hover:shadow-lg transition-all flex flex-col">
+                  <Quote className="w-6 h-6 text-[#76ff8a] mb-3" />
+                  <p className="text-xs text-slate-600 italic leading-relaxed flex-1 mb-4">&ldquo;{t.quote}&rdquo;</p>
+                  <div className="pt-4 border-t border-slate-100">
+                    <div className="text-sm font-bold text-[#1a361d]">{t.name}</div>
+                    <div className="text-[11px] text-slate-500">
+                      {t.fromRole}{t.toRole && t.toRole !== t.fromRole ? ` → ${t.toRole}` : ''}
+                    </div>
+                    {t.company && <div className="text-[11px] font-semibold text-[#2d5c36] mt-1">{t.company}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Hiring Partners Showcase */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">

@@ -73,6 +73,81 @@ export default function FaqAccordion({
         answer: 'Yes! Our curriculum capstones are built to enterprise production specifications. Hiring partner engineering leads review your GitHub repositories, architecture documentation, and live demo recordings during technical evaluation.',
         category: 'Live Jobs',
       }
+    ],
+    // Complete knowledgebase used when the FAQ database has no entries yet
+    all: [
+      {
+        _id: 'default-all-1',
+        question: 'Are your programs suitable for beginners?',
+        answer: 'Yes. Our beginner tracks such as Data Science and Advanced Analytics start from the fundamentals and build up gradually. For advanced programs (Agentic AI, Cyber Security & AI), prerequisites are listed on each course page.',
+        category: 'Admissions',
+      },
+      {
+        _id: 'default-all-2',
+        question: 'How do I access my course after enrolling?',
+        answer: 'Enrollment is instant once your payment succeeds. Head to your student dashboard and click "Continue" on your course to open the lesson player — you can watch sessions, mark lessons complete, and access all materials from there.',
+        category: 'Enrollment',
+      },
+      {
+        _id: 'default-all-3',
+        question: 'Which payment methods do you accept?',
+        answer: 'We accept major credit and debit cards (Visa, Mastercard, American Express, Discover), plus eligible Buy Now Pay Later options including Klarna, Zip, Afterpay, and Affirm. Availability is determined by the provider at checkout. You can also reserve any program with a $99 refundable deposit.',
+        category: 'Tuition & Payments',
+      },
+      {
+        _id: 'default-all-4',
+        question: 'What is your refund policy?',
+        answer: 'You can request a full refund within 7 days of purchase if you have completed less than 20% of a self-paced course. Cohort and personalized mentorship fees follow the terms outlined in our Refund & Return Policy page.',
+        category: 'Tuition & Payments',
+      },
+      {
+        _id: 'default-all-5',
+        question: 'Will I receive a certificate after completion?',
+        answer: 'Absolutely. Complete all lessons and required capstone deliverables and a verifiable certificate of completion is issued automatically — downloadable as a PDF from your dashboard with a unique ID anyone can verify on our public registry.',
+        category: 'Certificates',
+      },
+      {
+        _id: 'default-all-6',
+        question: 'Do you offer 1-on-1 mentorship?',
+        answer: 'Yes. Our flagship programs include live cohorts, and our Personalized Learning track adds weekly 1-on-1 private mentorship, personalized interview preparation, and salary negotiation coaching. You can also book individual mentorship sessions with our AI and cyber leads.',
+        category: 'Personalized Learning',
+      },
+      {
+        _id: 'default-all-7',
+        question: 'What is the live cohort schedule?',
+        answer: 'Cohorts meet live on weekends (2-hour interactive sessions) with additional weekday office hours for code walkthroughs. Every session is recorded in HD and added to your LMS library for lifetime access.',
+        category: 'Enrollment',
+      },
+      {
+        _id: 'default-all-8',
+        question: 'Is there real placement assistance?',
+        answer: 'Yes — and we are transparent about scope. We provide direct resume rewrites, 1-on-1 mock technical interviews, portfolio reviews, hiring partner introductions, and offer/salary negotiation guidance. Final hiring decisions always belong to employers; our framework maximises your interview performance.',
+        category: 'Career Support',
+      },
+      {
+        _id: 'default-all-9',
+        question: 'Can I pay in instalments?',
+        answer: 'Yes. Alongside the $99 seat reservation, eligible learners can split tuition across interest-free monthly instalments or use Buy Now Pay Later providers at checkout depending on eligibility.',
+        category: 'Tuition & Payments',
+      },
+      {
+        _id: 'default-all-10',
+        question: 'How long do I keep access to the course materials?',
+        answer: 'Lifetime LMS access is included with every program — all recorded sessions, code repositories, capstone templates, and curriculum updates remain available to you after graduation.',
+        category: 'Certificates',
+      },
+      {
+        _id: 'default-all-11',
+        question: 'Which capstone projects will I build?',
+        answer: 'Capstones are production-grade: real AI agents with tool use, RAG pipelines over enterprise datasets, virtual penetration testing labs, BI dashboards, and cloud-deployed microservices. Each is reviewed line-by-line by instructors and defended live.',
+        category: 'Curriculum',
+      },
+      {
+        _id: 'default-all-12',
+        question: 'Do I need prior coding experience for AI or Cyber Security programs?',
+        answer: 'No prior professional experience is required for beginner tracks — we start with Python, Linux, and networking fundamentals. Advanced tracks expect working knowledge of Python and basic statistics, which our foundation modules cover as well.',
+        category: 'Admissions',
+      },
     ]
   };
 
@@ -85,9 +160,9 @@ export default function FaqAccordion({
   });
 
   // Fallback to rich pre-configured FAQs if database has no entries for this specific category
-  const filteredFaqs = rawFiltered.length > 0 
-    ? rawFiltered 
-    : (DEFAULT_FALLBACK_FAQS[targetCategory] || []);
+  const fallbackForCategory = DEFAULT_FALLBACK_FAQS[targetCategory]
+    || (targetCategory === 'all' ? DEFAULT_FALLBACK_FAQS.all : []);
+  const filteredFaqs = rawFiltered.length > 0 ? rawFiltered : fallbackForCategory;
 
   const displayFaqs = typeof limit === 'number' ? filteredFaqs.slice(0, limit) : filteredFaqs;
 

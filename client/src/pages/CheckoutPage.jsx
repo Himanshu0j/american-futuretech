@@ -4,13 +4,22 @@ import { Shield, Lock, CheckCircle2, ArrowRight, CreditCard, Tag, AlertCircle, A
 import axios from 'axios';
 import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { settings } = useSiteSettings();
   const initialCourseId = searchParams.get('courseId');
-  const initialTier = searchParams.get('tier') || 'deposit';
+  const programParam = (searchParams.get('program') || searchParams.get('mode') || '').toLowerCase();
+  const initialTier = searchParams.get('tier') || (programParam === 'personalized' ? 'personalized' : 'deposit');
+
+  // Personalized 1-on-1 track pricing (admin editable via Settings → Personalized)
+  const personalizedPrice = settings?.personalizedLearning?.price || 5499;
+  const personalizedOriginal = settings?.personalizedLearning?.originalPrice || 6999;
+  const personalizedDuration = settings?.personalizedLearning?.duration || 'Custom / 3 to 6 Months';
 
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(initialCourseId || '');
@@ -49,7 +58,11 @@ export default function CheckoutPage() {
 
   const selectedCourse = courses.find(c => c._id === selectedCourseId) || courses[0];
 
-  const baseAmount = tier === 'deposit' ? 99 : (selectedCourse?.pricing?.discountedPrice || 1899);
+  const baseAmount = tier === 'deposit'
+    ? 99
+    : tier === 'personalized'
+      ? personalizedPrice
+      : (selectedCourse?.pricing?.discountedPrice || 1899);
   const finalAmount = Math.max(10, baseAmount - discountAmount);
 
   const handleApplyCoupon = () => {
@@ -108,7 +121,8 @@ export default function CheckoutPage() {
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* Header */}
+
+        <CompanyMarquee />        {/* Header */}
         <div className="max-w-2xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-3">
             <Lock className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -211,7 +225,7 @@ export default function CheckoutPage() {
                     Choose Tuition Schedule
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Deposit Option */}
                   <div
                     onClick={() => { setTier('deposit'); setDiscountAmount(0); setAppliedCoupon(''); }}
@@ -246,6 +260,30 @@ export default function CheckoutPage() {
                     <p className="text-xs text-slate-600 leading-relaxed">
                       Complete upfront payment. Unlocks instant access to labs, course repository, and 1-on-1 advisor.
                     </p>
+                  </div>
+
+                  {/* Personalized 1-on-1 Option */}
+                  <div
+                    onClick={() => { setTier('personalized'); setDiscountAmount(0); setAppliedCoupon(''); }}
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden ${
+                      tier === 'personalized'
+                        ? 'bg-[#fffdf7] border-amber-500 shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-amber-300'
+                    }`}
+                  >
+                    <span className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
+                      Independent
+                    </span>
+                    <div className="flex justify-between items-start mb-2 pr-14">
+                      <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">Personalized 1-on-1</span>
+                      <span className="text-2xl font-display font-black text-[#1a361d]">${personalizedPrice.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed mb-2">
+                      Weekly private mentorship, personalized interview preparation, and salary negotiation coaching.
+                    </p>
+                    <div className="text-[10px] font-mono text-slate-500">
+                      Duration: {personalizedDuration} • <span className="line-through">${personalizedOriginal.toLocaleString()}</span> list price
+                    </div>
                   </div>
                 </div>
               </div>

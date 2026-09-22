@@ -69,7 +69,7 @@ const sendLeadConfirmationEmail = async (lead, courseTitle = 'Technology Program
 };
 
 const sendAdminLeadAlert = async (lead, courseTitle = 'Technology Program') => {
-  const adminEmail = process.env.NOTIFICATION_EMAIL || 'admissions@americanfuturetech.com';
+  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americantechgloballlc.com';
   const subject = `[NEW LEAD] ${lead.fullName} - ${courseTitle}`;
   const text = `New application received for ${courseTitle} from ${lead.fullName} (${lead.email}, ${lead.phone}). Preferred Batch: ${lead.preferredBatch}.`;
   return await sendEmail({ to: adminEmail, subject, text });

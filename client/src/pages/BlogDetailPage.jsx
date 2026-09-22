@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Calendar, User, Tag, Share2, BookOpen } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 
 export default function BlogDetailPage() {
@@ -50,7 +51,8 @@ export default function BlogDetailPage() {
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
-        <Link
+
+        <CompanyMarquee />        <Link
           to="/blog"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#1a361d] transition-colors mb-8"
         >

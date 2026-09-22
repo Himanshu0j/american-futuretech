@@ -54,13 +54,13 @@ export default function JobsManager() {
     title: '',
     company: '',
     companyLogo: '',
-    department: 'AI Research & Deployment',
-    location: 'Remote (US Timezones)',
+    department: '',
+    location: '',
     type: 'Full-time',
-    experienceLevel: 'Entry to Mid Level',
-    salaryMin: 95000,
-    salaryMax: 135000,
-    salaryRange: '$95,000 - $135,000 / year',
+    experienceLevel: '',
+    salaryMin: '',
+    salaryMax: '',
+    salaryRange: '',
     recommendedCourse: '',
     recommendedCourseTitle: '',
     applyLink: '',
@@ -69,12 +69,12 @@ export default function JobsManager() {
     isFeatured: false,
     isActive: true,
     isPublished: true,
-    responsibilities: ['Collaborate with engineering teams to scale distributed systems', 'Implement automated tests and observability pipelines'],
-    preferredQualifications: ['Hands-on experience with production cloud deployments', 'Demonstrated understanding of microservices architecture'],
-    keyRequirements: ['Completion of American FutureTech Program or relevant CS experience', 'Proficiency in modern programming languages and cloud tools'],
-    requiredCertificates: ['American FutureTech Program Certification', 'Relevant Industry Credential (e.g. AWS, CompTIA, or equivalent)'],
-    technicalSkills: ['Python', 'Docker', 'AWS', 'Linux'],
-    softSkills: ['Communication', 'Problem Solving', 'Team Collaboration']
+    responsibilities: [],
+    preferredQualifications: [],
+    keyRequirements: [],
+    requiredCertificates: [],
+    technicalSkills: [],
+    softSkills: []
   });
 
   // Selected application preview
@@ -144,12 +144,13 @@ export default function JobsManager() {
   };
 
   const handleSalaryChange = (key, value) => {
-    const numVal = Number(value);
+    const numVal = value === '' ? '' : Number(value);
     const updated = { ...jobForm, [key]: numVal };
-    if (key === 'salaryMin' && updated.salaryMax) {
-      updated.salaryRange = `$${numVal.toLocaleString()} - $${Number(updated.salaryMax).toLocaleString()} / year`;
-    } else if (key === 'salaryMax' && updated.salaryMin) {
-      updated.salaryRange = `$${Number(updated.salaryMin).toLocaleString()} - $${numVal.toLocaleString()} / year`;
+    // Build the display range ONLY from manual entries; never guess defaults
+    if (updated.salaryMin !== '' && updated.salaryMax !== '') {
+      updated.salaryRange = `$${Number(updated.salaryMin).toLocaleString()} - $${Number(updated.salaryMax).toLocaleString()} / year`;
+    } else {
+      updated.salaryRange = '';
     }
     setJobForm(updated);
   };
@@ -171,17 +172,18 @@ export default function JobsManager() {
   const handleOpenJobModal = (job = null) => {
     if (job) {
       setEditingJob(job);
+      // Prefill ONLY what exists in the saved job — no invented placeholder data
       setJobForm({
         title: job.title || '',
         company: job.company || '',
         companyLogo: job.companyLogo || '',
-        department: job.department || 'AI Research & Deployment',
-        location: job.location || 'Remote (US Timezones)',
+        department: job.department || '',
+        location: job.location || '',
         type: job.employmentType || job.type || 'Full-time',
-        experienceLevel: job.experienceLevel || 'Mid-Level',
-        salaryMin: job.salaryMin || 100000,
-        salaryMax: job.salaryMax || 140000,
-        salaryRange: job.salaryRange || '$100,000 - $140,000 / year',
+        experienceLevel: job.experienceLevel || '',
+        salaryMin: job.salaryMin !== undefined && job.salaryMin !== null ? job.salaryMin : '',
+        salaryMax: job.salaryMax !== undefined && job.salaryMax !== null ? job.salaryMax : '',
+        salaryRange: job.salaryRange || '',
         recommendedCourse: typeof job.recommendedCourse === 'object' ? job.recommendedCourse?._id : (job.recommendedCourse || ''),
         recommendedCourseTitle: job.recommendedCourseTitle || (typeof job.recommendedCourse === 'object' ? job.recommendedCourse?.title : '') || '',
         applyLink: job.applyLink || '',
@@ -190,40 +192,40 @@ export default function JobsManager() {
         isFeatured: job.isFeatured || false,
         isActive: job.isActive !== undefined ? job.isActive : true,
         isPublished: job.isPublished !== undefined ? job.isPublished : (job.isActive !== undefined ? job.isActive : true),
-        responsibilities: Array.isArray(job.responsibilities) && job.responsibilities.length ? job.responsibilities : ['Collaborate with engineering teams to scale distributed systems'],
-        preferredQualifications: Array.isArray(job.preferredQualifications) && job.preferredQualifications.length ? job.preferredQualifications : ['Hands-on experience with production systems'],
-        keyRequirements: Array.isArray(job.keyRequirements) && job.keyRequirements.length ? job.keyRequirements : ['Completion of American FutureTech Program or relevant CS experience'],
-        requiredCertificates: Array.isArray(job.requiredCertificates) && job.requiredCertificates.length ? job.requiredCertificates : ['American FutureTech Credential'],
-        technicalSkills: Array.isArray(job.technicalSkills) && job.technicalSkills.length ? job.technicalSkills : (Array.isArray(job.skills) ? job.skills : ['Python', 'Docker']),
-        softSkills: Array.isArray(job.softSkills) && job.softSkills.length ? job.softSkills : ['Communication', 'Teamwork']
+        responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities : [],
+        preferredQualifications: Array.isArray(job.preferredQualifications) ? job.preferredQualifications : [],
+        keyRequirements: Array.isArray(job.keyRequirements) ? job.keyRequirements : [],
+        requiredCertificates: Array.isArray(job.requiredCertificates) ? job.requiredCertificates : [],
+        technicalSkills: Array.isArray(job.technicalSkills) ? job.technicalSkills : (Array.isArray(job.skills) ? job.skills : []),
+        softSkills: Array.isArray(job.softSkills) ? job.softSkills : []
       });
     } else {
       setEditingJob(null);
       setJobForm({
         title: '',
         company: '',
-        companyLogo: LOGO_PRESETS[0].url,
-        department: 'AI Research & Deployment',
-        location: 'Remote (US Timezones)',
+        companyLogo: '',
+        department: '',
+        location: '',
         type: 'Full-time',
-        experienceLevel: 'Entry to Mid Level',
-        salaryMin: 95000,
-        salaryMax: 135000,
-        salaryRange: '$95,000 - $135,000 / year',
-        recommendedCourse: courses.length ? courses[0]._id : '',
-        recommendedCourseTitle: courses.length ? courses[0].title : '',
+        experienceLevel: '',
+        salaryMin: '',
+        salaryMax: '',
+        salaryRange: '',
+        recommendedCourse: '',
+        recommendedCourseTitle: '',
         applyLink: '',
         description: '',
-        careerGrowth: 'Rapid internal progression to Senior Architect or Tech Lead within 18 to 24 months with regular merit reviews and direct executive sponsorship.',
+        careerGrowth: '',
         isFeatured: false,
         isActive: true,
         isPublished: true,
-        responsibilities: ['Collaborate with engineering teams to scale distributed systems', 'Implement automated tests and observability pipelines'],
-        preferredQualifications: ['Hands-on experience with production cloud deployments', 'Demonstrated understanding of microservices architecture'],
-        keyRequirements: ['Completion of American FutureTech Program or relevant CS experience', 'Proficiency in modern programming languages and cloud tools'],
-        requiredCertificates: ['American FutureTech Program Certification', 'Relevant Industry Credential'],
-        technicalSkills: ['Python', 'PyTorch', 'Docker', 'AWS'],
-        softSkills: ['Communication', 'Problem Solving', 'Team Collaboration']
+        responsibilities: [],
+        preferredQualifications: [],
+        keyRequirements: [],
+        requiredCertificates: [],
+        technicalSkills: [],
+        softSkills: []
       });
     }
     setShowJobModal(true);
@@ -246,8 +248,10 @@ export default function JobsManager() {
       const payload = {
         ...jobForm,
         employmentType: jobForm.type,
-        salaryMin: Number(jobForm.salaryMin) || undefined,
-        salaryMax: Number(jobForm.salaryMax) || undefined,
+        // Persist empty as null so stale defaults never resurrect on the public board
+        salaryMin: jobForm.salaryMin === '' ? null : Number(jobForm.salaryMin),
+        salaryMax: jobForm.salaryMax === '' ? null : Number(jobForm.salaryMax),
+        salaryRange: jobForm.salaryRange || '',
         responsibilities: cleanList(jobForm.responsibilities),
         preferredQualifications: cleanList(jobForm.preferredQualifications),
         keyRequirements: cleanList(jobForm.keyRequirements),
@@ -675,10 +679,11 @@ export default function JobsManager() {
                       onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                     >
-                      <option value="AI Research & Deployment">AI Research & Deployment</option>
+                      <option value="">-- Select Department --</option>
+                      <option value="AI Research & Deployment">AI Research &amp; Deployment</option>
                       <option value="Security Operations">Security Operations</option>
-                      <option value="Infrastructure & SRE">Infrastructure & SRE</option>
-                      <option value="Engineering & Technology">Engineering & Technology</option>
+                      <option value="Infrastructure & SRE">Infrastructure &amp; SRE</option>
+                      <option value="Engineering & Technology">Engineering &amp; Technology</option>
                     </select>
                   </div>
                   <div>
@@ -706,35 +711,35 @@ export default function JobsManager() {
                   </div>
                 </div>
 
-                {/* Location & Salary Range */}
+                {/* Location & Salary Range — both fully manual, no preset values */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-slate-400 uppercase mb-1">Location</label>
+                    <label className="block text-slate-400 uppercase mb-1">Location (manual text)</label>
                     <input
                       type="text"
                       value={jobForm.location}
                       onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
-                      placeholder="Remote (US Timezones)"
+                      placeholder="e.g. Remote, Dallas TX, On-site..."
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 uppercase mb-1">Min Salary ($/yr)</label>
+                    <label className="block text-slate-400 uppercase mb-1">Min Salary ($/yr) — manual</label>
                     <input
                       type="number"
                       value={jobForm.salaryMin}
                       onChange={(e) => handleSalaryChange('salaryMin', e.target.value)}
-                      placeholder="95000"
+                      placeholder="e.g. 95000"
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 uppercase mb-1">Max Salary ($/yr)</label>
+                    <label className="block text-slate-400 uppercase mb-1">Max Salary ($/yr) — manual</label>
                     <input
                       type="number"
                       value={jobForm.salaryMax}
                       onChange={(e) => handleSalaryChange('salaryMax', e.target.value)}
-                      placeholder="135000"
+                      placeholder="e.g. 135000"
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                     />
                   </div>

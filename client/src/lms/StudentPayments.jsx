@@ -243,7 +243,7 @@ export default function StudentPayments() {
                     </div>
                     <div className="text-xs text-slate-500 mt-1 leading-relaxed">
                       30 N Gould St Ste R, Sheridan, WY 82801, United States<br />
-                      billing@americanfuturetech.com | +1 (307) 201-9494
+                      info@americantechgloballlc.com | +1 (816) 846-6717
                     </div>
                   </div>
                   <div className="text-right">
@@ -316,7 +316,7 @@ export default function StudentPayments() {
                 </div>
 
                 <div className="pt-4 text-[11px] text-slate-500 text-center leading-relaxed">
-                  American FutureTech LLC is a registered US educational provider headquartered in Sheridan, Wyoming. Tuition fees are subject to academic enrollment policies. For questions, contact billing@americanfuturetech.com.
+                  American FutureTech LLC is a registered US educational provider headquartered in Sheridan, Wyoming. Tuition fees are subject to academic enrollment policies. For questions, contact info@americantechgloballlc.com.
                 </div>
               </div>
             </motion.div>

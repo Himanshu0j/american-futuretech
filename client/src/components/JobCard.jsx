@@ -18,6 +18,19 @@ export default function JobCard({
   onOpenDetails,
   onOpenApply
 }) {
+  // Normalize any stored salary string so there is never a doubled "$" (e.g. "$ $100K")
+  const normalizeSalary = (raw) => {
+    if (!raw) return '';
+    let s = String(raw).trim();
+    // collapse repeated $ signs and any spaces between them
+    s = s.replace(/\$\s*(\$\s*)+/, '$ ');
+    // collapse "100,000" -> "100K"
+    s = s.replace(/(\d{1,3}),000\b/g, '$1K');
+    // remove a second $ inside the range ("$100K - $130K" is fine, "$100K - $$130K" is not)
+    s = s.replace(/-\s*\$\$/g, '- $');
+    return s.trim();
+  };
+
   // Format salary cleanly into $110K - $140K / yr
   const formatSalary = () => {
     const min = Number(job.salaryMin);
@@ -28,11 +41,9 @@ export default function JobCard({
       return `$${minK} - $${maxK} / yr`;
     }
     if (job.salaryRange) {
-      let s = String(job.salaryRange).trim().replace(/^\$\s*\$?\s*/, '$');
-      s = s.replace(/(\d{2,3}),000/g, '$1K');
-      return s;
+      return normalizeSalary(job.salaryRange);
     }
-    return '$110K - $140K / yr';
+    return '';
   };
 
   const handleApplyClick = (e) => {
@@ -118,7 +129,7 @@ export default function JobCard({
         {/* Right: Compensation & Actively Hiring Badge */}
         <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
           <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#1a361d] dark:text-[#76ff8a] font-mono tracking-tight bg-[#d8ffd2]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#76ff8a]/60 dark:border-emerald-800 shadow-2xs">
-            {formatSalary()}
+            {formatSalary() || 'Salary on request'}
           </div>
           <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />

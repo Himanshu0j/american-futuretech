@@ -165,11 +165,11 @@ export default function ToolsSection() {
   ];
 
   return (
-    <section id="tools" className="py-20 bg-slate-50 dark:bg-[#0B132B] border-t border-slate-200/60 dark:border-slate-800 relative">
+    <section id="tools" className="py-12 bg-slate-50 dark:bg-[#0B132B] border-t border-slate-200/60 dark:border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div className="max-w-2xl text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-3">
               <Terminal className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
@@ -196,16 +196,16 @@ export default function ToolsSection() {
         </div>
 
         {/* Featured Capstone Tools Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {featuredTools.map((tool, idx) => (
             <div
               key={tool.name || idx}
-              className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-left group relative"
+              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Logo & Category Badge */}
                 <div className="flex items-center justify-between">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
                     {tool.logo ? (
                       <img
                         src={tool.logo}
@@ -217,40 +217,40 @@ export default function ToolsSection() {
                         }}
                       />
                     ) : null}
-                    <div className={`w-full h-full rounded-xl bg-slate-900 text-white font-bold text-xs items-center justify-center ${tool.logo ? 'hidden' : 'flex'}`}>
+                    <div className={`w-full h-full rounded-lg bg-slate-900 text-white font-bold text-xs items-center justify-center ${tool.logo ? 'hidden' : 'flex'}`}>
                       {tool.name?.slice(0, 2).toUpperCase() || 'TL'}
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                    {tool.badge || 'Core Standard'}
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    {tool.badge || 'Core'}
                   </span>
                 </div>
 
                 <div>
-                  <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
+                  <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-0.5">
                     {tool.category || 'Production Tool'}
                   </div>
-                  <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-base font-display font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {tool.name}
                   </h3>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
                   {tool.description || 'Enterprise platform deployed in student production laboratory environments.'}
                 </p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-[11px] font-medium text-slate-500 font-mono">Verified in Cohorts</span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span className="text-[10px] font-medium text-slate-500 font-mono">Verified in Cohorts</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Capstone Real-World Outcomes Banner */}
-        <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+        <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">

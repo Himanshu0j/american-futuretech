@@ -5,7 +5,6 @@ import {
   Briefcase,
   Building2,
   MapPin,
-  DollarSign,
   Clock,
   ArrowLeft,
   ArrowRight,
@@ -21,6 +20,7 @@ import {
   Share2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import BulletContent from '../components/common/BulletContent';
 import SafeImage from '../components/common/SafeImage';
@@ -133,7 +133,7 @@ export default function JobDetailPage() {
     );
   }
 
-  // Determine formatted salary string ($110K - $140K / yr)
+  // Determine formatted salary string ($110K - $140K / yr) — never renders a doubled $
   const salaryText = (() => {
     const min = Number(job.salaryMin);
     const max = Number(job.salaryMax);
@@ -143,11 +143,12 @@ export default function JobDetailPage() {
       return `$${minK} - $${maxK} / yr`;
     }
     if (job.salaryRange) {
-      let s = String(job.salaryRange).trim().replace(/^\$\s*\$?\s*/, '$');
-      s = s.replace(/(\d{2,3}),000/g, '$1K');
-      return s;
+      let s = String(job.salaryRange).trim().replace(/\$\s*(\$\s*)+/, '$ ');
+      s = s.replace(/(\d{1,3}),000\b/g, '$1K');
+      s = s.replace(/-\s*\$\$/g, '- $');
+      return s.trim();
     }
-    return '$110K - $140K / yr';
+    return 'Salary on request';
   })();
 
   return (
@@ -155,7 +156,8 @@ export default function JobDetailPage() {
       <Navbar />
 
       <main className="pt-28 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
-        
+
+        <CompanyMarquee />        
         {/* Back Link Breadcrumb */}
         <div className="flex items-center justify-between mb-8 text-xs font-mono text-slate-500">
           <div className="flex items-center gap-2">
@@ -231,8 +233,7 @@ export default function JobDetailPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
               <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">COMPENSATION</span>
-              <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                <DollarSign className="w-3.5 h-3.5" />
+              <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
                 {salaryText}
               </span>
             </div>

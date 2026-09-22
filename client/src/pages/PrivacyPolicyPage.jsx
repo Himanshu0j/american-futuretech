@@ -80,8 +80,8 @@ export default function PrivacyPolicyPage() {
             <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-1 font-mono text-xs">
               <p><strong>American Futuretech LLC</strong></p>
               <p>30 N Gould St, Sheridan, WY 82801, USA</p>
-              <p>Email: <a href="mailto:admissions@americanfuturetech.com" className="text-[#2d5c36] hover:underline">admissions@americanfuturetech.com</a></p>
-              <p>Phone: +1 (307) 201-9494</p>
+              <p>Email: <a href="mailto:info@americantechgloballlc.com" className="text-[#2d5c36] hover:underline">info@americantechgloballlc.com</a></p>
+              <p>Phone: +1 (816) 846-6717</p>
             </div>
           </section>
         </div>

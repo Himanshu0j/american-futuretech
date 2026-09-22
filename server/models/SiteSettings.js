@@ -29,6 +29,109 @@ const CompanyLogoSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true });
 
+// Leadership & Faculty team member (About page)
+const LeaderSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, default: 'Leadership' },
+  experience: { type: String, default: '' },
+  badge: { type: String, default: 'Leadership' },
+  bio: { type: String, default: '' },
+  skills: [{ type: String }],
+  linkedin: { type: String, default: '' },
+  image: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: true });
+
+// Sister company / staffing alliance block
+const SisterCompanySchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: true },
+  eyebrow: { type: String, default: 'Sister Staffing Company • Strategic Alliance' },
+  name: { type: String, default: 'Redmont Global Inc.' },
+  badge: { type: String, default: 'Sister Company' },
+  location: { type: String, default: 'Branchburg, New Jersey • Nationwide Reach' },
+  headline: { type: String, default: 'Connecting Top Talent with Leading Companies Through Smart Recruitment' },
+  tagline: { type: String, default: 'Connecting top talent with leading companies through smart recruitment and staffing solutions.' },
+  description: { type: String, default: 'While American FutureTech provides live academy training and certifications, Redmont Global Inc. handles specialized enterprise recruitment, corporate C2C staffing, and direct placements with Fortune 500 companies.' },
+  website: { type: String, default: '' },
+  stats: {
+    shortlistHours: { type: String, default: '48h' },
+    shortlistLabel: { type: String, default: 'Shortlists' },
+    vetted: { type: String, default: '100%' },
+    vettedLabel: { type: String, default: 'Vetted' },
+    placement: { type: String, default: 'Direct' },
+    placementLabel: { type: String, default: 'Placement' },
+  },
+  services: {
+    type: [{ title: { type: String }, desc: { type: String } }],
+    default: [
+      { title: 'IT Staffing & Recruitment', desc: 'Sourcing and screening specialized software engineers, data scientists, AI architects, and cybersecurity specialists.' },
+      { title: 'C2C Staffing Solutions', desc: 'Corporation-to-Corporation contracts, vendor compliance, and dedicated technical contractors for corporate teams.' },
+      { title: 'Direct Hire & Contract Staffing', desc: 'Flexible models including project contracts, contract-to-hire, and executive permanent placements.' },
+      { title: 'Temporary & Permanent Placements', desc: 'Fast deployment for project spikes, seasonal surges, and long-term permanent full-time technical hires.' },
+      { title: 'Workforce & Talent Solutions', desc: 'Strategic workforce planning, talent advisory, salary benchmarking, and customized hiring pipelines for enterprise employers.' },
+    ],
+  },
+}, { _id: false });
+
+// "Build-First" pedagogy block (About page)
+const PedagogySchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: true },
+  eyebrow: { type: String, default: 'Pedagogy' },
+  title: { type: String, default: 'The "Build-First" Learning Approach' },
+  description: { type: String, default: 'Traditional bootcamps rely heavily on pre-recorded videos and shallow toy examples. At American FutureTech, our methodology centers on 70% hands-on project building and 30% deep theoretical foundation.' },
+  handsOnPercent: { type: Number, default: 70 },
+  theoryPercent: { type: Number, default: 30 },
+  pillars: {
+    type: [{ title: { type: String }, desc: { type: String }, icon: { type: String } }],
+    default: [
+      { title: 'Production-Grade Capstones', desc: 'Build real AI agents, RAG systems, and virtual penetration testing labs that reflect enterprise environments.', icon: 'Terminal' },
+      { title: 'Line-by-Line Code Reviews', desc: 'Receive direct instructor feedback on code efficiency, security vulnerabilities, and architectural patterns.', icon: 'FileCode2' },
+      { title: 'Verifiable Credentialing', desc: 'Earn cryptographically verifiable certificates with unique IDs that prove your skills to recruiters.', icon: 'Award' },
+    ],
+  },
+  stats: {
+    type: [{ value: { type: String }, label: { type: String } }],
+    default: [
+      { value: '2,000+', label: 'Students Trained' },
+      { value: '89.9%', label: 'Career Growth' },
+      { value: '6+', label: 'Years Experience' },
+      { value: '3', label: 'Countries Served' },
+    ],
+  },
+}, { _id: false });
+
+// Career Support (6-stage framework + transparency)
+const CareerSupportSchema = new mongoose.Schema({
+  title: { type: String, default: 'The Six Pillars of Career Acceleration' },
+  subtitle: { type: String, default: 'Every enrolled learner receives direct, hands-on guidance through each phase of career preparation.' },
+  stages: {
+    type: [{ stage: { type: String }, title: { type: String }, tagline: { type: String }, points: [{ type: String }], icon: { type: String } }],
+    default: [
+      { stage: 'STAGE 01', title: 'Resume Development', tagline: 'Professional resume optimization', icon: 'FileText', points: ['ATS-optimized formatting engineered for tech recruiter software', 'Strategic alignment of technical keywords and project impacts', 'Quantified business outcome framing for all capstone deliverables', 'Multiple tailored versions for Data Science, AI, or Security job tracks'] },
+      { stage: 'STAGE 02', title: 'LinkedIn Optimization', tagline: 'Profile positioning & recruiter visibility', icon: 'Linkedin', points: ['Keyword-dense headlines and about summaries designed for search rank', 'Featured projects and interactive GitHub portfolio showcase', 'Strategic skills endorsement and professional recommendation strategy', 'Network growth and recruiter inbound engagement playbooks'] },
+      { stage: 'STAGE 03', title: 'Mock Interviews', tagline: 'Technical + HR preparation', icon: 'MessagesSquare', points: ['1-on-1 live technical mock interviews with senior engineers', 'Real-time feedback on code efficiency, logic explanation, and edge cases', 'Behavioral and leadership question practice using the STAR methodology', 'Post-interview scorecards highlighting strengths and improvement points'] },
+      { stage: 'STAGE 04', title: 'Portfolio Development', tagline: 'Projects, GitHub, and deployable demos', icon: 'Code2', points: ['Clean, well-documented GitHub repositories with production READMEs', 'Live deployed web applications, ML APIs, and interactive dashboards', 'Architecture diagrams explaining enterprise design choices', 'End-to-end data pipelines and automated testing demonstrations'] },
+      { stage: 'STAGE 05', title: 'Interview Preparation', tagline: 'Technical interview practice & drills', icon: 'Zap', points: ['Algorithmic problem-solving drills in Python and SQL', 'System design fundamentals for AI, ML, and Cyber Defense systems', 'Live debugging and live code execution assessments', 'Deep-dive preparation on machine learning theory and security frameworks'] },
+      { stage: 'STAGE 06', title: 'Job Search Guidance', tagline: 'Application strategy and career roadmapping', icon: 'Compass', points: ['Targeted company prospecting across tech, finance, and healthcare', 'High-conversion cold email and LinkedIn outreach templates', 'Hiring partner referral introductions and application tracking', 'Offer evaluation, benefits analysis, and compensation negotiation support'] },
+    ],
+  },
+  transparency: {
+    title: { type: String, default: 'What "Placement Assistance" Actually Means' },
+    description: { type: String, default: 'We believe in radical honesty. We do not use gimmicky "guaranteed job" promises. Here is the exact, comprehensive scope of what our career support delivers.' },
+    whatWeProvide: { type: [String], default: ['Direct Resume Rewrites: 1-on-1 line-by-line editing to pass enterprise ATS scans.', '1-on-1 Mock Technical Interviews: Live coding sessions and system design evaluations with detailed feedback scorecards.', 'Hiring Partner Introductions: Referrals to our network of staffing partners and corporate hiring pipelines.', 'Offer & Salary Negotiation: Guidance on evaluating total compensation packages, stock options, and bonuses.'] },
+    studentAccountability: { type: [String], default: ['Active Project Completion: Learners must complete all required capstone assignments and maintain clean GitHub code.', 'Dedicated Practice: Consistent effort on algorithmic drills, SQL queries, and interview question preparation.', 'Proactive Applications: Executing on targeted application strategies and responding promptly to recruiter screenings.', 'Merit-Based Outcomes: Final hiring decisions belong to employers; our framework maximizes your interview performance.'] },
+  },
+  transitions: {
+    type: [{ name: { type: String }, fromRole: { type: String }, toRole: { type: String }, quote: { type: String }, company: { type: String }, linkedin: { type: String } }],
+    default: [
+      { name: 'Jessica Martinez', fromRole: 'Data Analyst', toRole: 'Data Analyst', quote: 'The Data Science program gave me the skills and confidence to move into an AI role. The support and mentorship were amazing!', company: 'Apex Financial Analytics' },
+      { name: 'Rahul Sharma', fromRole: 'Software Engineer', toRole: 'Software Engineer', quote: 'Hands-on projects and expert mentors made all the difference. Highly recommended!', company: 'Synthetix Cloud Labs' },
+      { name: 'Priya Sharma', fromRole: 'IT Consultant', toRole: 'IT Consultant', quote: 'A well-structured program with excellent instructors. I gained real-world skills and confidence to grow in my career.', company: 'Vanguard Cyber Defense' },
+    ],
+  },
+}, { _id: false });
+
 const SiteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
@@ -40,7 +143,7 @@ const SiteSettingsSchema = new mongoose.Schema({
   },
   contactEmail: {
     type: String,
-    default: 'admissions@americanfuturetech.com',
+    default: 'info@americantechgloballlc.com',
   },
   contactPhone: {
     type: String,
@@ -106,18 +209,22 @@ const SiteSettingsSchema = new mongoose.Schema({
     title: { type: String, default: 'Personalized 1-on-1 Applied Mentorship Track' },
     subtitle: { type: String, default: 'Customized Curriculum Tailored to Your Prior Background & Target Tech Role' },
     duration: { type: String, default: 'Custom / 3 to 6 Months' },
-    fee: { type: Number, default: 2199 },
-    originalFee: { type: Number, default: 2999 },
-    discount: { type: String, default: '27% Off Spring Cohort' },
+    fee: { type: Number, default: 5499 },
+    price: { type: Number, default: 5499 },
+    originalFee: { type: Number, default: 6999 },
+    originalPrice: { type: Number, default: 6999 },
+    depositPrice: { type: Number, default: 99 },
+    discount: { type: String, default: 'Spring Cohort Offer' },
     description: { type: String, default: 'A bespoke, private mentorship fellowship engineered for career switchers and accelerated upskilling. Includes 1-on-1 weekly code reviews, personalized capstone project architectures, and custom pacing.' },
     features: {
       type: [String],
       default: [
-        'Dedicated 1-on-1 Senior Industry Practitioner Mentor',
-        'Custom-tailored curriculum matching your exact career target',
-        'Private weekly code reviews and live debugging sessions',
-        'Bespoke production capstone designed for your domain',
-        'Direct recruiter portfolio review and referral access'
+        'Everything in the group programs (all live cohorts + recordings)',
+        'Weekly private 1-on-1 mentorship with a senior industry practitioner',
+        'Personalized interview preparation, system design and mock interviews',
+        'Salary negotiation coaching and dedicated career support',
+        'Bespoke production capstone designed for your exact domain',
+        'Direct recruiter portfolio review and hiring partner referral access'
       ]
     },
     tools: {
@@ -188,6 +295,61 @@ const SiteSettingsSchema = new mongoose.Schema({
     missionText: { type: String, default: 'We combine the academic rigor of premier North American computer science curricula with the pragmatic urgency of Silicon Valley engineering sprints.' },
     visionTitle: { type: String, default: 'The Standard for Verified Technical Competence.' },
     visionText: { type: String, default: 'To become the gold standard global technology workforce accelerator, trusted by Fortune 500 engineering directors for verified, day-one production-ready technical talent.' },
+  },
+
+  // 🌟 LEADERSHIP & FACULTY CMS (About page team)
+  leadership: {
+    type: [LeaderSchema],
+    default: [
+      {
+        name: 'Mandeep Saraswat', role: 'Founder & CEO', badge: 'Leadership', experience: '8+ Years — Leadership & Business Growth', order: 1, active: true,
+        bio: 'With 8+ years of experience in leadership, sales management, business development, and client relations, I lead with a strong focus on building meaningful partnerships and creating long-term value. As Founder and CEO, I am passionate about business growth, innovation, and delivering education and business solutions that make a real impact.',
+        skills: ['Business Strategy', 'Sales Management', 'Client Relations', 'Business Development', 'Innovation', 'Partnership Building'], linkedin: '',
+      },
+      {
+        name: 'Suresh Gupta', role: 'Business & Operations Director', badge: 'Leadership', experience: '15+ Years — Business & Operations Management', order: 2, active: true,
+        bio: 'With 15+ years of experience in business management, project management, sales, and operations, I specialize in turning business strategies into practical results. I focus on building strong teams, improving operations, growing the business, and developing lasting relationships with clients and partners.',
+        skills: ['Project Management', 'Operations', 'Sales Strategy', 'Team Building', 'Client Partnerships', 'Business Growth'], linkedin: '',
+      },
+      {
+        name: 'Priyanshu Sharma', role: 'Managing Director — US Staffing & Recruitment', badge: 'Leadership', experience: '6+ Years — US Staffing & Talent Acquisition', order: 3, active: true,
+        bio: 'With 6+ years of experience in US staffing and recruitment, I specialize in client management, talent acquisition, and delivering the right staffing solutions for business needs. As Managing Director, I focus on driving growth, developing strategic partnerships, and building strong, long-term relationships with clients.',
+        skills: ['US Staffing', 'Talent Acquisition', 'Client Management', 'Recruitment Strategy', 'Strategic Partnerships', 'Business Development'], linkedin: '',
+      },
+      {
+        name: 'Raja Ranjan', role: 'AI & Cybersecurity Lead', badge: 'Faculty Lead', experience: '15+ Years — Cybersecurity & AI Training', order: 4, active: true,
+        bio: 'Certified Cybersecurity Expert and Corporate Trainer with 15+ years of experience in cybersecurity and AI, I specialize in helping professionals and enterprises build smarter security capabilities. My work focuses on AI-driven threat detection, automated incident response, and machine learning-based security analysis to create stronger, proactive defenses.',
+        skills: ['Cybersecurity', 'AI & ML', 'Threat Detection', 'Incident Response', 'Ethical Hacking', 'Corporate Training'], linkedin: '',
+      },
+      {
+        name: 'Ankit Kumar', role: 'AI Lead Architect', badge: 'Faculty Lead', experience: '6+ Years — Building & Teaching AI', order: 5, active: true,
+        bio: 'With 6 years of experience, I work as a Senior AI Engineer and Technology Architect, specializing in enterprise machine learning and agentic AI systems. I focus on designing scalable AI solutions, solving complex technology challenges, and mentoring 10,000+ technology professionals worldwide through practical, industry-focused learning.',
+        skills: ['Machine Learning', 'Deep Learning', 'Generative AI', 'LLMs', 'AI Agents', 'Python', 'Data Science'], linkedin: '',
+      },
+      {
+        name: 'Prince Chaudhary', role: 'Client Relations Lead', badge: 'Leadership', experience: '4+ Years — Client Relations & Account Management', order: 6, active: true,
+        bio: 'With 4+ years of experience in account management and client relationship management, I specialize in understanding client needs, building strong partnerships, and ensuring a positive client experience. I focus on clear communication, trust, and delivering consistent results that support both client satisfaction and business growth.',
+        skills: ['Account Management', 'Client Relations', 'Communication', 'Trust Building', 'Customer Experience', 'Business Growth'], linkedin: '',
+      },
+    ],
+  },
+
+  // 🌟 SISTER COMPANY / STAFFING ALLIANCE CMS
+  sisterCompany: {
+    type: SisterCompanySchema,
+    default: () => ({}),
+  },
+
+  // 🌟 "BUILD-FIRST" PEDAGOGY CMS
+  pedagogy: {
+    type: PedagogySchema,
+    default: () => ({}),
+  },
+
+  // 🌟 CAREER SUPPORT CMS (6-stage framework)
+  careerSupport: {
+    type: CareerSupportSchema,
+    default: () => ({}),
   },
 
   // 🌟 GLOBAL CTAs CMS

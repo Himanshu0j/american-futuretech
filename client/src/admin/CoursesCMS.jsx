@@ -14,6 +14,7 @@ import {
   Layers,
   X,
   Save,
+  Briefcase,
 } from 'lucide-react';
 import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
@@ -38,6 +39,9 @@ export default function CoursesCMS() {
     { moduleNumber: 1, moduleTitle: 'Module 1: Foundations', topics: 'Topic 1, Topic 2, Topic 3', hours: 30 },
   ]);
 
+  // Capstone showcase cards — editable from the same course modal, saved via /api/settings
+  const [capstoneProjects, setCapstoneProjects] = useState([]);
+
   const fetchCourses = async () => {
     try {
       setLoading(true);
@@ -52,8 +56,20 @@ export default function CoursesCMS() {
     }
   };
 
+  const fetchCapstones = async () => {
+    try {
+      const res = await api.get('/settings');
+      if (res.data.success) {
+        setCapstoneProjects(res.data.settings?.capstone?.projects || []);
+      }
+    } catch (err) {
+      console.error('Failed to load capstone projects:', err);
+    }
+  };
+
   useEffect(() => {
     fetchCourses();
+    fetchCapstones();
   }, []);
 
   const openCreateModal = () => {
@@ -125,6 +141,30 @@ export default function CoursesCMS() {
     }
   };
 
+  // ── Capstone helpers (shared site-wide showcase cards) ──
+  const addCapstone = () => {
+    setCapstoneProjects((prev) => [
+      ...prev,
+      { tag: 'Machine Learning', title: 'New Capstone Project', desc: 'Describe what students will build.', stack: ['Python'], color: 'from-indigo-500 to-blue-500' },
+    ]);
+  };
+
+  const updateCapstone = (idx, field, value) => {
+    setCapstoneProjects((prev) => {
+      const updated = [...prev];
+      if (field === 'stack') {
+        updated[idx] = { ...updated[idx], stack: value.split(',').map((s) => s.trim()).filter(Boolean) };
+      } else {
+        updated[idx] = { ...updated[idx], [field]: value };
+      }
+      return updated;
+    });
+  };
+
+  const removeCapstone = (idx) => {
+    setCapstoneProjects((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSaveCourse = async (e) => {
     e.preventDefault();
 
@@ -162,8 +202,24 @@ export default function CoursesCMS() {
       } else {
         await api.post('/courses', payload);
       }
+
+      // Persist capstone edits from the same modal (they power the Capstone section on course pages)
+      try {
+        const settingsRes = await api.get('/settings');
+        if (settingsRes.data.success) {
+          const current = settingsRes.data.settings || {};
+          await api.put('/settings', {
+            ...current,
+            capstone: { ...(current.capstone || {}), projects: capstoneProjects },
+          });
+        }
+      } catch (capErr) {
+        console.error('Capstone save failed:', capErr);
+      }
+
       setModalOpen(false);
       fetchCourses();
+      fetchCapstones();
     } catch (err) {
       console.error('Save course failed:', err);
     }
@@ -431,6 +487,94 @@ export default function CoursesCMS() {
                   onChange={setHighlights}
                   placeholder="Enter program highlight or outcome..."
                 />
+              </div>
+
+              {/* Capstone Projects Editor (course page showcase cards) */}
+              <div className="space-y-4 pt-4 border-t border-white/[0.08]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-teal-400" />
+                      <span>Capstone Projects (Showcase Cards)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      These cards render in the Capstone Projects section on all course pages.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addCapstone}
+                    className="px-3 py-1.5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-teal-500/30"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Project</span>
+                  </button>
+                </div>
+
+                {capstoneProjects.length === 0 && (
+                  <div className="text-xs text-slate-500 text-center py-4 border border-dashed border-slate-700 rounded-xl">
+                    No capstone cards yet — add one, or course defaults will show.
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {capstoneProjects.map((proj, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-teal-400 text-xs">Project {idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeCapstone(idx)}
+                          className="text-rose-400 hover:text-rose-300 p-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Category Tag (e.g. Computer Vision)"
+                          value={proj.tag || ''}
+                          onChange={(e) => updateCapstone(idx, 'tag', e.target.value)}
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Project Title"
+                          value={proj.title || ''}
+                          onChange={(e) => updateCapstone(idx, 'title', e.target.value)}
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs"
+                        />
+                      </div>
+
+                      <textarea
+                        rows={2}
+                        placeholder="What do students build?"
+                        value={proj.desc || ''}
+                        onChange={(e) => updateCapstone(idx, 'desc', e.target.value)}
+                        className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-300 text-xs resize-none"
+                      />
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Tech Stack (comma-separated)"
+                          value={(proj.stack || []).join(', ')}
+                          onChange={(e) => updateCapstone(idx, 'stack', e.target.value)}
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-300 text-xs"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Gradient (e.g. from-blue-500 to-cyan-500)"
+                          value={proj.color || ''}
+                          onChange={(e) => updateCapstone(idx, 'color', e.target.value)}
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs font-mono"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Visual Curriculum Composer */}

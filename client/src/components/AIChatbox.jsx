@@ -34,7 +34,7 @@ const KNOWLEDGE_BASE = [
   },
   {
     triggers: ['contact', 'human', 'call', 'speak', 'admissions', 'counselor'],
-    answer: "Our admissions department is located at 30 N Gould St, Sheridan, WY 82801. You can call us directly at +1 (307) 201-9494, chat via WhatsApp, or share your details below to schedule an advisory consultation."
+    answer: "Our admissions department is located at 30 N Gould St, Sheridan, WY 82801. You can call us directly at +1 (816) 846-6717, chat via WhatsApp, or share your details below to schedule an advisory consultation."
   }
 ];
 
@@ -131,7 +131,7 @@ export default function AIChatbox() {
         }
       ]);
     } catch (err) {
-      alert('Failed to submit advisory request. Please call us at +1 (307) 201-9494.');
+      alert('Failed to submit advisory request. Please call us at +1 (816) 846-6717.');
     }
   };
 

@@ -28,6 +28,7 @@ const DEFAULT_7_PROGRAMS = [
   { title: 'DevOps, Kubernetes & Cloud with AI', slug: 'devops-and-cloud-with-ai', badge: 'Enterprise Standard', duration: '6 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
   { title: 'AI Product Manager with Agentic AI', slug: 'ai-product-manager', badge: 'High Impact', duration: '4 Months', color: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300' },
   { title: 'Governance, Risk, and Compliance (GRC)', slug: 'governance-risk-and-compliance-grc-with-ai', badge: 'Enterprise Security', duration: '4 Months', color: 'text-cyan-700 bg-cyan-50 dark:bg-cyan-950/60 dark:text-cyan-300' },
+  { title: 'Placement Support', slug: 'placement-support', badge: 'Career Accelerator', duration: '3 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
 ];
 
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
@@ -84,6 +85,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   ];
 
   const moreLinks = [
+    { name: 'AI Certification Program', path: '/certifications/ai-certification' },
+    { name: 'Data Science Certification', path: '/certifications/data-science-certification' },
     { name: 'Privacy Policy', path: '/privacy' },
     { name: 'Refund & Return Policy', path: '/refund-policy' },
     { name: 'Cookie Policy', path: '/cookie-policy' },
@@ -146,9 +149,9 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               30 N Gould St, Sheridan, WY 82801
             </span>
             <span className="text-white/20">•</span>
-            <a href="tel:+13072019494" className="flex items-center gap-1 text-[#d8ffd2]/90 hover:text-white transition-colors">
+            <a href="tel:+18168466717" className="flex items-center gap-1 text-[#d8ffd2]/90 hover:text-white transition-colors">
               <Phone className="w-3 h-3 text-[#76ff8a]" />
-              +1 (307) 201-9494
+              +1 (816) 846-6717
             </a>
           </div>
 
@@ -190,16 +193,16 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           } flex items-center justify-between`}
         >
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group py-1 cursor-pointer shrink-0">
+          <Link to="/" className="flex items-center gap-2.5 group py-1 cursor-pointer shrink-0 min-w-[150px] sm:min-w-[170px]">
             <img
               src="/images/logo-horizontal.webp"
               alt="American FutureTech"
-              className={`w-auto object-contain transition-all duration-200 group-hover:scale-[1.02] ${scrolled ? 'h-9 sm:h-10' : 'h-10 sm:h-11'}`}
+              className={`w-auto object-contain transition-all duration-200 group-hover:scale-[1.02] ${scrolled ? 'h-8 sm:h-9' : 'h-9 sm:h-10'}`}
             />
           </Link>
 
           {/* Desktop Navigation Links: HOME, LIVE JOBS, CAREER PROGRAMS ▼, PERSONALIZED LEARNING, CERTIFICATIONS, ABOUT US, MORE ▼ */}
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
+          <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 min-w-0">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path || (link.path === '/jobs' && location.pathname === '/careers');
 
@@ -211,18 +214,28 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     onMouseEnter={() => setCoursesDropdown(true)}
                     onMouseLeave={() => setCoursesDropdown(false)}
                   >
-                    <button
-                      type="button"
-                      onClick={() => setCoursesDropdown(!coursesDropdown)}
-                      className={`text-[12px] xl:text-[13px] font-bold flex items-center gap-1 transition-colors py-1 cursor-pointer ${
-                        location.pathname.startsWith('/courses')
-                          ? 'text-[#1a361d]'
-                          : 'text-slate-600 hover:text-[#1a361d]'
-                      }`}
-                    >
-                      <span>{link.name}</span>
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
-                    </button>
+                    <div className="flex items-center">
+                      {/* Clicking the label itself navigates to the full courses page */}
+                      <Link
+                        to="/courses"
+                        onClick={() => setCoursesDropdown(false)}
+                        className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 whitespace-nowrap ${
+                          location.pathname.startsWith('/courses')
+                            ? 'text-[#1a361d]'
+                            : 'text-slate-600 hover:text-[#1a361d]'
+                        }`}
+                      >
+                        <span>{link.name}</span>
+                      </Link>
+                      <button
+                        type="button"
+                        aria-label="Toggle Career Programs dropdown"
+                        onClick={() => setCoursesDropdown(!coursesDropdown)}
+                        className="pl-0.5 py-1 cursor-pointer"
+                      >
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
+                      </button>
+                    </div>
 
                     {/* Career Programs Mega-Menu Dropdown (fetching real DB courses) */}
                     <div
@@ -265,7 +278,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                           onClick={() => setCoursesDropdown(false)}
                           className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-[#d8ffd2]/60 dark:hover:bg-slate-700 text-[#1a361d] dark:text-white text-xs font-bold transition-colors"
                         >
-                          <span>Explore All 7 Programs</span>
+                          <span>Explore All 8 Programs</span>
                           <ArrowRight className="w-3.5 h-3.5 text-[#2d5c36] dark:text-[#76ff8a]" />
                         </Link>
                       </div>
@@ -278,7 +291,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 relative ${
+                  className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 relative whitespace-nowrap ${
                     isActive
                       ? 'text-[#1a361d]'
                       : 'text-slate-600 hover:text-[#1a361d]'
@@ -326,7 +339,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           </nav>
 
           {/* Desktop Right CTAs: LMS LOGIN and REGISTER NOW */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5 shrink-0">
             <Link
               to="/student/login"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#1a361d] bg-white hover:bg-slate-100 border border-slate-200/90 shadow-2xs transition-all hover:shadow-xs"
@@ -396,11 +409,11 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 ))}
               </div>
 
-              {/* Programs Quick List (All 7 Programs with $99 Deposit Badge) */}
+              {/* Programs Quick List (All 8 Programs with $99 Deposit Badge) */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3 flex items-center justify-between">
                   <span>Flagship Tracks</span>
-                  <span className="text-[#2d5c36] dark:text-[#76ff8a] font-bold">7 Programs</span>
+                  <span className="text-[#2d5c36] dark:text-[#76ff8a] font-bold">8 Programs</span>
                 </div>
                 {programList.map((prog) => (
                   <button

@@ -8,6 +8,9 @@ import CyberParticles from '../components/CyberParticles';
 import LeadModal from '../components/LeadModal';
 import SyllabusModal from '../components/SyllabusModal';
 import PersonalizedLearningSection from '../components/PersonalizedLearningSection';
+import CompanyMarquee from '../components/CompanyMarquee';
+import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
+import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
 export default function CoursesPage() {
@@ -77,6 +80,8 @@ export default function CoursesPage() {
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-20 relative z-10">
+        <CompanyMarquee />
+
         {/* Header Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 text-center max-w-5xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold font-heading uppercase tracking-wider mb-4">
@@ -246,6 +251,59 @@ export default function CoursesPage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* ── Enterprise Tools & Technologies (grouped by discipline) ───── */}
+        <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 py-12 mt-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div className="text-center max-w-3xl mx-auto mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider mb-4">
+                <Wrench className="w-3.5 h-3.5" />
+                <span>Tools &amp; Tech Stack</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight text-slate-900 dark:text-white">
+                Enterprise Tools &amp; Technologies You'll Master
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                Gain hands-on proficiency with the modern toolchains and industry-standard software demanded by top technology employers.
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {DEFAULT_TOOL_CATEGORIES.map((cat) => (
+                <div key={cat.id}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 font-heading">
+                      {cat.label}
+                    </span>
+                    <span className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                  </div>
+
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
+                    {cat.tools.map((tool) => (
+                      <div
+                        key={tool.name}
+                        className="group rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-indigo-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
+                      >
+                        <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-1.5 mb-1.5">
+                          <img
+                            src={tool.logo}
+                            alt={tool.name}
+                            className="w-6 h-6 object-contain"
+                            loading="lazy"
+                            onError={(e) => { e.target.style.opacity = '0.25'; }}
+                          />
+                        </div>
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">
+                          {tool.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* Personalized Learning Extended 1-on-1 Track */}

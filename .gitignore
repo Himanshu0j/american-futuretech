@@ -30,3 +30,6 @@ live_audit_*.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Agent tooling metadata
+.freebuff/

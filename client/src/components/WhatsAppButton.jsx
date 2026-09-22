@@ -9,8 +9,8 @@ export default function WhatsAppButton() {
   }
 
   const [isHovered, setIsHovered] = useState(false);
-  const phoneNumber = '+1 (307) 201-9494';
-  const whatsappUrl = 'https://wa.me/13072019494?text=Hello%20American%20FutureTech%2C%20I%20would%20like%20to%20learn%20more%20about%20your%20fellowship%20programs%20and%20admissions.';
+  const phoneNumber = '+1 (816) 846-6717';
+  const whatsappUrl = 'https://wa.me/18168466717?text=Hello%20American%20FutureTech%2C%20I%20would%20like%20to%20learn%20more%20about%20your%20fellowship%20programs%20and%20admissions.';
 
   return (
     <div

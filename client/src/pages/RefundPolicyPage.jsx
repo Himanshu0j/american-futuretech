@@ -47,7 +47,7 @@ export default function RefundPolicyPage() {
           <section className="space-y-3">
             <h2 className="text-lg sm:text-xl font-display font-bold text-[#1a361d]">2. Refund Eligibility Criteria</h2>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Refund requests must be formally submitted in writing to <code>admissions@americanfuturetech.com</code> before the conclusion of Day 14 of the cohort.</li>
+              <li>Refund requests must be formally submitted in writing to <code>info@americantechgloballlc.com</code> before the conclusion of Day 14 of the cohort.</li>
               <li>Students must have attended or viewed all orientation sessions and submitted initial diagnostic assessments to qualify for unconditional withdrawal.</li>
               <li>After the 14-day trial period, tuition payments are committed to reserving faculty instruction and live sandbox infrastructure; prorated refunds will be evaluated on a case-by-case basis under verified medical emergencies.</li>
             </ul>

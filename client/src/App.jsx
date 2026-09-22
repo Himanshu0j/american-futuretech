@@ -42,6 +42,7 @@ const FaqPage = lazy(() => import('./pages/FaqPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const CertificateVerificationPage = lazy(() => import('./pages/CertificateVerificationPage'));
+const CertificationsPage = lazy(() => import('./pages/CertificationsPage'));
 
 // Lazy-loaded Student LMS Portal
 const StudentLogin = lazy(() => import('./lms/StudentLogin'));
@@ -69,6 +70,7 @@ const ContentCMS = lazy(() => import('./admin/ContentCMS'));
 const SupportManager = lazy(() => import('./admin/SupportManager'));
 const SettingsCMS = lazy(() => import('./admin/SettingsCMS'));
 const StaffRBAC = lazy(() => import('./admin/StaffRBAC'));
+const AdminGuide = lazy(() => import('./admin/AdminGuide'));
 
 function AdminProtectedRoute({ children }) {
   const { isAuthenticated, loading, user } = useAuth();
@@ -252,6 +254,7 @@ export default function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/certificate/:certificateId" element={<CertificateVerificationPage />} />
+              <Route path="/certifications/:slug" element={<CertificationsPage />} />
 
               {/* Route Aliases */}
               <Route path="/login" element={<Navigate to="/student/login" replace />} />
@@ -304,6 +307,7 @@ export default function App() {
                 <Route path="content" element={<ContentCMS />} />
                 <Route path="support" element={<SupportManager />} />
                 <Route path="settings" element={<SettingsCMS />} />
+                <Route path="guide" element={<AdminGuide />} />
                 <Route path="users" element={<StaffRBAC />} />
               </Route>
 

@@ -29,7 +29,7 @@ ${course.curriculum
   .join('\n\n')}
 
 ADMISSIONS & ENROLLMENT:
-Visit https://americanfuturetech.com or contact admissions@americanfuturetech.com
+Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
 =====================================================`;
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Search, Clock, ArrowRight, Tag, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 
 export default function BlogPage() {
@@ -42,7 +43,8 @@ export default function BlogPage() {
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-24 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
-        <div className="max-w-3xl mx-auto text-center mb-12">
+
+        <CompanyMarquee />        <div className="max-w-3xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <BookOpen className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>Engineering Research & Briefings</span>

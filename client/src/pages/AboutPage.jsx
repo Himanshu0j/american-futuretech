@@ -15,9 +15,23 @@ import {
   Compass,
   ArrowRight,
   MapPin,
-  FileCheck
+  FileCheck,
+  Linkedin,
+  Terminal,
+  FileCode2,
+  Handshake,
+  BadgeCheck,
+  Rocket,
+  Briefcase,
+  TrendingUp
 } from 'lucide-react';
+import {
+  DEFAULT_LEADERSHIP,
+  DEFAULT_SISTER_COMPANY,
+  DEFAULT_PEDAGOGY
+} from '../data/siteContent';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import engineeringTeamSvg from '../assets/illustrations/about/engineering-team.svg';
@@ -33,6 +47,13 @@ import FaqAccordion from '../components/common/FaqAccordion';
 export default function AboutPage() {
   const { settings } = useSiteSettings();
   const about = settings?.aboutCMS || {};
+
+  // Leadership / pedagogy / sister-company content (admin override, static fallback)
+  const leadership = (settings?.leadership?.length ? settings.leadership.filter(l => l.active !== false) : DEFAULT_LEADERSHIP);
+  const pedagogy = { ...DEFAULT_PEDAGOGY, ...(settings?.pedagogy || {}) };
+  const sisterCompany = { ...DEFAULT_SISTER_COMPANY, ...(settings?.sisterCompany || {}) };
+
+  const pedagogyIcons = { Terminal, FileCode2, Award, Shield, Rocket, Target, BookOpen };
   const pillars = [
     {
       num: '01',
@@ -81,6 +102,9 @@ export default function AboutPage() {
       <Navbar />
 
       <main className="pt-28 pb-20">
+
+        <CompanyMarquee />
+
         {/* Editorial Magazine Hero Header */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-6 pb-12 text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-6">
@@ -298,6 +322,218 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
+
+        {/* ── Build-First Pedagogy + Institutional Stats ─────────────────── */}
+        {pedagogy.enabled !== false && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
+            <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-6 sm:p-10">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-7">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                    <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
+                    <span>{pedagogy.eyebrow || 'Pedagogy'}</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight mb-3">
+                    {pedagogy.title}
+                  </h2>
+                  <p className="text-sm text-gray-600 leading-relaxed mb-6">
+                    {pedagogy.description}
+                  </p>
+
+                  {/* 70/30 split bar */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-xs font-mono font-bold text-[#1a361d]">{pedagogy.handsOnPercent}% Hands-On</span>
+                    <div className="flex-1 h-2.5 rounded-full overflow-hidden bg-gray-100 flex">
+                      <div className="h-full bg-[#1a361d]" style={{ width: `${pedagogy.handsOnPercent}%` }} />
+                      <div className="h-full bg-[#76ff8a]" style={{ width: `${pedagogy.theoryPercent}%` }} />
+                    </div>
+                    <span className="text-xs font-mono font-bold text-[#2d5c36]">{pedagogy.theoryPercent}% Theory</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {(pedagogy.pillars || []).map((pil, i) => {
+                      const Icon = pedagogyIcons[pil.icon] || Terminal;
+                      return (
+                        <div key={i} className="p-4 rounded-2xl border border-gray-200 bg-[#fafbf9] hover:border-[#1a361d]/30 transition-colors">
+                          <div className="w-9 h-9 rounded-xl bg-[#1a361d] text-[#76ff8a] flex items-center justify-center mb-3">
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <h3 className="text-sm font-bold text-[#1a361d] mb-1">{pil.title}</h3>
+                          <p className="text-[11px] text-gray-600 leading-relaxed">{pil.desc}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Institutional stats */}
+                <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+                  {(pedagogy.stats || []).map((st, i) => (
+                    <div key={i} className="p-5 rounded-2xl bg-gradient-to-br from-[#1a361d] to-[#132815] text-white text-center shadow-sm">
+                      <div className="text-2xl sm:text-3xl font-black font-heading text-[#76ff8a]">{st.value}</div>
+                      <div className="text-[11px] text-gray-300 mt-1 font-medium">{st.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── Leadership & Faculty ──────────────────────────────────────── */}
+        {leadership.length > 0 && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                <Users className="w-3.5 h-3.5 text-[#2d5c36]" />
+                <span>Leadership &amp; Faculty</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight">
+                Led by Industry Practitioners
+              </h2>
+              <p className="text-sm text-gray-600 mt-2">
+                Learn directly from senior AI engineers, cybersecurity leaders, and data scientists who build production systems.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {leadership.map((person, idx) => (
+                <div key={idx} className="rounded-3xl bg-white border border-gray-200 shadow-xs hover:shadow-lg hover:border-[#1a361d]/25 transition-all p-6 flex flex-col">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3">
+                      {person.image ? (
+                        <img src={person.image} alt={person.name} className="w-12 h-12 rounded-2xl object-cover border border-gray-200" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center">
+                          {person.name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-base font-bold text-[#1a361d] leading-tight">{person.name}</h3>
+                        <p className="text-[11px] font-semibold text-[#2d5c36]">{person.role}</p>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] whitespace-nowrap">
+                      {person.badge || 'Leadership'}
+                    </span>
+                  </div>
+
+                  {person.experience && (
+                    <div className="text-[11px] font-mono text-gray-500 mb-3 flex items-center gap-1.5">
+                      <BadgeCheck className="w-3.5 h-3.5 text-[#10b981]" />
+                      {person.experience}
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-gray-600 leading-relaxed flex-1 mb-4">
+                    {person.bio}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {(person.skills || []).slice(0, 6).map((sk, si) => (
+                      <span key={si} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                        {sk}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[11px]">
+                    <span className="text-[#10b981] font-semibold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Direct Cohort Mentor
+                    </span>
+                    {person.linkedin ? (
+                      <a href={person.linkedin} target="_blank" rel="noreferrer" className="text-[#1a361d] font-bold hover:underline flex items-center gap-1">
+                        <Linkedin className="w-3 h-3" /> Connect
+                      </a>
+                    ) : (
+                      <span className="text-gray-400 font-mono">Faculty</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Sister Company / Staffing Alliance ────────────────────────── */}
+        {sisterCompany.enabled !== false && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-left">
+            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-10 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
+              <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#76ff8a]/10 blur-3xl" />
+
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#76ff8a]/15 border border-[#76ff8a]/40 text-[#76ff8a] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                  <Handshake className="w-3.5 h-3.5" />
+                  <span>{sisterCompany.eyebrow}</span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  <div className="lg:col-span-5">
+                    <h2 className="text-2xl sm:text-3xl font-black font-heading tracking-tight mb-3">
+                      {sisterCompany.headline}
+                    </h2>
+
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 font-bold text-sm">{sisterCompany.name}</div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#76ff8a]/20 text-[#76ff8a] border border-[#76ff8a]/40">
+                        {sisterCompany.badge}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#d8ffd2]/80 flex items-center gap-1.5 mb-4">
+                      <MapPin className="w-3.5 h-3.5 text-[#76ff8a]" />
+                      {sisterCompany.location}
+                    </p>
+
+                    <p className="text-sm text-gray-200 italic border-l-2 border-[#76ff8a] pl-4 mb-4">
+                      &ldquo;{sisterCompany.tagline}&rdquo;
+                    </p>
+
+                    <p className="text-xs text-gray-300 leading-relaxed mb-6">
+                      {sisterCompany.description}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { v: sisterCompany.stats?.shortlistHours, l: sisterCompany.stats?.shortlistLabel },
+                        { v: sisterCompany.stats?.vetted, l: sisterCompany.stats?.vettedLabel },
+                        { v: sisterCompany.stats?.placement, l: sisterCompany.stats?.placementLabel },
+                      ].map((s, i) => (
+                        <div key={i} className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                          <div className="text-xl font-black font-heading text-[#76ff8a]">{s.v}</div>
+                          <div className="text-[10px] text-gray-300 mt-0.5">{s.l}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-7 space-y-2.5">
+                    {(sisterCompany.services || []).map((svc, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                        <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-xs font-bold text-white">{svc.title}</div>
+                          <div className="text-[11px] text-gray-300 leading-relaxed">{svc.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div className="p-3.5 rounded-2xl bg-[#76ff8a]/10 border border-[#76ff8a]/30 flex items-center gap-2.5 text-xs text-[#d8ffd2]">
+                        <Briefcase className="w-4 h-4 text-[#76ff8a] shrink-0" />
+                        Direct internal referrals for certified graduates
+                      </div>
+                      <Link to="/careers" className="p-3.5 rounded-2xl bg-white text-[#1a361d] font-bold text-xs flex items-center justify-between gap-2 hover:bg-[#d8ffd2] transition-colors">
+                        <span className="flex items-center gap-2"><TrendingUp className="w-4 h-4" /> View Live Partner Jobs</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Global Vision Visual Banner */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-16 text-center">

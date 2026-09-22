@@ -19,6 +19,7 @@ import {
   LifeBuoy,
   Settings,
   GraduationCap,
+  HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -43,6 +44,7 @@ export default function AdminLayout() {
     { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy, permission: 'STUDENTS_VIEW' },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
+    { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },
   ];
 
   const hasItemAccess = (item) => {

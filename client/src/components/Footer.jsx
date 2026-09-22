@@ -84,7 +84,7 @@ export default function Footer({ onOpenLeadModal }) {
               </li>
               <li>
                 <Link to="/courses" className="hover:text-[#76ff8a] transition-colors font-bold text-[#76ff8a] flex items-center gap-1 pt-1">
-                  <span>View All 7 Specializations</span>
+                  <span>View All 8 Specializations</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </li>
@@ -103,11 +103,11 @@ export default function Footer({ onOpenLeadModal }) {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                <span>+1 (307) 201-9494</span>
+                <span>+1 (816) 846-6717</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                <span>admissions@americanfuturetech.com</span>
+                <span>info@americantechgloballlc.com</span>
               </li>
               <li className="pt-2">
                 <button

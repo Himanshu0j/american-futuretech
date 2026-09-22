@@ -12,7 +12,13 @@ const getSiteSettings = async (req, res) => {
     } else {
       let modified = false;
       const schemaDefaults = new SiteSettings().toObject();
-      const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies'];
+      const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies', 'sisterCompany', 'pedagogy', 'careerSupport'];
+
+      // Populate the leadership roster for existing databases that predate the team CMS
+      if (!settings.leadership || settings.leadership.length === 0) {
+        settings.leadership = schemaDefaults.leadership;
+        modified = true;
+      }
       
       for (const key of keysToCheck) {
         if (!settings[key] || (typeof settings[key] === 'object' && Object.keys(settings[key].toObject ? settings[key].toObject() : settings[key]).length === 0)) {

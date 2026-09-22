@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, Shield, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import CyberParticles from '../components/CyberParticles';
 
@@ -39,7 +40,8 @@ export default function ContactPage() {
       <Navbar />
 
       <main className="pt-28 pb-20">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-14">
+
+        <CompanyMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <Mail className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>ACADEMIC & ADMISSIONS ADVISORY</span>
@@ -93,8 +95,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <div className="font-display font-bold text-[#1a361d] text-sm">Email Inquiries</div>
-                    <a href="mailto:admissions@americanfuturetech.com" className="text-[#2d5c36] hover:underline mt-0.5 block font-semibold">
-                      admissions@americanfuturetech.com
+                    <a href="mailto:info@americantechgloballlc.com" className="text-[#2d5c36] hover:underline mt-0.5 block font-semibold">
+                      info@americantechgloballlc.com
                     </a>
                     <div className="text-slate-500">Target response time: &lt; 2 hours</div>
                   </div>

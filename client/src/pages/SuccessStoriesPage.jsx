@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, Building2, Quote, ArrowRight, Award, CheckCircle2, ShieldCheck, Check } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 
@@ -30,7 +31,8 @@ export default function SuccessStoriesPage() {
       <Navbar />
 
       <main className="pt-28 pb-20">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
+
+        <CompanyMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
             <TrendingUp className="w-3.5 h-3.5 text-[#2d5c36]" />
             <span>VERIFIED GRADUATE OUTCOMES</span>

@@ -57,18 +57,18 @@ export default function TrustMarquee() {
           {duplicatedCompanies.map((comp, idx) => (
             <div
               key={`${comp.name}-${idx}`}
-              className="px-5 py-3.5 sm:px-7 sm:py-4 rounded-2xl bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs hover:shadow-md hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-200 flex items-center justify-center shrink-0 group"
+              className="px-5 py-3.5 sm:px-7 sm:py-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-500/50 transition-all duration-200 flex items-center justify-center shrink-0 group"
             >
               <img
                 src={comp.logoUrl || `/images/companies/${comp.name.toLowerCase().replace(/\s+/g, '')}.svg`}
                 alt={comp.name}
-                className="h-6 sm:h-8 max-w-[140px] sm:max-w-[170px] w-auto object-contain grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                className={`${comp.height || 'h-6 sm:h-8'} max-w-[140px] sm:max-w-[170px] w-auto object-contain group-hover:scale-105 transition-transform duration-200`}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   if (e.target.nextSibling) e.target.nextSibling.style.display = 'block';
                 }}
               />
-              <span className="hidden text-sm font-bold text-slate-800 dark:text-slate-200">
+              <span className="hidden text-sm font-bold text-slate-900">
                 {comp.name}
               </span>
             </div>

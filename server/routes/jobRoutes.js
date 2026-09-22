@@ -11,7 +11,7 @@ const {
   getAllApplications,
   updateApplicationStatus,
 } = require('../controllers/jobController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, checkPermission } = require('../middleware/auth');
 
 // Public routes
 router.get('/', getPublishedJobs);
@@ -20,10 +20,10 @@ router.get('/:id', getJobById);
 router.post('/:id/apply', applyForJob);
 
 // Admin routes
-router.post('/', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), createJob);
-router.put('/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), updateJob);
-router.delete('/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), deleteJob);
-router.get('/admin/applications', protect, authorize('SUPERADMIN', 'ADMIN', 'COUNSELOR', 'SuperAdmin'), getAllApplications);
-router.patch('/applications/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'COUNSELOR', 'SuperAdmin'), updateApplicationStatus);
+router.post('/', protect, checkPermission('JOBS_CREATE'), createJob);
+router.put('/:id', protect, checkPermission('JOBS_EDIT'), updateJob);
+router.delete('/:id', protect, checkPermission('JOBS_DELETE'), deleteJob);
+router.get('/admin/applications', protect, checkPermission('JOBS_VIEW'), getAllApplications);
+router.patch('/applications/:id', protect, checkPermission('JOBS_EDIT'), updateApplicationStatus);
 
 module.exports = router;

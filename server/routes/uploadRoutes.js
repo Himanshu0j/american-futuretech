@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { protect } = require('../middleware/auth');
+const { protect, checkPermission } = require('../middleware/auth');
 
 // Ensure destination directories exist
 const serverUploadsDir = path.join(__dirname, '../uploads');
@@ -54,8 +54,8 @@ const upload = multer({
 
 // @desc    Upload single image asset
 // @route   POST /api/upload
-// @access  Protected (Admin / Staff)
-router.post('/', (req, res, next) => {
+// @access  Protected (Admin / Staff with MEDIA_UPLOAD permission)
+router.post('/', protect, checkPermission('MEDIA_UPLOAD'), (req, res, next) => {
   // Allow optional token or test mode
   upload.single('image')(req, res, (err) => {
     if (err instanceof multer.MulterError) {

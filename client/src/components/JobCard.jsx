@@ -11,6 +11,7 @@ import {
   Building2,
   Sparkles
 } from 'lucide-react';
+import SafeImage from './common/SafeImage';
 
 export default function JobCard({
   job,
@@ -65,27 +66,15 @@ export default function JobCard({
       {/* 1. TOP ROW: Prominent Company Logo (w-12 h-12 / w-14 h-14) + Title & Key Metadata Tags */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div className="flex items-start gap-4 flex-1">
-          {/* Company Logo Avatar: Size w-12 h-12 sm:w-14 sm:h-14 */}
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2 flex items-center justify-center overflow-hidden shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200">
-            {job.companyLogo ? (
-              <img
-                src={job.companyLogo}
-                alt={job.company}
-                className="w-full h-full object-contain rounded-xl"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-            ) : null}
-            <div
-              className={`w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center ${
-                job.companyLogo ? 'hidden' : 'flex'
-              }`}
-            >
-              {job.company?.slice(0, 2).toUpperCase() || 'FT'}
-            </div>
-          </div>
+          {/* Company Logo Avatar: Size w-12 h-12 sm:w-14 sm:h-14 with SafeImage fallback */}
+          <SafeImage
+            src={job.companyLogo}
+            alt={job.company}
+            fallbackText={job.company || 'FT'}
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
+            imageClassName="w-full h-full object-contain rounded-xl"
+            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center"
+          />
 
           {/* Job Title & Structured Tags Row */}
           <div className="space-y-2 flex-1">

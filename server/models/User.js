@@ -28,8 +28,12 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['SUPERADMIN', 'ADMIN', 'COUNSELOR', 'INSTRUCTOR', 'STUDENT', 'SuperAdmin', 'Counselor', 'Instructor'],
+    enum: ['SUPERADMIN', 'ADMIN', 'COUNSELOR', 'INSTRUCTOR', 'STUDENT', 'SuperAdmin', 'Admin', 'Counselor', 'Instructor'],
     default: 'STUDENT',
+  },
+  permissions: {
+    type: [String],
+    default: [],
   },
   isActive: {
     type: Boolean,

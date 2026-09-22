@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const AuditLog = require('../models/AuditLog');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'american_futuretech_jwt_secret_ultra_secure_key_2026', {
@@ -116,6 +117,7 @@ const login = async (req, res) => {
         role: user.role,
         avatar: user.avatar,
         phone: user.phone,
+        permissions: user.permissions || [],
         enrollmentNumber: user.studentDetails?.enrollmentNumber,
       },
     });
@@ -135,7 +137,10 @@ const getMe = async (req, res) => {
     const user = await User.findById(req.user.id);
     return res.status(200).json({
       success: true,
-      user,
+      user: {
+        ...user.toObject(),
+        permissions: user.permissions || [],
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -147,7 +152,7 @@ const getMe = async (req, res) => {
 
 // @desc    Get all staff/users
 // @route   GET /api/auth/users
-// @access  Private (SuperAdmin)
+// @access  Private (SuperAdmin or ADMIN_MANAGEMENT_VIEW)
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
@@ -163,17 +168,28 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// @desc    Create new staff member
+// @desc    Create new staff / admin member
 // @route   POST /api/auth/users
-// @access  Private (SuperAdmin)
+// @access  Private (SuperAdmin or ADMIN_MANAGEMENT_CREATE)
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, phone, role, permissions } = req.body;
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists',
+        message: 'A user with this email address already exists',
+      });
+    }
+
+    const actorRole = (req.user?.role || '').toUpperCase();
+    const requestedRole = (role || 'ADMIN').toUpperCase();
+
+    // SuperAdmin Protection: Only a SUPERADMIN can create a SUPERADMIN
+    if (requestedRole === 'SUPERADMIN' && actorRole !== 'SUPERADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only SuperAdmin can create SuperAdmin accounts.',
       });
     }
 
@@ -181,7 +197,20 @@ const createUser = async (req, res) => {
       name,
       email: email.toLowerCase(),
       password,
-      role: role || 'COUNSELOR',
+      phone: phone || '',
+      role: requestedRole,
+      permissions: Array.isArray(permissions) ? permissions : [],
+      isActive: true,
+    });
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'SUPERADMIN',
+      action: 'ADMIN_CREATED',
+      entity: 'User',
+      entityId: user._id.toString(),
+      details: `Created staff member ${user.name} (${user.email}) as ${user.role} with ${user.permissions?.length || 0} permissions`,
     });
 
     return res.status(201).json({
@@ -191,6 +220,7 @@ const createUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        permissions: user.permissions || [],
         isActive: user.isActive,
       },
     });
@@ -202,12 +232,12 @@ const createUser = async (req, res) => {
   }
 };
 
-// @desc    Update user role or status
+// @desc    Update user role, status or permissions
 // @route   PUT /api/auth/users/:id
-// @access  Private (SuperAdmin)
+// @access  Private (SuperAdmin or ADMIN_MANAGEMENT_EDIT)
 const updateUser = async (req, res) => {
   try {
-    const { role, isActive, name, phone } = req.body;
+    const { role, isActive, name, phone, permissions } = req.body;
     const user = await User.findById(req.params.id);
 
     if (!user) {
@@ -217,16 +247,160 @@ const updateUser = async (req, res) => {
       });
     }
 
-    if (role) user.role = role;
+    const actorRole = (req.user?.role || '').toUpperCase();
+    const targetRole = (user.role || '').toUpperCase();
+
+    // SuperAdmin Protection: Non-SuperAdmin cannot edit a SuperAdmin account
+    if (targetRole === 'SUPERADMIN' && actorRole !== 'SUPERADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Non-SuperAdmin accounts cannot modify SuperAdmin profiles.',
+      });
+    }
+
+    // SuperAdmin Protection: Non-SuperAdmin cannot promote anyone to SuperAdmin
+    if (role && role.toUpperCase() === 'SUPERADMIN' && actorRole !== 'SUPERADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only SuperAdmin can grant SuperAdmin status.',
+      });
+    }
+
+    // Protection: Cannot deactivate own active account
+    if (typeof isActive === 'boolean' && user._id.toString() === req.user._id.toString() && !isActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot deactivate your own active account.',
+      });
+    }
+
+    if (role) user.role = role.toUpperCase();
     if (typeof isActive === 'boolean') user.isActive = isActive;
     if (name) user.name = name;
-    if (phone) user.phone = phone;
+    if (phone !== undefined) user.phone = phone;
+    if (Array.isArray(permissions)) user.permissions = permissions;
 
     await user.save();
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'SUPERADMIN',
+      action: 'ADMIN_UPDATED',
+      entity: 'User',
+      entityId: user._id.toString(),
+      details: `Updated user ${user.name} (${user.email}): role=${user.role}, active=${user.isActive}, permissions=${user.permissions?.length || 0}`,
+    });
 
     return res.status(200).json({
       success: true,
       user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Delete user
+// @route   DELETE /api/auth/users/:id
+// @access  Private (SuperAdmin or ADMIN_MANAGEMENT_DELETE)
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const actorRole = (req.user?.role || '').toUpperCase();
+    const targetRole = (user.role || '').toUpperCase();
+
+    // SuperAdmin Protection: Cannot delete a SuperAdmin
+    if (targetRole === 'SUPERADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: SuperAdmin accounts are protected and cannot be deleted.',
+      });
+    }
+
+    // Cannot delete own account
+    if (user._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot delete your own account.',
+      });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'SUPERADMIN',
+      action: 'ADMIN_DELETED',
+      entity: 'User',
+      entityId: req.params.id,
+      details: `Deleted user ${user.name} (${user.email}) role=${user.role}`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Reset user password
+// @route   POST /api/auth/users/:id/reset-password
+// @access  Private (SuperAdmin)
+const resetUserPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters',
+      });
+    }
+
+    const user = await User.findById(req.params.id).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const actorRole = (req.user?.role || '').toUpperCase();
+    const targetRole = (user.role || '').toUpperCase();
+
+    if (targetRole === 'SUPERADMIN' && actorRole !== 'SUPERADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: Only SuperAdmin can reset passwords for SuperAdmin accounts.',
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'SuperAdmin',
+      actorRole: req.user?.role || 'SUPERADMIN',
+      action: 'PASSWORD_RESET',
+      entity: 'User',
+      entityId: user._id.toString(),
+      details: `Password reset by ${req.user.name} for user ${user.name} (${user.email})`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password reset successfully',
     });
   } catch (error) {
     return res.status(500).json({
@@ -292,5 +466,7 @@ module.exports = {
   getAllUsers,
   createUser,
   updateUser,
+  deleteUser,
+  resetUserPassword,
   updateProfile,
 };

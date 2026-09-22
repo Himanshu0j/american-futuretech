@@ -16,6 +16,7 @@ import {
   Save,
 } from 'lucide-react';
 import api from '../lib/api';
+import ListItemsEditor from './components/ListItemsEditor';
 
 export default function CoursesCMS() {
   const [courses, setCourses] = useState([]);
@@ -32,7 +33,7 @@ export default function CoursesCMS() {
   const [duration, setDuration] = useState('6 Months');
   const [basePrice, setBasePrice] = useState(2499);
   const [discountedPrice, setDiscountedPrice] = useState(1899);
-  const [highlights, setHighlights] = useState('');
+  const [highlights, setHighlights] = useState(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
   const [modules, setModules] = useState([
     { moduleNumber: 1, moduleTitle: 'Module 1: Foundations', topics: 'Topic 1, Topic 2, Topic 3', hours: 30 },
   ]);
@@ -65,7 +66,7 @@ export default function CoursesCMS() {
     setDuration('6 Months');
     setBasePrice(2499);
     setDiscountedPrice(1899);
-    setHighlights('AI & ML Capstones\nReal Data Projects\nPlacement Assistance');
+    setHighlights(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
     setModules([
       { moduleNumber: 1, moduleTitle: 'Module 1: Foundations & Architecture', topics: 'Topic 1, Topic 2, Topic 3', hours: 32 },
     ]);
@@ -82,7 +83,7 @@ export default function CoursesCMS() {
     setDuration(course.duration || '6 Months');
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
-    setHighlights(course.highlights?.join('\n') || '');
+    setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
     setModules(
       course.curriculum?.map((m) => ({
         moduleNumber: m.moduleNumber,
@@ -134,10 +135,11 @@ export default function CoursesCMS() {
       hours: Number(m.hours) || 30,
     }));
 
-    const formattedHighlights = highlights
-      .split('\n')
-      .map((h) => h.trim())
-      .filter(Boolean);
+    const formattedHighlights = Array.isArray(highlights)
+      ? highlights.filter(Boolean)
+      : typeof highlights === 'string'
+      ? highlights.split('\n').map((h) => h.trim()).filter(Boolean)
+      : [];
 
     const payload = {
       title,
@@ -420,14 +422,14 @@ export default function CoursesCMS() {
                 </div>
               </div>
 
-              {/* Highlights (1 per line) */}
-              <div>
-                <label className="block text-slate-400 font-semibold mb-1">Card Key Highlights (1 per line)</label>
-                <textarea
-                  rows="3"
-                  value={highlights}
-                  onChange={(e) => setHighlights(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-sky-400"
+              {/* Highlights */}
+              <div className="pt-2 border-t border-white/[0.08]">
+                <ListItemsEditor
+                  label="Card Key Highlights & Learning Outcomes"
+                  helperText="Add bullet points or click 'Paste Multiple Lines' to auto-split text into bullet points."
+                  items={highlights}
+                  onChange={setHighlights}
+                  placeholder="Enter program highlight or outcome..."
                 />
               </div>
 

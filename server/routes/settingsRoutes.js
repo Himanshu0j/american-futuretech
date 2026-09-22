@@ -5,10 +5,10 @@ const {
   updateSiteSettings,
   getAuditLogs,
 } = require('../controllers/settingsController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, checkPermission } = require('../middleware/auth');
 
 router.get('/', getSiteSettings);
-router.put('/', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), updateSiteSettings);
-router.get('/audit-logs', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), getAuditLogs);
+router.put('/', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), updateSiteSettings);
+router.get('/audit-logs', protect, checkPermission('AUDIT_LOG_VIEW', 'SETTINGS_VIEW'), getAuditLogs);
 
 module.exports = router;

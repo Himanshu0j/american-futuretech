@@ -62,4 +62,43 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+/**
+ * Granular Permission Guard Middleware
+ * - SuperAdmin automatically passes all checks.
+ * - For ADMIN and other staff, verifies that req.user.permissions includes at least one of the required permissions.
+ * - Rejects with 403 Forbidden if permissions are insufficient.
+ */
+const checkPermission = (...requiredPermissions) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required.',
+      });
+    }
+
+    const roleLower = (req.user.role || '').toLowerCase();
+
+    // SuperAdmin has unconditional authority
+    if (roleLower === 'superadmin') {
+      return next();
+    }
+
+    // Normal Admin or other roles must possess at least one matching granular permission
+    const userPermissions = req.user.permissions || [];
+    const hasAccess = requiredPermissions.some((perm) => userPermissions.includes(perm));
+
+    if (!hasAccess) {
+      return res.status(403).json({
+        success: false,
+        message: `Forbidden: You do not possess the required permission (${requiredPermissions.join(' or ')}) to perform this action.`,
+        requiredPermissions,
+      });
+    }
+
+    next();
+  };
+};
+
+module.exports = { protect, authorize, checkPermission };
+

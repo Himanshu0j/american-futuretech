@@ -177,6 +177,17 @@ const updateJob = async (req, res) => {
     const updated = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true })
       .populate('recommendedCourse', 'title slug category duration badge pricing');
     if (!updated) return res.status(404).json({ success: false, message: 'Job not found' });
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Admin',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'JOB_UPDATED',
+      entity: 'Job',
+      entityId: updated._id.toString(),
+      details: `Updated job posting: ${updated.title} at ${updated.company}`,
+    });
+
     return res.status(200).json({ success: true, job: updated });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -191,6 +202,17 @@ const deleteJob = async (req, res) => {
     const job = await Job.findByIdAndDelete(req.params.id);
     if (!job) return res.status(404).json({ success: false, message: 'Job not found' });
     await JobApplication.deleteMany({ job: req.params.id });
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Admin',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'JOB_DELETED',
+      entity: 'Job',
+      entityId: req.params.id,
+      details: `Deleted job posting: ${job.title} at ${job.company}`,
+    });
+
     return res.status(200).json({ success: true, message: 'Job deleted' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

@@ -1,6 +1,7 @@
 const BlogPost = require('../models/BlogPost');
 const FAQ = require('../models/FAQ');
 const SuccessStory = require('../models/SuccessStory');
+const AuditLog = require('../models/AuditLog');
 
 // BLOGS
 const getBlogs = async (req, res) => {
@@ -81,6 +82,17 @@ const getFaqs = async (req, res) => {
 const createFaq = async (req, res) => {
   try {
     const faq = await FAQ.create(req.body);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'FAQ_CREATED',
+      entity: 'FAQ',
+      entityId: faq._id.toString(),
+      details: `Created FAQ: "${faq.question.slice(0, 45)}..." in category ${faq.category}`,
+    });
+
     return res.status(201).json({ success: true, faq });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -91,6 +103,17 @@ const updateFaq = async (req, res) => {
   try {
     const faq = await FAQ.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!faq) return res.status(404).json({ success: false, message: 'FAQ not found' });
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'FAQ_UPDATED',
+      entity: 'FAQ',
+      entityId: faq._id.toString(),
+      details: `Updated FAQ: "${faq.question.slice(0, 45)}..."`,
+    });
+
     return res.status(200).json({ success: true, faq });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -99,7 +122,18 @@ const updateFaq = async (req, res) => {
 
 const deleteFaq = async (req, res) => {
   try {
-    await FAQ.findByIdAndDelete(req.params.id);
+    const faq = await FAQ.findByIdAndDelete(req.params.id);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'FAQ_DELETED',
+      entity: 'FAQ',
+      entityId: req.params.id,
+      details: `Deleted FAQ: "${faq?.question?.slice(0, 45) || req.params.id}"`,
+    });
+
     return res.status(200).json({ success: true, message: 'FAQ deleted' });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

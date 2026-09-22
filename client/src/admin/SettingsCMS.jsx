@@ -27,9 +27,9 @@ import {
   Zap,
   Globe,
   Award,
-  ArrowRight,
   ChevronRight,
-  Compass
+  Compass,
+  Eye
 } from 'lucide-react';
 import RepeatableListInput from './components/RepeatableListInput';
 import ImageUploadInput from './components/ImageUploadInput';
@@ -345,6 +345,7 @@ export default function SettingsCMS() {
 
   const tabs = [
     { id: 'general', label: 'General & Identity', icon: Building },
+    { id: 'sections', label: 'Homepage Sections', icon: Eye },
     { id: 'hero', label: 'Homepage Hero', icon: Sparkles },
     { id: 'companies', label: 'Company Logos Marquee', icon: Award },
     { id: 'personalized', label: 'Personalized ($2,199)', icon: DollarSign },
@@ -521,6 +522,114 @@ export default function SettingsCMS() {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: HOMEPAGE SECTION VISIBILITY CONTROLS                                 */}
+          {/* ========================================================================= */}
+          {activeTab === 'sections' && (
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-6 backdrop-blur-xl text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                  <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-cyan-400" />
+                    Homepage Section Visibility & Toggles
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Show or hide individual sections on the public landing page without developer intervention.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allOn = {
+                        hero: true,
+                        trustMarquee: true,
+                        metrics: true,
+                        learningJourney: true,
+                        courses: true,
+                        personalizedLearning: true,
+                        tools: true,
+                        roadmap: true,
+                        whyChooseUs: true,
+                        faqs: true,
+                        callToAction: true,
+                      };
+                      setSettings(prev => ({ ...prev, sectionVisibility: allOn }));
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono font-bold transition-colors cursor-pointer"
+                  >
+                    Enable All
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                {[
+                  { key: 'hero', label: '1. Product Hero & LMS Cockpit', desc: 'Interactive visual cockpit, floating badges, and primary headline' },
+                  { key: 'trustMarquee', label: '2. Enterprise Brand Marquee', desc: 'Infinite loop company logos (Google, Microsoft, AWS, etc.)' },
+                  { key: 'metricsStrip', keyName: 'metrics', label: '3. Institutional Value Metrics Strip', desc: 'Key outcome statistics and telemetry highlights' },
+                  { key: 'learningJourney', label: '4. Pedagogical Learning Journey', desc: 'Learn, Practice, Certify, and Advance 4-phase cards' },
+                  { key: 'courses', label: '5. Career Programs & Course Bento', desc: 'Main course cards, syllabi modals, and credential seals' },
+                  { key: 'personalizedLearning', label: '6. Personalized 1-on-1 Mentorship', desc: 'Dedicated $2,199 private career coaching offering' },
+                  { key: 'tools', label: '7. 40+ Industry Tools & Tech', desc: 'Interactive developer tools, frameworks, and cloud stack grid' },
+                  { key: 'roadmap', label: '8. 6-Step Career Transformation Roadmap', desc: 'Step-by-step pathway from orientation to elite hiring' },
+                  { key: 'whyChooseUs', label: '9. Why Choose Us & Product Showcase', desc: 'Live sandbox terminals, code reviews, and architectural depth' },
+                  { key: 'faqs', label: '10. Frequently Asked Questions (Accordion)', desc: 'Categorized expandable answers for admissions & placement' },
+                  { key: 'callToAction', label: '11. Selective Admissions Bottom CTA', desc: 'Urgency countdown and final enrollment reservation banner' },
+                ].map(({ key, keyName, label, desc }) => {
+                  const prop = keyName || key;
+                  const isVisible = settings.sectionVisibility?.[prop] !== false;
+                  return (
+                    <div
+                      key={prop}
+                      className={`p-4 rounded-xl border transition-all flex items-start justify-between gap-4 ${
+                        isVisible
+                          ? 'bg-slate-950/80 border-cyan-500/30 shadow-xs'
+                          : 'bg-slate-950/30 border-slate-800 opacity-60'
+                      }`}
+                    >
+                      <div className="space-y-1 flex-1">
+                        <div className="text-white font-bold flex items-center gap-2">
+                          <span>{label}</span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              isVisible
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            {isVisible ? 'VISIBLE' : 'HIDDEN'}
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-[11px] font-sans">{desc}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSettings(prev => ({
+                            ...prev,
+                            sectionVisibility: {
+                              ...(prev.sectionVisibility || {}),
+                              [prop]: !isVisible,
+                            }
+                          }));
+                        }}
+                        className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                          isVisible
+                            ? 'bg-cyan-500 text-slate-950 hover:bg-cyan-400 shadow-sm'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        {isVisible ? 'Hide Section' : 'Show Section'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

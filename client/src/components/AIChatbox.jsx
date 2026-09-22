@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Sparkles,
   MessageSquare,
@@ -38,6 +39,12 @@ const KNOWLEDGE_BASE = [
 ];
 
 export default function AIChatbox() {
+  const location = useLocation();
+  // Strictly prevent AIChatbox from ever rendering in Admin UI
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {

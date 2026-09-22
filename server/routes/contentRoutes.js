@@ -15,25 +15,25 @@ const {
   updateSuccessStory,
   deleteSuccessStory,
 } = require('../controllers/contentController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, checkPermission } = require('../middleware/auth');
 
 // Blogs
 router.get('/blogs', getBlogs);
 router.get('/blogs/:slug', getBlogBySlug);
-router.post('/blogs', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), createBlog);
-router.put('/blogs/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), updateBlog);
-router.delete('/blogs/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), deleteBlog);
+router.post('/blogs', protect, checkPermission('FAQ_CREATE', 'HOMEPAGE_EDIT'), createBlog);
+router.put('/blogs/:id', protect, checkPermission('FAQ_EDIT', 'HOMEPAGE_EDIT'), updateBlog);
+router.delete('/blogs/:id', protect, checkPermission('FAQ_DELETE', 'HOMEPAGE_EDIT'), deleteBlog);
 
 // FAQs
 router.get('/faqs', getFaqs);
-router.post('/faqs', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), createFaq);
-router.put('/faqs/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), updateFaq);
-router.delete('/faqs/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), deleteFaq);
+router.post('/faqs', protect, checkPermission('FAQ_CREATE'), createFaq);
+router.put('/faqs/:id', protect, checkPermission('FAQ_EDIT'), updateFaq);
+router.delete('/faqs/:id', protect, checkPermission('FAQ_DELETE'), deleteFaq);
 
 // Success Stories
 router.get('/success-stories', getSuccessStories);
-router.post('/success-stories', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), createSuccessStory);
-router.put('/success-stories/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), updateSuccessStory);
-router.delete('/success-stories/:id', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), deleteSuccessStory);
+router.post('/success-stories', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_CREATE'), createSuccessStory);
+router.put('/success-stories/:id', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_EDIT'), updateSuccessStory);
+router.delete('/success-stories/:id', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_DELETE'), deleteSuccessStory);
 
 module.exports = router;

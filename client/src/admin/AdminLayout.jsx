@@ -28,20 +28,29 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const isSuperAdmin = (user?.role || '').toUpperCase() === 'SUPERADMIN';
+  const userPermissions = user?.permissions || [];
 
   const navItems = [
-    { name: 'Executive Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Admissions Pipeline', path: '/admin/leads', icon: Users },
-    { name: 'Curriculum & Courses CMS', path: '/admin/courses', icon: BookOpen },
-    { name: 'Batches & Urgency', path: '/admin/batches', icon: Calendar },
-    { name: 'Enrolled Students', path: '/admin/students', icon: GraduationCap },
-    { name: 'Tuition & Billing Ledger', path: '/admin/payments', icon: CreditCard },
-    { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase },
-    { name: 'Content & FAQs CMS', path: '/admin/content', icon: FileText },
-    { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy },
-    { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings },
-    { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, superAdminOnly: true },
+    { name: 'Executive Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, permission: 'DASHBOARD_VIEW' },
+    { name: 'Admissions Pipeline', path: '/admin/leads', icon: Users, permission: 'LEADS_VIEW' },
+    { name: 'Curriculum & Courses CMS', path: '/admin/courses', icon: BookOpen, permission: 'COURSES_VIEW' },
+    { name: 'Batches & Urgency', path: '/admin/batches', icon: Calendar, permission: 'PROGRAMS_VIEW' },
+    { name: 'Enrolled Students', path: '/admin/students', icon: GraduationCap, permission: 'STUDENTS_VIEW' },
+    { name: 'Tuition & Billing Ledger', path: '/admin/payments', icon: CreditCard, permission: 'SETTINGS_VIEW' },
+    { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase, permission: 'JOBS_VIEW' },
+    { name: 'Content & FAQs CMS', path: '/admin/content', icon: FileText, permission: 'FAQ_VIEW' },
+    { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy, permission: 'STUDENTS_VIEW' },
+    { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
+    { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
   ];
+
+  const hasItemAccess = (item) => {
+    if (isSuperAdmin) return true;
+    if (item.superAdminOnly) return false;
+    if (!item.permission) return true;
+    return userPermissions.includes(item.permission);
+  };
 
   const handleLogout = () => {
     logout();
@@ -123,7 +132,7 @@ export default function AdminLayout() {
         {/* Nav Links */}
         <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            if (item.superAdminOnly && user?.role?.toUpperCase() !== 'SUPERADMIN') return null;
+            if (!hasItemAccess(item)) return null;
 
             const Icon = item.icon;
             const isActive = location.pathname.startsWith(item.path);
@@ -205,7 +214,33 @@ export default function AdminLayout() {
 
         {/* Body Content */}
         <main className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#080a0f]">
-          <Outlet />
+          {(() => {
+            const matchedNav = navItems.find((n) => location.pathname.startsWith(n.path));
+            if (matchedNav && !hasItemAccess(matchedNav)) {
+              return (
+                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#0f172a] border border-rose-500/30 text-center space-y-4 shadow-2xl">
+                  <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+                    <ShieldAlert className="w-7 h-7" />
+                  </div>
+                  <h2 className="text-xl font-bold text-white font-heading">
+                    Access Restricted (403 Forbidden)
+                  </h2>
+                  <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
+                    Your account (<span className="text-white font-mono">{user?.email}</span>) does not possess the required permission (<strong className="text-rose-400 font-mono">{matchedNav.permission}</strong>) to access this administrative module.
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      to="/admin/dashboard"
+                      className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-colors inline-block"
+                    >
+                      Return to Executive Dashboard
+                    </Link>
+                  </div>
+                </div>
+              );
+            }
+            return <Outlet />;
+          })()}
         </main>
       </div>
 

@@ -22,7 +22,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SiteSettingsProvider } from './context/SiteSettingsContext';
+import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 
 // Lazy-loaded Public Subpages
 const CoursesPage = lazy(() => import('./pages/CoursesPage'));
@@ -119,6 +119,8 @@ function LandingPage() {
   };
 
   const { isCyber } = useThemeMode();
+  const { settings } = useSiteSettings();
+  const visibility = settings?.sectionVisibility || {};
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-indigo-600 selection:text-white relative overflow-x-hidden pt-16 md:pt-24">
@@ -136,51 +138,63 @@ function LandingPage() {
 
       <main>
         {/* Product-Led Hero Showcase with Interactive LMS Cockpit */}
-        <Hero
-          onOpenLeadModal={() => handleOpenLeadModal(null)}
-          onExploreCourses={scrollToCourses}
-        />
+        {visibility.hero !== false && (
+          <Hero
+            onOpenLeadModal={() => handleOpenLeadModal(null)}
+            onExploreCourses={scrollToCourses}
+          />
+        )}
 
         {/* Global Enterprise Brand & Logo Marquee */}
-        <TrustMarquee />
+        {visibility.trustMarquee !== false && <TrustMarquee />}
 
         {/* 3-Pillar Value Metrics Strip & Institutional Telemetry */}
-        <MetricsStrip />
+        {visibility.metrics !== false && <MetricsStrip />}
 
         {/* 4-Phase Pedagogical Storytelling Journey (Learn, Practice, Certify, Advance) */}
-        <LearningJourney />
+        {visibility.learningJourney !== false && <LearningJourney />}
 
         {/* Program Selector Dynamic Bento Cards */}
-        <CourseSection
-          onSelectCourse={(course) => handleOpenLeadModal(course)}
-          onOpenSyllabusModal={handleOpenSyllabusModal}
-        />
+        {visibility.courses !== false && (
+          <CourseSection
+            onSelectCourse={(course) => handleOpenLeadModal(course)}
+            onOpenSyllabusModal={handleOpenSyllabusModal}
+          />
+        )}
 
         {/* Dedicated 1-on-1 Personalized Learning Track ($2,199 Independent Offering) */}
-        <PersonalizedLearningSection onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        {visibility.personalizedLearning !== false && (
+          <PersonalizedLearningSection onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        )}
 
         {/* 40+ Industry Tools & Technologies Showcase (Real Database Data) */}
-        <ToolsSection />
+        {visibility.tools !== false && <ToolsSection />}
 
         {/* 8-Step Roadmap & 5 Proven Steps to Career Transformation (Verbatim Client Copy) */}
-        <PlacementRoadmap onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        {visibility.roadmap !== false && (
+          <PlacementRoadmap onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        )}
 
         {/* Real Product Showcase & Architectural Depth */}
-        <WhyChooseUs />
+        {visibility.whyChooseUs !== false && <WhyChooseUs />}
 
         {/* Comprehensive Academic & Program FAQs */}
-        <section id="faqs" className="py-20 md:py-28 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-            <FaqAccordion
-              showCategoryFilter={true}
-              title="Frequently Asked Questions"
-              subtitle="Everything you need to know about our curriculum, $99 reservation, 1-on-1 mentorship, and corporate hiring."
-            />
-          </div>
-        </section>
+        {visibility.faqs !== false && (
+          <section id="faqs" className="py-20 md:py-28 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+              <FaqAccordion
+                showCategoryFilter={true}
+                title="Frequently Asked Questions"
+                subtitle="Everything you need to know about our curriculum, $99 reservation, 1-on-1 mentorship, and corporate hiring."
+              />
+            </div>
+          </section>
+        )}
 
         {/* Bottom CTA Banner with Selective Admissions */}
-        <CallToAction onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        {visibility.callToAction !== false && (
+          <CallToAction onOpenLeadModal={() => handleOpenLeadModal(null)} />
+        )}
       </main>
 
       {/* Footer */}

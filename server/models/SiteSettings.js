@@ -72,6 +72,21 @@ const SiteSettingsSchema = new mongoose.Schema({
     default: false,
   },
 
+  // 🌟 HOMEPAGE SECTION VISIBILITY CONTROLS
+  sectionVisibility: {
+    hero: { type: Boolean, default: true },
+    trustMarquee: { type: Boolean, default: true },
+    metrics: { type: Boolean, default: true },
+    learningJourney: { type: Boolean, default: true },
+    courses: { type: Boolean, default: true },
+    personalizedLearning: { type: Boolean, default: true },
+    tools: { type: Boolean, default: true },
+    roadmap: { type: Boolean, default: true },
+    whyChooseUs: { type: Boolean, default: true },
+    faqs: { type: Boolean, default: true },
+    callToAction: { type: Boolean, default: true },
+  },
+
   // 🌟 HOMEPAGE HERO CMS
   hero: {
     eyebrow: { type: String, default: 'ACCREDITED US TECHNOLOGY INSTITUTE • SPRING 2026' },

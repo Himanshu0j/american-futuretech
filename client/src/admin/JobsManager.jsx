@@ -28,8 +28,9 @@ import {
   Minus,
   Link as LinkIcon
 } from 'lucide-react';
-import RepeatableListInput from './components/RepeatableListInput';
+import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
+import SafeImage from '../components/common/SafeImage';
 
 const LOGO_PRESETS = [
   { name: 'AWS / Cloud', url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&auto=format&fit=crop&q=80' },
@@ -401,13 +402,14 @@ export default function JobsManager() {
                       <tr key={job._id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 p-1 flex items-center justify-center shrink-0 overflow-hidden">
-                              {job.companyLogo ? (
-                                <img src={job.companyLogo} alt={job.company} className="w-full h-full object-contain rounded-lg" />
-                              ) : (
-                                <Building2 className="w-5 h-5 text-slate-500" />
-                              )}
-                            </div>
+                            <SafeImage
+                              src={job.companyLogo}
+                              alt={job.company}
+                              fallbackText={job.company || 'CP'}
+                              className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 p-1 shrink-0 overflow-hidden"
+                              imageClassName="w-full h-full object-contain rounded-lg"
+                              fallbackClassName="w-full h-full rounded-lg bg-slate-900 text-slate-400 text-xs font-bold flex items-center justify-center"
+                            />
                             <div>
                               <div className="font-bold text-white text-sm">{job.title}</div>
                               <div className="text-slate-400 text-xs flex items-center gap-2">
@@ -769,58 +771,57 @@ export default function JobsManager() {
                   </div>
 
                   {/* Responsibilities */}
-                  <RepeatableListInput
+                  <ListItemsEditor
                     label="Key Responsibilities"
-                    description="Paste lines or bullet points to auto-split into distinct items."
+                    helperText="Add pointers or click 'Paste Multiple Lines' to auto-split text into bullet points."
                     items={jobForm.responsibilities || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, responsibilities: items }))}
                     placeholder="Enter responsibility..."
-                    badgeColor="cyan"
                   />
 
                   {/* Preferred Qualifications */}
-                  <RepeatableListInput
+                  <ListItemsEditor
                     label="Preferred Qualifications"
+                    helperText="Paste multi-line qualifications to instantly parse into discrete pointers."
                     items={jobForm.preferredQualifications || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, preferredQualifications: items }))}
                     placeholder="Enter qualification..."
-                    badgeColor="emerald"
                   />
 
                   {/* Key Requirements */}
-                  <RepeatableListInput
+                  <ListItemsEditor
                     label="Key Requirements"
+                    helperText="Specify core eligibility and academic/experience requirements."
                     items={jobForm.keyRequirements || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, keyRequirements: items }))}
                     placeholder="Enter key requirement..."
-                    badgeColor="cyan"
                   />
 
                   {/* Required Certificates */}
-                  <RepeatableListInput
+                  <ListItemsEditor
                     label="Required Certificates & Credentials"
+                    helperText="e.g. AWS Certified Solutions Architect, CompTIA Security+, etc."
                     items={jobForm.requiredCertificates || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, requiredCertificates: items }))}
                     placeholder="e.g. AWS Certified Solutions Architect..."
-                    badgeColor="fuchsia"
                   />
 
                   {/* Technical Skills */}
-                  <RepeatableListInput
+                  <ListItemsEditor
                     label="Technical Skills (Keywords / Chips)"
+                    helperText="Enter technology keywords or paste comma/newline separated skill tags."
                     items={jobForm.technicalSkills || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, technicalSkills: items }))}
-                    placeholder="e.g. Docker, Python, AWS..."
-                    badgeColor="emerald"
+                    placeholder="e.g. Docker, Python, AWS, Kubernetes..."
                   />
 
                   {/* Soft Skills */}
-                  <RepeatableListInput
-                    label="Soft Skills"
+                  <ListItemsEditor
+                    label="Soft Skills & Core Competencies"
+                    helperText="e.g. Incident Response Leadership, Cross-functional Collaboration."
                     items={jobForm.softSkills || []}
                     onChange={(items) => setJobForm(prev => ({ ...prev, softSkills: items }))}
                     placeholder="e.g. System Design, Communication..."
-                    badgeColor="cyan"
                   />
                 </div>
 

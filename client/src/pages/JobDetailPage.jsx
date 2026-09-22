@@ -23,6 +23,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BulletContent from '../components/common/BulletContent';
+import SafeImage from '../components/common/SafeImage';
 
 export default function JobDetailPage() {
   const { id } = useParams();
@@ -181,19 +182,15 @@ export default function JobDetailPage() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
             {/* Left: Logo & Core Identity */}
             <div className="flex items-start gap-4 sm:gap-6">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 flex items-center justify-center overflow-hidden shrink-0">
-                {job.companyLogo ? (
-                  <img
-                    src={job.companyLogo}
-                    alt={job.company}
-                    className="w-full h-full object-contain rounded-xl"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white font-bold text-xl flex items-center justify-center">
-                    {job.company?.slice(0, 2).toUpperCase() || 'CP'}
-                  </div>
-                )}
-              </div>
+              {/* Company Logo Avatar with SafeImage */}
+              <SafeImage
+                src={job.companyLogo}
+                alt={job.company}
+                fallbackText={job.company || 'AFT'}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
+                imageClassName="w-full h-full object-contain rounded-xl"
+                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white font-bold text-xl flex items-center justify-center"
+              />
 
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">

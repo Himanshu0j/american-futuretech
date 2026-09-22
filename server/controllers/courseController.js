@@ -1,4 +1,5 @@
 const Course = require('../models/Course');
+const AuditLog = require('../models/AuditLog');
 
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
@@ -94,6 +95,16 @@ const createCourse = async (req, res) => {
       seatsUrgencyText,
     });
 
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'COURSE_CREATED',
+      entity: 'Course',
+      entityId: course._id.toString(),
+      details: `Created course: ${course.title} (${course.slug})`,
+    });
+
     return res.status(201).json({
       success: true,
       course,
@@ -122,6 +133,16 @@ const updateCourse = async (req, res) => {
     course = await Course.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
+    });
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'COURSE_UPDATED',
+      entity: 'Course',
+      entityId: course._id.toString(),
+      details: `Updated course: ${course.title}`,
     });
 
     return res.status(200).json({
@@ -181,6 +202,16 @@ const deleteCourse = async (req, res) => {
     }
 
     await course.deleteOne();
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'COURSE_DELETED',
+      entity: 'Course',
+      entityId: req.params.id,
+      details: `Deleted course: ${course.title} (${course.slug})`,
+    });
 
     return res.status(200).json({
       success: true,

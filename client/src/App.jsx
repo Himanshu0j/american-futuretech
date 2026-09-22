@@ -17,6 +17,7 @@ import PageSkeleton from './components/PageSkeleton';
 import ToolsSection from './components/ToolsSection';
 import PlacementRoadmap from './components/PlacementRoadmap';
 import PersonalizedLearningSection from './components/PersonalizedLearningSection';
+import FaqAccordion from './components/common/FaqAccordion';
 import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
@@ -166,6 +167,17 @@ function LandingPage() {
 
         {/* Real Product Showcase & Architectural Depth */}
         <WhyChooseUs />
+
+        {/* Comprehensive Academic & Program FAQs */}
+        <section id="faqs" className="py-20 md:py-28 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+            <FaqAccordion
+              showCategoryFilter={true}
+              title="Frequently Asked Questions"
+              subtitle="Everything you need to know about our curriculum, $99 reservation, 1-on-1 mentorship, and corporate hiring."
+            />
+          </div>
+        </section>
 
         {/* Bottom CTA Banner with Selective Admissions */}
         <CallToAction onOpenLeadModal={() => handleOpenLeadModal(null)} />

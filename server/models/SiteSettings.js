@@ -75,12 +75,14 @@ const SiteSettingsSchema = new mongoose.Schema({
   // 🌟 HOMEPAGE HERO CMS
   hero: {
     eyebrow: { type: String, default: 'ACCREDITED US TECHNOLOGY INSTITUTE • SPRING 2026' },
+    eyebrowBadgeText: { type: String, default: 'AMERICAN FUTURETECH · 6-MONTH CAREER TRAINING & FELLOWSHIPS' },
     headline: { type: String, default: 'Master Applied Emerging Tech. Launch Elite Careers.' },
     subheadline: { type: String, default: 'Live instructor-led fellowships in Artificial Intelligence, Cyber Security, and Cloud Architecture. Master 40+ industry tools, defend real capstones, and access our vetted hiring partner network.' },
     primaryCtaText: { type: String, default: 'Reserve Your Seat — $99' },
     primaryCtaLink: { type: String, default: '/checkout' },
     secondaryCtaText: { type: String, default: 'Explore Programs' },
     secondaryCtaLink: { type: String, default: '/courses' },
+    statsBadgeText: { type: String, default: '1,200+ Fellows Placed' },
     showAnimation: { type: Boolean, default: true },
   },
 

@@ -29,6 +29,7 @@ import {
   Link as LinkIcon
 } from 'lucide-react';
 import RepeatableListInput from './components/RepeatableListInput';
+import ImageUploadInput from './components/ImageUploadInput';
 
 const LOGO_PRESETS = [
   { name: 'AWS / Cloud', url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&auto=format&fit=crop&q=80' },
@@ -619,54 +620,13 @@ export default function JobsManager() {
 
                 {/* Company Logo Section */}
                 <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-slate-300 font-bold uppercase text-[11px] flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
-                      Company Logo URL & Presets
-                    </label>
-                    {jobForm.companyLogo && (
-                      <span className="text-[10px] text-emerald-400 font-mono">Logo Loaded</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-700 p-1 flex items-center justify-center shrink-0 overflow-hidden">
-                      {jobForm.companyLogo ? (
-                        <img
-                          src={jobForm.companyLogo}
-                          alt="Preview"
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      ) : (
-                        <Building2 className="w-5 h-5 text-slate-600" />
-                      )}
-                    </div>
-                    <input
-                      type="url"
-                      value={jobForm.companyLogo}
-                      onChange={(e) => setJobForm({ ...jobForm, companyLogo: e.target.value })}
-                      placeholder="https://example.com/logo.png or choose a preset below"
-                      className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    <span className="text-[10px] text-slate-500 mr-1 self-center">Presets:</span>
-                    {LOGO_PRESETS.map((preset) => (
-                      <button
-                        key={preset.name}
-                        type="button"
-                        onClick={() => setJobForm({ ...jobForm, companyLogo: preset.url })}
-                        className={`text-[10px] px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
-                          jobForm.companyLogo === preset.url
-                            ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 font-bold'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        {preset.name}
-                      </button>
-                    ))}
-                  </div>
+                {/* Company Logo with Live Upload & Preview */}
+                <ImageUploadInput
+                  label="Company Logo / Brand Asset"
+                  value={jobForm.companyLogo}
+                  onChange={(url) => setJobForm({ ...jobForm, companyLogo: url })}
+                  placeholder="Upload PNG/SVG or choose preset..."
+                />
                 </div>
 
                 {/* Recommended Course Selector */}

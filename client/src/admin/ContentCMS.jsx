@@ -15,7 +15,11 @@ import {
   X,
   Sparkles,
   Building,
-  DollarSign
+  DollarSign,
+  ChevronUp,
+  ChevronDown,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function ContentCMS() {
@@ -44,8 +48,9 @@ export default function ContentCMS() {
   const [faqForm, setFaqForm] = useState({
     question: '',
     answer: '',
-    category: 'General',
+    category: 'Admissions & Fees',
     order: 1,
+    isPublished: true,
   });
 
   const [storyForm, setStoryForm] = useState({
@@ -69,7 +74,7 @@ export default function ContentCMS() {
         const res = await axios.get('/api/content/blogs');
         if (res.data.success) setBlogs(res.data.blogs || []);
       } else if (activeTab === 'faqs') {
-        const res = await axios.get('/api/content/faqs');
+        const res = await axios.get('/api/content/faqs?all=true');
         if (res.data.success) setFaqs(res.data.faqs || []);
       } else if (activeTab === 'stories') {
         const res = await axios.get('/api/content/success-stories');
@@ -79,6 +84,36 @@ export default function ContentCMS() {
       console.error('Failed to load content:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleFaqPublished = async (faq) => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      const updatedStatus = faq.isPublished === false ? true : false;
+      const res = await axios.put(`/api/content/faqs/${faq._id}`, { isPublished: updatedStatus }, { headers });
+      if (res.data.success) {
+        setFaqs(faqs.map(f => f._id === faq._id ? res.data.faq : f));
+      }
+    } catch (err) {
+      console.error('Failed to toggle FAQ published state:', err);
+      alert('Failed to update FAQ publish status');
+    }
+  };
+
+  const handleReorderFaq = async (faq, direction) => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      const currentOrder = faq.order || 1;
+      const newOrder = direction === 'up' ? Math.max(1, currentOrder - 1) : currentOrder + 1;
+      const res = await axios.put(`/api/content/faqs/${faq._id}`, { order: newOrder }, { headers });
+      if (res.data.success) {
+        fetchContent();
+      }
+    } catch (err) {
+      console.error('Failed to reorder FAQ:', err);
     }
   };
 
@@ -96,7 +131,7 @@ export default function ContentCMS() {
         isPublished: true,
       });
     } else if (activeTab === 'faqs') {
-      setFaqForm({ question: '', answer: '', category: 'General', order: faqs.length + 1 });
+      setFaqForm({ question: '', answer: '', category: 'Admissions & Fees', order: faqs.length + 1, isPublished: true });
     } else if (activeTab === 'stories') {
       setStoryForm({
         name: '',
@@ -128,8 +163,9 @@ export default function ContentCMS() {
       setFaqForm({
         question: item.question || '',
         answer: item.answer || '',
-        category: item.category || 'General',
+        category: item.category || 'Admissions & Fees',
         order: item.order || 1,
+        isPublished: item.isPublished !== false,
       });
     } else if (activeTab === 'stories') {
       setStoryForm({
@@ -325,11 +361,53 @@ export default function ContentCMS() {
               {faqs.map((f) => (
                 <div key={f._id} className="p-5 flex items-start justify-between gap-4 hover:bg-slate-800/30 transition-colors">
                   <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">
                         {f.category}
                       </span>
-                      <span className="text-xs text-slate-500 font-mono">Order: #{f.order || 1}</span>
+                      <div className="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-xs text-slate-400 font-mono">
+                        <span>Order #{f.order || 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleReorderFaq(f, 'up')}
+                          className="hover:text-cyan-400 p-0.5"
+                          title="Move Up"
+                        >
+                          <ChevronUp className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReorderFaq(f, 'down')}
+                          className="hover:text-cyan-400 p-0.5"
+                          title="Move Down"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      {/* 1-Click Active / Published Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleFaqPublished(f)}
+                        className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                          f.isPublished !== false
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25'
+                            : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25'
+                        }`}
+                        title="Click to toggle publish state"
+                      >
+                        {f.isPublished !== false ? (
+                          <>
+                            <Eye className="w-3 h-3" />
+                            <span>Live & Published</span>
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff className="w-3 h-3" />
+                            <span>Draft / Inactive</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                     <h4 className="text-sm font-bold text-white">{f.question}</h4>
                     <p className="text-xs text-slate-400 leading-relaxed">{f.answer}</p>
@@ -338,12 +416,14 @@ export default function ContentCMS() {
                     <button
                       onClick={() => handleOpenEdit(f)}
                       className="p-1.5 text-slate-400 hover:text-cyan-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      title="Edit FAQ"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(f._id)}
                       className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      title="Delete FAQ"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -514,16 +594,16 @@ export default function ContentCMS() {
                           onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                         >
-                          <option value="General">General</option>
+                          <option value="Admissions & Fees">Admissions & Fees</option>
+                          <option value="Curriculum & Projects">Curriculum & Projects</option>
+                          <option value="Career & Placement">Career & Placement</option>
+                          <option value="Certifications">Certifications</option>
                           <option value="Career Programs">Career Programs</option>
                           <option value="Personalized Learning">Personalized Learning</option>
-                          <option value="Capstone">Capstone Engineering</option>
+                          <option value="Capstone Engineering">Capstone Engineering</option>
                           <option value="Live Jobs">Live Jobs & Placement</option>
-                          <option value="Admissions">Admissions & Eligibility</option>
-                          <option value="Curriculum">Curriculum & Accreditation</option>
-                          <option value="Placement">Job Placement & Mentorship</option>
-                          <option value="Financing">Tuition & Financing</option>
                           <option value="$99 Reservation">$99 Seat Reservation</option>
+                          <option value="General">General Academic</option>
                         </select>
                       </div>
                       <div>
@@ -535,6 +615,19 @@ export default function ContentCMS() {
                           className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
                         />
                       </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 py-1">
+                      <input
+                        type="checkbox"
+                        id="faqIsPublished"
+                        checked={faqForm.isPublished !== false}
+                        onChange={(e) => setFaqForm({ ...faqForm, isPublished: e.target.checked })}
+                        className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 w-4 h-4 bg-slate-950 cursor-pointer"
+                      />
+                      <label htmlFor="faqIsPublished" className="text-slate-300 font-medium cursor-pointer">
+                        Published & Active on Live Website
+                      </label>
                     </div>
 
                     <div>

@@ -65,10 +65,13 @@ const deleteBlog = async (req, res) => {
 // FAQS
 const getFaqs = async (req, res) => {
   try {
-    const { category } = req.query;
-    let query = { isPublished: true };
+    const { category, all } = req.query;
+    let query = {};
+    if (all !== 'true') {
+      query.isPublished = true;
+    }
     if (category && category !== 'All') query.category = category;
-    const faqs = await FAQ.find(query).sort({ order: 1 });
+    const faqs = await FAQ.find(query).sort({ order: 1, createdAt: -1 });
     return res.status(200).json({ success: true, count: faqs.length, faqs });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

@@ -37,7 +37,7 @@ export default function AdminLayout() {
     { name: 'Enrolled Students', path: '/admin/students', icon: GraduationCap },
     { name: 'Tuition & Billing Ledger', path: '/admin/payments', icon: CreditCard },
     { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase },
-    { name: 'Tech Journal CMS', path: '/admin/content', icon: FileText },
+    { name: 'Content & FAQs CMS', path: '/admin/content', icon: FileText },
     { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, superAdminOnly: true },

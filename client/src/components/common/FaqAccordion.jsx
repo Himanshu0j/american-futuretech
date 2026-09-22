@@ -12,27 +12,21 @@ export default function FaqAccordion({
   limit = undefined,
   className = '',
 }) {
-  const [faqs, setFaqs] = useState([]);
+  const [allFaqs, setAllFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(category || 'All');
   const [openIndex, setOpenIndex] = useState(0);
 
   useEffect(() => {
-    fetchFaqs();
-  }, [category, activeCategory]);
+    fetchAllFaqs();
+  }, []);
 
-  const fetchFaqs = async () => {
+  const fetchAllFaqs = async () => {
     try {
       setLoading(true);
-      const targetCat = category || (activeCategory !== 'All' ? activeCategory : undefined);
-      const url = targetCat ? `/api/content/faqs?category=${encodeURIComponent(targetCat)}` : '/api/content/faqs';
-      const res = await axios.get(url);
+      const res = await axios.get('/api/content/faqs');
       if (res.data.success) {
-        let items = res.data.faqs || [];
-        if (typeof limit === 'number') {
-          items = items.slice(0, limit);
-        }
-        setFaqs(items);
+        setAllFaqs(res.data.faqs || []);
       }
     } catch (err) {
       console.error('Failed to load FAQs:', err);
@@ -41,16 +35,15 @@ export default function FaqAccordion({
     }
   };
 
-  const categories = [
-    'All',
-    'Career Programs',
-    'Personalized Learning',
-    'Capstone',
-    'Live Jobs',
-    'Enrollment',
-    '$99 Reservation',
-    'Admissions & Fees',
-  ];
+  const dynamicCategories = ['All', ...Array.from(new Set(allFaqs.map((f) => f.category).filter(Boolean)))];
+
+  const filteredFaqs = allFaqs.filter((faq) => {
+    const target = category || activeCategory;
+    if (!target || target === 'All') return true;
+    return faq.category?.toLowerCase() === target.toLowerCase();
+  });
+
+  const displayFaqs = typeof limit === 'number' ? filteredFaqs.slice(0, limit) : filteredFaqs;
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -75,7 +68,7 @@ export default function FaqAccordion({
       {/* Category Pills (if requested) */}
       {showCategoryFilter && !category && (
         <div className="flex flex-wrap gap-2 pb-2">
-          {categories.map((cat) => (
+          {dynamicCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => {
@@ -101,13 +94,13 @@ export default function FaqAccordion({
             <div key={n} className="h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse" />
           ))}
         </div>
-      ) : faqs.length === 0 ? (
+      ) : displayFaqs.length === 0 ? (
         <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
           No FAQs currently listed under this category.
         </div>
       ) : (
         <div className="space-y-3">
-          {faqs.map((faq, idx) => {
+          {displayFaqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
 
             return (
@@ -163,6 +156,17 @@ export default function FaqAccordion({
           })}
         </div>
       )}
+
+      {/* Footer Link to Dedicated Knowledgebase */}
+      <div className="pt-2 text-center">
+        <a
+          href="/faq"
+          className="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 hover:underline transition-colors"
+        >
+          <span>Have more questions? Browse all disclosures & academic FAQs</span>
+          <Sparkles className="w-3.5 h-3.5" />
+        </a>
+      </div>
     </div>
   );
 }

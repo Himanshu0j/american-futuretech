@@ -65,6 +65,10 @@ app.use('/api/content', require('./routes/contentRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
+
+// Serve uploaded static assets
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve static assets in production if client build exists
 if (process.env.NODE_ENV === 'production') {

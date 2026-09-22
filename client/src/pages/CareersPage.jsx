@@ -110,7 +110,7 @@ export default function CareersPage() {
 
   const jobTypes = ['All', 'Full-time', 'Contract', 'Part-time', 'Internship'];
   const experienceLevels = ['All', 'Entry', 'Mid', 'Senior'];
-  const locations = ['All', 'Remote', 'On-site', 'Hybrid'];
+  const locations = ['All', 'Remote', 'New York, NY', 'Austin, TX', 'Dallas, TX', 'Washington, DC', 'On-site', 'Hybrid'];
 
   const filteredJobs = jobs.filter((job) => {
     const term = searchTerm.trim().toLowerCase();
@@ -128,8 +128,12 @@ export default function CareersPage() {
     const matchesExp = selectedExp === 'All' ||
       job.experienceLevel?.toLowerCase().includes(selectedExp.toLowerCase());
 
-    const matchesLocation = selectedLocation === 'All' ||
-      job.location?.toLowerCase().includes(selectedLocation.toLowerCase());
+    const locKeyword = selectedLocation === 'All'
+      ? ''
+      : selectedLocation.split(',')[0].toLowerCase().trim();
+
+    const matchesLocation = !locKeyword ||
+      job.location?.toLowerCase().includes(locKeyword);
 
     const matchesCourse = selectedCourse === 'All' ||
       job.recommendedCourseTitle === selectedCourse ||
@@ -400,6 +404,53 @@ export default function CareersPage() {
                   </select>
                 </div>
               </div>
+
+              {/* Active Filter Chips */}
+              {hasActiveFilters && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[11px] text-slate-400 font-mono">Active filters:</span>
+                  {searchTerm && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                      <span>Keyword: &quot;{searchTerm}&quot;</span>
+                      <button type="button" onClick={() => setSearchTerm('')} className="hover:text-rose-600 p-0.5 cursor-pointer">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {selectedJobType !== 'All' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                      <span>Type: {selectedJobType}</span>
+                      <button type="button" onClick={() => setSelectedJobType('All')} className="hover:text-rose-600 p-0.5 cursor-pointer">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {selectedExp !== 'All' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                      <span>Exp: {selectedExp}</span>
+                      <button type="button" onClick={() => setSelectedExp('All')} className="hover:text-rose-600 p-0.5 cursor-pointer">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {selectedLocation !== 'All' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
+                      <span>Location: {selectedLocation}</span>
+                      <button type="button" onClick={() => setSelectedLocation('All')} className="hover:text-rose-600 p-0.5 cursor-pointer">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {selectedCourse !== 'All' && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200 max-w-[220px] truncate">
+                      <span className="truncate">Track: {selectedCourse}</span>
+                      <button type="button" onClick={() => setSelectedCourse('All')} className="hover:text-rose-600 p-0.5 cursor-pointer shrink-0">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Filter Telemetry & Clear Filters Button */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">

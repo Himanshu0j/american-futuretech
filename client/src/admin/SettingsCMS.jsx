@@ -32,6 +32,7 @@ import {
   Compass
 } from 'lucide-react';
 import RepeatableListInput from './components/RepeatableListInput';
+import ImageUploadInput from './components/ImageUploadInput';
 
 export default function SettingsCMS() {
   const [activeTab, setActiveTab] = useState('general');
@@ -701,39 +702,17 @@ export default function SettingsCMS() {
                     {(settings.trustedCompanies?.companies || []).map((comp, idx) => (
                       <div
                         key={idx}
-                        className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-start gap-3 relative group"
+                        className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col gap-2 relative group"
                       >
-                        {/* Logo Preview */}
-                        <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0 overflow-hidden">
-                          {comp.logoUrl ? (
-                            <img
-                              src={comp.logoUrl}
-                              alt={comp.name}
-                              className="w-full h-full object-contain"
-                              onError={(e) => { e.target.style.display = 'none'; }}
-                            />
-                          ) : (
-                            <Building className="w-5 h-5 text-slate-400" />
-                          )}
-                        </div>
-
-                        {/* Fields */}
-                        <div className="flex-1 space-y-1.5 text-xs font-mono">
+                        <div className="flex items-center justify-between">
                           <input
                             type="text"
                             value={comp.name || ''}
                             onChange={(e) => handleUpdateCompany(idx, 'name', e.target.value)}
                             placeholder="Company Name"
-                            className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-800 text-white font-sans font-bold text-xs focus:outline-none focus:border-cyan-500"
+                            className="flex-1 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-white font-sans font-bold text-xs focus:outline-none focus:border-cyan-500 mr-2"
                           />
-                          <input
-                            type="text"
-                            value={comp.logoUrl || ''}
-                            onChange={(e) => handleUpdateCompany(idx, 'logoUrl', e.target.value)}
-                            placeholder="Logo URL (/images/companies/google.svg)"
-                            className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono text-[11px] focus:outline-none focus:border-cyan-500"
-                          />
-                          <div className="flex items-center justify-between pt-1">
+                          <div className="flex items-center gap-2 shrink-0">
                             <label className="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -754,6 +733,15 @@ export default function SettingsCMS() {
                             </button>
                           </div>
                         </div>
+
+                        {/* Image Upload & Preview Component */}
+                        <ImageUploadInput
+                          value={comp.logoUrl || ''}
+                          onChange={(url) => handleUpdateCompany(idx, 'logoUrl', url)}
+                          placeholder="/images/companies/google.svg or upload..."
+                          label=""
+                          previewSize="w-10 h-10"
+                        />
                       </div>
                     ))}
                   </div>

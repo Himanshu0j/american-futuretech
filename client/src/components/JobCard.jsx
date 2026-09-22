@@ -115,14 +115,14 @@ export default function JobCard({
           </div>
         </div>
 
-        {/* Right: Compensation & Actively Reviewing Badge */}
+        {/* Right: Compensation & Actively Hiring Badge */}
         <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
           <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#1a361d] dark:text-[#76ff8a] font-mono tracking-tight bg-[#d8ffd2]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#76ff8a]/60 dark:border-emerald-800 shadow-2xs">
             {formatSalary()}
           </div>
           <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            <span>Actively Interviewing</span>
+            <span>Actively Hiring</span>
           </div>
         </div>
       </div>
@@ -147,14 +147,9 @@ export default function JobCard({
         </div>
       )}
 
-      {/* 3. Role Summary Description */}
-      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-        {job.description}
-      </p>
-
-      {/* 4. Filtered Skills & Action Buttons Row */}
+      {/* 3. Filtered Skills (Strictly 5 tools) & Action Buttons Row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
-        {/* Skills: Showing 4 to 5 tools */}
+        {/* Skills: Showing max 5 tools */}
         <div className="flex flex-wrap items-center gap-1.5 flex-1">
           {visibleSkills.map((skill, i) => (
             <span
@@ -164,11 +159,6 @@ export default function JobCard({
               {skill}
             </span>
           ))}
-          {remainingSkillsCount > 0 && (
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700 font-mono">
-              +{remainingSkillsCount} more
-            </span>
-          )}
         </div>
 
         {/* Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}

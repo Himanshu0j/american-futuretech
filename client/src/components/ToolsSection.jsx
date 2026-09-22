@@ -185,17 +185,9 @@ export default function ToolsSection() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              to={capstone.ctaLink || '/checkout?tier=deposit'}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-md hover:shadow-lg cursor-pointer"
-            >
-              <span>{capstone.ctaText || 'Reserve Capstone Seat — $99'}</span>
-              <ArrowRight className="w-4 h-4 text-white" />
-            </Link>
-
             <button
               onClick={() => setModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               <span>View All 12+ Tools</span>
               <ExternalLink className="w-3.5 h-3.5 text-indigo-500" />
@@ -271,16 +263,6 @@ export default function ToolsSection() {
               <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
                 Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.
               </p>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                to="/checkout?tier=deposit"
-                className="py-2.5 px-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md"
-              >
-                <span>Enroll in Next Cohort — $99</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
           </div>
 

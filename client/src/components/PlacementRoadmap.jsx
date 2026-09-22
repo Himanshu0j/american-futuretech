@@ -159,7 +159,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
             <div className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider">
               100% Placement Guidance Guaranteed
             </div>
-            <h4 className="text-xl sm:text-2xl font-display font-bold">
+            <h4 className="text-xl sm:text-2xl font-display font-extrabold text-white">
               Ready to Accelerate Your Career Transformation?
             </h4>
             <p className="text-xs text-[#d8ffd2]/80 leading-relaxed">

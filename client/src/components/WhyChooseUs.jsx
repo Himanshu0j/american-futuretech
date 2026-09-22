@@ -480,7 +480,7 @@ export default function WhyChooseUs() {
               04 — Career Placement Acceleration
             </span>
             <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1a361d] font-heading leading-tight">
-              A 4-month dedicated accelerator to land your next high-impact role
+              Dedicated Career Accelerator to Help You Land Your Next High-Impact Role
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
               We do not leave career outcomes to chance. Each fellow is paired with an experienced technical career advisor who oversees ATS resume engineering, mock panel reviews, and direct introductions to hiring partners.

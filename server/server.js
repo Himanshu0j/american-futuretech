@@ -12,15 +12,11 @@ const { assertAuthConfig } = require('./config/auth');
 const { autoSeedIfEmpty } = require('./utils/seeder');
 const errorHandler = require('./middleware/errorHandler');
 
-// Fail fast: an unsafe/missing JWT secret must stop the boot in production
-// instead of silently falling back to a secret that is published in this repo.
-let authStatus = null;
-try {
-  authStatus = assertAuthConfig();
-} catch (authError) {
-  console.error(`\n${authError.message}\n`);
-  process.exit(1);
-}
+// Resolve the JWT signing secret at boot. A missing or unsafe value never stops
+// the boot (that would take the public site down with it) — config/auth.js
+// generates a random per-process secret instead, warns loudly, and reports it
+// through /api/health. The leaked value published in this repo is never used.
+const authStatus = assertAuthConfig();
 
 // Initialize database and auto-seed if empty
 connectDB().then(() => {
@@ -78,6 +74,7 @@ app.get('/api/health', (req, res) => {
       'Ephemeral in-memory database: admin content is wiped on every restart/redeploy. Set MONGODB_URI to a persistent MongoDB (e.g. MongoDB Atlas).',
     );
   }
+  if (authStatus && authStatus.warning) warnings.push(authStatus.warning);
   if (payments.warning) warnings.push(payments.warning);
 
   res.status(200).json({

@@ -18,8 +18,9 @@ This document covers the fixes made after the audit that found a live admin take
 
 **1. No hardcoded secrets** — `server/config/auth.js` owns the JWT secret:
 
-- Production: the server **refuses to boot** (exit code 1) when `JWT_SECRET` is missing, shorter than 32 characters, or a known leaked/placeholder value.
-- Development: a random per-process secret is generated and a warning is printed, so tokens can never be forged with the published value — they simply expire on restart.
+- Any environment: an unsafe `JWT_SECRET` (missing, shorter than 32 characters, or a known leaked/placeholder value) is **never used for signing**. The server generates a random 48-byte secret for that process, prints a warning, and keeps serving.
+- Why not refuse to boot: a missing environment variable must never take the whole API — and with it the public site — down. The trade-off is that sessions are invalidated on restart, which `/api/health` reports (`auth.mode: ephemeral-generated-secret` plus a `warnings[]` entry) so a misconfigured deploy is visible without reading logs.
+- Setting a strong `JWT_SECRET` is still what you want in production: it is the only way sessions survive a restart or redeploy.
 
 Generate a secret:
 
@@ -74,7 +75,7 @@ Rotation also clears the brute-force lock and immediately invalidates every exis
 ## Verification
 
 ```bash
-npm run verify:auth     # 42 checks: policy, JWT config, prod boot failure,
+npm run verify:auth     # 46 checks: policy, JWT config, prod boot survival,
                         # forged-token rejection, lockout, enumeration, rate limits
 npm run verify:payments # 36 checks
 npm run verify:cms      # 17 checks

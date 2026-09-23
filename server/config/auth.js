@@ -5,11 +5,18 @@ const crypto = require('crypto');
  *
  * The JWT signing secret previously had a hardcoded fallback that was committed
  * to source control, so anyone holding the repository could mint a valid
- * SUPERADMIN token. There is now NO fallback:
+ * SUPERADMIN token. That fallback is gone for good:
  *
- *   production  → the server refuses to boot without a strong, unique secret.
- *   development → a random per-process secret is generated and loudly announced,
- *                 so tokens become invalid on restart instead of being forgeable.
+ *   - A configured, strong secret is used as-is.
+ *   - Anything unsafe (missing, too short, or one of the leaked/placeholder
+ *     values published in this repository) is NEVER used for signing. The
+ *     process instead generates a random 48-byte secret for its own lifetime
+ *     and warns loudly, in every environment including production.
+ *
+ * Falling back to a random secret instead of refusing to boot is deliberate: a
+ * missing environment variable must never take the whole API (and therefore the
+ * public site) down. The cost is that sessions are invalidated on restart, so
+ * the warning tells you exactly how to make them stable.
  */
 
 const MIN_SECRET_LENGTH = 32;
@@ -31,6 +38,9 @@ const ENV_HINT =
 let cachedSecret = null;
 let resolution = null;
 
+const FIX_HINT =
+  'Set a unique JWT_SECRET in your environment to make sessions survive restarts (Render → your service → Environment → JWT_SECRET).';
+
 const isProduction = () => process.env.NODE_ENV === 'production';
 
 const inspectSecret = (rawSecret) => {
@@ -50,7 +60,9 @@ const inspectSecret = (rawSecret) => {
 
 /**
  * Resolve (and cache) the signing secret.
- * Throws in production when the configured value is missing or unsafe.
+ *
+ * Never throws: an unsafe/missing value is replaced by a random per-process
+ * secret so the API always boots. The unsafe value itself is never used.
  */
 const getJwtSecret = () => {
   if (cachedSecret) return cachedSecret;
@@ -62,35 +74,31 @@ const getJwtSecret = () => {
     return cachedSecret;
   }
 
-  if (isProduction()) {
-    throw new Error(
-      [
-        `[FATAL] ${inspection.reason}`,
-        'Refusing to start: a guessable JWT secret would let anyone forge admin sessions.',
-        `Generate one with: ${GENERATE_COMMAND}`,
-        ENV_HINT,
-      ].join('\n'),
-    );
-  }
-
   cachedSecret = crypto.randomBytes(48).toString('hex');
-  resolution = { mode: 'ephemeral-development-secret', reason: inspection.reason };
+  resolution = { mode: 'ephemeral-generated-secret', reason: inspection.reason };
   console.warn(
     `\n⚠️  [Auth] ${inspection.reason}\n` +
-    '   Using a RANDOM development secret instead — existing logins will be invalidated on every restart.\n' +
-    `   For stable sessions, add JWT_SECRET to server/.env: ${GENERATE_COMMAND}\n`,
+    '   Using a RANDOM secret for this process instead — the configured value is never used for signing.\n' +
+    '   Consequence: admin/student logins are invalidated on every restart or redeploy.\n' +
+    `   Generate a stable one with: ${GENERATE_COMMAND}\n` +
+    `   ${ENV_HINT}\n`,
   );
   return cachedSecret;
 };
 
-/** Called once during boot so misconfiguration fails fast and loudly. */
+/** Called once during boot. Always succeeds; reports how the secret resolved. */
 const assertAuthConfig = () => {
-  const secret = getJwtSecret(); // throws in production when unsafe
+  const secret = getJwtSecret();
+  const configured = inspectSecret(process.env.JWT_SECRET).ok;
   return {
-    configured: inspectSecret(process.env.JWT_SECRET).ok,
+    configured,
     mode: resolution ? resolution.mode : (isProduction() ? 'production' : 'development'),
     secretLength: secret.length,
     expiresIn: process.env.JWT_EXPIRE || '7d',
+    // Surfaced by /api/health so a misconfigured deploy is visible without logs.
+    warning: configured
+      ? null
+      : `${resolution.reason} A random per-process secret is in use instead, so admin and student sessions reset on every restart. ${FIX_HINT}`,
   };
 };
 

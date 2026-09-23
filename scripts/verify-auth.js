@@ -91,18 +91,28 @@ const run = async () => {
     authConfig.inspectSecret(LEAKED_SECRET).reason);
   check('Short secrets are recognised as unsafe', authConfig.inspectSecret('short-one').ok === false);
 
+  // A missing/unsafe secret must never take the API down (a dead API kills the
+  // public site), but the unsafe value must NEVER be used for signing either.
   process.env.NODE_ENV = 'production';
   process.env.JWT_SECRET = '';
   authConfig.__test__.reset();
-  let prodMissingThrew = false;
-  try { authConfig.getJwtSecret(); } catch (error) { prodMissingThrew = /Refusing to start/.test(error.message); }
-  check('Production refuses to start without a secret', prodMissingThrew);
+  const prodMissingSecret = authConfig.getJwtSecret();
+  check('Production boots without a secret instead of dying',
+    typeof prodMissingSecret === 'string' && prodMissingSecret.length >= 32,
+    `${prodMissingSecret.length} chars`);
+  check('The generated production secret is reported as ephemeral',
+    authConfig.assertAuthConfig().mode === 'ephemeral-generated-secret');
+  check('Health surfaces a warning about the missing secret',
+    /JWT_SECRET/.test(authConfig.assertAuthConfig().warning || ''),
+    authConfig.assertAuthConfig().warning);
 
   process.env.JWT_SECRET = LEAKED_SECRET;
   authConfig.__test__.reset();
-  let prodLeakedThrew = false;
-  try { authConfig.getJwtSecret(); } catch (error) { prodLeakedThrew = /leaked|placeholder/i.test(error.message); }
-  check('Production refuses to start with the leaked secret', prodLeakedThrew);
+  const prodLeakedSecret = authConfig.getJwtSecret();
+  check('Production never signs with the leaked secret',
+    prodLeakedSecret !== LEAKED_SECRET && prodLeakedSecret.length >= 32);
+  check('The leaked secret is not silently accepted as configured',
+    authConfig.assertAuthConfig().configured === false);
 
   process.env.NODE_ENV = 'development';
   process.env.JWT_SECRET = '';
@@ -122,22 +132,44 @@ const run = async () => {
   authConfig.__test__.reset();
 
   // ───────────────────────────────────────────────────────────────────────
-  console.log('\nLEVEL 3 · Production boot fails fast');
-  const bootFailure = await new Promise((resolve) => {
+  console.log('\nLEVEL 3 · Production boot survives a missing secret');
+  const bootOutcome = await new Promise((resolve) => {
     const child = spawn(process.execPath, [path.join(SERVER_DIR, 'server.js')], {
       // Empty string wins over server/.env because dotenv never overwrites
       // variables that already exist in the environment.
-      env: { ...process.env, NODE_ENV: 'production', JWT_SECRET: '' },
+      env: {
+        ...process.env,
+        NODE_ENV: 'production',
+        JWT_SECRET: '',
+        PORT: '5399',
+        SEED_ON_BOOT: 'false',
+        MONGODB_URI: MONGO_URI,
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
-    child.stdout.on('data', (d) => { output += d.toString(); });
-    child.stderr.on('data', (d) => { output += d.toString(); });
-    const timer = setTimeout(() => { child.kill(); resolve({ code: 'timeout', output }); }, 20000);
-    child.on('exit', (code) => { clearTimeout(timer); resolve({ code, output }); });
+    let settled = false;
+    const finish = (result) => { if (!settled) { settled = true; child.kill(); resolve(result); } };
+    const read = (d) => {
+      output += d.toString();
+      if (/Server running|Auth\]/.test(output)) setTimeout(() => finish({ code: null, output }), 1500);
+    };
+    child.stdout.on('data', read);
+    child.stderr.on('data', read);
+    const timer = setTimeout(() => finish({ code: 'timeout', output }), 30000);
+    timer.unref?.();
+    child.on('exit', (code) => finish({ code, output }));
   });
-  check('Server process exits with an error instead of booting', bootFailure.code === 1, `exit code ${bootFailure.code}`);
-  check('Exit message explains the fix', /Refusing to start/.test(bootFailure.output) && /JWT_SECRET/.test(bootFailure.output));
+  // null = we killed the healthy process ourselves; 'timeout' = it stayed up
+  // for the full window. Any numeric non-zero exit code is a crash.
+  const bootCrashed = typeof bootOutcome.code === 'number' && bootOutcome.code !== 0;
+  check('Server keeps running instead of crashing out',
+    !bootCrashed && (bootOutcome.code === null || bootOutcome.code === 'timeout'),
+    `exit code ${bootOutcome.code}`);
+  check('Boot warns that a random secret is in use',
+    /RANDOM secret for this process/.test(bootOutcome.output) && /JWT_SECRET/.test(bootOutcome.output));
+  check('A crash-loop is never the result of a missing secret',
+    !/Refusing to start/.test(bootOutcome.output));
 
   // ───────────────────────────────────────────────────────────────────────
   console.log('\nLEVEL 4 · Live API behaviour (throwaway database)');

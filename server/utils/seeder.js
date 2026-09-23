@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const { generateSecurePassword, validatePassword } = require('./passwords');
+const { getDbInfo } = require('../config/db');
 const Course = require('../models/Course');
 const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
@@ -29,13 +30,25 @@ const autoSeedIfEmpty = async () => {
     console.log('[Auto-Seed Triggered]: Populating comprehensive American FutureTech enterprise dataset...');
 
     // 1. Staff & Demo Users
-    // Passwords are NEVER hardcoded: each demo account gets its own random,
+    // On a persistent database each demo account gets its own random,
     // policy-compliant password that is printed once below. Set
-    // SEED_ADMIN_PASSWORD to force a specific value (used by automated tests).
+    // SEED_ADMIN_PASSWORD to force a specific value. On a throwaway in-memory
+    // database the credentials are pinned instead (see below) so the panel
+    // stays reachable without digging through server logs.
     const forcedSeedPassword = (process.env.SEED_ADMIN_PASSWORD || '').trim();
-    const adminPassword = forcedSeedPassword || generateSecurePassword();
-    const counselorPassword = forcedSeedPassword || generateSecurePassword();
-    const studentPassword = forcedSeedPassword || generateSecurePassword();
+
+    // Throwaway (in-memory) deployments hold no real data, yet their random
+    // seeded password was only ever printed to the server log — which left the
+    // panel unreachable on hosts where those logs are not at hand. In that
+    // ephemeral mode we pin a known demo password instead. On a persistent
+    // database the random, printed-once behaviour is unchanged.
+    const DEMO_FALLBACK_PASSWORD = 'admin123';
+    const ephemeralDemoMode = !forcedSeedPassword && getDbInfo().ephemeral;
+    const pinnedPassword = forcedSeedPassword || (ephemeralDemoMode ? DEMO_FALLBACK_PASSWORD : '');
+
+    const adminPassword = pinnedPassword || generateSecurePassword();
+    const counselorPassword = pinnedPassword || generateSecurePassword();
+    const studentPassword = pinnedPassword || generateSecurePassword();
 
     const superAdmin = await User.create({
       name: 'Alexander Pierce',
@@ -87,6 +100,16 @@ const autoSeedIfEmpty = async () => {
         `   COUNSELOR   counselor@americanfuturetech.com\n` +
         `   STUDENT     student@americanfuturetech.com\n` +
         `   ⚠️  Rotate these before going live (Admin → Staff & RBAC → Reset password).\n`,
+      );
+    } else if (ephemeralDemoMode) {
+      console.log(
+        `\n[Seed] EPHEMERAL DEMO database -- pinned credentials (no SEED_ADMIN_PASSWORD set):\n` +
+        `   SUPERADMIN  admin@americanfuturetech.com      / ${adminPassword}\n` +
+        `   COUNSELOR   counselor@americanfuturetech.com  / ${counselorPassword}\n` +
+        `   STUDENT     student@americanfuturetech.com    / ${studentPassword}\n` +
+        `   This database is in-memory: every restart wipes it and re-seeds these\n` +
+        `   same credentials. Set MONGODB_URI for real content, then rotate the\n` +
+        `   passwords in Admin > Staff & RBAC > Reset password.\n`,
       );
     } else {
       console.log(

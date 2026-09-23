@@ -84,18 +84,18 @@ export default function MetricsStrip() {
 
   return (
     <section id="curriculum-metrics" className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto space-y-10">
+      <div className="max-w-7xl mx-auto space-y-8">
         
         {/* ============================================================
             SECTION A: 3 DISTINCT VALUE PROPOSITION CARDS (Separated UI)
             ============================================================ */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-6 text-left">
           {valueProps.map((item, idx) => {
             const Icon = item.icon;
             return (
               <div
                 key={idx}
-                className={`p-7 sm:p-8 rounded-3xl bg-white border border-slate-200/90 ${item.accentBorder} shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden`}
+                className={`p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 ${item.accentBorder} shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden`}
               >
                 {/* Subtle card top glowing ambient accent */}
                 <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#2d5c36]/20 to-transparent group-hover:via-[#2d5c36]/60 transition-all" />

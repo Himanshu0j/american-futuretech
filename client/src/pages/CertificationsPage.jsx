@@ -84,7 +84,7 @@ export default function CertificationsPage() {
             <span>{cert.eyebrow}</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-7">
               <h1 className="text-3xl sm:text-5xl font-black font-heading tracking-tight text-[#1a361d] mb-2">
                 {cert.title}{' '}
@@ -149,14 +149,14 @@ export default function CertificationsPage() {
 
         {/* Overview + competencies */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-12">
-          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-8">
+          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2d5c36] mb-3">
               <BookOpen className="w-3.5 h-3.5" /> Comprehensive Overview
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] mb-3">About This Program</h2>
+            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] mb-3">About This Program</h2>
             <p className="text-sm text-slate-600 leading-relaxed max-w-3xl mb-8">{cert.overview}</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <div className="flex items-center gap-2 text-sm font-bold text-[#1a361d] mb-4">
                   <Cpu className="w-4 h-4 text-[#2d5c36]" /> Competencies You Will Build
@@ -190,8 +190,8 @@ export default function CertificationsPage() {
 
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-10 text-center shadow-2xl border border-[#2d5c36]">
-            <h3 className="text-2xl sm:text-3xl font-black font-heading mb-3">
+          <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-7 text-center shadow-2xl border border-[#2d5c36]">
+            <h3 className="text-xl sm:text-2xl font-black font-heading mb-3">
               Advance Your Career with American FutureTech
             </h3>
             <p className="text-sm text-emerald-100/90 max-w-xl mx-auto mb-6">

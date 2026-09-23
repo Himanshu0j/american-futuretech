@@ -280,13 +280,13 @@ export default function CareersPage() {
         {/* ========================================================================= */}
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}
         {/* ========================================================================= */}
-        <section className="mb-10 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-5 sm:p-8 lg:p-10 relative overflow-hidden">
+        <section className="mb-10 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-5 sm:p-6 lg:p-7 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#76ff8a]/20 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#9e4f8f]/10 blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
             {/* Left Column */}
-            <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="lg:col-span-7 space-y-4 text-left">
               <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/60 text-[#1a361d] text-xs font-bold tracking-wide shadow-xs">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -340,7 +340,7 @@ export default function CareersPage() {
             {/* Right Column: Visual Showcase */}
             <div className="lg:col-span-5 relative flex justify-center">
               <div className="relative w-full max-w-sm">
-                <div className="p-6 sm:p-8 rounded-3xl bg-[#1a361d] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#2d5c36]">
+                <div className="p-6 sm:p-6 rounded-3xl bg-[#1a361d] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#2d5c36]">
                   <div className="flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#76ff8a] animate-ping" />
@@ -379,10 +379,10 @@ export default function CareersPage() {
         {/* ========================================================================= */}
         {/* 2-COLUMN WORKSPACE: JOB SEARCH, FILTERS & LISTINGS + STICKY SIDEBAR        */}
         {/* ========================================================================= */}
-        <div id="openings" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div id="openings" className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* MAIN COLUMN (8 COLS): SEARCH, WORKING FILTERS, 8+ JOB GRID */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-4">
             
             {/* Search and Filters Bar */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 text-left">
@@ -578,7 +578,7 @@ export default function CareersPage() {
                 <div className="text-xs font-mono text-slate-500">Loading career network opportunities...</div>
               </div>
             ) : filteredJobs.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs space-y-4">
+              <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
                 <div className="w-36 h-36 mx-auto">
                   <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
                 </div>
@@ -617,7 +617,7 @@ export default function CareersPage() {
           </div>
 
           {/* RIGHT SIDEBAR (4 COLS): FAST-TRACK APPLICATION & VETTED NETWORK */}
-          <div id="fast-track" className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
+          <div id="fast-track" className="lg:col-span-4 space-y-4 lg:sticky lg:top-28">
             
             {/* Widget 1: Fast-Track Direct Referral Application Form */}
             <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden text-left">
@@ -637,7 +637,7 @@ export default function CareersPage() {
 
               {fastTrackSuccess ? (
                 <div className="p-5 rounded-2xl bg-[#d8ffd2]/50 border border-[#76ff8a] text-center space-y-3 animate-fadeIn">
-                  <div className="w-24 h-24 mx-auto">
+                  <div className="w-16 h-16 mx-auto">
                     <img src={approvedSuccessSvg} alt="Profile Submitted" className="w-full h-full object-contain" />
                   </div>
                   <h4 className="text-sm font-display font-bold text-[#1a361d]">Profile Submitted to Talent Pool!</h4>
@@ -798,7 +798,7 @@ export default function CareersPage() {
       {/* ========================================================================= */}
       {detailsModalOpen && selectedJobForDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto text-left space-y-5">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-white border border-slate-200 p-6 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto text-left space-y-5">
             
             <button
               onClick={() => setDetailsModalOpen(false)}
@@ -809,7 +809,7 @@ export default function CareersPage() {
 
             {/* Header: Company Logo, Name & Title */}
             <div className="flex items-start gap-4 pr-8">
-              <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-xs p-1.5 flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs p-1.5 flex items-center justify-center overflow-hidden shrink-0">
                 {selectedJobForDetails.companyLogo ? (
                   <img
                     src={selectedJobForDetails.companyLogo}
@@ -925,7 +925,7 @@ export default function CareersPage() {
       {/* ========================================================================= */}
       {applyModalOpen && selectedJobForApply && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto text-left">
+          <div className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto text-left">
             <button
               onClick={() => setApplyModalOpen(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"

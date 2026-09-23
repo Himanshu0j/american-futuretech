@@ -56,7 +56,7 @@ export default function TrustMarquee() {
       {/* Infinite Scrolling Marquee Track with Pause on Hover */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div
-          className="flex items-center gap-6 sm:gap-8 w-max animate-infinite-marquee hover:[animation-play-state:paused] cursor-pointer py-2"
+          className="flex items-center gap-6 sm:gap-6 w-max animate-infinite-marquee hover:[animation-play-state:paused] cursor-pointer py-2"
           style={{
             animationDuration: '32s'
           }}

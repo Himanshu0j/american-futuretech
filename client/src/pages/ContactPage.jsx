@@ -57,10 +57,10 @@ export default function ContactPage() {
         </section>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left Column: Office & Contact Cards */}
             <div className="lg:col-span-5 space-y-4 text-left">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xs">
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-5 space-y-4 shadow-xs">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                   INSTITUTIONAL HEADQUARTERS
                 </span>
@@ -117,10 +117,10 @@ export default function ContactPage() {
 
             {/* Right Column: Inquiry Form */}
             <div className="lg:col-span-7 text-left">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 shadow-xs">
                 {isSuccess ? (
                   <div className="text-center py-10">
-                    <div className="w-14 h-14 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
+                    <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
                       <CheckCircle2 className="w-8 h-8 text-[#2d5c36]" />
                     </div>
                     <h3 className="text-xl font-display font-bold text-[#1a361d] mb-2">Inquiry Submitted</h3>

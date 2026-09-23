@@ -167,7 +167,7 @@ export default function FaqAccordion({
   const displayFaqs = typeof limit === 'number' ? filteredFaqs.slice(0, limit) : filteredFaqs;
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-4 ${className}`}>
       {/* Optional Header */}
       {title && (
         <div className="text-left space-y-2 mb-6">
@@ -175,7 +175,7 @@ export default function FaqAccordion({
             <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>KNOWLEDGEBASE & DISCLOSURES</span>
           </div>
-          <h3 className="text-2xl sm:text-3xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
             {title}
           </h3>
           {subtitle && (
@@ -216,7 +216,7 @@ export default function FaqAccordion({
           ))}
         </div>
       ) : displayFaqs.length === 0 ? (
-        <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">
           No FAQs currently listed under this category.
         </div>
       ) : (

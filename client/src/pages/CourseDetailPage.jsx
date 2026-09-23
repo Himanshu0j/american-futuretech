@@ -146,12 +146,12 @@ export default function CourseDetailPage() {
 
         {/* 1. Course Hero Banner Container */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="rounded-3xl bg-[#1a361d] text-white p-6 sm:p-10 lg:p-12 shadow-xl border border-[#2d5c36] relative overflow-hidden">
+          <div className="rounded-3xl bg-[#1a361d] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#2d5c36] relative overflow-hidden">
             {/* Background ambient glow */}
             <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#9e4f8f]/20 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start relative z-10">
               {/* Left Column: Course Header Info */}
               <div className="lg:col-span-8">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
@@ -221,7 +221,7 @@ export default function CourseDetailPage() {
 
               {/* Right Column: Sticky Enrollment Card */}
               <div className="lg:col-span-4 lg:sticky lg:top-28">
-                <div className="rounded-3xl bg-white text-slate-800 p-6 sm:p-7 shadow-2xl border border-slate-200/80">
+                <div className="rounded-3xl bg-white text-slate-800 p-6 sm:p-5 shadow-2xl border border-slate-200/80">
                   <div className="mb-6 pb-5 border-b border-slate-100">
                     <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tuition Investment</div>
                     <div className="flex items-baseline justify-between mb-1">
@@ -289,7 +289,7 @@ export default function CourseDetailPage() {
               <Sparkle className="w-3.5 h-3.5 text-[#2d5c36]" />
               Hands-On Industry Toolkit
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] tracking-tight">
               {detailedData.heroTitle || `${course.title} Program`} Tools Covered
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -342,16 +342,16 @@ export default function CourseDetailPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
               {whyChooseList.map((item, idx) => {
                 const IconComponent = whyIcons[item.icon] || CheckCircle2;
                 return (
                   <div
                     key={idx}
-                    className="rounded-2xl bg-white border border-slate-200/80 p-7 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                    className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mb-5 shadow-md`}>
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mb-5 shadow-md`}>
                         <IconComponent className="w-7 h-7" />
                       </div>
                       <h3 className="text-xl font-bold text-slate-900 mb-2.5 font-display">
@@ -375,7 +375,7 @@ export default function CourseDetailPage() {
 
         {/* 4. Who Can Apply for this Course */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center">
             {/* Left: Numbered Criteria */}
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-900 text-xs font-bold uppercase tracking-wider mb-3">
@@ -407,10 +407,10 @@ export default function CourseDetailPage() {
             </div>
 
             {/* Right: Globally Recognised Certification Card + Audience Pills */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#1f4223] to-[#132815] text-white p-8 sm:p-9 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
+            <div className="lg:col-span-5 space-y-4">
+              <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#1f4223] to-[#132815] text-white p-6 sm:p-6 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#76ff8a]/20 rounded-full blur-2xl pointer-events-none" />
-                <div className="w-14 h-14 rounded-2xl bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] flex items-center justify-center mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] flex items-center justify-center mb-5">
                   <Award className="w-7 h-7" />
                 </div>
                 <h3 className="text-2xl font-bold font-display text-white mb-3">
@@ -562,7 +562,7 @@ export default function CourseDetailPage() {
               <Layers className="w-3.5 h-3.5 text-teal-700" />
               Build &amp; Showcase
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] tracking-tight">
               Capstone Projects
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -660,7 +660,7 @@ export default function CourseDetailPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 max-w-5xl mx-auto">
             {/* Card 1: American FutureTech Certificate */}
             <div className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
               <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
@@ -680,7 +680,7 @@ export default function CourseDetailPage() {
                   image: certImages.completionImage || '/static/images/dsai.jpeg',
                   code: 'AFT-FELLOWSHIP-DIPLOMA',
                 })}
-                className="relative aspect-[16/11] bg-slate-100 overflow-hidden cursor-pointer group/zoom"
+                className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
                 title="Click to inspect certificate in 4K"
               >
                 <img
@@ -744,7 +744,7 @@ export default function CourseDetailPage() {
                   image: certImages.microsoftImage || alignedMsCert.image,
                   code: certImages.microsoftCode || alignedMsCert.code,
                 })}
-                className="relative aspect-[16/11] bg-slate-100 overflow-hidden cursor-pointer group/zoom"
+                className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
                 title="Click to inspect Microsoft Certificate in 4K"
               >
                 <img
@@ -783,12 +783,12 @@ export default function CourseDetailPage() {
 
         {/* 8. Register Now Bottom Cockpit (Matching user request: Register now ka niche option) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-8 lg:p-12 shadow-2xl border border-[#2d5c36]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#2d5c36]">
             {/* Ambient background orbs */}
             <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#76ff8a]/15 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#9e4f8f]/25 blur-3xl" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center relative z-10">
               {/* Left Column: Register Now Details & Checklist */}
               <div className="lg:col-span-7">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] text-xs font-bold uppercase tracking-wider mb-5">
@@ -837,7 +837,7 @@ export default function CourseDetailPage() {
 
               {/* Right Column: High-Conversion CTA Buttons Box */}
               <div className="lg:col-span-5">
-                <div className="rounded-3xl bg-white text-slate-800 p-7 sm:p-9 shadow-2xl border border-white/20">
+                <div className="rounded-3xl bg-white text-slate-800 p-5 sm:p-6 shadow-2xl border border-white/20">
                   <div className="text-center mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Upcoming Live Cohort</span>
                     <div className="text-3xl font-display font-black text-[#1a361d] mt-1">

@@ -27,7 +27,7 @@ export default function PageSkeleton() {
       </div>
 
       {/* Main Content Shimmer */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 sm:px-10 py-12 space-y-10">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 sm:px-10 py-12 space-y-8">
         {/* Hero / Header Shimmer */}
         <div className="space-y-4 max-w-2xl animate-pulse">
           <div className="h-6 w-36 bg-sky-500/15 border border-sky-400/20 rounded-full" />

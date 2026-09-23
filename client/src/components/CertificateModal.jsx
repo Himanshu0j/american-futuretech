@@ -67,7 +67,7 @@ export default function CertificateModal({ isOpen, onClose, certificate }) {
         </div>
 
         {/* Modal Image Display */}
-        <div className="flex-1 overflow-auto p-4 sm:p-8 flex items-center justify-center bg-slate-950/40">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 flex items-center justify-center bg-slate-950/40">
           <div className="relative max-w-4xl w-full rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-white">
             <img
               src={certificate.image}

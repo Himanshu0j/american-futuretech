@@ -27,7 +27,7 @@ import lmsCertificateSvg from '../assets/illustrations/lms/lms-certificate.svg';
 export default function WhyChooseUs() {
   return (
     <section id="why-us" className="py-12 sm:py-16 bg-[#fffff2] text-[#1b1b1b]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14 sm:space-y-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14">
         
         {/* Intro Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
@@ -43,13 +43,13 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 1: Dedicated Academy Portal (TEXT Left | PRODUCT UI Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-4">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
               01 — The Dedicated Academy Portal
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1a361d] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1a361d] font-heading leading-tight">
               A unified student portal tailored to your engineering fellowship
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -107,7 +107,7 @@ export default function WhyChooseUs() {
                   <div className="text-sm font-bold font-heading">American FutureTech Academy Space</div>
                   <div className="text-[#d8ffd2] text-[10px]">Real-time lesson synchronization & cloud notebooks</div>
                 </div>
-                <div className="w-20 h-20 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
+                <div className="w-14 h-14 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
                   <img src={lmsDashboardSvg} alt="Dedicated Academy Portal" className="w-full h-full object-contain" />
                 </div>
               </div>
@@ -165,12 +165,12 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 2: Distraction-Free Classroom (PRODUCT UI Left | TEXT Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           {/* Product UI Mockup: Video Classroom & Code Lab */}
           <div className="lg:col-span-6 order-2 lg:order-1 relative">
             {/* Floating 3D Laptop Asset */}
-            <div className="hidden sm:block absolute -top-8 -right-6 z-20 w-24 h-24 animate-float-slow pointer-events-none drop-shadow-2xl">
+            <div className="hidden sm:block absolute -top-6 -right-6 z-20 w-16 h-16 animate-float-slow pointer-events-none drop-shadow-2xl">
               <img
                 src="/images/floating-laptop-code.webp"
                 alt="Floating 3D Neural Architecture"
@@ -229,11 +229,11 @@ export default function WhyChooseUs() {
           </div>
 
           {/* Text Content */}
-          <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
+          <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
               02 — Distraction-Free Classroom
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1a361d] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1a361d] font-heading leading-tight">
               Create high-impact learning outcomes with zero clutter
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -281,13 +281,13 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 3: Verifiable US Digital Credentials (TEXT Left | PRODUCT UI Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-4">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
               03 — Verifiable US Credentials
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1a361d] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1a361d] font-heading leading-tight">
               Demonstrate your achievements with cryptographically verified credentials
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -335,7 +335,7 @@ export default function WhyChooseUs() {
           {/* Product UI Mockup: Diploma Card */}
           <div className="lg:col-span-6 relative">
             {/* Floating Official Gold Seal Asset */}
-            <div className="hidden sm:block absolute -top-6 -right-4 z-20 w-20 h-20 animate-float-delayed pointer-events-none">
+            <div className="hidden sm:block absolute -top-6 -right-4 z-20 w-14 h-14 animate-float-delayed pointer-events-none">
               <img
                 src="/images/gold-seal-medal.webp"
                 alt="Official Gold Accreditation Seal"
@@ -394,12 +394,12 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Feature Story 4: Career Acceleration & 1-on-1 Mentorship (PRODUCT UI Left | TEXT Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           {/* Product UI Mockup: Career Pipeline */}
           <div className="lg:col-span-6 order-2 lg:order-1 relative">
             {/* Floating 3D Graduation Cap Asset */}
-            <div className="hidden sm:block absolute -top-7 -right-4 z-20 w-22 h-22 animate-float-drift pointer-events-none">
+            <div className="hidden sm:block absolute -top-5 -right-4 z-20 w-22 h-22 animate-float-drift pointer-events-none">
               <img
                 src="/images/grad-cap-diploma.webp"
                 alt="Graduation Cap & Diploma"
@@ -417,7 +417,7 @@ export default function WhyChooseUs() {
                   <div className="text-sm font-bold font-heading">1-on-1 Faculty Interview Defense</div>
                   <div className="text-[#d8ffd2] text-[10px]">Mock panels, whiteboarding & direct partner referrals</div>
                 </div>
-                <div className="w-20 h-20 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
+                <div className="w-14 h-14 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
                   <img src={lmsProgressDataSvg} alt="Career Acceleration Pipeline" className="w-full h-full object-contain" />
                 </div>
               </div>
@@ -475,11 +475,11 @@ export default function WhyChooseUs() {
           </div>
 
           {/* Text Content */}
-          <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
+          <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
             <span className="text-xs font-bold tracking-widest text-[#40844e] uppercase font-heading">
               04 — Career Placement Acceleration
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1a361d] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1a361d] font-heading leading-tight">
               Dedicated Career Accelerator to Help You Land Your Next High-Impact Role
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">

@@ -138,7 +138,7 @@ export default function FaqPage() {
         )}
 
         {/* Academic Callback Card */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#1a361d] text-white border border-[#2d5c36] text-center shadow-lg">
+        <div className="p-6 sm:p-6 rounded-3xl bg-[#1a361d] text-white border border-[#2d5c36] text-center shadow-lg">
           <h3 className="text-xl font-display font-bold text-white mb-2">Need direct guidance on tracks?</h3>
           <p className="text-xs sm:text-sm text-emerald-100 mb-6 max-w-md mx-auto leading-relaxed">
             Our admissions directors in Sheridan, Wyoming and online faculty provide personalized curriculum reviews.

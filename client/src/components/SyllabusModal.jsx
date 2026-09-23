@@ -48,7 +48,7 @@ Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
       <div className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white border border-slate-200 shadow-2xl flex flex-col overflow-hidden">
         
         {/* Header Bar */}
-        <div className="p-6 sm:p-8 border-b border-slate-200 bg-slate-50/50 relative text-left">
+        <div className="p-6 sm:p-6 border-b border-slate-200 bg-slate-50/50 relative text-left">
           <button
             onClick={onClose}
             className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
@@ -75,7 +75,7 @@ Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
         </div>
 
         {/* Scrollable Curriculum Content */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1 text-left">
+        <div className="p-6 sm:p-6 overflow-y-auto space-y-4 flex-1 text-left">
           {/* Key Highlights */}
           <div className="p-5 rounded-2xl bg-[#f7fdf8] border border-[#76ff8a]/40">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#1a361d] mb-3">

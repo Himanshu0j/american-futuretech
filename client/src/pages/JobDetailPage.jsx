@@ -178,7 +178,7 @@ export default function JobDetailPage() {
         </div>
 
         {/* Hero Header Card (Department & Verified Partner REMOVED) */}
-        <div className="p-5 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
+        <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#76ff8a]/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
@@ -189,7 +189,7 @@ export default function JobDetailPage() {
                 src={job.companyLogo}
                 alt={job.company}
                 fallbackText={job.company || 'AFT'}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
+                className="w-12 h-12 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
                 imageClassName="w-full h-full object-contain rounded-xl"
                 fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white font-bold text-xl flex items-center justify-center"
               />
@@ -265,10 +265,10 @@ export default function JobDetailPage() {
         </div>
 
         {/* 2-Column Body: Detailed Specification + Recommended Course & Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Main Specification Body (8 cols) */}
-          <div className="lg:col-span-8 space-y-8 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs text-slate-700 dark:text-slate-300">
+          <div className="lg:col-span-8 space-y-8 bg-white dark:bg-slate-900 p-6 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs text-slate-700 dark:text-slate-300">
             
             {/* 1. Job Description with Intelligent BulletContent parser */}
             <section className="space-y-3">
@@ -411,7 +411,7 @@ export default function JobDetailPage() {
           </div>
 
           {/* Right Column: Recommended Course & Institutional Guarantee (4 cols) */}
-          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
+          <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-28">
             
             {/* Recommended Course Card with $99 CTA */}
             {(job.recommendedCourse || job.recommendedCourseTitle || job.course) && (
@@ -493,7 +493,7 @@ export default function JobDetailPage() {
       {/* Internal Application Form Modal */}
       {applyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto text-left">
+          <div className="relative w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto text-left">
             <button
               onClick={() => setApplyModalOpen(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
@@ -503,7 +503,7 @@ export default function JobDetailPage() {
 
             {applySuccess ? (
               <div className="text-center py-6">
-                <div className="w-14 h-14 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
+                <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
                   <CheckCircle2 className="w-8 h-8 text-[#2d5c36]" />
                 </div>
                 <h3 className="text-xl font-display font-bold text-[#1a361d] mb-2">Application Transmitted!</h3>

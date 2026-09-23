@@ -138,11 +138,11 @@ export default function CheckoutPage() {
 
         {checkoutSuccess ? (
           /* Success Screen */
-          <div className="max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl relative overflow-hidden">
-            <div className="w-16 h-16 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-6 border border-[#76ff8a]">
+          <div className="max-w-2xl mx-auto p-6 sm:p-6 rounded-3xl bg-white border border-slate-200 text-center shadow-xl relative overflow-hidden">
+            <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-6 border border-[#76ff8a]">
               <CheckCircle2 className="w-9 h-9 text-[#2d5c36]" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#1a361d] mb-2">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#1a361d] mb-2">
               {tier === 'deposit' ? 'Cohort Seat Reserved Successfully' : 'Tuition & Enrollment Confirmed'}
             </h2>
             <p className="text-slate-600 text-sm mb-6 leading-relaxed">
@@ -189,9 +189,9 @@ export default function CheckoutPage() {
           </div>
         ) : (
           /* Checkout Form & Order Summary */
-          <form onSubmit={handleSubmitCheckout} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <form onSubmit={handleSubmitCheckout} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left Column: Form Details */}
-            <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="lg:col-span-7 space-y-4 text-left">
               {/* 1. Program Selection */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
@@ -400,7 +400,7 @@ export default function CheckoutPage() {
 
             {/* Right Column: Order Summary */}
             <div className="lg:col-span-5 lg:sticky lg:top-28 text-left">
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border-2 border-[#1a361d]/15 shadow-xl space-y-6">
+              <div className="p-6 sm:p-5 rounded-2xl bg-white border-2 border-[#1a361d]/15 shadow-xl space-y-4">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                   <h3 className="text-base font-display font-bold text-[#1a361d]">
                     Summary of Enrollment

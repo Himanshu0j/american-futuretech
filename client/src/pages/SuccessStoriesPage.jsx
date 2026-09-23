@@ -49,26 +49,26 @@ export default function SuccessStoriesPage() {
 
         {/* Proof Ledger */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-10">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 shadow-xs">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-left divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
               <div className="pt-4 lg:pt-0 lg:px-4 first:px-0">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Placement Rate</div>
-                <div className="text-2xl sm:text-3xl font-display font-black text-[#1a361d] mt-1">94.2%</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[#1a361d] mt-1">94.2%</div>
                 <div className="text-xs text-slate-500 mt-0.5">Employed within 180 days</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Salary Uplift</div>
-                <div className="text-2xl sm:text-3xl font-display font-black text-[#2d5c36] mt-1">+138%</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[#2d5c36] mt-1">+138%</div>
                 <div className="text-xs text-slate-500 mt-0.5">Average compensation gain</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hiring Network</div>
-                <div className="text-2xl sm:text-3xl font-display font-black text-[#1a361d] mt-1">100+</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[#1a361d] mt-1">100+</div>
                 <div className="text-xs text-slate-500 mt-0.5">US & international partners</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Alumni Rating</div>
-                <div className="text-2xl sm:text-3xl font-display font-black text-amber-500 mt-1">4.9 / 5.0</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-amber-500 mt-1">4.9 / 5.0</div>
                 <div className="text-xs text-slate-500 mt-0.5">From 320+ verified evaluations</div>
               </div>
             </div>
@@ -125,11 +125,11 @@ export default function SuccessStoriesPage() {
 
         {/* Bottom CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="bg-[#1a361d] text-white border border-[#2d5c36] rounded-3xl p-6 sm:p-10 text-center shadow-lg">
+          <div className="bg-[#1a361d] text-white border border-[#2d5c36] rounded-3xl p-6 sm:p-7 text-center shadow-lg">
             <span className="text-xs font-semibold text-[#76ff8a] uppercase tracking-wider block mb-2">
               ADMISSIONS ARE OPEN
             </span>
-            <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3">
+            <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-3">
               Your Engineering Breakthrough Begins Here
             </h3>
             <p className="text-emerald-100 text-xs sm:text-sm max-w-xl mx-auto mb-8 leading-relaxed">

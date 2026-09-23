@@ -379,7 +379,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
 
           {/* Slide-in Drawer Container */}
           <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl flex flex-col justify-between p-6 z-10 animate-in slide-in-from-right duration-300 overflow-y-auto">
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Drawer Top Header */}
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                 <img

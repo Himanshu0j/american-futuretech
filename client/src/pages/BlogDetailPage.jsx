@@ -60,7 +60,7 @@ export default function BlogDetailPage() {
           Back to all papers
         </Link>
 
-        <article className="p-6 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
+        <article className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <span className="text-xs font-bold text-[#1a361d] bg-[#d8ffd2] px-3 py-1 rounded-full">
               {blog.category}
@@ -90,7 +90,7 @@ export default function BlogDetailPage() {
           </div>
 
           {/* Body Content */}
-          <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-6">
+          <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
             {blog.content.split('\n\n').map((para, i) => (
               <p key={i}>{para}</p>
             ))}

@@ -158,7 +158,7 @@ export default function CoursesPage() {
               ))}
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-8 shadow-sm">
+            <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-6 shadow-sm">
               <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
               <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">No Specializations Found</h3>
               <p className="text-slate-500 text-xs mb-4">Try clearing filters or search terms.</p>
@@ -170,7 +170,7 @@ export default function CoursesPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
               {filteredCourses.map((course) => (
                 <div
                   key={course._id}

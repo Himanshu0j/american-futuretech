@@ -224,7 +224,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           <div className="mb-12 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
-              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[280px] lg:min-h-[420px] overflow-hidden bg-slate-950">
+              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[190px] lg:min-h-[290px] overflow-hidden bg-slate-950">
                 <img
                   src={getCourseImage(flagship)}
                   alt={flagship.title}
@@ -256,8 +256,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </div>
 
               {/* Right Content Column */}
-              <div className="lg:col-span-7 p-5 sm:p-8 flex flex-col justify-between space-y-6 relative">
-                <div className="hidden sm:block absolute top-6 right-6 w-20 h-20 opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <div className="lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between space-y-4 relative">
+                <div className="hidden sm:block absolute top-6 right-6 w-14 h-14 opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <img src={getCourseIllustration(flagship)} alt="" className="w-full h-full object-contain" />
                 </div>
                 <div>
@@ -271,7 +271,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   </div>
 
                   <Link to={`/courses/${flagship.slug}`}>
-                    <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
                       {flagship.title}
                     </h3>
                   </Link>
@@ -365,7 +365,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
         {/* SECONDARY TRACKS MODULAR GRID */}
         {secondaryCourses.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-6 text-left">
             {secondaryCourses.map((course) => {
               const tuition = course.pricing?.discountedPrice || 499;
               const originalTuition = course.pricing?.originalPrice || 1299;
@@ -377,7 +377,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                 >
                   <div>
                     {/* Visual Thumbnail Header */}
-                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950">
+                    <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-950">
                       <img
                         src={getCourseImage(course)}
                         alt={course.title}
@@ -477,14 +477,14 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
         )}
 
         {/* Official Microsoft Partner Credential Showcase */}
-        <div className="mt-12 p-5 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
+        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-indigo-500/20">
             <div className="space-y-2 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">
                 <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
                 <span>Dual Credential Framework &bull; US Institute + Microsoft Certified</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white">
+              <h3 className="text-xl sm:text-2xl font-black font-heading tracking-tight text-white">
                 Official Microsoft Certified Partner Credentials
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -538,7 +538,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
           {/* Active Certificate Spotlight Card */}
           {MICROSOFT_CERTIFICATES[activeCertIdx] && (
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-950/60 p-6 sm:p-8 rounded-2xl border border-indigo-500/20">
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-950/60 p-6 sm:p-6 rounded-2xl border border-indigo-500/20">
               {/* Certificate Image with Zoom Lightbox Trigger */}
               <div className="lg:col-span-5 flex flex-col items-center">
                 <div
@@ -548,7 +548,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   <img
                     src={MICROSOFT_CERTIFICATES[activeCertIdx].image}
                     alt={MICROSOFT_CERTIFICATES[activeCertIdx].title}
-                    className="w-full h-auto object-contain transition-transform duration-300 group-hover:contrast-105"
+                    className="w-full h-auto max-h-[210px] sm:max-h-[240px] object-contain transition-transform duration-300 group-hover:contrast-105"
                   />
                   <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
                     <span className="px-3.5 py-1.5 rounded-full bg-white/90 text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-lg">

@@ -92,7 +92,7 @@ export default function BlogPage() {
             <div className="w-8 h-8 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
           </div>
         ) : filteredBlogs.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-8 shadow-xs">
+          <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
             <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
             <h3 className="text-base font-display font-bold text-[#1a361d] mb-1">No articles found matching filters</h3>
             <p className="text-slate-500 text-xs">Try selecting 'All' or searching for another topic.</p>

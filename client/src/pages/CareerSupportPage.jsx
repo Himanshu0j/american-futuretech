@@ -91,7 +91,7 @@ export default function CareerSupportPage() {
             {pillars.map((p) => (
               <div
                 key={p.num}
-                className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col justify-between text-left shadow-xs hover:border-[#1a361d]/30 hover:shadow-md transition-all"
+                className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#1a361d]/30 hover:shadow-md transition-all"
               >
                 <div>
                   <span className="text-xs font-bold text-[#1a361d] px-2.5 py-1 rounded-full bg-[#d8ffd2] mb-3 inline-block">
@@ -164,12 +164,12 @@ export default function CareerSupportPage() {
 
         {/* ── Transparency: What Placement Assistance Actually Means ────── */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-10">
-          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-8 text-left">
+          <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
               <Shield className="w-3.5 h-3.5 text-[#2d5c36]" />
               <span>Transparency First</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] tracking-tight mb-2">
+            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] tracking-tight mb-2">
               {career.transparency?.title}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed mb-8">
@@ -218,7 +218,7 @@ export default function CareerSupportPage() {
                 <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
                 <span>Student Transitions</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] tracking-tight">
                 Learners Who Reached Their Target Roles
               </h2>
             </div>
@@ -243,7 +243,7 @@ export default function CareerSupportPage() {
 
         {/* Hiring Partners Showcase */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-10 text-center shadow-xs">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 text-center shadow-xs">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">
               EMPLOYER NETWORK
             </span>

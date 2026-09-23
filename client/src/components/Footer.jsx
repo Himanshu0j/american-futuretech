@@ -11,7 +11,7 @@ export default function Footer({ onOpenLeadModal }) {
           <p className="text-[11px] uppercase tracking-widest font-mono font-bold text-[#76ff8a] mb-6 text-center">
             Alumni Engineering at Leading Enterprise & High-Growth Technology Companies
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-6">
             <div className="flex items-center px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-xs hover:scale-105">
               <img src="/images/companies/google-cloud.svg" alt="Google Cloud" className="h-6 sm:h-7 w-auto object-contain filter-none" />
             </div>
@@ -37,7 +37,7 @@ export default function Footer({ onOpenLeadModal }) {
         </div>
 
         {/* 4-Column Directory Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-12 text-left">
           {/* Col 1: Institutional Brand */}
           <div className="space-y-4 md:col-span-1">
             <Link to="/" className="inline-block mb-1">

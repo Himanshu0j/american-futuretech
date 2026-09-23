@@ -22,10 +22,10 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(41,151,255,0.15),transparent_70%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-6 items-center">
           
           {/* Left Column: Apple Copywriting & Restrained Affordances */}
-          <div className="lg:col-span-7 flex flex-col items-start space-y-6 text-left">
+          <div className="lg:col-span-7 flex flex-col items-start space-y-4 text-left">
             
             {/* Apple Pill Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-xs font-sans text-[#f5f5f7] backdrop-blur-xl">

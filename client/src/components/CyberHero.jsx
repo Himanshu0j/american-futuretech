@@ -24,7 +24,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
   return (
     <section id="home" className="relative pt-32 pb-14 md:pt-36 md:pb-20 overflow-hidden bg-[#070b14]">
       {/* Dynamic Animated Background Ambient Glows */}
-      <div className="absolute top-10 left-1/4 w-[450px] h-[450px] bg-sky-500/15 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
+      <div className="absolute top-7 left-1/4 w-[450px] h-[450px] bg-sky-500/15 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
       <div className="absolute top-40 right-10 w-[550px] h-[550px] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none animate-float-slow" />
       <div className="absolute top-1/2 left-5 w-80 h-80 bg-rose-500/10 rounded-full blur-[100px] pointer-events-none animate-float-delayed" />
 
@@ -38,7 +38,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-6 items-center">
           
           {/* Left Column: Copywriting & High-Converting CTAs */}
           <div className="lg:col-span-7 flex flex-col items-start space-y-7 text-left">
@@ -179,9 +179,9 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
                     </div>
 
                     {/* Holographic AI Neural Network & Cyber Shield Icons */}
-                    <div className="flex items-center justify-center gap-7 my-2">
+                    <div className="flex items-center justify-center gap-5 my-2">
                       {/* AI Neural Network Graphic with Rotating Ring */}
-                      <div className="relative w-16 h-16 rounded-2xl bg-sky-950/50 border border-sky-400/50 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.5)] group-hover:scale-105 transition-transform duration-300">
+                      <div className="relative w-12 h-12 rounded-2xl bg-sky-950/50 border border-sky-400/50 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.5)] group-hover:scale-105 transition-transform duration-300">
                         <div className="absolute inset-0 rounded-2xl border border-sky-400/30 animate-spin-slow" />
                         <Cpu className="w-9 h-9 text-sky-400 animate-pulse" />
                         <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-sky-500 text-slate-950 font-black text-[8px] rounded font-mono shadow-[0_0_8px_#38bdf8]">
@@ -190,7 +190,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
                       </div>
 
                       {/* Cyber Shield Hologram with Pulse */}
-                      <div className="relative w-16 h-16 rounded-2xl bg-rose-950/50 border border-rose-500/50 flex items-center justify-center shadow-[0_0_30px_rgba(244,63,94,0.5)] group-hover:scale-105 transition-transform duration-300">
+                      <div className="relative w-12 h-12 rounded-2xl bg-rose-950/50 border border-rose-500/50 flex items-center justify-center shadow-[0_0_30px_rgba(244,63,94,0.5)] group-hover:scale-105 transition-transform duration-300">
                         <Lock className="w-8 h-8 text-rose-400" />
                         <ShieldCheck className="w-4 h-4 text-rose-300 absolute bottom-1 right-1" />
                       </div>
@@ -231,7 +231,7 @@ export default function CyberHero({ onOpenLeadModal, onExploreCourses }) {
               <div className="w-4/5 mx-auto h-3 bg-sky-500/25 blur-lg rounded-full" />
 
               {/* Floating Holographic Card 1: AI Mentor badge */}
-              <div className="hidden sm:flex absolute -top-7 -left-7 items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/90 border border-sky-400/50 backdrop-blur-xl shadow-[0_0_30px_rgba(14,165,233,0.35)] animate-float-slow z-20 hover:scale-105 transition-transform cursor-pointer">
+              <div className="hidden sm:flex absolute -top-5 -left-7 items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900/90 border border-sky-400/50 backdrop-blur-xl shadow-[0_0_30px_rgba(14,165,233,0.35)] animate-float-slow z-20 hover:scale-105 transition-transform cursor-pointer">
                 <div className="relative">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-400 to-blue-600 flex items-center justify-center font-bold text-xs text-white shadow-[0_0_12px_#38bdf8]">
                     MV

@@ -154,8 +154,8 @@ export default function CertificateVerificationPage() {
             <div className="text-xs font-mono text-gray-500">Querying Cryptographic Credential Registry...</div>
           </div>
         ) : error ? (
-          <div className="p-6 sm:p-10 rounded-3xl bg-white border border-rose-200 text-center max-w-lg mx-auto shadow-md">
-            <div className="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-200 shadow-xs">
+          <div className="p-6 sm:p-7 rounded-3xl bg-white border border-rose-200 text-center max-w-lg mx-auto shadow-md">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-200 shadow-xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold font-heading text-gray-900 mb-2">Record Not Found</h3>
@@ -225,7 +225,7 @@ export default function CertificateVerificationPage() {
 
             {/* TAB 1: Official High-Resolution Double-Bordered US Diploma Presentation */}
             {(activeTab === 'us-diploma' || activeTab === 'both') && (
-              <div className="rounded-3xl bg-white border-8 border-double border-[#1a361d]/40 p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[#1a361d] print:border-4 print:p-8">
+              <div className="rounded-3xl bg-white border-8 border-double border-[#1a361d]/40 p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[#1a361d] print:border-4 print:p-6">
                 {/* Background Crest Watermark */}
                 <div className="absolute right-4 -bottom-10 opacity-[0.03] pointer-events-none">
                   <Award className="w-96 h-96 text-[#1a361d]" />
@@ -237,7 +237,7 @@ export default function CertificateVerificationPage() {
                     <img
                       src="/images/logo-crest.webp"
                       alt="American FutureTech Crest"
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-md"
+                      className="w-12 h-12 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-md"
                     />
                     <div>
                       <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#10b981]">
@@ -262,7 +262,7 @@ export default function CertificateVerificationPage() {
                 </div>
 
                 {/* Diploma Body */}
-                <div className="py-12 sm:py-12 text-center space-y-6">
+                <div className="py-12 sm:py-12 text-center space-y-4">
                   <div className="text-xs font-mono uppercase tracking-widest text-gray-500 font-bold">
                     By the authority of the academic faculty and Board of Trustees
                   </div>
@@ -319,7 +319,7 @@ export default function CertificateVerificationPage() {
                     <img
                       src="/images/gold-seal-medal.webp"
                       alt="Official Gold Accreditation Seal"
-                      className="w-20 h-20 object-contain drop-shadow-lg"
+                      className="w-14 h-14 object-contain drop-shadow-lg"
                     />
                     <span className="text-[10px] font-mono text-gray-500 mt-1 uppercase tracking-wider font-semibold">
                       Board of Accreditation Seal
@@ -361,7 +361,7 @@ export default function CertificateVerificationPage() {
                 {/* Top Microsoft Header Bar */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800 text-center sm:text-left relative z-10">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
                       <ShieldCheck className="w-8 h-8" />
                     </div>
                     <div>
@@ -387,7 +387,7 @@ export default function CertificateVerificationPage() {
                 </div>
 
                 {/* Microsoft Certificate Showcase */}
-                <div className="py-8 relative z-10 space-y-6">
+                <div className="py-8 relative z-10 space-y-4">
                   {/* Interactive Certificate Image */}
                   <div className="flex flex-col items-center justify-center">
                     <div

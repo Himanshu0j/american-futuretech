@@ -235,10 +235,10 @@ export default function LearningJourney() {
         </div>
 
         {/* Active Step Detailed Showcase Box */}
-        <div className="rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-5 sm:p-8 lg:p-10 text-left relative overflow-hidden transition-all duration-500">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <div className="rounded-3xl bg-white border border-gray-200/90 shadow-2xl p-5 sm:p-6 lg:p-7 text-left relative overflow-hidden transition-all duration-500">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center">
             {/* Left Narrative Column */}
-            <div className="lg:col-span-6 space-y-6">
+            <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono font-bold text-[#10b981] uppercase tracking-wider px-3 py-1 rounded-full bg-[#d8ffd2]/70 border border-[#10b981]/20">
                   {current.tag}
@@ -246,7 +246,7 @@ export default function LearningJourney() {
                 <span className="text-xs text-gray-500 font-medium">Step {current.number} of 05</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#1a361d] font-heading leading-tight tracking-tight">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#1a361d] font-heading leading-tight tracking-tight">
                 {current.tagline}
               </h3>
 
@@ -445,7 +445,7 @@ export default function LearningJourney() {
               {/* STEP 03: PRACTICE PREVIEW (Docker, PyTest Terminal Sandbox) */}
               {activeStep === 2 && (
                 <div className="relative">
-                  <div className="hidden sm:block absolute -top-8 -right-6 z-20 w-24 h-24 animate-float-slow pointer-events-none drop-shadow-2xl">
+                  <div className="hidden sm:block absolute -top-6 -right-6 z-20 w-16 h-16 animate-float-slow pointer-events-none drop-shadow-2xl">
                     <img
                       src="/images/floating-laptop-code.webp"
                       alt="Floating 3D Code Sandbox"
@@ -486,7 +486,7 @@ export default function LearningJourney() {
               {/* STEP 04: CERTIFY PREVIEW (Official Verifiable Diploma) */}
               {activeStep === 3 && (
                 <div className="relative">
-                  <div className="hidden sm:block absolute -top-6 -right-5 z-20 w-20 h-20 animate-float-delayed pointer-events-none">
+                  <div className="hidden sm:block absolute -top-6 -right-5 z-20 w-14 h-14 animate-float-delayed pointer-events-none">
                     <img
                       src="/images/gold-seal-medal.webp"
                       alt="Accreditation Gold Seal Medal"
@@ -507,7 +507,7 @@ export default function LearningJourney() {
                         <img
                           src="/images/gold-seal-medal.webp"
                           alt="Gold Seal Medal"
-                          className="w-14 h-14 object-contain drop-shadow-md shrink-0 animate-float-slow"
+                          className="w-12 h-12 object-contain drop-shadow-md shrink-0 animate-float-slow"
                         />
                         <div className="text-left">
                           <div className="text-xl sm:text-2xl font-black font-heading text-[#1a361d]">
@@ -521,8 +521,8 @@ export default function LearningJourney() {
                           </div>
                         </div>
                       </div>
-                      <div className="w-16 h-16 shrink-0 hidden sm:block">
-                        <Lottie src={successLottie} loop autoplay className="w-16 h-16" />
+                      <div className="w-12 h-12 shrink-0 hidden sm:block">
+                        <Lottie src={successLottie} loop autoplay className="w-12 h-12" />
                       </div>
                     </div>
 
@@ -547,7 +547,7 @@ export default function LearningJourney() {
               {/* STEP 05: CAREER READY PREVIEW (Resume Scorecard & Hiring Pipeline) */}
               {activeStep === 4 && (
                 <div className="relative">
-                  <div className="hidden sm:block absolute -top-7 -right-5 z-20 w-22 h-22 animate-float-drift pointer-events-none">
+                  <div className="hidden sm:block absolute -top-5 -right-5 z-20 w-22 h-22 animate-float-drift pointer-events-none">
                     <img
                       src="/images/grad-cap-diploma.webp"
                       alt="Graduation Cap & Diploma"
@@ -568,7 +568,7 @@ export default function LearningJourney() {
                           Direct introductions across 200+ partner network
                         </div>
                       </div>
-                      <div className="w-20 h-20 shrink-0 ml-3">
+                      <div className="w-14 h-14 shrink-0 ml-3">
                         <img src={careerReadySvg} alt="Career Ready" className="w-full h-full object-contain" />
                       </div>
                     </div>

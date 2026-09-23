@@ -112,7 +112,7 @@ export default function AboutPage() {
             <span>US REGISTERED ACADEMIC INSTITUTE</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
             <div className="lg:col-span-8 space-y-4">
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-[#1a361d] leading-[1.1]">
                 Pioneering Applied <span className="highlight">Emerging Tech</span> Education for the Global Workforce.
@@ -144,16 +144,16 @@ export default function AboutPage() {
         {/* EDITORIAL 2-COLUMN STORY: STATEMENT (40%) vs CLIENT VERBATIM COPY (60%)     */}
         {/* ========================================================================= */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
-          <div className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-xl">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          <div className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 lg:p-7 shadow-xl">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start">
               
               {/* Left Column (40% - 5 cols): Bold Manifesto & Mission Visual */}
-              <div className="lg:col-span-5 space-y-6">
+              <div className="lg:col-span-5 space-y-4">
                 <div className="p-6 rounded-2xl bg-[#f8fafc] border border-gray-200/80 space-y-4">
                   <div className="text-xs font-mono font-bold uppercase tracking-widest text-[#10b981]">
                     Institutional Statement
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] leading-snug">
+                  <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] leading-snug">
                     Building the next generation of applied technology leaders.
                   </h2>
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-sans">
@@ -179,13 +179,13 @@ export default function AboutPage() {
               </div>
 
               {/* Right Column (60% - 7 cols): Client Verbatim Copy & Mission/Vision Bento */}
-              <div className="lg:col-span-7 space-y-6">
+              <div className="lg:col-span-7 space-y-4">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold text-xs mb-3">
                     <Globe className="w-3.5 h-3.5 text-[#2d5c36]" />
                     <span>ABOUT AMERICAN FUTURETECH</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-black font-heading text-[#1a361d] mb-4">
+                  <h3 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] mb-4">
                     {about.headline || 'Bridging the Divide Between Academia and Global Industry'}
                   </h3>
                   
@@ -291,7 +291,7 @@ export default function AboutPage() {
             {pillars.map((p) => (
               <div
                 key={p.num}
-                className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 flex flex-col justify-between text-left shadow-xs hover:border-[#1a361d]/30 hover:shadow-lg transition-all group"
+                className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#1a361d]/30 hover:shadow-lg transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -326,8 +326,8 @@ export default function AboutPage() {
         {/* ── Build-First Pedagogy + Institutional Stats ─────────────────── */}
         {pedagogy.enabled !== false && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
-            <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-5 sm:p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-5 sm:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-7">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
                     <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
@@ -370,7 +370,7 @@ export default function AboutPage() {
                 <div className="lg:col-span-5 grid grid-cols-2 gap-4">
                   {(pedagogy.stats || []).map((st, i) => (
                     <div key={i} className="p-5 rounded-2xl bg-gradient-to-br from-[#1a361d] to-[#132815] text-white text-center shadow-sm">
-                      <div className="text-2xl sm:text-3xl font-black font-heading text-[#76ff8a]">{st.value}</div>
+                      <div className="text-xl sm:text-2xl font-black font-heading text-[#76ff8a]">{st.value}</div>
                       <div className="text-[11px] text-gray-300 mt-1 font-medium">{st.label}</div>
                     </div>
                   ))}
@@ -398,7 +398,7 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {leadership.map((person, idx) => (
-                <div key={idx} className="rounded-3xl bg-white border border-gray-200 shadow-xs hover:shadow-lg hover:border-[#1a361d]/25 transition-all p-6 flex flex-col">
+                <div key={idx} className="rounded-3xl bg-white border border-gray-200 shadow-xs hover:shadow-lg hover:border-[#1a361d]/25 transition-all p-5 flex flex-col">
                   <div className="flex items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
                       {person.image ? (
@@ -425,12 +425,12 @@ export default function AboutPage() {
                     </div>
                   )}
 
-                  <p className="text-[11px] text-gray-600 leading-relaxed flex-1 mb-4">
+                  <p className="text-[11px] text-gray-600 leading-relaxed flex-1 mb-4 line-clamp-4">
                     {person.bio}
                   </p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
-                    {(person.skills || []).slice(0, 6).map((sk, si) => (
+                    {(person.skills || []).slice(0, 4).map((sk, si) => (
                       <span key={si} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
                         {sk}
                       </span>
@@ -458,7 +458,7 @@ export default function AboutPage() {
         {/* ── Sister Company / Staffing Alliance ────────────────────────── */}
         {sisterCompany.enabled !== false && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
-            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-5 sm:p-8 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
+            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-5 sm:p-6 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
               <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#76ff8a]/10 blur-3xl" />
 
               <div className="relative z-10">
@@ -467,9 +467,9 @@ export default function AboutPage() {
                   <span>{sisterCompany.eyebrow}</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   <div className="lg:col-span-5">
-                    <h2 className="text-2xl sm:text-3xl font-black font-heading tracking-tight mb-3">
+                    <h2 className="text-xl sm:text-2xl font-black font-heading tracking-tight mb-3">
                       {sisterCompany.headline}
                     </h2>
 
@@ -537,7 +537,7 @@ export default function AboutPage() {
 
         {/* Global Vision Visual Banner */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-center">
-          <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
+          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4 relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#76ff8a] text-xs font-mono font-bold uppercase">
                 Worldwide Impact

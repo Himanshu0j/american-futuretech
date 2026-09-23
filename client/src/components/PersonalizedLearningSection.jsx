@@ -65,9 +65,9 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
         </div>
 
         {/* 2-Column Comparison Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left Column: Visual & Mentorship Overview */}
-          <div className="lg:col-span-7 flex flex-col justify-between rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-7 flex flex-col justify-between rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-6 lg:p-7 shadow-2xl relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800">
                 <div>
@@ -134,7 +134,7 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
           </div>
 
           {/* Right Column: Pricing & Direct Enrollment Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-slate-900 via-slate-900 to-[#0F172A] p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl border-2 border-amber-500/40 bg-gradient-to-b from-slate-900 via-slate-900 to-[#0F172A] p-6 lg:p-7 shadow-2xl relative overflow-hidden">
             {/* Top Ribbon */}
             <div className="absolute top-0 right-0">
               <div className="bg-gradient-to-l from-amber-500 to-orange-500 text-slate-950 font-black text-[10px] tracking-wider uppercase py-1.5 px-6 rounded-bl-xl shadow-lg">

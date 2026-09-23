@@ -117,7 +117,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
             return (
               <div
                 key={step._id || idx}
-                className="p-6 sm:p-7 rounded-3xl bg-[#fffff2] border border-slate-200/90 hover:border-[#1a361d]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="p-6 sm:p-5 rounded-3xl bg-[#fffff2] border border-slate-200/90 hover:border-[#1a361d]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
@@ -154,7 +154,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
         </div>
 
         {/* Placement Bottom Action Strip */}
-        <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-[#1a361d] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-left">
+        <div className="mt-12 p-6 sm:p-6 rounded-3xl bg-[#1a361d] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-left">
           <div className="space-y-1 max-w-xl">
             <div className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider">
               100% Placement Guidance Guaranteed

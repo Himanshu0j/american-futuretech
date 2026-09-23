@@ -67,12 +67,12 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f10a_1px,transparent_1px),linear-gradient(to_bottom,#6366f10a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-6 items-center">
           
           {/* ============================================================
               LEFT COLUMN: Editorial Typography & Strategic Positioning
               ============================================================ */}
-          <div className="lg:col-span-6 space-y-6 text-left">
+          <div className="lg:col-span-6 space-y-4 text-left">
             
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">

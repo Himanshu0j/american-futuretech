@@ -77,8 +77,8 @@ const autoSeedIfEmpty = async () => {
       const strength = validatePassword(forcedSeedPassword, { email: 'admin@americanfuturetech.com' });
       if (!strength.valid) {
         console.warn(
-          `\n⚠️  [Seed] SEED_ADMIN_PASSWORD does not meet the password policy (${strength.errors[0]})\n` +
-          '   Change it after first login, or omit SEED_ADMIN_PASSWORD to get random passwords.\n',
+        `\n⚠️  [Seed] SEED_ADMIN_PASSWORD does not meet the password policy (${strength.errors[0]})\n` +
+        '   Forcing it anyway for this seed (administrators can rotate it in the panel later).\n',
         );
       }
       console.log(

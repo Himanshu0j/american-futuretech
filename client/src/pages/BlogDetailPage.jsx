@@ -29,17 +29,17 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080a0f] flex items-center justify-center text-sky-400">
-        <div className="w-8 h-8 border-2 border-sky-500/20 border-t-sky-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#070C17] flex items-center justify-center text-indigo-400">
+        <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!blog) {
     return (
-      <div className="min-h-screen bg-[#080a0f] text-white flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#070C17] text-white flex flex-col items-center justify-center p-4">
         <h2 className="text-xl font-bold mb-4">Article Not Found</h2>
-        <Link to="/blog" className="px-5 py-2.5 bg-sky-500 text-slate-950 rounded-xl font-semibold text-sm">
+        <Link to="/blog" className="px-5 py-2.5 bg-indigo-500 text-slate-950 rounded-xl font-semibold text-sm">
           Return to Tech Journal
         </Link>
       </div>
@@ -47,14 +47,14 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
         <CompanyMarquee />        <Link
           to="/blog"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#1a361d] transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#0B1220] transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to all papers
@@ -62,11 +62,11 @@ export default function BlogDetailPage() {
 
         <article className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
           <div className="flex flex-wrap items-center gap-3 mb-5">
-            <span className="text-xs font-bold text-[#1a361d] bg-[#d8ffd2] px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-[#0B1220] bg-[#EFE6D6] px-3 py-1 rounded-full">
               {blog.category}
             </span>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-              <Clock className="w-3.5 h-3.5 text-[#40844e]" />
+              <Clock className="w-3.5 h-3.5 text-[#10B981]" />
               <span>{blog.readTimeMinutes} min read</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
@@ -75,16 +75,16 @@ export default function BlogDetailPage() {
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight leading-snug mb-6">
+          <h1 className="text-2xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight leading-snug mb-6">
             {blog.title}
           </h1>
 
           <div className="flex items-center gap-4 py-4 border-y border-slate-100 mb-8">
-            <div className="w-10 h-10 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-sm">
-              <User className="w-5 h-5 text-[#2d5c36]" />
+            <div className="w-10 h-10 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center font-bold text-sm">
+              <User className="w-5 h-5 text-[#4338CA]" />
             </div>
             <div>
-              <div className="text-sm font-display font-bold text-[#1a361d]">{blog.author?.name || 'American FutureTech AI Research Group'}</div>
+              <div className="text-sm font-display font-bold text-[#0B1220]">{blog.author?.name || 'American FutureTech AI Research Group'}</div>
               <div className="text-xs text-slate-500">{blog.author?.role || 'Principal Engineering Faculty'}</div>
             </div>
           </div>

@@ -41,7 +41,7 @@ export default function TrustMarquee() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 text-center space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold uppercase tracking-wider">
-          <Sparkles className="w-3 h-3 text-[#2d5c36] dark:text-[#76ff8a]" />
+          <Sparkles className="w-3 h-3 text-[#4338CA] dark:text-[#E5C275]" />
           <span>Global Enterprise Alumni Network</span>
         </div>
 

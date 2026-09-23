@@ -62,11 +62,11 @@ export default function MyCertificates() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-2">
-            <Award className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
+            <Award className="w-3.5 h-3.5 text-[#4338CA]" />
             Accredited Credentials
           </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-black text-[#1a361d]">
+          <h1 className="text-2xl md:text-3xl font-heading font-black text-[#0B1220]">
             My Issued Certificates
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
@@ -77,7 +77,7 @@ export default function MyCertificates() {
         <div className="flex items-center gap-3">
           <div className="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-right shadow-xs">
             <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Total Earned</div>
-            <div className="text-2xl font-heading font-black text-[#1a361d]">{certificates.length}</div>
+            <div className="text-2xl font-heading font-black text-[#0B1220]">{certificates.length}</div>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function MyCertificates() {
             onClick={() => setActiveTab('all')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'all'
-                ? 'bg-[#1a361d] text-white shadow-xs'
+                ? 'bg-[#0B1220] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
@@ -99,7 +99,7 @@ export default function MyCertificates() {
             onClick={() => setActiveTab('us')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'us'
-                ? 'bg-[#1a361d] text-white shadow-xs'
+                ? 'bg-[#0B1220] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
@@ -128,8 +128,8 @@ export default function MyCertificates() {
       {(activeTab === 'all' || activeTab === 'us') && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-heading font-bold text-[#1a361d] flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#2d5c36]" />
+            <h2 className="text-lg font-heading font-bold text-[#0B1220] flex items-center gap-2">
+              <Award className="w-5 h-5 text-[#4338CA]" />
               <span>US Institutional Fellowship Diplomas</span>
             </h2>
             <span className="text-xs font-mono text-slate-500">Wyoming Digital Registry</span>
@@ -143,16 +143,16 @@ export default function MyCertificates() {
             </div>
           ) : certificates.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center max-w-xl mx-auto shadow-xs">
-              <div className="w-14 h-14 mx-auto rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 flex items-center justify-center text-[#1a361d] mb-3">
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 flex items-center justify-center text-[#0B1220] mb-3">
                 <Award className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-heading font-bold text-[#1a361d] mb-1">No US Diplomas Conferred Yet</h3>
+              <h3 className="text-base font-heading font-bold text-[#0B1220] mb-1">No US Diplomas Conferred Yet</h3>
               <p className="text-slate-600 text-xs mb-4 leading-relaxed">
                 Complete 100% of your course modules and pass technical capstone defenses to unlock your verified American FutureTech credential.
               </p>
               <Link
                 to="/student/courses"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white font-bold text-xs shadow-xs transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-xs transition-all"
               >
                 <BookOpen className="w-4 h-4" />
                 Resume Active Courses
@@ -168,26 +168,26 @@ export default function MyCertificates() {
                     key={cert._id}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="group relative rounded-2xl border-2 border-slate-200 hover:border-[#1a361d]/40 bg-white p-6 transition-all duration-300 shadow-xs flex flex-col justify-between"
+                    className="group relative rounded-2xl border-2 border-slate-200 hover:border-[#0B1220]/40 bg-white p-6 transition-all duration-300 shadow-xs flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-[#d8ffd2] border border-[#76ff8a]/40 flex items-center justify-center text-[#1a361d] shrink-0">
-                            <ShieldCheck className="w-6 h-6 text-[#2d5c36]" />
+                          <div className="w-12 h-12 rounded-xl bg-[#EFE6D6] border border-[#E5C275]/40 flex items-center justify-center text-[#0B1220] shrink-0">
+                            <ShieldCheck className="w-6 h-6 text-[#4338CA]" />
                           </div>
                           <div>
-                            <span className="text-[11px] font-bold text-[#2d5c36] uppercase tracking-wider block">
+                            <span className="text-[11px] font-bold text-[#4338CA] uppercase tracking-wider block">
                               {cert.grade || 'Certified with Distinction'}
                             </span>
-                            <h3 className="text-base sm:text-lg font-heading font-bold text-[#1a361d] leading-snug">
+                            <h3 className="text-base sm:text-lg font-heading font-bold text-[#0B1220] leading-snug">
                               {cert.courseTitle || cert.course?.title || 'Advanced Specialization'}
                             </h3>
                           </div>
                         </div>
 
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#d8ffd2] text-[#1a361d] shrink-0">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#2d5c36]" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#EFE6D6] text-[#0B1220] shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#4338CA]" />
                           VERIFIED
                         </span>
                       </div>
@@ -233,7 +233,7 @@ export default function MyCertificates() {
                       <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 mb-4 text-xs">
                         <div>
                           <span className="text-slate-400 block mb-0.5 font-semibold uppercase text-[10px] tracking-wider">CREDENTIAL ID</span>
-                          <span className="text-[#1a361d] font-mono font-bold">{cert.certificateId}</span>
+                          <span className="text-[#0B1220] font-mono font-bold">{cert.certificateId}</span>
                         </div>
                         <div>
                           <span className="text-slate-400 block mb-0.5 font-semibold uppercase text-[10px] tracking-wider">DATE OF ISSUANCE</span>
@@ -251,7 +251,7 @@ export default function MyCertificates() {
                         <Link
                           to={`/certificate/${cert.certificateId}`}
                           target="_blank"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white text-xs font-bold transition-colors shadow-xs"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white text-xs font-bold transition-colors shadow-xs"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
                           View & Verify
@@ -260,7 +260,7 @@ export default function MyCertificates() {
                         <Link
                           to={`/certificate/${cert.certificateId}`}
                           target="_blank"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-[#1a361d] text-xs font-semibold transition-colors"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-[#0B1220] text-xs font-semibold transition-colors"
                           title="Print / Save PDF"
                         >
                           <Download className="w-3.5 h-3.5" />
@@ -275,8 +275,8 @@ export default function MyCertificates() {
                       >
                         {copiedId === cert.certificateId ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-[#2d5c36]" />
-                            <span className="text-[#2d5c36] font-bold">Copied!</span>
+                            <Check className="w-3.5 h-3.5 text-[#4338CA]" />
+                            <span className="text-[#4338CA] font-bold">Copied!</span>
                           </>
                         ) : (
                           <>
@@ -396,11 +396,11 @@ export default function MyCertificates() {
 
       {/* Verification Notice */}
       <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3.5">
-        <div className="p-2 rounded-xl bg-[#d8ffd2] text-[#2d5c36] shrink-0 mt-0.5">
+        <div className="p-2 rounded-xl bg-[#EFE6D6] text-[#4338CA] shrink-0 mt-0.5">
           <Sparkles className="w-5 h-5" />
         </div>
         <p className="text-xs text-slate-600 leading-relaxed">
-          <strong className="text-[#1a361d]">Global Verification Standard:</strong> Every American FutureTech credential is cryptographically anchored in our Wyoming Registry and aligned with official Microsoft Professional certifications. Recruiters and hiring managers can verify your transcript and honors directly at our public registry portal without login.
+          <strong className="text-[#0B1220]">Global Verification Standard:</strong> Every American FutureTech credential is cryptographically anchored in our Wyoming Registry and aligned with official Microsoft Professional certifications. Recruiters and hiring managers can verify your transcript and honors directly at our public registry portal without login.
         </p>
       </div>
 

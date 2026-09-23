@@ -152,7 +152,7 @@ export default function JobDetailPage() {
   })();
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
@@ -161,16 +161,16 @@ export default function JobDetailPage() {
         {/* Back Link Breadcrumb */}
         <div className="flex items-center justify-between mb-8 text-xs font-mono text-slate-500">
           <div className="flex items-center gap-2">
-            <Link to="/" className="hover:text-[#1a361d] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/careers" className="hover:text-[#1a361d] transition-colors">Live Jobs</Link>
+            <Link to="/careers" className="hover:text-[#0B1220] transition-colors">Live Jobs</Link>
             <span>/</span>
             <span className="text-slate-900 font-semibold truncate max-w-[200px] sm:max-w-none">{job.title}</span>
           </div>
 
           <Link
             to="/careers"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2d5c36] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4338CA] hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Openings</span>
@@ -179,7 +179,7 @@ export default function JobDetailPage() {
 
         {/* Hero Header Card (Department & Verified Partner REMOVED) */}
         <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#76ff8a]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#E5C275]/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
             {/* Left: Logo & Core Identity */}
@@ -191,7 +191,7 @@ export default function JobDetailPage() {
                 fallbackText={job.company || 'AFT'}
                 className="w-12 h-12 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
                 imageClassName="w-full h-full object-contain rounded-xl"
-                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white font-bold text-xl flex items-center justify-center"
+                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-white font-bold text-xl flex items-center justify-center"
               />
 
               <div className="space-y-1.5">
@@ -503,16 +503,16 @@ export default function JobDetailPage() {
 
             {applySuccess ? (
               <div className="text-center py-6">
-                <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
-                  <CheckCircle2 className="w-8 h-8 text-[#2d5c36]" />
+                <div className="w-12 h-12 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center mx-auto mb-4 border border-[#E5C275]">
+                  <CheckCircle2 className="w-8 h-8 text-[#4338CA]" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-[#1a361d] mb-2">Application Transmitted!</h3>
+                <h3 className="text-xl font-display font-bold text-[#0B1220] mb-2">Application Transmitted!</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-6">
                   Your application for <strong className="text-slate-900">{job.title}</strong> has been transmitted directly to <strong className="text-slate-900">{job.company}</strong>. Our Placement Officer will follow up within 24 hours.
                 </p>
                 <button
                   onClick={() => setApplyModalOpen(false)}
-                  className="w-full py-3 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
                 >
                   Done
                 </button>
@@ -520,8 +520,8 @@ export default function JobDetailPage() {
             ) : (
               <form onSubmit={handleApplySubmit} className="space-y-4">
                 <div>
-                  <div className="text-[11px] font-bold text-[#2d5c36] uppercase tracking-wider mb-1">Direct Application</div>
-                  <h3 className="text-lg font-display font-bold text-[#1a361d]">{job.title}</h3>
+                  <div className="text-[11px] font-bold text-[#4338CA] uppercase tracking-wider mb-1">Direct Application</div>
+                  <h3 className="text-lg font-display font-bold text-[#0B1220]">{job.title}</h3>
                   <div className="text-xs text-slate-500">{job.company} • {job.location}</div>
                 </div>
 
@@ -533,7 +533,7 @@ export default function JobDetailPage() {
                     placeholder="Jane Doe"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                   />
                 </div>
 
@@ -546,7 +546,7 @@ export default function JobDetailPage() {
                       placeholder="jane@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                     />
                   </div>
                   <div>
@@ -557,7 +557,7 @@ export default function JobDetailPage() {
                       placeholder="+1 (555) 019-2834"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                     />
                   </div>
                 </div>
@@ -569,7 +569,7 @@ export default function JobDetailPage() {
                     placeholder="https://linkedin.com/in/janedoe"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                   />
                 </div>
 
@@ -581,7 +581,7 @@ export default function JobDetailPage() {
                     placeholder="https://drive.google.com/your-resume.pdf"
                     value={resumeUrl}
                     onChange={(e) => setResumeUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                   />
                 </div>
 
@@ -592,14 +592,14 @@ export default function JobDetailPage() {
                     placeholder="Relevant capstone projects, certifications, and availability..."
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? 'Transmitting Application...' : (
                     <>

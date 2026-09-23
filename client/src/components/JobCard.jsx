@@ -84,14 +84,14 @@ export default function JobCard({
             fallbackText={job.company || 'FT'}
             className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
             imageClassName="w-full h-full object-contain rounded-xl"
-            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center"
+            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-[#E5C275] font-black text-sm flex items-center justify-center"
           />
 
           {/* Job Title & Structured Tags Row */}
           <div className="space-y-2 flex-1">
             <Link
               to={`/jobs/${jobId}`}
-              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#1a361d] dark:group-hover:text-[#76ff8a] transition-colors leading-snug block"
+              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#0B1220] dark:group-hover:text-[#E5C275] transition-colors leading-snug block"
             >
               {job.title}
             </Link>
@@ -128,7 +128,7 @@ export default function JobCard({
 
         {/* Right: Compensation & Actively Hiring Badge */}
         <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
-          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#1a361d] dark:text-[#76ff8a] font-mono tracking-tight bg-[#d8ffd2]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#76ff8a]/60 dark:border-emerald-800 shadow-2xs">
+          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#0B1220] dark:text-[#E5C275] font-mono tracking-tight bg-[#EFE6D6]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#E5C275]/60 dark:border-emerald-800 shadow-2xs">
             {formatSalary() || 'Salary on request'}
           </div>
           <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
@@ -141,12 +141,12 @@ export default function JobCard({
       {/* 2. Recommended Course Track Banner */}
       {(job.recommendedCourseTitle || (job.recommendedCourse && job.recommendedCourse.title) || job.course) && (
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200">
-          <GraduationCap className="w-4 h-4 text-[#2d5c36] dark:text-[#76ff8a] shrink-0" />
+          <GraduationCap className="w-4 h-4 text-[#4338CA] dark:text-[#E5C275] shrink-0" />
           <span className="font-semibold text-slate-500 dark:text-slate-400">Recommended Track:</span>
           {job.recommendedCourse?.slug ? (
             <Link
               to={`/courses/${job.recommendedCourse.slug}`}
-              className="font-bold text-[#1a361d] dark:text-[#76ff8a] hover:underline truncate"
+              className="font-bold text-[#0B1220] dark:text-[#E5C275] hover:underline truncate"
             >
               {job.recommendedCourse.title || job.recommendedCourseTitle}
             </Link>
@@ -184,13 +184,13 @@ export default function JobCard({
 
           <button
             onClick={handleApplyClick}
-            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#0B1220] hover:bg-[#4338CA] text-[#EFE6D6] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>APPLY NOW</span>
             {job.applyLink ? (
-              <ExternalLink className="w-3.5 h-3.5 text-[#76ff8a]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#E5C275]" />
             ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-[#76ff8a]" />
+              <ChevronRight className="w-3.5 h-3.5 text-[#E5C275]" />
             )}
           </button>
         </div>

@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MessageCircle, Phone, ArrowUpRight } from 'lucide-react';
+import useCompanyInfo from '../hooks/useCompanyInfo';
 
 export default function WhatsAppButton() {
   const location = useLocation();
+  const [isHovered, setIsHovered] = useState(false);
+  const company = useCompanyInfo();
+
+  const phoneNumber = company.phone;
+  const whatsappUrl = `https://wa.me/${company.phoneDigits}?text=${encodeURIComponent(
+    `Hello ${company.siteName}, I would like to learn more about your fellowship programs and admissions.`,
+  )}`;
+
+  // NOTE: this early return must stay *after* every hook — returning before a
+  // hook changes the hook order between routes and crashes React.
   if (location.pathname.startsWith('/admin')) {
     return null;
   }
-
-  const [isHovered, setIsHovered] = useState(false);
-  const phoneNumber = '+1 (816) 846-6717';
-  const whatsappUrl = 'https://wa.me/18168466717?text=Hello%20American%20FutureTech%2C%20I%20would%20like%20to%20learn%20more%20about%20your%20fellowship%20programs%20and%20admissions.';
 
   return (
     <div
@@ -20,13 +27,13 @@ export default function WhatsAppButton() {
     >
       {/* Expanding Tooltip Pill on Hover */}
       <div
-        className={`mr-3 px-3.5 py-2 rounded-2xl bg-[#1a361d] text-[#d8ffd2] border border-[#2d5c36] shadow-xl text-xs font-medium transition-all duration-300 pointer-events-none hidden sm:flex items-center gap-2 ${
+        className={`mr-3 px-3.5 py-2 rounded-2xl bg-[#0B1220] text-[#EFE6D6] border border-[#4338CA] shadow-xl text-xs font-medium transition-all duration-300 pointer-events-none hidden sm:flex items-center gap-2 ${
           isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
         }`}
       >
         <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
         <span>Chat on WhatsApp: <strong className="text-white">{phoneNumber}</strong></span>
-        <ArrowUpRight className="w-3.5 h-3.5 text-[#76ff8a]" />
+        <ArrowUpRight className="w-3.5 h-3.5 text-[#E5C275]" />
       </div>
 
       {/* Floating Action Button */}

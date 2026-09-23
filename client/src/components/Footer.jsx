@@ -1,14 +1,23 @@
 import React from 'react';
-import { ShieldCheck, Mail, Phone, MapPin, Award, ArrowRight, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Mail, Phone, MapPin, Award, ArrowRight, ExternalLink, Linkedin, Youtube, Instagram, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useCompanyInfo from '../hooks/useCompanyInfo';
 
 export default function Footer({ onOpenLeadModal }) {
+  const company = useCompanyInfo();
+  const socials = [
+    { key: 'linkedin', href: company.socials.linkedin, Icon: Linkedin, label: 'LinkedIn' },
+    { key: 'youtube', href: company.socials.youtube, Icon: Youtube, label: 'YouTube' },
+    { key: 'instagram', href: company.socials.instagram, Icon: Instagram, label: 'Instagram' },
+    { key: 'twitter', href: company.socials.twitter, Icon: Twitter, label: 'X' },
+  ].filter((s) => s.href);
+
   return (
-    <footer id="contact" className="border-t border-[#2d5c36] bg-[#1a361d] pt-16 pb-12 text-[#d8ffd2]/80 text-sm relative z-10">
+    <footer id="contact" className="border-t border-[#4338CA] bg-[#0B1220] pt-16 pb-12 text-[#EFE6D6]/80 text-sm relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Alumni Hiring Network Strip */}
-        <div id="placement" className="pb-12 border-b border-[#2d5c36]/80">
-          <p className="text-[11px] uppercase tracking-widest font-mono font-bold text-[#76ff8a] mb-6 text-center">
+        <div id="placement" className="pb-12 border-b border-[#4338CA]/80">
+          <p className="text-[11px] uppercase tracking-widest font-mono font-bold text-[#E5C275] mb-6 text-center">
             Alumni Engineering at Leading Enterprise & High-Growth Technology Companies
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-6">
@@ -47,21 +56,21 @@ export default function Footer({ onOpenLeadModal }) {
                 className="h-10 w-auto object-contain"
               />
             </Link>
-            <p className="text-xs text-[#d8ffd2]/80 leading-relaxed font-normal">
+            <p className="text-xs text-[#EFE6D6]/80 leading-relaxed font-normal">
               An accredited US technology workforce institute providing rigorous cohort fellowships in applied AI engineering, offensive cybersecurity, and enterprise cloud architecture.
             </p>
-            <div className="flex items-center gap-2 text-xs text-[#76ff8a] font-semibold pt-1">
-              <Award className="w-4 h-4 text-[#76ff8a] shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-[#E5C275] font-semibold pt-1">
+              <Award className="w-4 h-4 text-[#E5C275] shrink-0" />
               <span>Wyoming Registered Corporate Charter</span>
             </div>
           </div>
 
           {/* Col 2: Specializations */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider font-heading">
+            <h4 className="text-xs font-bold text-[#E5C275] uppercase tracking-wider font-heading">
               Engineering Fellowships
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#d8ffd2]/80">
+            <ul className="space-y-2.5 text-xs text-[#EFE6D6]/80">
               <li>
                 <Link to="/courses/data-science-with-ai-integration" className="hover:text-white transition-colors">
                   Data Science with AI Integration
@@ -83,7 +92,7 @@ export default function Footer({ onOpenLeadModal }) {
                 </Link>
               </li>
               <li>
-                <Link to="/courses" className="hover:text-[#76ff8a] transition-colors font-bold text-[#76ff8a] flex items-center gap-1 pt-1">
+                <Link to="/courses" className="hover:text-[#E5C275] transition-colors font-bold text-[#E5C275] flex items-center gap-1 pt-1">
                   <span>View All 8 Specializations</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
@@ -93,26 +102,42 @@ export default function Footer({ onOpenLeadModal }) {
 
           {/* Col 3: Admissions & Location */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider font-heading">
+            <h4 className="text-xs font-bold text-[#E5C275] uppercase tracking-wider font-heading">
               Admissions & Offices
             </h4>
-            <ul className="space-y-2.5 text-xs text-[#d8ffd2]/80">
+            <ul className="space-y-2.5 text-xs text-[#EFE6D6]/80">
               <li className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#76ff8a] shrink-0 mt-0.5" />
-                <span>30 N Gould St, Sheridan, WY 82801, USA</span>
+                <MapPin className="w-3.5 h-3.5 text-[#E5C275] shrink-0 mt-0.5" />
+                <span>{company.address}</span>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                <span>+1 (816) 846-6717</span>
+                <Phone className="w-3.5 h-3.5 text-[#E5C275] shrink-0" />
+                <a href={company.phoneHref} className="hover:text-white transition-colors">{company.phone}</a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#76ff8a] shrink-0" />
-                <span>info@americantechgloballlc.com</span>
+                <Mail className="w-3.5 h-3.5 text-[#E5C275] shrink-0" />
+                <a href={company.emailHref} className="hover:text-white transition-colors break-all">{company.email}</a>
               </li>
+              {socials.length > 0 && (
+                <li className="flex items-center gap-2.5 pt-1">
+                  {socials.map(({ key, href, Icon, label }) => (
+                    <a
+                      key={key}
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={label}
+                      className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#EFE6D6] hover:text-[#0B1220] hover:bg-[#E5C275] transition-colors"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </a>
+                  ))}
+                </li>
+              )}
               <li className="pt-2">
                 <button
                   onClick={onOpenLeadModal}
-                  className="text-xs font-bold text-[#1a361d] bg-[#76ff8a] hover:bg-white px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
+                  className="text-xs font-bold text-[#0B1220] bg-[#E5C275] hover:bg-white px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
                 >
                   Contact Admissions Advisor
                 </button>
@@ -122,36 +147,36 @@ export default function Footer({ onOpenLeadModal }) {
 
           {/* Col 4: Portals & Registry */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider font-heading">
+            <h4 className="text-xs font-bold text-[#E5C275] uppercase tracking-wider font-heading">
               Academy Portals
             </h4>
             <div className="flex flex-col gap-2.5">
               <Link
                 to="/student/login"
-                className="text-xs text-[#d8ffd2] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
+                className="text-xs text-[#EFE6D6] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
               >
                 <span>Student LMS Classroom</span>
-                <ArrowRight className="w-3 h-3 text-[#76ff8a]" />
+                <ArrowRight className="w-3 h-3 text-[#E5C275]" />
               </Link>
               <Link
                 to="/certificate/AFT-CERT-AI9821"
-                className="text-xs text-[#d8ffd2] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
+                className="text-xs text-[#EFE6D6] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
               >
                 <span>Digital Credential Verification</span>
-                <ArrowRight className="w-3 h-3 text-[#76ff8a]" />
+                <ArrowRight className="w-3 h-3 text-[#E5C275]" />
               </Link>
               <Link
                 to="/careers"
-                className="text-xs text-[#d8ffd2] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
+                className="text-xs text-[#EFE6D6] hover:text-white transition-colors flex items-center gap-1.5 font-semibold"
               >
                 <span>Verified Employer Jobs</span>
-                <ArrowRight className="w-3 h-3 text-[#76ff8a]" />
+                <ArrowRight className="w-3 h-3 text-[#E5C275]" />
               </Link>
               <Link
                 to="/admin/login"
-                className="text-xs text-[#d8ffd2]/60 hover:text-white transition-colors flex items-center gap-1.5 mt-2 pt-2 border-t border-[#2d5c36]"
+                className="text-xs text-[#EFE6D6]/60 hover:text-white transition-colors flex items-center gap-1.5 mt-2 pt-2 border-t border-[#4338CA]"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-[#76ff8a]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#E5C275]" />
                 <span>Enterprise Staff Console</span>
               </Link>
             </div>
@@ -159,9 +184,9 @@ export default function Footer({ onOpenLeadModal }) {
         </div>
 
         {/* Bottom copyright & legal links */}
-        <div className="pt-8 border-t border-[#2d5c36]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#d8ffd2]/70 gap-4">
+        <div className="pt-8 border-t border-[#4338CA]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#EFE6D6]/70 gap-4">
           <div>
-            © 2026 American FutureTech LLC. All rights reserved. Registered in Wyoming, USA.
+            © 2026 {company.legalName}. All rights reserved. Registered in Wyoming, USA.
           </div>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>

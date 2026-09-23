@@ -150,9 +150,9 @@ export default function AIChatbox() {
           <button
             onClick={() => setIsOpen(true)}
             aria-label="Open AI Advisor Chat"
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#76ff8a]/40 group cursor-pointer"
+            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#E5C275]/40 group cursor-pointer"
           >
-            <div className="w-6 h-6 rounded-full bg-[#76ff8a] text-[#1a361d] flex items-center justify-center font-bold">
+            <div className="w-6 h-6 rounded-full bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold">
               <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             </div>
             <span className="text-xs font-bold font-sans tracking-wide">Ask AI Advisor</span>
@@ -165,9 +165,9 @@ export default function AIChatbox() {
         <div className="fixed bottom-6 right-6 z-50 w-[92vw] sm:w-96 rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] h-[540px] text-left animate-in fade-in slide-in-from-bottom-5 duration-200 font-sans">
           
           {/* Header */}
-          <div className="p-4 bg-[#1a361d] text-white flex items-center justify-between shrink-0">
+          <div className="p-4 bg-[#0B1220] text-white flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#76ff8a] text-[#1a361d] flex items-center justify-center font-bold">
+              <div className="w-9 h-9 rounded-2xl bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
@@ -175,7 +175,7 @@ export default function AIChatbox() {
                   <span>AFT Academic AI</span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
-                <div className="text-[10px] text-[#d8ffd2]/80 font-mono">
+                <div className="text-[10px] text-[#EFE6D6]/80 font-mono">
                   Online • Instant Admissions Guidance
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function AIChatbox() {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#fffff2]/60 text-xs">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F7F7F5]/60 text-xs">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -200,14 +200,14 @@ export default function AIChatbox() {
                 }`}
               >
                 {msg.sender === 'bot' && (
-                  <div className="w-6 h-6 rounded-full bg-[#1a361d] text-[#76ff8a] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-full bg-[#0B1220] text-[#E5C275] flex items-center justify-center shrink-0 mt-0.5">
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                 )}
                 <div
                   className={`p-3 rounded-2xl max-w-[82%] leading-relaxed whitespace-pre-line ${
                     msg.sender === 'user'
-                      ? 'bg-[#1a361d] text-white rounded-tr-none'
+                      ? 'bg-[#0B1220] text-white rounded-tr-none'
                       : 'bg-white border border-slate-200 text-slate-800 shadow-2xs rounded-tl-none'
                   }`}
                 >
@@ -228,8 +228,8 @@ export default function AIChatbox() {
             {/* Quick Lead Capture Box */}
             {showLeadForm && !leadSubmitted && (
               <form onSubmit={handleLeadSubmit} className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 mt-2">
-                <div className="font-bold text-[#1a361d] text-xs flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-[#2d5c36]" />
+                <div className="font-bold text-[#0B1220] text-xs flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#4338CA]" />
                   <span>Request Admissions Call Back</span>
                 </div>
                 <input
@@ -238,7 +238,7 @@ export default function AIChatbox() {
                   placeholder="Your Full Name"
                   value={leadName}
                   onChange={(e) => setLeadName(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#1a361d]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
                 />
                 <input
                   type="email"
@@ -246,7 +246,7 @@ export default function AIChatbox() {
                   placeholder="Email Address"
                   value={leadEmail}
                   onChange={(e) => setLeadEmail(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#1a361d]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
                 />
                 <input
                   type="tel"
@@ -254,11 +254,11 @@ export default function AIChatbox() {
                   placeholder="Phone Number (with country code)"
                   value={leadPhone}
                   onChange={(e) => setLeadPhone(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#1a361d]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
                 />
                 <button
                   type="submit"
-                  className="w-full py-2 rounded-lg bg-[#1a361d] hover:bg-[#2d5c36] text-white font-bold text-xs cursor-pointer transition-colors"
+                  className="w-full py-2 rounded-lg bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-xs cursor-pointer transition-colors"
                 >
                   Confirm Counseling Request
                 </button>
@@ -274,7 +274,7 @@ export default function AIChatbox() {
               <button
                 key={idx}
                 onClick={() => handleSend(pill)}
-                className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#d8ffd2] text-slate-700 hover:text-[#1a361d] text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#EFE6D6] text-slate-700 hover:text-[#0B1220] text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0"
               >
                 {pill}
               </button>
@@ -295,12 +295,12 @@ export default function AIChatbox() {
                 placeholder="Ask about admissions, courses, or jobs..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d]"
+                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220]"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim()}
-                className="p-2.5 rounded-xl bg-[#1a361d] hover:bg-[#2d5c36] text-white disabled:opacity-40 transition-all cursor-pointer"
+                className="p-2.5 rounded-xl bg-[#0B1220] hover:bg-[#4338CA] text-white disabled:opacity-40 transition-all cursor-pointer"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />

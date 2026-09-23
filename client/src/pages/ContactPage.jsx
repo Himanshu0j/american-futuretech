@@ -5,8 +5,10 @@ import Navbar from '../components/Navbar';
 import CompanyMarquee from '../components/CompanyMarquee';
 import Footer from '../components/Footer';
 import CyberParticles from '../components/CyberParticles';
+import useCompanyInfo from '../hooks/useCompanyInfo';
 
 export default function ContactPage() {
+  const company = useCompanyInfo();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -36,18 +38,18 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-28 pb-10">
 
         <CompanyMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
-            <Mail className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">
+            <Mail className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>ACADEMIC & ADMISSIONS ADVISORY</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#1a361d] mb-4">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#0B1220] mb-4">
             Connect with <span className="highlight">Admissions</span>
           </h1>
 
@@ -66,37 +68,37 @@ export default function ContactPage() {
                 </span>
 
                 <div className="flex items-start gap-3.5 text-xs text-slate-600">
-                  <div className="w-10 h-10 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 text-[#2d5c36]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-[#4338CA]" />
                   </div>
                   <div>
-                    <div className="font-display font-bold text-[#1a361d] text-sm">United States Office</div>
-                    <div className="text-slate-700 mt-0.5">30 N Gould St Ste R</div>
-                    <div className="text-slate-500">Sheridan, WY 82801, United States</div>
+                    <div className="font-display font-bold text-[#0B1220] text-sm">United States Office</div>
+                    <div className="text-slate-700 mt-0.5">{company.address}</div>
+                    <div className="text-slate-500">Registered in Wyoming, United States</div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3.5 text-xs text-slate-600">
-                  <div className="w-10 h-10 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center shrink-0">
-                    <Phone className="w-4 h-4 text-[#2d5c36]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4 text-[#4338CA]" />
                   </div>
                   <div>
-                    <div className="font-display font-bold text-[#1a361d] text-sm">Admissions Hotline</div>
-                    <a href="tel:+18168466717" className="text-[#2d5c36] hover:underline mt-0.5 block font-mono font-semibold">
-                      +1 (816) 846-6717
+                    <div className="font-display font-bold text-[#0B1220] text-sm">Admissions Hotline</div>
+                    <a href={company.phoneHref} className="text-[#4338CA] hover:underline mt-0.5 block font-mono font-semibold">
+                      {company.phone}
                     </a>
                     <div className="text-slate-500">Mon - Sat 9:00 AM - 6:00 PM EST</div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3.5 text-xs text-slate-600">
-                  <div className="w-10 h-10 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center shrink-0">
-                    <Mail className="w-4 h-4 text-[#2d5c36]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-[#4338CA]" />
                   </div>
                   <div>
-                    <div className="font-display font-bold text-[#1a361d] text-sm">Email Inquiries</div>
-                    <a href="mailto:info@americantechgloballlc.com" className="text-[#2d5c36] hover:underline mt-0.5 block font-semibold">
-                      info@americantechgloballlc.com
+                    <div className="font-display font-bold text-[#0B1220] text-sm">Email Inquiries</div>
+                    <a href={company.emailHref} className="text-[#4338CA] hover:underline mt-0.5 block font-semibold break-all">
+                      {company.email}
                     </a>
                     <div className="text-slate-500">Target response time: &lt; 2 hours</div>
                   </div>
@@ -107,7 +109,7 @@ export default function ContactPage() {
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="font-display font-bold text-[#1a361d] text-sm">Advisory Hours</div>
+                    <div className="font-display font-bold text-[#0B1220] text-sm">Advisory Hours</div>
                     <div className="text-slate-700 mt-0.5">Mon – Fri: 8:00 AM – 8:00 PM EST</div>
                     <div className="text-slate-500">Saturday: 10:00 AM – 4:00 PM EST</div>
                   </div>
@@ -120,10 +122,10 @@ export default function ContactPage() {
               <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 shadow-xs">
                 {isSuccess ? (
                   <div className="text-center py-10">
-                    <div className="w-12 h-12 rounded-full bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center mx-auto mb-4 border border-[#76ff8a]">
-                      <CheckCircle2 className="w-8 h-8 text-[#2d5c36]" />
+                    <div className="w-12 h-12 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center mx-auto mb-4 border border-[#E5C275]">
+                      <CheckCircle2 className="w-8 h-8 text-[#4338CA]" />
                     </div>
-                    <h3 className="text-xl font-display font-bold text-[#1a361d] mb-2">Inquiry Submitted</h3>
+                    <h3 className="text-xl font-display font-bold text-[#0B1220] mb-2">Inquiry Submitted</h3>
                     <p className="text-slate-600 text-xs sm:text-sm max-w-md mx-auto leading-relaxed mb-6">
                       Thank you, <strong>{fullName}</strong>. Your inquiry has been routed to our admissions team. An advisor will contact you shortly via email and phone.
                     </p>
@@ -137,7 +139,7 @@ export default function ContactPage() {
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <h3 className="text-lg font-display font-bold text-[#1a361d] mb-1">Request Admissions Consultation</h3>
+                      <h3 className="text-lg font-display font-bold text-[#0B1220] mb-1">Request Admissions Consultation</h3>
                       <p className="text-xs text-slate-500 mb-5">Fill in your information below to schedule a discussion with our technical admissions advisors.</p>
                     </div>
 
@@ -149,7 +151,7 @@ export default function ContactPage() {
                         placeholder="e.g. Jordan Miller"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
@@ -162,7 +164,7 @@ export default function ContactPage() {
                           placeholder="jordan@gmail.com"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                         />
                       </div>
                       <div>
@@ -173,7 +175,7 @@ export default function ContactPage() {
                           placeholder="+1 (555) 019-2831"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                          className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                         />
                       </div>
                     </div>
@@ -183,7 +185,7 @@ export default function ContactPage() {
                       <select
                         value={preferredBatch}
                         onChange={(e) => setPreferredBatch(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       >
                         <option value="Weekend Live (2 Hours)">Weekend Live (Sat & Sun: 10:00 AM - 12:00 PM EST)</option>
                         <option value="Weekday Evening (1.5 Hours)">Weekday Evening (Tue & Thu: 7:00 PM - 8:30 PM EST)</option>
@@ -198,14 +200,14 @@ export default function ContactPage() {
                         placeholder="Tell us about your background and target career objectives..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3.5 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 cursor-pointer"
+                      className="w-full py-3.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 cursor-pointer"
                     >
                       {isSubmitting ? 'Submitting Inquiry...' : (
                         <>

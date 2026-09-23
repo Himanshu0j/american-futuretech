@@ -39,17 +39,17 @@ export default function BlogPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl relative z-10">
 
         <CompanyMarquee />        <div className="max-w-3xl mx-auto text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold mb-4">
-            <BookOpen className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">
+            <BookOpen className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>Engineering Research & Briefings</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#1a361d] mb-4">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#0B1220] mb-4">
             FutureTech <span className="highlight">Engineering Journal</span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
@@ -66,7 +66,7 @@ export default function BlogPage() {
               placeholder="Search engineering papers by keyword or topic..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
             />
           </div>
           <div className="flex flex-wrap gap-2 items-center">
@@ -76,7 +76,7 @@ export default function BlogPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-[#1a361d] text-white shadow-xs'
+                    ? 'bg-[#0B1220] text-white shadow-xs'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
@@ -89,12 +89,12 @@ export default function BlogPage() {
         {/* Blog Grid */}
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="w-8 h-8 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-3 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin" />
           </div>
         ) : filteredBlogs.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
             <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <h3 className="text-base font-display font-bold text-[#1a361d] mb-1">No articles found matching filters</h3>
+            <h3 className="text-base font-display font-bold text-[#0B1220] mb-1">No articles found matching filters</h3>
             <p className="text-slate-500 text-xs">Try selecting 'All' or searching for another topic.</p>
           </div>
         ) : (
@@ -103,21 +103,21 @@ export default function BlogPage() {
               <Link
                 key={post._id}
                 to={`/blog/${post.slug}`}
-                className="group rounded-2xl bg-white border border-slate-200 hover:border-[#1a361d]/40 transition-all flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5"
+                className="group rounded-2xl bg-white border border-slate-200 hover:border-[#0B1220]/40 transition-all flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5"
               >
                 <div className="p-6 flex flex-col flex-1 justify-between text-left">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="text-[11px] font-semibold text-[#1a361d] bg-[#d8ffd2] px-2.5 py-0.5 rounded-full">
+                      <span className="text-[11px] font-semibold text-[#0B1220] bg-[#EFE6D6] px-2.5 py-0.5 rounded-full">
                         {post.category}
                       </span>
                       <div className="flex items-center gap-1 text-slate-500 text-xs font-medium">
-                        <Clock className="w-3.5 h-3.5 text-[#40844e]" />
+                        <Clock className="w-3.5 h-3.5 text-[#10B981]" />
                         <span>{post.readTimeMinutes} min</span>
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-display font-bold text-[#1a361d] mb-2.5 group-hover:text-[#40844e] transition-colors leading-snug">
+                    <h3 className="text-lg font-display font-bold text-[#0B1220] mb-2.5 group-hover:text-[#10B981] transition-colors leading-snug">
                       {post.title}
                     </h3>
 
@@ -128,7 +128,7 @@ export default function BlogPage() {
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <span className="text-xs text-slate-500">{post.author?.name || 'Faculty Research Team'}</span>
-                    <span className="text-xs font-bold text-[#2d5c36] group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    <span className="text-xs font-bold text-[#4338CA] group-hover:translate-x-1 transition-transform flex items-center gap-1">
                       Read Paper <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </div>

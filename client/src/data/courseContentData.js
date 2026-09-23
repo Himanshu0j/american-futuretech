@@ -151,7 +151,7 @@ export const COURSE_DETAILED_DATA = {
         title: "US Health Care Analysis",
         desc: "Analyze real-world U.S. healthcare data to uncover patterns in patient outcomes, treatment costs, and regional clinical resource optimization.",
         stack: ["Python", "Pandas", "Scikit-Learn", "Seaborn"],
-        color: "from-blue-500 to-cyan-500",
+        color: "from-blue-500 to-indigo-500",
       },
       {
         tag: "Computer Vision",
@@ -193,7 +193,7 @@ export const COURSE_DETAILED_DATA = {
         title: "Customer Churn Prediction",
         desc: "Predict subscriber churn for a 100k+ customer telecom dataset using gradient boosting and interpret feature drivers using SHAP values.",
         stack: ["XGBoost", "SHAP", "Scikit-Learn", "Pandas"],
-        color: "from-cyan-500 to-sky-500",
+        color: "from-indigo-500 to-indigo-500",
       },
       {
         tag: "Recommendation AI",
@@ -204,7 +204,7 @@ export const COURSE_DETAILED_DATA = {
       },
     ],
     careerRoles: [
-      { name: "Machine Learning Engineer", color: "from-blue-500 to-cyan-500" },
+      { name: "Machine Learning Engineer", color: "from-blue-500 to-indigo-500" },
       { name: "Data Scientist", color: "from-violet-500 to-purple-500" },
       { name: "AI Research Scientist", color: "from-emerald-500 to-green-500" },
       { name: "NLP Engineer", color: "from-amber-500 to-yellow-500" },
@@ -212,7 +212,7 @@ export const COURSE_DETAILED_DATA = {
       { name: "Data Engineer", color: "from-indigo-500 to-blue-500" },
       { name: "Business Intelligence Analyst", color: "from-teal-500 to-emerald-500" },
       { name: "MLOps Engineer", color: "from-fuchsia-500 to-violet-500" },
-      { name: "AI Product Manager", color: "from-sky-500 to-cyan-500" },
+      { name: "AI Product Manager", color: "from-indigo-500 to-indigo-500" },
       { name: "AI Solutions Architect", color: "from-orange-500 to-amber-500" },
     ],
     certificates: {
@@ -318,7 +318,7 @@ export const COURSE_DETAILED_DATA = {
         title: "Network Intrusion Detection System",
         desc: "Build an automated ML-powered IDS that classifies malicious traffic patterns and generates instant alerts from packet streams.",
         stack: ["Python", "Scapy", "Wireshark", "Scikit-Learn"],
-        color: "from-blue-500 to-cyan-500",
+        color: "from-blue-500 to-indigo-500",
       },
       {
         tag: "Cryptography",
@@ -343,7 +343,7 @@ export const COURSE_DETAILED_DATA = {
       },
     ],
     careerRoles: [
-      { name: "Ethical Hacker", color: "from-blue-500 to-cyan-500" },
+      { name: "Ethical Hacker", color: "from-blue-500 to-indigo-500" },
       { name: "Cyber Security Analyst", color: "from-violet-500 to-purple-500" },
       { name: "Penetration Tester", color: "from-emerald-500 to-green-500" },
       { name: "SOC Analyst", color: "from-amber-500 to-yellow-500" },

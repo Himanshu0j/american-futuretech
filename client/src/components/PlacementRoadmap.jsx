@@ -83,23 +83,23 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
   return (
     <section id="placement-roadmap" className="py-12 bg-white border-t border-slate-200 relative overflow-hidden">
       {/* Subtle Background Glow */}
-      <div className="absolute top-1/2 -left-48 w-96 h-96 bg-[#d8ffd2]/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 -left-48 w-96 h-96 bg-[#EFE6D6]/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/3 -right-48 w-96 h-96 bg-[#ffe6fa]/40 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Headers as specified by client */}
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold">
+            <Sparkles className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>PROVEN CAREER TRANSFORMATION SYSTEM</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-[#1a361d] tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-[#0B1220] tracking-tight">
             {roadmap.title || `${activeSteps.length}-Step Roadmap to Your Dream Job`}
           </h2>
 
-          <p className="text-lg sm:text-xl font-display font-semibold text-[#2d5c36]">
+          <p className="text-lg sm:text-xl font-display font-semibold text-[#4338CA]">
             {roadmap.subtitle || `Follow ${activeSteps.length} Proven Steps to Career Transformation`}
           </p>
 
@@ -117,23 +117,23 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
             return (
               <div
                 key={step._id || idx}
-                className="p-6 sm:p-5 rounded-3xl bg-[#fffff2] border border-slate-200/90 hover:border-[#1a361d]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="p-6 sm:p-5 rounded-3xl bg-[#F7F7F5] border border-slate-200/90 hover:border-[#0B1220]/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] border border-[#76ff8a]/40">
+                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] border border-[#E5C275]/40">
                       Step {stepNumber}
                     </span>
-                    <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 p-2 flex items-center justify-center text-[#1a361d] group-hover:scale-110 transition-transform shadow-2xs">
-                      <Icon className="w-5 h-5 text-[#2d5c36]" />
+                    <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 p-2 flex items-center justify-center text-[#0B1220] group-hover:scale-110 transition-transform shadow-2xs">
+                      <Icon className="w-5 h-5 text-[#4338CA]" />
                     </div>
                   </div>
 
-                  <div className="text-[11px] font-bold text-[#40844e] uppercase tracking-wider mb-1">
+                  <div className="text-[11px] font-bold text-[#10B981] uppercase tracking-wider mb-1">
                     {step.tag || 'Phase Milestone'}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-display font-bold text-[#1a361d] mb-2">
+                  <h3 className="text-lg sm:text-xl font-display font-bold text-[#0B1220] mb-2">
                     {step.title}
                   </h3>
 
@@ -146,7 +146,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
 
                 <div className="pt-4 mt-6 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500 font-medium">
                   <span>Phase {stepNumber} Deliverable</span>
-                  <CheckCircle2 className="w-4 h-4 text-[#40844e]" />
+                  <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                 </div>
               </div>
             );
@@ -154,15 +154,15 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
         </div>
 
         {/* Placement Bottom Action Strip */}
-        <div className="mt-12 p-6 sm:p-6 rounded-3xl bg-[#1a361d] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-left">
+        <div className="mt-12 p-6 sm:p-6 rounded-3xl bg-[#0B1220] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-left">
           <div className="space-y-1 max-w-xl">
-            <div className="text-xs font-bold text-[#76ff8a] uppercase tracking-wider">
+            <div className="text-xs font-bold text-[#E5C275] uppercase tracking-wider">
               100% Placement Guidance Guaranteed
             </div>
             <h4 className="text-xl sm:text-2xl font-display font-extrabold text-white">
               Ready to Accelerate Your Career Transformation?
             </h4>
-            <p className="text-xs text-[#d8ffd2]/80 leading-relaxed">
+            <p className="text-xs text-[#EFE6D6]/80 leading-relaxed">
               Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only $99 deposit.
             </p>
           </div>
@@ -170,7 +170,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <Link
               to="/checkout?tier=deposit"
-              className="px-5 py-2.5 rounded-full bg-[#76ff8a] hover:bg-[#5be26f] text-[#1a361d] text-xs font-bold transition-colors shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-[#E5C275] hover:bg-[#5be26f] text-[#0B1220] text-xs font-bold transition-colors shadow-sm"
             >
               Reserve Seat with $99
             </Link>

@@ -72,17 +72,17 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fffff2] flex items-center justify-center text-[#1a361d] font-sans text-sm">
-        <div className="w-10 h-10 border-4 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-[#0B1220] font-sans text-sm">
+        <div className="w-10 h-10 border-4 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin mb-4" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#fffff2] text-[#1a361d] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F7F7F5] text-[#0B1220] flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-display font-bold mb-4">Program Not Found</h2>
-        <Link to="/courses" className="px-6 py-2.5 bg-[#9e4f8f] text-white rounded-full font-semibold hover:bg-[#582c50] transition-colors">
+        <Link to="/courses" className="px-6 py-2.5 bg-[#4338CA] text-white rounded-full font-semibold hover:bg-[#3730A3] transition-colors">
           Browse All Programs
         </Link>
       </div>
@@ -119,6 +119,49 @@ export default function CourseDetailPage() {
   const careerRoles = detailedData.careerRoles || [];
   const certImages = detailedData.certificates || {};
 
+  // ── Admin-controlled blocks (edited on this course in Curriculum & Courses CMS) ──
+  const eligibility = course?.eligibility || {};
+  const eligibilityPoints = eligibility.points?.length ? eligibility.points : whoCanApplyList;
+  const certificationPoints = eligibility.certificationPoints?.length
+    ? eligibility.certificationPoints
+    : [
+        'Official American FutureTech US Fellowship Diploma',
+        'Microsoft Certified Professional Exam Alignment',
+        'Permanent Credential Verification on Global Ledger',
+      ];
+  const audienceTags = eligibility.audiences?.length
+    ? eligibility.audiences
+    : audiencePills.map((p) => p.tag);
+  const audienceColors = [
+    'from-[#4338CA] to-[#6366F1]',
+    'from-emerald-600 to-teal-500',
+    'from-rose-500 to-pink-500',
+    'from-violet-600 to-fuchsia-500',
+  ];
+
+  // "Choose your learning experience" — the admin ticks decide which cards show.
+  const showGroupBatch = course?.viewOptions?.groupBatch !== false;
+  const showPersonalizedMentor = course?.viewOptions?.personalizedMentor !== false;
+  const personalized = settings?.personalizedLearning || {};
+  const groupPrice = Number(course?.pricing?.discountedPrice) || Number(course?.pricing?.basePrice) || 0;
+  const groupOriginal = Number(course?.pricing?.basePrice) || groupPrice;
+  const personalizedPrice = Number(personalized.price) || Number(personalized.fee) || 5499;
+  const personalizedOriginal = Number(personalized.originalPrice) || Number(personalized.originalFee) || personalizedPrice;
+  const groupFeatures = (course?.highlights?.length ? course.highlights : [
+    `${course?.duration || '6 Months'} live syllabus`,
+    'Hands-on projects and guided labs',
+    'Career preparation and portfolio support',
+    'Lifetime community access',
+  ]).slice(0, 5);
+  const personalizedFeatures = (Array.isArray(personalized.features) && personalized.features.length
+    ? personalized.features
+    : [
+        'Everything in group classes',
+        'Weekly private mentorship',
+        'Personalized interview preparation',
+        'Salary negotiation and career support',
+      ]).slice(0, 5);
+
   const whyIcons = {
     MessageSquare,
     ShieldCheck,
@@ -129,36 +172,36 @@ export default function CourseDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased relative selection:bg-[#76ff8a] selection:text-[#1a361d]">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased relative selection:bg-[#E5C275] selection:text-[#0B1220]">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-24 pb-10">
         {/* Breadcrumb strip */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6">
           <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <Link to="/" className="hover:text-[#1a361d] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/courses" className="hover:text-[#1a361d] transition-colors">Academy Programs</Link>
+            <Link to="/courses" className="hover:text-[#0B1220] transition-colors">Academy Programs</Link>
             <span>/</span>
-            <span className="text-[#1a361d] font-semibold truncate">{course.title}</span>
+            <span className="text-[#0B1220] font-semibold truncate">{course.title}</span>
           </nav>
         </div>
 
         {/* 1. Course Hero Banner Container */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="rounded-3xl bg-[#1a361d] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#2d5c36] relative overflow-hidden">
+          <div className="rounded-3xl bg-[#0B1220] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#4338CA] relative overflow-hidden">
             {/* Background ambient glow */}
-            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#76ff8a]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#9e4f8f]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#E5C275]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#4338CA]/20 rounded-full blur-3xl pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start relative z-10">
               {/* Left Column: Course Header Info */}
               <div className="lg:col-span-8">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#1a361d] bg-[#d8ffd2] px-3.5 py-1.5 rounded-full shadow-xs">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#0B1220] bg-[#EFE6D6] px-3.5 py-1.5 rounded-full shadow-xs">
                     {course.category || 'Career Program'}
                   </span>
-                  <span className="text-xs font-semibold text-[#76ff8a] bg-[#76ff8a]/15 px-3.5 py-1.5 rounded-full border border-[#76ff8a]/40">
+                  <span className="text-xs font-semibold text-[#E5C275] bg-[#E5C275]/15 px-3.5 py-1.5 rounded-full border border-[#E5C275]/40">
                     Dual US & Microsoft Accredited
                   </span>
                   <span className="text-xs font-medium text-emerald-200 bg-emerald-900/50 px-3 py-1 rounded-full border border-emerald-500/30">
@@ -175,11 +218,11 @@ export default function CourseDetailPage() {
                 </p>
 
                 {/* Key Metrics / Highlights Strip */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#132815]/90 border border-[#2d5c36] text-center sm:text-left backdrop-blur-xs mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#0B1220]/90 border border-[#4338CA] text-center sm:text-left backdrop-blur-xs mb-8">
                   <div>
                     <div className="text-xs text-emerald-300/80 font-medium">Duration</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Clock className="w-4 h-4 text-[#76ff8a]" />
+                      <Clock className="w-4 h-4 text-[#E5C275]" />
                       {course.duration || '24 Weeks'}
                     </div>
                   </div>
@@ -193,14 +236,14 @@ export default function CourseDetailPage() {
                   <div>
                     <div className="text-xs text-emerald-300/80 font-medium">Learning Format</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Zap className="w-4 h-4 text-[#76ff8a]" />
+                      <Zap className="w-4 h-4 text-[#E5C275]" />
                       Live Interactive Lab
                     </div>
                   </div>
                   <div>
                     <div className="text-xs text-emerald-300/80 font-medium">Placement Support</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Briefcase className="w-4 h-4 text-[#76ff8a]" />
+                      <Briefcase className="w-4 h-4 text-[#E5C275]" />
                       100% Career Assistance
                     </div>
                   </div>
@@ -211,7 +254,7 @@ export default function CourseDetailPage() {
                   <div className="text-xs font-bold text-emerald-300/90 uppercase tracking-wider mb-3">Skills You Will Master:</div>
                   <div className="flex flex-wrap gap-2">
                     {(course.skills || ['Machine Learning', 'Deep Learning', 'PyTorch', 'Vector Databases', 'RAG Pipelines', 'Computer Vision', 'LLM Fine-Tuning', 'MLOps']).map((skill, i) => (
-                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[#132815] text-emerald-100 text-xs font-semibold border border-[#2d5c36] shadow-xs">
+                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[#0B1220] text-emerald-100 text-xs font-semibold border border-[#4338CA] shadow-xs">
                         {skill}
                       </span>
                     ))}
@@ -225,22 +268,22 @@ export default function CourseDetailPage() {
                   <div className="mb-6 pb-5 border-b border-slate-100">
                     <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tuition Investment</div>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-3xl font-display font-black text-[#1a361d]">${course.pricing?.discountedPrice || 1899}</span>
+                      <span className="text-3xl font-display font-black text-[#0B1220]">${course.pricing?.discountedPrice || 1899}</span>
                       <span className="text-sm text-slate-400 line-through">${course.pricing?.basePrice || 2499}</span>
                     </div>
-                    <div className="text-xs text-[#2d5c36] font-bold flex items-center gap-1.5 mt-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#40844e]" />
+                    <div className="text-xs text-[#4338CA] font-bold flex items-center gap-1.5 mt-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#10B981]" />
                       Save ${(course.pricing?.basePrice || 2499) - (course.pricing?.discountedPrice || 1899)} with institutional scholarship
                     </div>
                   </div>
 
                   {/* Flexible Deposit Box */}
-                  <div className="p-4 rounded-2xl bg-[#f7fdf8] border border-[#76ff8a]/60 mb-4 shadow-xs">
+                  <div className="p-4 rounded-2xl bg-[#F5F7FF] border border-[#E5C275]/60 mb-4 shadow-xs">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#1a361d]">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#0B1220]">
                         Flexible Seat Deposit
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] text-[10px] font-black uppercase tracking-wider">
+                      <span className="px-2 py-0.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-[10px] font-black uppercase tracking-wider">
                         Most Popular
                       </span>
                     </div>
@@ -249,7 +292,7 @@ export default function CourseDetailPage() {
                     </p>
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit`}
-                      className="w-full py-3 px-4 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                     >
                       Reserve Seat for $99
                       <ArrowRight className="w-4 h-4" />
@@ -258,16 +301,16 @@ export default function CourseDetailPage() {
 
                   <Link
                     to={`/checkout?courseId=${course._id}&tier=full`}
-                    className="w-full py-2.5 px-4 rounded-full border-2 border-[#1a361d] hover:bg-[#1a361d] hover:text-white text-[#1a361d] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                    className="w-full py-2.5 px-4 rounded-full border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                   >
                     Enroll Full Tuition (${course.pricing?.discountedPrice || 1899})
                   </Link>
 
                   <button
                     onClick={() => setIsLeadModalOpen(true)}
-                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[#1a361d] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
+                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[#0B1220] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
                   >
-                    <PhoneCall className="w-3.5 h-3.5 text-[#40844e]" />
+                    <PhoneCall className="w-3.5 h-3.5 text-[#10B981]" />
                     Talk to Admissions Counselor
                   </button>
 
@@ -285,11 +328,11 @@ export default function CourseDetailPage() {
         {/* 2. Data Science & AI Program Tools Covered */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkle className="w-3.5 h-3.5 text-[#2d5c36]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
+              <Sparkle className="w-3.5 h-3.5 text-[#4338CA]" />
               Hands-On Industry Toolkit
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
               {detailedData.heroTitle || `${course.title} Program`} Tools Covered
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -317,7 +360,7 @@ export default function CourseDetailPage() {
                     />
                   </div>
 
-                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 tracking-tight leading-tight truncate w-full group-hover:text-[#1a361d] transition-colors">
+                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 tracking-tight leading-tight truncate w-full group-hover:text-[#0B1220] transition-colors">
                     {toolName}
                   </h3>
                 </div>
@@ -330,11 +373,11 @@ export default function CourseDetailPage() {
         <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-3">
-                <Award className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-3">
+                <Award className="w-3.5 h-3.5 text-[#4338CA]" />
                 The American FutureTech Advantage
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight max-w-3xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight max-w-3xl mx-auto">
                 Why Get {course.title} Certification From American FutureTech
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -362,8 +405,8 @@ export default function CourseDetailPage() {
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#2d5c36]">
-                      <CheckCircle2 className="w-4 h-4 text-[#40844e]" />
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#4338CA]">
+                      <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                       <span>Guaranteed Standard</span>
                     </div>
                   </div>
@@ -373,6 +416,102 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
+        {/* 3b. Choose Your Learning Experience — Group batch vs Personalized mentor */}
+        {(showGroupBatch || showPersonalizedMentor) && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+            <div className="text-center max-w-3xl mx-auto mb-8">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-900 text-xs font-bold uppercase tracking-wider mb-3">
+                <GraduationCap className="w-3.5 h-3.5 text-indigo-700" />
+                Choose Your Learning Experience
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
+                One curriculum. Two ways to learn.
+              </h2>
+              <p className="text-slate-600 text-base mt-3 leading-relaxed">
+                Select the support level that matches your schedule and career goals. Pricing is shown in USD.
+              </p>
+            </div>
+
+            <div
+              className={`grid grid-cols-1 gap-5 ${
+                showGroupBatch && showPersonalizedMentor ? 'lg:grid-cols-2' : 'max-w-2xl mx-auto'
+              }`}
+            >
+              {showGroupBatch && (
+                <div className="rounded-3xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow flex flex-col">
+                  <div className="p-6 sm:p-7 flex flex-col flex-1">
+                    <h3 className="text-2xl font-bold font-display text-[#0B1220]">Group Classes</h3>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mt-1">
+                      Full Immersive Journey
+                    </div>
+
+                    <div className="mt-5 flex items-baseline gap-2">
+                      <span className="text-4xl font-black font-display text-[#0B1220]">${groupPrice.toLocaleString()}</span>
+                      {groupOriginal > groupPrice && (
+                        <span className="text-sm text-slate-400 line-through">${groupOriginal.toLocaleString()}</span>
+                      )}
+                    </div>
+
+                    <ul className="mt-6 space-y-3 text-sm text-slate-700 flex-1">
+                      {groupFeatures.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="w-4 h-4 text-[#4338CA] shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link
+                      to={`/checkout?tier=full&courseId=${course._id}`}
+                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white border-2 border-[#0B1220] text-[#0B1220] hover:bg-[#0B1220] hover:text-white text-sm font-bold transition-colors"
+                    >
+                      Enroll in group classes <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {showPersonalizedMentor && (
+                <div className="relative rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#1B2740] to-[#0B1220] text-white shadow-2xl border border-[#4338CA]/40 flex flex-col overflow-hidden">
+                  <div className="absolute -top-10 -right-10 w-52 h-52 bg-[#E5C275]/20 rounded-full blur-3xl pointer-events-none" />
+                  <span className="absolute top-5 right-5 px-3 py-1 rounded-full bg-[#E5C275] text-[#0B1220] text-[10px] font-black uppercase tracking-wider">
+                    Most Popular
+                  </span>
+                  <div className="p-6 sm:p-7 flex flex-col flex-1 relative">
+                    <h3 className="text-2xl font-bold font-display text-white">Personalized Services</h3>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#E5C275] mt-1">
+                      Top Industry Mentor Track
+                    </div>
+
+                    <div className="mt-5 flex items-baseline gap-2">
+                      <span className="text-4xl font-black font-display text-white">${personalizedPrice.toLocaleString()}</span>
+                      {personalizedOriginal > personalizedPrice && (
+                        <span className="text-sm text-white/50 line-through">${personalizedOriginal.toLocaleString()}</span>
+                      )}
+                    </div>
+
+                    <ul className="mt-6 space-y-3 text-sm text-slate-200 flex-1">
+                      {personalizedFeatures.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2.5">
+                          <Check className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Link
+                      to={`/checkout?tier=personalized&courseId=${course._id}`}
+                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#E5C275] text-[#0B1220] hover:bg-white text-sm font-bold transition-colors"
+                    >
+                      Enroll in personalized classes <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* 4. Who Can Apply for this Course */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center">
@@ -380,22 +519,22 @@ export default function CourseDetailPage() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-900 text-xs font-bold uppercase tracking-wider mb-3">
                 <Users className="w-3.5 h-3.5 text-violet-700" />
-                Eligibility & Candidate Profile
+                {eligibility.eyebrow || 'Eligibility & Candidate Profile'}
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight mb-4">
-                Who Can Apply for this Course?
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight mb-4">
+                {eligibility.title || 'Who Can Apply for this Course?'}
               </h2>
               <p className="text-slate-600 text-base mb-8 leading-relaxed">
-                Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.
+                {eligibility.subtitle || 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.'}
               </p>
 
               <div className="space-y-4">
-                {whoCanApplyList.map((point, idx) => (
+                {eligibilityPoints.map((point, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[#1a361d]/40 transition-colors"
+                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[#0B1220]/40 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-[#1a361d] text-[#76ff8a] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="w-8 h-8 rounded-xl bg-[#0B1220] text-[#E5C275] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
                       {idx + 1}
                     </div>
                     <p className="text-sm text-slate-700 leading-relaxed font-medium pt-0.5">
@@ -408,31 +547,25 @@ export default function CourseDetailPage() {
 
             {/* Right: Globally Recognised Certification Card + Audience Pills */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#1f4223] to-[#132815] text-white p-6 sm:p-6 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#76ff8a]/20 rounded-full blur-2xl pointer-events-none" />
-                <div className="w-12 h-12 rounded-2xl bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] flex items-center justify-center mb-5">
+              <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#1f4223] to-[#0B1220] text-white p-6 sm:p-6 shadow-2xl border border-[#4338CA] relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#E5C275]/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="w-12 h-12 rounded-2xl bg-[#E5C275]/20 border border-[#E5C275]/40 text-[#E5C275] flex items-center justify-center mb-5">
                   <Award className="w-7 h-7" />
                 </div>
                 <h3 className="text-2xl font-bold font-display text-white mb-3">
-                  Globally Recognised Certification
+                  {eligibility.certificationTitle || 'Globally Recognised Certification'}
                 </h3>
                 <p className="text-sm text-emerald-100/90 leading-relaxed mb-6">
-                  Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.
+                  {eligibility.certificationText || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.'}
                 </p>
 
-                <div className="space-y-2.5 text-xs text-emerald-200 font-medium pt-2 border-t border-[#2d5c36]">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#76ff8a]" />
-                    <span>Official American FutureTech US Fellowship Diploma</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#76ff8a]" />
-                    <span>Microsoft Certified Professional Exam Alignment</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#76ff8a]" />
-                    <span>Permanent Credential Verification on Global Ledger</span>
-                  </div>
+                <div className="space-y-2.5 text-xs text-emerald-200 font-medium pt-2 border-t border-[#4338CA]">
+                  {certificationPoints.map((point, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-[#E5C275] shrink-0" />
+                      <span>{point}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -440,12 +573,16 @@ export default function CourseDetailPage() {
               <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Target Audiences Welcomed:</div>
                 <div className="flex flex-wrap gap-2.5">
-                  {audiencePills.map((pill, i) => (
+                  {audienceTags.map((tag, i) => (
                     <span
                       key={i}
-                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${pill.color} text-white text-xs font-bold shadow-xs`}
+                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${
+                        eligibility.audiences?.length
+                          ? audienceColors[i % audienceColors.length]
+                          : (audiencePills[i]?.color || audienceColors[i % audienceColors.length])
+                      } text-white text-xs font-bold shadow-xs`}
                     >
-                      {pill.tag}
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -459,26 +596,17 @@ export default function CourseDetailPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-200">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
                   <BookOpen className="w-3.5 h-3.5" />
                   Structured Syllabus
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d]">
+                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220]">
                   {course.title} Course Curriculum
                 </h2>
                 <p className="text-slate-600 text-sm mt-1">
                   {curriculum.length} enterprise modules aligned with real production workflows.
                 </p>
               </div>
-              <a
-                href={course.brochureUrl || '/brochures/American_FutureTech_Syllabus.pdf'}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1a361d] text-white hover:bg-[#2d5c36] text-xs font-bold transition-colors shadow-sm"
-              >
-                <Download className="w-4 h-4" />
-                Download Full Syllabus PDF
-              </a>
             </div>
 
             {/* Accordion List */}
@@ -488,28 +616,26 @@ export default function CourseDetailPage() {
                 return (
                   <div
                     key={mod._id || index}
-                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[#1a361d]/40"
+                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[#0B1220]/40"
                   >
                     <button
                       onClick={() => setOpenModuleIndex(isOpen ? -1 : index)}
                       className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="w-11 h-11 rounded-xl bg-[#d8ffd2] text-[#1a361d] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        <span className="w-11 h-11 rounded-xl bg-[#EFE6D6] text-[#0B1220] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
                           {index + 1 < 10 ? `0${index + 1}` : index + 1}
                         </span>
                         <div className="min-w-0">
-                          <h3 className="text-base sm:text-lg font-bold text-[#1a361d] truncate leading-tight">
+                          <h3 className="text-base sm:text-lg font-bold text-[#0B1220] truncate leading-tight">
                             {mod.title}
                           </h3>
                           <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
                             <span>{mod.lessons?.length || 4} Lessons</span>
-                            <span>•</span>
-                            <span>{mod.durationHours || 24} Hours Total</span>
                             {mod.quiz && (
                               <>
                                 <span>•</span>
-                                <span className="text-[#9e4f8f] font-semibold">1 Assessment</span>
+                                <span className="text-[#4338CA] font-semibold">1 Assessment</span>
                               </>
                             )}
                           </div>
@@ -532,13 +658,13 @@ export default function CourseDetailPage() {
                               className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <Play className="w-3.5 h-3.5 text-[#40844e] shrink-0" />
+                                <Play className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
                                 <span className="truncate font-medium">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0 text-slate-500">
                                 <span>{lesson.videoDuration || '45m'}</span>
                                 {lesson.isPreview && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#d8ffd2] text-[#1a361d]">
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EFE6D6] text-[#0B1220]">
                                     Free Preview
                                   </span>
                                 )}
@@ -562,7 +688,7 @@ export default function CourseDetailPage() {
               <Layers className="w-3.5 h-3.5 text-teal-700" />
               Build &amp; Showcase
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
               Capstone Projects
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -584,7 +710,7 @@ export default function CourseDetailPage() {
                     {proj.tag}
                   </span>
 
-                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[#1a361d] transition-colors font-display leading-snug line-clamp-1">
+                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[#0B1220] transition-colors font-display leading-snug line-clamp-1">
                     {proj.title}
                   </h3>
 
@@ -619,7 +745,7 @@ export default function CourseDetailPage() {
                 <Briefcase className="w-3.5 h-3.5 text-rose-700" />
                 Career Opportunities
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
                 Unlock Your Potential — What Can You Become?
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -631,12 +757,12 @@ export default function CourseDetailPage() {
               {careerRoles.map((role, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#1a361d]/40 transition-all flex items-center gap-3.5 group"
+                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#0B1220]/40 transition-all flex items-center gap-3.5 group"
                 >
                   <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${role.color || 'from-emerald-500 to-teal-500'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#1a361d] transition-colors">
+                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#0B1220] transition-colors">
                     {role.name}
                   </span>
                 </div>
@@ -652,7 +778,7 @@ export default function CourseDetailPage() {
               <Award className="w-3.5 h-3.5 text-indigo-700" />
               Dual Industry Recognition
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1a361d] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
               American FutureTech & Microsoft Credentials
             </h2>
             <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -690,7 +816,7 @@ export default function CourseDetailPage() {
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
                   <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
-                    <ZoomIn className="w-4 h-4 text-[#1a361d]" /> Inspect in 4K
+                    <ZoomIn className="w-4 h-4 text-[#0B1220]" /> Inspect in 4K
                   </span>
                 </div>
               </div>
@@ -712,7 +838,7 @@ export default function CourseDetailPage() {
                   </span>
                   <Link
                     to="/certificate/AFT-CERT-AI9821"
-                    className="text-[#1a361d] font-semibold hover:underline flex items-center gap-1"
+                    className="text-[#0B1220] font-semibold hover:underline flex items-center gap-1"
                   >
                     Sample <ExternalLink className="w-3 h-3" />
                   </Link>
@@ -783,16 +909,16 @@ export default function CourseDetailPage() {
 
         {/* 8. Register Now Bottom Cockpit (Matching user request: Register now ka niche option) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#2d5c36]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#4338CA]">
             {/* Ambient background orbs */}
-            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#76ff8a]/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#9e4f8f]/25 blur-3xl" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#E5C275]/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#4338CA]/25 blur-3xl" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center relative z-10">
               {/* Left Column: Register Now Details & Checklist */}
               <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 text-[#76ff8a] text-xs font-bold uppercase tracking-wider mb-5">
-                  <span className="w-2 h-2 rounded-full bg-[#76ff8a] animate-ping" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 text-[#E5C275] text-xs font-bold uppercase tracking-wider mb-5">
+                  <span className="w-2 h-2 rounded-full bg-[#E5C275] animate-ping" />
                   Limited Seats Available for Next Cohort
                 </div>
 
@@ -807,20 +933,20 @@ export default function CourseDetailPage() {
                 {/* 3 Checklist Items */}
                 <div className="space-y-3.5 mb-8">
                   <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#76ff8a]" />
+                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#E5C275]" />
                     </span>
                     <span>Complete the course successfully with 1-on-1 mentor guidance</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#76ff8a]" />
+                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#E5C275]" />
                     </span>
                     <span>Receive your accredited American FutureTech completion diploma</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#76ff8a]/20 border border-[#76ff8a]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#76ff8a]" />
+                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#E5C275]" />
                     </span>
                     <span>Eligible learners receive official Microsoft certification alignment</span>
                   </div>
@@ -828,7 +954,7 @@ export default function CourseDetailPage() {
 
                 {/* Post-Registration Guarantee Note */}
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-start gap-3 text-xs text-emerald-200/90 max-w-xl">
-                  <Mail className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                  <Mail className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-white">After registration:</strong> You will immediately receive a welcome orientation email, syllabus kit, and direct invite to the private cohort Slack & virtual lab.
                   </p>
@@ -840,7 +966,7 @@ export default function CourseDetailPage() {
                 <div className="rounded-3xl bg-white text-slate-800 p-5 sm:p-6 shadow-2xl border border-white/20">
                   <div className="text-center mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Upcoming Live Cohort</span>
-                    <div className="text-3xl font-display font-black text-[#1a361d] mt-1">
+                    <div className="text-3xl font-display font-black text-[#0B1220] mt-1">
                       ${course.pricing?.discountedPrice || 1899}
                     </div>
                     <span className="text-xs text-slate-500">Or get started with just a $99 deposit</span>
@@ -849,7 +975,7 @@ export default function CourseDetailPage() {
                   <div className="space-y-3.5">
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit`}
-                      className="w-full py-4 px-6 rounded-2xl bg-[#9e4f8f] hover:bg-[#582c50] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 px-6 rounded-2xl bg-[#4338CA] hover:bg-[#3730A3] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     >
                       Register Now — $99 Deposit
                       <ArrowRight className="w-5 h-5" />
@@ -857,7 +983,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=full`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#1a361d] hover:bg-[#1a361d] hover:text-white text-[#1a361d] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Enroll Full Tuition (${course.pricing?.discountedPrice || 1899})
                     </Link>
@@ -866,13 +992,13 @@ export default function CourseDetailPage() {
                       onClick={() => setIsLeadModalOpen(true)}
                       className="w-full py-3 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs text-center transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <PhoneCall className="w-4 h-4 text-[#2d5c36]" />
+                      <PhoneCall className="w-4 h-4 text-[#4338CA]" />
                       Talk to an Admissions Advisor
                     </button>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    <Shield className="w-3.5 h-3.5 text-[#2d5c36]" />
+                    <Shield className="w-3.5 h-3.5 text-[#4338CA]" />
                     <span>256-Bit SSL Encrypted & Money-Back Guaranteed</span>
                   </div>
                 </div>

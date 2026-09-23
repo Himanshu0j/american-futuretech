@@ -20,6 +20,9 @@ import PersonalizedLearningSection from './components/PersonalizedLearningSectio
 import FaqAccordion from './components/common/FaqAccordion';
 import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
+import SiteEditor from './components/SiteEditor';
+import SiteOverridesApplier from './components/SiteOverridesApplier';
+import useCompanyInfo from './hooks/useCompanyInfo';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
@@ -69,14 +72,50 @@ const JobsManager = lazy(() => import('./admin/JobsManager'));
 const ContentCMS = lazy(() => import('./admin/ContentCMS'));
 const SupportManager = lazy(() => import('./admin/SupportManager'));
 const SettingsCMS = lazy(() => import('./admin/SettingsCMS'));
+const WebsiteEditor = lazy(() => import('./admin/WebsiteEditor'));
 const StaffRBAC = lazy(() => import('./admin/StaffRBAC'));
 const AdminGuide = lazy(() => import('./admin/AdminGuide'));
+
+/**
+ * Real maintenance gate for the admin's "Maintenance mode" switch.
+ * Visitors see this screen; /admin and /student keep working so staff can turn it back off.
+ */
+function MaintenanceScreen() {
+  const { settings } = useSiteSettings();
+  const company = useCompanyInfo();
+  const path = window.location.pathname;
+  const isStaffArea = path.startsWith('/admin') || path.startsWith('/student');
+
+  if (settings?.isMaintenanceMode !== true || isStaffArea) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9998] bg-[#070C17] flex items-center justify-center px-6">
+      <div className="max-w-lg w-full rounded-3xl border border-white/10 bg-[#0B1220] p-10 text-center space-y-5">
+        <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 flex items-center justify-center mx-auto font-black">
+          AF
+        </div>
+        <h1 className="text-2xl font-black text-white font-heading">We'll be right back</h1>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          {company.siteName} is doing a quick scheduled update. Please check back in a few minutes.
+        </p>
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
+          <a href={company.phoneHref} className="px-4 py-2 rounded-xl border border-white/10 text-slate-300 hover:text-white">
+            {company.phone}
+          </a>
+          <a href={company.emailHref} className="px-4 py-2 rounded-xl border border-white/10 text-slate-300 hover:text-white break-all">
+            {company.email}
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AdminProtectedRoute({ children }) {
   const { isAuthenticated, loading, user } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070b14] flex items-center justify-center text-sky-400 font-mono text-sm">
+      <div className="min-h-screen bg-[#070b14] flex items-center justify-center text-indigo-400 font-mono text-sm">
         Verifying Enterprise Credentials...
       </div>
     );
@@ -125,7 +164,7 @@ function LandingPage() {
   const visibility = settings?.sectionVisibility || {};
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-indigo-600 selection:text-white relative overflow-x-hidden pt-16 md:pt-24">
+    <div className="min-h-screen bg-canvas dark:bg-ink-950 text-ink-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden pt-16 md:pt-24">
       {/* Subtle Premium Ambient Canvas */}
       <AmbientBackground />
 
@@ -307,6 +346,7 @@ export default function App() {
                 <Route path="content" element={<ContentCMS />} />
                 <Route path="support" element={<SupportManager />} />
                 <Route path="settings" element={<SettingsCMS />} />
+                <Route path="website-editor" element={<WebsiteEditor />} />
                 <Route path="guide" element={<AdminGuide />} />
                 <Route path="users" element={<StaffRBAC />} />
               </Route>
@@ -319,6 +359,15 @@ export default function App() {
           {/* Global Floating Admissions & Support Widgets */}
           <WhatsAppButton />
           <AIChatbox />
+
+          {/* Shows the maintenance screen to visitors when the admin switches it on */}
+          <MaintenanceScreen />
+
+          {/* Renders admin text/image edits for every visitor (mount order matters: apply, then edit) */}
+          <SiteOverridesApplier />
+
+          {/* Inline site editor — only renders for a signed-in admin on ?edit=1 */}
+          <SiteEditor />
 
           {/* Global Floating Interactive Design Switcher (Hidden in production client view) */}
           {typeof window !== 'undefined' && window.location.search.includes('showSwitcher=1') && (

@@ -61,10 +61,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   ];
 
   return (
-    <section className="relative pt-6 sm:pt-10 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 via-white to-slate-100/80 dark:from-[#0B132B] dark:via-[#0F172A] dark:to-[#0B132B] overflow-hidden">
-      
+    <section className="relative pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-aurora-light dark:bg-aurora-ink overflow-hidden">
+
       {/* Background Architectural Grid Accent */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f10a_1px,transparent_1px),linear-gradient(to_bottom,#6366f10a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f108_1px,transparent_1px),linear-gradient(to_bottom,#6366f108_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-6 items-center">
@@ -76,9 +76,9 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800/90 border border-indigo-500/20 shadow-xs text-xs font-semibold text-indigo-900 dark:text-indigo-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 pulse-mint-dot" />
-                <span className="tracking-widest uppercase font-mono text-[11px] font-bold">
+              <div className="section-eyebrow shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-mint-dot" />
+                <span>
                   {heroData.eyebrowBadgeText || heroData.eyebrow || 'AMERICAN FUTURETECH · 6-MONTH CAREER TRAINING & FELLOWSHIPS'}
                 </span>
               </div>
@@ -86,13 +86,16 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
             {/* Editorial Agency-Grade Headline */}
             <div className="anim-hero-heading space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-slate-900 dark:text-white tracking-tight leading-[1.08] font-heading whitespace-pre-line">
+              <h1 className="text-[34px] sm:text-5xl lg:text-[56px] font-black text-ink-900 dark:text-white tracking-[-0.03em] leading-[1.06] font-heading whitespace-pre-line text-balance">
                 {heroData.headline ? (
                   heroData.headline
                 ) : (
                   <>
                     BUILD HIGH-VALUE SKILLS.<br />
-                    <span className="text-indigo-600 dark:text-indigo-400">GET US CERTIFIED.</span><br />
+                    <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-violet-600 bg-clip-text text-transparent dark:from-brand-400 dark:to-violet-400">
+                      GET US CERTIFIED.
+                    </span>
+                    <br />
                     LAUNCH YOUR CAREER.
                   </>
                 )}
@@ -139,7 +142,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             <div className="anim-hero-cta flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 w-full sm:w-auto">
               <Link
                 to={heroData.primaryCtaLink || '/checkout?tier=deposit'}
-                className="elms-btn-primary !py-4 !px-8 !text-sm cursor-pointer group shadow-xl flex items-center justify-center gap-2"
+                className="elms-btn-gold sheen overflow-hidden !py-4 !px-8 !text-sm cursor-pointer group !rounded-xl flex items-center justify-center gap-2"
               >
                 <span>{heroData.primaryCtaText || 'Reserve Your Seat — $99'}</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
@@ -155,7 +158,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             </div>
 
             {/* Trust Microcopy Ledger */}
-            <div className="anim-hero-cta pt-4 w-full border-t border-slate-200/80 dark:border-slate-800">
+            <div className="anim-hero-cta pt-5 w-full border-t border-hairline dark:border-slate-800">
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-left pt-2">
                 <div>
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-1">
@@ -170,7 +173,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <div className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-heading font-mono">$99 Deposit</div>
+                  <div className="text-sm font-bold text-gold-600 dark:text-gold-400 font-heading font-mono">$99 Deposit</div>
                   <div className="text-[11px] text-slate-500 font-medium">Risk-Free Reservation</div>
                 </div>
               </div>
@@ -494,7 +497,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       <div className="text-emerald-400">import torch, vllm</div>
                       <div className="text-slate-300">from langchain.agents import initialize_agent</div>
                       <div className="text-slate-400"># Model initialized with FlashAttention-2</div>
-                      <div className="text-cyan-300">agent = initialize_agent(tools, llm, verbose=True)</div>
+                      <div className="text-indigo-300">agent = initialize_agent(tools, llm, verbose=True)</div>
                     </div>
 
                     <button

@@ -271,7 +271,7 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-24 sm:pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
@@ -281,21 +281,21 @@ export default function CareersPage() {
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}
         {/* ========================================================================= */}
         <section className="mb-10 rounded-3xl bg-gradient-to-br from-white via-[#f6faf4] to-[#eef7ec] border border-slate-200/90 shadow-lg p-5 sm:p-6 lg:p-7 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#76ff8a]/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#9e4f8f]/10 blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#E5C275]/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-[#4338CA]/10 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
             {/* Left Column */}
             <div className="lg:col-span-7 space-y-4 text-left">
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/60 text-[#1a361d] text-xs font-bold tracking-wide shadow-xs">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] border border-[#E5C275]/60 text-[#0B1220] text-xs font-bold tracking-wide shadow-xs">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2d5c36]"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#4338CA]"></span>
                 </span>
                 <span>Corporate Employer Hiring Network • Active Placements</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-display font-extrabold tracking-tight text-[#1a361d] leading-[1.15]">
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-display font-extrabold tracking-tight text-[#0B1220] leading-[1.15]">
                 Where Elite Tech Employers Hire{' '}
                 <span className="highlight">Verified Graduate Talent</span>
               </h1>
@@ -306,15 +306,15 @@ export default function CareersPage() {
 
               <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
                 <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">$128K</div>
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#0B1220]">$128K</div>
                   <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Avg Placement Comp</div>
                 </div>
                 <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">140+</div>
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#0B1220]">140+</div>
                   <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Corporate Partners</div>
                 </div>
                 <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[#1a361d]">94%</div>
+                  <div className="text-xl sm:text-2xl font-black font-display text-[#0B1220]">94%</div>
                   <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Placement Rate</div>
                 </div>
               </div>
@@ -322,10 +322,10 @@ export default function CareersPage() {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="#openings"
-                  className="py-3 px-7 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer hover:shadow-lg"
+                  className="py-3 px-7 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-[#EFE6D6] font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer hover:shadow-lg"
                 >
                   <span>Explore Open Positions</span>
-                  <ChevronRight className="w-4 h-4 text-[#76ff8a]" />
+                  <ChevronRight className="w-4 h-4 text-[#E5C275]" />
                 </a>
                 <a
                   href="#fast-track"
@@ -340,11 +340,11 @@ export default function CareersPage() {
             {/* Right Column: Visual Showcase */}
             <div className="lg:col-span-5 relative flex justify-center">
               <div className="relative w-full max-w-sm">
-                <div className="p-6 sm:p-6 rounded-3xl bg-[#1a361d] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#2d5c36]">
+                <div className="p-6 sm:p-6 rounded-3xl bg-[#0B1220] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#4338CA]">
                   <div className="flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#76ff8a] animate-ping" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#76ff8a]">Partner Network Active</span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#E5C275] animate-ping" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#E5C275]">Partner Network Active</span>
                     </div>
                     <div className="w-10 h-10">
                       <Lottie animationData={liveRadarLottie} loop autoplay className="w-10 h-10" />
@@ -361,7 +361,7 @@ export default function CareersPage() {
 
                   <div className="p-3 rounded-2xl bg-black/50 backdrop-blur-md border border-white/20 text-white flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#76ff8a] text-[#1a361d] font-bold text-xs flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-full bg-[#E5C275] text-[#0B1220] font-bold text-xs flex items-center justify-center">
                         <Check className="w-4 h-4" />
                       </div>
                       <div>
@@ -394,7 +394,7 @@ export default function CareersPage() {
                   placeholder="Search jobs by title, company, location, or skills (e.g. AWS, Python, Docker)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                  className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                 />
               </div>
 
@@ -406,7 +406,7 @@ export default function CareersPage() {
                   <select
                     value={selectedJobType}
                     onChange={(e) => setSelectedJobType(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
                   >
                     {jobTypes.map(t => <option key={t} value={t}>{t === 'All' ? 'All Types' : t}</option>)}
                   </select>
@@ -418,7 +418,7 @@ export default function CareersPage() {
                   <select
                     value={selectedExp}
                     onChange={(e) => setSelectedExp(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
                   >
                     {experienceLevels.map(exp => <option key={exp} value={exp}>{exp === 'All' ? 'All Experience' : `${exp} Level`}</option>)}
                   </select>
@@ -430,7 +430,7 @@ export default function CareersPage() {
                   <select
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
                   >
                     {locations.map(loc => <option key={loc} value={loc}>{loc === 'All' ? 'All Locations' : loc}</option>)}
                   </select>
@@ -442,7 +442,7 @@ export default function CareersPage() {
                   <select
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d] truncate"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220] truncate"
                   >
                     <option value="All">All Tracks</option>
                     {courses.map(c => (
@@ -461,7 +461,7 @@ export default function CareersPage() {
                   <select
                     value={selectedDepartment}
                     onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d] truncate"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220] truncate"
                   >
                     {departments.map(d => <option key={d} value={d}>{d === 'All' ? 'All Departments' : d}</option>)}
                   </select>
@@ -472,7 +472,7 @@ export default function CareersPage() {
                   <select
                     value={selectedSalary}
                     onChange={(e) => setSelectedSalary(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
                   >
                     {salaryBands.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
@@ -483,7 +483,7 @@ export default function CareersPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#1a361d]"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
                   >
                     <option value="newest">Recently Added</option>
                     <option value="salary">Highest Salary</option>
@@ -497,7 +497,7 @@ export default function CareersPage() {
                     onClick={() => setRemoteOnly(!remoteOnly)}
                     className={`w-full px-2.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                       remoteOnly
-                        ? 'bg-[#1a361d] text-[#d8ffd2] border-[#1a361d]'
+                        ? 'bg-[#0B1220] text-[#EFE6D6] border-[#0B1220]'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
@@ -574,7 +574,7 @@ export default function CareersPage() {
             {/* Job Listings (Supports 8+ Jobs naturally in desktop/mobile) */}
             {loading ? (
               <div className="flex flex-col items-center justify-center py-12 bg-white rounded-3xl border border-slate-200 shadow-xs">
-                <div className="w-10 h-10 border-3 border-[#1a361d]/20 border-t-[#1a361d] rounded-full animate-spin mb-3" />
+                <div className="w-10 h-10 border-3 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin mb-3" />
                 <div className="text-xs font-mono text-slate-500">Loading career network opportunities...</div>
               </div>
             ) : filteredJobs.length === 0 ? (
@@ -582,13 +582,13 @@ export default function CareersPage() {
                 <div className="w-36 h-36 mx-auto">
                   <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-base font-display font-bold text-[#1a361d]">No job openings match your criteria</h3>
+                <h3 className="text-base font-display font-bold text-[#0B1220]">No job openings match your criteria</h3>
                 <p className="text-slate-500 text-xs max-w-sm mx-auto">
                   Try adjusting your search terms, resetting filters, or submit your resume directly to our Corporate Talent Pool on the right.
                 </p>
                 <button
                   onClick={handleClearFilters}
-                  className="px-5 py-2 rounded-full bg-[#1a361d] text-white text-xs font-bold cursor-pointer hover:bg-[#2d5c36]"
+                  className="px-5 py-2 rounded-full bg-[#0B1220] text-white text-xs font-bold cursor-pointer hover:bg-[#4338CA]"
                 >
                   Reset All Filters
                 </button>
@@ -621,14 +621,14 @@ export default function CareersPage() {
             
             {/* Widget 1: Fast-Track Direct Referral Application Form */}
             <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden text-left">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#76ff8a]/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#E5C275]/20 rounded-full blur-2xl pointer-events-none" />
 
-              <div className="flex items-center gap-2 text-xs font-bold text-[#2d5c36] bg-[#d8ffd2] px-3 py-1 rounded-full w-fit mb-3">
-                <Zap className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[#4338CA] bg-[#EFE6D6] px-3 py-1 rounded-full w-fit mb-3">
+                <Zap className="w-3.5 h-3.5 text-[#4338CA]" />
                 <span>Fast-Track Placement Concierge</span>
               </div>
 
-              <h3 className="text-lg font-display font-bold text-[#1a361d] mb-1">
+              <h3 className="text-lg font-display font-bold text-[#0B1220] mb-1">
                 Don't See Your Exact Role?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-4">
@@ -636,24 +636,24 @@ export default function CareersPage() {
               </p>
 
               {fastTrackSuccess ? (
-                <div className="p-5 rounded-2xl bg-[#d8ffd2]/50 border border-[#76ff8a] text-center space-y-3 animate-fadeIn">
+                <div className="p-5 rounded-2xl bg-[#EFE6D6]/50 border border-[#E5C275] text-center space-y-3 animate-fadeIn">
                   <div className="w-16 h-16 mx-auto">
                     <img src={approvedSuccessSvg} alt="Profile Submitted" className="w-full h-full object-contain" />
                   </div>
-                  <h4 className="text-sm font-display font-bold text-[#1a361d]">Profile Submitted to Talent Pool!</h4>
+                  <h4 className="text-sm font-display font-bold text-[#0B1220]">Profile Submitted to Talent Pool!</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     Our Enterprise Placement Officer will review your credentials within 24 hours.
                   </p>
                   <button
                     onClick={() => setFastTrackSuccess(false)}
-                    className="text-xs font-bold text-[#2d5c36] underline cursor-pointer pt-1"
+                    className="text-xs font-bold text-[#4338CA] underline cursor-pointer pt-1"
                   >
                     Submit Another Profile
                   </button>
                 </div>
               ) : (
                 <>
-                  <div className="mb-4 p-2 bg-[#fffff2] rounded-xl border border-gray-100 flex justify-center">
+                  <div className="mb-4 p-2 bg-[#F7F7F5] rounded-xl border border-gray-100 flex justify-center">
                     <img src={interviewPrepSvg} alt="Fast-Track Concierge" className="w-32 h-20 object-contain" />
                   </div>
                   <form onSubmit={handleFastTrackSubmit} className="space-y-3">
@@ -665,7 +665,7 @@ export default function CareersPage() {
                         placeholder="e.g. Alex Morgan"
                         value={fastTrackName}
                         onChange={(e) => setFastTrackName(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
@@ -677,7 +677,7 @@ export default function CareersPage() {
                         placeholder="alex@example.com"
                         value={fastTrackEmail}
                         onChange={(e) => setFastTrackEmail(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
@@ -689,7 +689,7 @@ export default function CareersPage() {
                         placeholder="+1 (555) 019-2834"
                         value={fastTrackPhone}
                         onChange={(e) => setFastTrackPhone(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
@@ -699,7 +699,7 @@ export default function CareersPage() {
                         <select
                           value={fastTrackDomain}
                           onChange={(e) => setFastTrackDomain(e.target.value)}
-                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
+                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#0B1220]"
                         >
                           <option value="AI & Machine Learning">AI & Machine Learning</option>
                           <option value="Cyber Defense & SOC">Cyber Defense & SOC</option>
@@ -713,7 +713,7 @@ export default function CareersPage() {
                         <select
                           value={fastTrackExp}
                           onChange={(e) => setFastTrackExp(e.target.value)}
-                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#1a361d]"
+                          className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#0B1220]"
                         >
                           <option value="Entry Level (0-2 Yrs)">Entry Level (0-2 Yrs)</option>
                           <option value="Mid-Level (2-5 Yrs)">Mid-Level (2-5 Yrs)</option>
@@ -729,7 +729,7 @@ export default function CareersPage() {
                         placeholder="https://linkedin.com/in/alexmorgan"
                         value={fastTrackLinkedin}
                         onChange={(e) => setFastTrackLinkedin(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
@@ -740,14 +740,14 @@ export default function CareersPage() {
                         placeholder="https://drive.google.com/resume.pdf"
                         value={fastTrackResume}
                         onChange={(e) => setFastTrackResume(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={fastTrackSubmitting}
-                      className="w-full py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer hover:shadow-lg"
+                      className="w-full py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer hover:shadow-lg"
                     >
                       {fastTrackSubmitting ? 'Transmitting Profile...' : (
                         <>
@@ -765,8 +765,8 @@ export default function CareersPage() {
             <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 to-[#122316] text-white shadow-xl relative overflow-hidden text-left space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#76ff8a]" />
-                  <span className="text-xs font-mono text-[#76ff8a] font-bold uppercase tracking-wider">Hiring Partner Standards</span>
+                  <ShieldCheck className="w-4 h-4 text-[#E5C275]" />
+                  <span className="text-xs font-mono text-[#E5C275] font-bold uppercase tracking-wider">Hiring Partner Standards</span>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
                   US Registered
@@ -775,15 +775,15 @@ export default function CareersPage() {
 
               <div className="space-y-2 text-xs">
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
                   <span className="text-slate-300">Direct interview scheduling with Tech Leads & CISOs</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
                   <span className="text-slate-300">Verified institutional accreditation on graduation records</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
                   <span className="text-slate-300">Salary transparency policy: All roles disclose minimum compensation</span>
                 </div>
               </div>
@@ -817,7 +817,7 @@ export default function CareersPage() {
                     className="w-full h-full object-contain rounded-xl"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-white font-bold text-lg flex items-center justify-center">
+                  <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-white font-bold text-lg flex items-center justify-center">
                     {selectedJobForDetails.company?.slice(0, 2).toUpperCase() || 'CP'}
                   </div>
                 )}
@@ -825,7 +825,7 @@ export default function CareersPage() {
 
               <div>
                 <div className="text-sm font-bold text-slate-900">{selectedJobForDetails.company}</div>
-                <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#1a361d] mt-1">
+                <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] mt-1">
                   {selectedJobForDetails.title}
                 </h2>
               </div>
@@ -835,7 +835,7 @@ export default function CareersPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
               <div>
                 <span className="text-slate-400 font-mono text-[10px] block">COMPENSATION</span>
-                <span className="font-bold text-[#2d5c36]">{String(selectedJobForDetails.salaryRange || 'Salary on request').trim().replace(/\$\s*(\$\s*)+/, '$ ').replace(/(\d{1,3}),000\b/g, '$1K')}</span>
+                <span className="font-bold text-[#4338CA]">{String(selectedJobForDetails.salaryRange || 'Salary on request').trim().replace(/\$\s*(\$\s*)+/, '$ ').replace(/(\d{1,3}),000\b/g, '$1K')}</span>
               </div>
               <div>
                 <span className="text-slate-400 font-mono text-[10px] block">LOCATION</span>
@@ -910,7 +910,7 @@ export default function CareersPage() {
               </button>
               <button
                 onClick={() => handleOpenApply(selectedJobForDetails)}
-                className="px-6 py-2.5 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5 hover:shadow-md"
+                className="px-6 py-2.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1.5 hover:shadow-md"
               >
                 <span>Apply for This Role</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -938,13 +938,13 @@ export default function CareersPage() {
                 <div className="w-28 h-28 mx-auto">
                   <img src={jobOffersSvg} alt="Application Transmitted" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-[#1a361d]">Application Transmitted!</h3>
+                <h3 className="text-xl font-display font-bold text-[#0B1220]">Application Transmitted!</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-4 max-w-sm mx-auto">
                   Your application for <strong className="text-slate-900">{selectedJobForApply.title}</strong> at <strong className="text-slate-900">{selectedJobForApply.company}</strong> has been received. Our Enterprise Placement Officer will contact you within 24 hours.
                 </p>
                 <button
                   onClick={() => setApplyModalOpen(false)}
-                  className="w-full py-3 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
                 >
                   Done
                 </button>
@@ -952,10 +952,10 @@ export default function CareersPage() {
             ) : (
               <form onSubmit={handleApplySubmit} className="space-y-4">
                 <div>
-                  <div className="text-[11px] font-bold text-[#2d5c36] uppercase tracking-wider mb-1">
+                  <div className="text-[11px] font-bold text-[#4338CA] uppercase tracking-wider mb-1">
                     Application For Position
                   </div>
-                  <h3 className="text-lg font-display font-bold text-[#1a361d]">{selectedJobForApply.title}</h3>
+                  <h3 className="text-lg font-display font-bold text-[#0B1220]">{selectedJobForApply.title}</h3>
                   <div className="text-xs text-slate-500 font-medium">
                     {selectedJobForApply.company} • {selectedJobForApply.location} • {String(selectedJobForApply.salaryRange || '').trim().replace(/\$\s*(\$\s*)+/, '$ ').replace(/(\d{1,3}),000\b/g, '$1K')}
                   </div>
@@ -969,7 +969,7 @@ export default function CareersPage() {
                     placeholder="Jane Doe"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                   />
                 </div>
 
@@ -982,7 +982,7 @@ export default function CareersPage() {
                       placeholder="jane@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                     />
                   </div>
                   <div>
@@ -993,7 +993,7 @@ export default function CareersPage() {
                       placeholder="+1 (555) 019-2834"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                     />
                   </div>
                 </div>
@@ -1005,7 +1005,7 @@ export default function CareersPage() {
                     placeholder="https://linkedin.com/in/janedoe"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                   />
                 </div>
 
@@ -1017,7 +1017,7 @@ export default function CareersPage() {
                     placeholder="https://drive.google.com/your-resume.pdf"
                     value={resumeUrl}
                     onChange={(e) => setResumeUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                   />
                 </div>
 
@@ -1028,14 +1028,14 @@ export default function CareersPage() {
                     placeholder="Relevant American FutureTech capstone projects, certifications, and availability..."
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:ring-1 focus:ring-[#1a361d] transition-all"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? 'Transmitting Application...' : (
                     <>

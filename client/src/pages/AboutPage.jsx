@@ -98,7 +98,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar />
 
       <main className="pt-28 pb-10">
@@ -107,14 +107,14 @@ export default function AboutPage() {
 
         {/* Editorial Magazine Hero Header */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-6 pb-12 text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-6">
-            <Building2 className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-6">
+            <Building2 className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>US REGISTERED ACADEMIC INSTITUTE</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
             <div className="lg:col-span-8 space-y-4">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-[#1a361d] leading-[1.1]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-[#0B1220] leading-[1.1]">
                 Pioneering Applied <span className="highlight">Emerging Tech</span> Education for the Global Workforce.
               </h1>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
@@ -133,7 +133,7 @@ export default function AboutPage() {
                 <span>200+ Enterprise Hiring Network</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-xs text-xs font-semibold text-gray-700">
-                <FileCheck className="w-4 h-4 text-[#9e4f8f]" />
+                <FileCheck className="w-4 h-4 text-[#4338CA]" />
                 <span>Cryptographically Verifiable Diplomas</span>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function AboutPage() {
                   <div className="text-xs font-mono font-bold uppercase tracking-widest text-[#10b981]">
                     Institutional Statement
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] leading-snug">
+                  <h2 className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] leading-snug">
                     Building the next generation of applied technology leaders.
                   </h2>
                   <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-sans">
@@ -162,18 +162,18 @@ export default function AboutPage() {
                 </div>
 
                 {/* Sourced Vector Illustration: Mission & Transformation */}
-                <div className="p-4 rounded-2xl bg-[#fffff2] border border-[#2d5c36]/20 flex items-center justify-center">
+                <div className="p-4 rounded-2xl bg-[#F7F7F5] border border-[#4338CA]/20 flex items-center justify-center">
                   <img src={missionGrowthSvg} alt="American FutureTech Mission & Growth" className="w-full max-w-xs h-auto object-contain" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="font-mono text-gray-400 text-[10px] uppercase">Governance</div>
-                    <div className="font-bold text-[#1a361d] mt-0.5">Wyoming Charter</div>
+                    <div className="font-bold text-[#0B1220] mt-0.5">Wyoming Charter</div>
                   </div>
                   <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="font-mono text-gray-400 text-[10px] uppercase">Delivery</div>
-                    <div className="font-bold text-[#1a361d] mt-0.5">100% Live Masterclasses</div>
+                    <div className="font-bold text-[#0B1220] mt-0.5">100% Live Masterclasses</div>
                   </div>
                 </div>
               </div>
@@ -181,11 +181,11 @@ export default function AboutPage() {
               {/* Right Column (60% - 7 cols): Client Verbatim Copy & Mission/Vision Bento */}
               <div className="lg:col-span-7 space-y-4">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold text-xs mb-3">
-                    <Globe className="w-3.5 h-3.5 text-[#2d5c36]" />
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold text-xs mb-3">
+                    <Globe className="w-3.5 h-3.5 text-[#4338CA]" />
                     <span>ABOUT AMERICAN FUTURETECH</span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] mb-4">
+                  <h3 className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] mb-4">
                     {about.headline || 'Bridging the Divide Between Academia and Global Industry'}
                   </h3>
                   
@@ -214,14 +214,14 @@ export default function AboutPage() {
                 {/* Mission & Vision Bento Cards with Sourced Vector SVGs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
                   {/* Mission Card */}
-                  <div className="p-6 rounded-2xl bg-[#fffff2] border border-[#2d5c36]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+                  <div className="p-6 rounded-2xl bg-[#F7F7F5] border border-[#4338CA]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-[#d8ffd2] text-[#1a361d] flex items-center justify-center font-bold text-xs">
-                            <Target className="w-4 h-4 text-[#2d5c36]" />
+                          <div className="w-9 h-9 rounded-xl bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center font-bold text-xs">
+                            <Target className="w-4 h-4 text-[#4338CA]" />
                           </div>
-                          <span className="text-[10px] font-mono font-bold uppercase text-[#2d5c36] bg-[#d8ffd2] px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-mono font-bold uppercase text-[#4338CA] bg-[#EFE6D6] px-2 py-0.5 rounded-full">
                             Charter Goal
                           </span>
                         </div>
@@ -229,27 +229,27 @@ export default function AboutPage() {
                           <img src={missionGrowthSvg} alt="Mission Goal" className="w-full h-full object-contain" />
                         </div>
                       </div>
-                      <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
+                      <h4 className="text-lg font-black font-heading text-[#0B1220] mb-2">
                         {about.missionTitle || 'Our Institutional Mission'}
                       </h4>
                       <p className="text-xs text-gray-600 leading-relaxed">
                         {about.missionText || 'To empower 100,000+ students, professionals, and career changers worldwide with hands-on technical skills, industry-recognized certifications, and direct pathways to high-paying tech careers by delivering affordable, practical, and mentor-guided education.'}
                       </p>
                     </div>
-                    <div className="text-[11px] font-mono text-[#2d5c36] font-bold pt-2 border-t border-[#2d5c36]/10">
+                    <div className="text-[11px] font-mono text-[#4338CA] font-bold pt-2 border-t border-[#4338CA]/10">
                       {about.missionTarget || 'Target: 100,000+ Certified Tech Leaders'}
                     </div>
                   </div>
 
                   {/* Vision Card */}
-                  <div className="p-6 rounded-2xl bg-[#fdf8fc] border border-[#9e4f8f]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+                  <div className="p-6 rounded-2xl bg-[#fdf8fc] border border-[#4338CA]/20 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-[#ffe6fa] text-[#582c50] flex items-center justify-center font-bold text-xs">
-                            <Sparkles className="w-4 h-4 text-[#9e4f8f]" />
+                          <div className="w-9 h-9 rounded-xl bg-[#ffe6fa] text-[#3730A3] flex items-center justify-center font-bold text-xs">
+                            <Sparkles className="w-4 h-4 text-[#4338CA]" />
                           </div>
-                          <span className="text-[10px] font-mono font-bold uppercase text-[#9e4f8f] bg-[#ffe6fa] px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-mono font-bold uppercase text-[#4338CA] bg-[#ffe6fa] px-2 py-0.5 rounded-full">
                             Global Standard
                           </span>
                         </div>
@@ -257,14 +257,14 @@ export default function AboutPage() {
                           <img src={visionGlobalSvg} alt="Global Vision" className="w-full h-full object-contain" />
                         </div>
                       </div>
-                      <h4 className="text-lg font-black font-heading text-[#1a361d] mb-2">
+                      <h4 className="text-lg font-black font-heading text-[#0B1220] mb-2">
                         {about.visionTitle || 'Our Global Vision'}
                       </h4>
                       <p className="text-xs text-gray-600 leading-relaxed">
                         {about.visionText || "To be the world's most trusted workforce transformation institute, bridging the gap between talent and technology, creating equal opportunities for global learners, and driving the future of work."}
                       </p>
                     </div>
-                    <div className="text-[11px] font-mono text-[#9e4f8f] font-bold pt-2 border-t border-[#9e4f8f]/10">
+                    <div className="text-[11px] font-mono text-[#4338CA] font-bold pt-2 border-t border-[#4338CA]/10">
                       {about.visionTagline || 'Global Workforce Transformation Standard'}
                     </div>
                   </div>
@@ -279,7 +279,7 @@ export default function AboutPage() {
         {/* Institutional 4-Pillar Academic Charter */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-12 text-left">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#0B1220] tracking-tight">
               Our Academic & Engineering Charter
             </h2>
             <p className="text-gray-600 text-sm mt-2">
@@ -291,17 +291,17 @@ export default function AboutPage() {
             {pillars.map((p) => (
               <div
                 key={p.num}
-                className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#1a361d]/30 hover:shadow-lg transition-all group"
+                className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#0B1220]/30 hover:shadow-lg transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-mono font-black px-3 py-1 rounded-full bg-[#1a361d] text-[#76ff8a]">
+                    <span className="text-xs font-mono font-black px-3 py-1 rounded-full bg-[#0B1220] text-[#E5C275]">
                       PILLAR {p.num}
                     </span>
                     <span className="text-[11px] text-gray-400 font-mono">Academic Standard</span>
                   </div>
 
-                  <h3 className="text-xl font-bold font-heading text-[#1a361d] mb-2.5 group-hover:text-[#2d5c36] transition-colors">
+                  <h3 className="text-xl font-bold font-heading text-[#0B1220] mb-2.5 group-hover:text-[#4338CA] transition-colors">
                     {p.title}
                   </h3>
 
@@ -329,11 +329,11 @@ export default function AboutPage() {
             <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-5 sm:p-6">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 <div className="lg:col-span-7">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
-                    <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                    <Sparkles className="w-3.5 h-3.5 text-[#4338CA]" />
                     <span>{pedagogy.eyebrow || 'Pedagogy'}</span>
                   </div>
-                  <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight mb-3">
+                  <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#0B1220] tracking-tight mb-3">
                     {pedagogy.title}
                   </h2>
                   <p className="text-sm text-gray-600 leading-relaxed mb-6">
@@ -342,23 +342,23 @@ export default function AboutPage() {
 
                   {/* 70/30 split bar */}
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="text-xs font-mono font-bold text-[#1a361d]">{pedagogy.handsOnPercent}% Hands-On</span>
+                    <span className="text-xs font-mono font-bold text-[#0B1220]">{pedagogy.handsOnPercent}% Hands-On</span>
                     <div className="flex-1 h-2.5 rounded-full overflow-hidden bg-gray-100 flex">
-                      <div className="h-full bg-[#1a361d]" style={{ width: `${pedagogy.handsOnPercent}%` }} />
-                      <div className="h-full bg-[#76ff8a]" style={{ width: `${pedagogy.theoryPercent}%` }} />
+                      <div className="h-full bg-[#0B1220]" style={{ width: `${pedagogy.handsOnPercent}%` }} />
+                      <div className="h-full bg-[#E5C275]" style={{ width: `${pedagogy.theoryPercent}%` }} />
                     </div>
-                    <span className="text-xs font-mono font-bold text-[#2d5c36]">{pedagogy.theoryPercent}% Theory</span>
+                    <span className="text-xs font-mono font-bold text-[#4338CA]">{pedagogy.theoryPercent}% Theory</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {(pedagogy.pillars || []).map((pil, i) => {
                       const Icon = pedagogyIcons[pil.icon] || Terminal;
                       return (
-                        <div key={i} className="p-4 rounded-2xl border border-gray-200 bg-[#fafbf9] hover:border-[#1a361d]/30 transition-colors">
-                          <div className="w-9 h-9 rounded-xl bg-[#1a361d] text-[#76ff8a] flex items-center justify-center mb-3">
+                        <div key={i} className="p-4 rounded-2xl border border-gray-200 bg-[#fafbf9] hover:border-[#0B1220]/30 transition-colors">
+                          <div className="w-9 h-9 rounded-xl bg-[#0B1220] text-[#E5C275] flex items-center justify-center mb-3">
                             <Icon className="w-4 h-4" />
                           </div>
-                          <h3 className="text-sm font-bold text-[#1a361d] mb-1">{pil.title}</h3>
+                          <h3 className="text-sm font-bold text-[#0B1220] mb-1">{pil.title}</h3>
                           <p className="text-[11px] text-gray-600 leading-relaxed">{pil.desc}</p>
                         </div>
                       );
@@ -369,8 +369,8 @@ export default function AboutPage() {
                 {/* Institutional stats */}
                 <div className="lg:col-span-5 grid grid-cols-2 gap-4">
                   {(pedagogy.stats || []).map((st, i) => (
-                    <div key={i} className="p-5 rounded-2xl bg-gradient-to-br from-[#1a361d] to-[#132815] text-white text-center shadow-sm">
-                      <div className="text-xl sm:text-2xl font-black font-heading text-[#76ff8a]">{st.value}</div>
+                    <div key={i} className="p-5 rounded-2xl bg-gradient-to-br from-[#0B1220] to-[#0B1220] text-white text-center shadow-sm">
+                      <div className="text-xl sm:text-2xl font-black font-heading text-[#E5C275]">{st.value}</div>
                       <div className="text-[11px] text-gray-300 mt-1 font-medium">{st.label}</div>
                     </div>
                   ))}
@@ -384,11 +384,11 @@ export default function AboutPage() {
         {leadership.length > 0 && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
             <div className="text-center max-w-2xl mx-auto mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold font-heading uppercase tracking-wider mb-4">
-                <Users className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                <Users className="w-3.5 h-3.5 text-[#4338CA]" />
                 <span>Leadership &amp; Faculty</span>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#1a361d] tracking-tight">
+              <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#0B1220] tracking-tight">
                 Led by Industry Practitioners
               </h2>
               <p className="text-sm text-gray-600 mt-2">
@@ -398,22 +398,22 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {leadership.map((person, idx) => (
-                <div key={idx} className="rounded-3xl bg-white border border-gray-200 shadow-xs hover:shadow-lg hover:border-[#1a361d]/25 transition-all p-5 flex flex-col">
+                <div key={idx} className="rounded-3xl bg-white border border-gray-200 shadow-xs hover:shadow-lg hover:border-[#0B1220]/25 transition-all p-5 flex flex-col">
                   <div className="flex items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
                       {person.image ? (
                         <img src={person.image} alt={person.name} className="w-12 h-12 rounded-2xl object-cover border border-gray-200" />
                       ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1a361d] to-[#2d5c36] text-[#76ff8a] font-black text-sm flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-[#E5C275] font-black text-sm flex items-center justify-center">
                           {person.name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </div>
                       )}
                       <div>
-                        <h3 className="text-base font-bold text-[#1a361d] leading-tight">{person.name}</h3>
-                        <p className="text-[11px] font-semibold text-[#2d5c36]">{person.role}</p>
+                        <h3 className="text-base font-bold text-[#0B1220] leading-tight">{person.name}</h3>
+                        <p className="text-[11px] font-semibold text-[#4338CA]">{person.role}</p>
                       </div>
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#d8ffd2] text-[#1a361d] whitespace-nowrap">
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EFE6D6] text-[#0B1220] whitespace-nowrap">
                       {person.badge || 'Leadership'}
                     </span>
                   </div>
@@ -442,7 +442,7 @@ export default function AboutPage() {
                       <CheckCircle2 className="w-3.5 h-3.5" /> Direct Cohort Mentor
                     </span>
                     {person.linkedin ? (
-                      <a href={person.linkedin} target="_blank" rel="noreferrer" className="text-[#1a361d] font-bold hover:underline flex items-center gap-1">
+                      <a href={person.linkedin} target="_blank" rel="noreferrer" className="text-[#0B1220] font-bold hover:underline flex items-center gap-1">
                         <Linkedin className="w-3 h-3" /> Connect
                       </a>
                     ) : (
@@ -458,11 +458,11 @@ export default function AboutPage() {
         {/* ── Sister Company / Staffing Alliance ────────────────────────── */}
         {sisterCompany.enabled !== false && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
-            <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-5 sm:p-6 shadow-2xl border border-[#2d5c36] relative overflow-hidden">
-              <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#76ff8a]/10 blur-3xl" />
+            <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-5 sm:p-6 shadow-2xl border border-[#4338CA] relative overflow-hidden">
+              <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#E5C275]/10 blur-3xl" />
 
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#76ff8a]/15 border border-[#76ff8a]/40 text-[#76ff8a] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E5C275]/15 border border-[#E5C275]/40 text-[#E5C275] text-xs font-bold font-heading uppercase tracking-wider mb-4">
                   <Handshake className="w-3.5 h-3.5" />
                   <span>{sisterCompany.eyebrow}</span>
                 </div>
@@ -475,17 +475,17 @@ export default function AboutPage() {
 
                     <div className="flex items-center gap-3 mb-4">
                       <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 font-bold text-sm">{sisterCompany.name}</div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#76ff8a]/20 text-[#76ff8a] border border-[#76ff8a]/40">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#E5C275]/20 text-[#E5C275] border border-[#E5C275]/40">
                         {sisterCompany.badge}
                       </span>
                     </div>
 
-                    <p className="text-xs text-[#d8ffd2]/80 flex items-center gap-1.5 mb-4">
-                      <MapPin className="w-3.5 h-3.5 text-[#76ff8a]" />
+                    <p className="text-xs text-[#EFE6D6]/80 flex items-center gap-1.5 mb-4">
+                      <MapPin className="w-3.5 h-3.5 text-[#E5C275]" />
                       {sisterCompany.location}
                     </p>
 
-                    <p className="text-sm text-gray-200 italic border-l-2 border-[#76ff8a] pl-4 mb-4">
+                    <p className="text-sm text-gray-200 italic border-l-2 border-[#E5C275] pl-4 mb-4">
                       &ldquo;{sisterCompany.tagline}&rdquo;
                     </p>
 
@@ -500,7 +500,7 @@ export default function AboutPage() {
                         { v: sisterCompany.stats?.placement, l: sisterCompany.stats?.placementLabel },
                       ].map((s, i) => (
                         <div key={i} className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
-                          <div className="text-xl font-black font-heading text-[#76ff8a]">{s.v}</div>
+                          <div className="text-xl font-black font-heading text-[#E5C275]">{s.v}</div>
                           <div className="text-[10px] text-gray-300 mt-0.5">{s.l}</div>
                         </div>
                       ))}
@@ -510,7 +510,7 @@ export default function AboutPage() {
                   <div className="lg:col-span-7 space-y-2.5">
                     {(sisterCompany.services || []).map((svc, i) => (
                       <div key={i} className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                        <CheckCircle2 className="w-4 h-4 text-[#76ff8a] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
                         <div>
                           <div className="text-xs font-bold text-white">{svc.title}</div>
                           <div className="text-[11px] text-gray-300 leading-relaxed">{svc.desc}</div>
@@ -519,11 +519,11 @@ export default function AboutPage() {
                     ))}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                      <div className="p-3.5 rounded-2xl bg-[#76ff8a]/10 border border-[#76ff8a]/30 flex items-center gap-2.5 text-xs text-[#d8ffd2]">
-                        <Briefcase className="w-4 h-4 text-[#76ff8a] shrink-0" />
+                      <div className="p-3.5 rounded-2xl bg-[#E5C275]/10 border border-[#E5C275]/30 flex items-center gap-2.5 text-xs text-[#EFE6D6]">
+                        <Briefcase className="w-4 h-4 text-[#E5C275] shrink-0" />
                         Direct internal referrals for certified graduates
                       </div>
-                      <Link to="/careers" className="p-3.5 rounded-2xl bg-white text-[#1a361d] font-bold text-xs flex items-center justify-between gap-2 hover:bg-[#d8ffd2] transition-colors">
+                      <Link to="/careers" className="p-3.5 rounded-2xl bg-white text-[#0B1220] font-bold text-xs flex items-center justify-between gap-2 hover:bg-[#EFE6D6] transition-colors">
                         <span className="flex items-center gap-2"><TrendingUp className="w-4 h-4" /> View Live Partner Jobs</span>
                         <ArrowRight className="w-4 h-4" />
                       </Link>
@@ -537,9 +537,9 @@ export default function AboutPage() {
 
         {/* Global Vision Visual Banner */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-center">
-          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#1a361d] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
+          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#0B1220] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4 relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#76ff8a] text-xs font-mono font-bold uppercase">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#E5C275] text-xs font-mono font-bold uppercase">
                 Worldwide Impact
               </div>
               <h3 className="text-2xl sm:text-4xl font-black font-heading tracking-tight">
@@ -549,7 +549,7 @@ export default function AboutPage() {
                 Whether you are pivoting from traditional software engineering to generative AI or breaking into ethical hacking, our structured US-accredited curriculum gives you the proven technical credentials employers trust.
               </p>
               <div className="pt-2 flex flex-wrap justify-center gap-4">
-                <Link to="/courses" className="elms-btn-primary !bg-[#76ff8a] !text-[#1a361d] hover:!bg-white">
+                <Link to="/courses" className="elms-btn-primary !bg-[#E5C275] !text-[#0B1220] hover:!bg-white">
                   <span>Explore Fellowship Tracks</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>

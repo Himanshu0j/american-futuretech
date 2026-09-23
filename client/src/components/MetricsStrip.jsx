@@ -38,7 +38,7 @@ export default function MetricsStrip() {
       label: 'ADVANCE',
       tag: 'Career Acceleration',
       icon: TrendingUp,
-      iconBg: 'bg-purple-50 text-[#9e4f8f] border-purple-200/80',
+      iconBg: 'bg-purple-50 text-[#4338CA] border-purple-200/80',
       accentBorder: 'hover:border-purple-500/40',
       title: 'Build toward accelerated tech opportunities.',
       description: 'Access dedicated 1-on-1 mentorship, technical interview defense panels, and direct referral pathways into our 200+ employer network.',
@@ -83,7 +83,7 @@ export default function MetricsStrip() {
   ];
 
   return (
-    <section id="curriculum-metrics" className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#fffff2] relative overflow-hidden">
+    <section id="curriculum-metrics" className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F7F5] relative overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* ============================================================
@@ -98,7 +98,7 @@ export default function MetricsStrip() {
                 className={`p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 ${item.accentBorder} shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden`}
               >
                 {/* Subtle card top glowing ambient accent */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#2d5c36]/20 to-transparent group-hover:via-[#2d5c36]/60 transition-all" />
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#4338CA]/20 to-transparent group-hover:via-[#4338CA]/60 transition-all" />
 
                 <div className="space-y-4">
                   {/* Top Bar: Icon + Category Badge + Tag */}
@@ -107,18 +107,18 @@ export default function MetricsStrip() {
                       <div className={`w-11 h-11 rounded-2xl ${item.iconBg} border flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-xs font-bold tracking-widest text-[#1a361d] font-heading uppercase">
+                      <span className="text-xs font-bold tracking-widest text-[#0B1220] font-heading uppercase">
                         {item.label}
                       </span>
                     </div>
 
-                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#d8ffd2] text-[#1a361d] font-bold border border-[#76ff8a]/40 shadow-2xs">
+                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold border border-[#E5C275]/40 shadow-2xs">
                       {item.tag}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-[#1a361d] font-heading leading-snug pt-1">
+                  <h3 className="text-xl font-bold text-[#0B1220] font-heading leading-snug pt-1">
                     {item.title}
                   </h3>
 
@@ -131,7 +131,7 @@ export default function MetricsStrip() {
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     {item.bullets.map((b, bIdx) => (
                       <div key={bIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#40844e] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
                         <span>{b}</span>
                       </div>
                     ))}
@@ -139,12 +139,12 @@ export default function MetricsStrip() {
                 </div>
 
                 {/* Footer Tag */}
-                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#2d5c36]">
+                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#4338CA]">
                   <span className="inline-flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#40844e]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#10B981]" />
                     Included in All Cohorts
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#1a361d] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#0B1220] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
               </div>
             );
@@ -156,8 +156,8 @@ export default function MetricsStrip() {
             ============================================================ */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[#1a361d] shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#40844e] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[#0B1220] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
               <span>FELLOWSHIP STANDARDS & BENCHMARKS</span>
             </div>
             <div className="text-xs text-slate-500 font-mono hidden sm:block">
@@ -171,7 +171,7 @@ export default function MetricsStrip() {
               return (
                 <div
                   key={idx}
-                  className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-[#1a361d]/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
+                  className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-[#0B1220]/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
                 >
                   {/* Top Thumbnail Image Header */}
                   <div className="relative h-28 w-full rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50">
@@ -188,18 +188,18 @@ export default function MetricsStrip() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                     
                     {/* Floating Pill Badge */}
-                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[#1a361d] shadow-2xs flex items-center gap-1.5">
-                      <Icon className="w-3 h-3 text-[#2d5c36]" />
+                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[#0B1220] shadow-2xs flex items-center gap-1.5">
+                      <Icon className="w-3 h-3 text-[#4338CA]" />
                       <span>{m.badge}</span>
                     </div>
                   </div>
 
                   {/* Main Metric Stat & Title */}
                   <div className="space-y-1">
-                    <div className="text-3xl sm:text-4xl font-black text-[#1a361d] font-heading tracking-tight flex items-baseline gap-1">
+                    <div className="text-3xl sm:text-4xl font-black text-[#0B1220] font-heading tracking-tight flex items-baseline gap-1">
                       <span>{m.stat}</span>
                       {m.stat === '$99' && (
-                        <span className="text-xs font-mono font-bold text-[#9e4f8f] bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200/60">
+                        <span className="text-xs font-mono font-bold text-[#4338CA] bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200/60">
                           Refundable
                         </span>
                       )}

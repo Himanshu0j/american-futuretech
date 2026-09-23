@@ -2,11 +2,11 @@ import React from 'react';
 
 export default function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-200 flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-[#070b14] text-slate-200 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
       {/* Top Navbar Shimmer */}
       <div className="h-20 border-b border-white/[0.08] bg-[#0c1322]/80 px-6 sm:px-12 flex items-center justify-between">
         <div className="flex items-center gap-3 animate-pulse">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500/30 to-blue-600/30 border border-sky-400/20" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500/30 to-blue-600/30 border border-indigo-400/20" />
           <div className="space-y-1.5">
             <div className="h-4 w-36 bg-slate-800 rounded" />
             <div className="h-2.5 w-20 bg-slate-800/60 rounded" />
@@ -22,7 +22,7 @@ export default function PageSkeleton() {
 
         <div className="flex items-center gap-3 animate-pulse">
           <div className="h-9 w-24 bg-slate-800/80 rounded-xl" />
-          <div className="h-9 w-28 bg-sky-500/20 rounded-xl border border-sky-500/30" />
+          <div className="h-9 w-28 bg-indigo-500/20 rounded-xl border border-indigo-500/30" />
         </div>
       </div>
 
@@ -30,7 +30,7 @@ export default function PageSkeleton() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 sm:px-10 py-12 space-y-8">
         {/* Hero / Header Shimmer */}
         <div className="space-y-4 max-w-2xl animate-pulse">
-          <div className="h-6 w-36 bg-sky-500/15 border border-sky-400/20 rounded-full" />
+          <div className="h-6 w-36 bg-indigo-500/15 border border-indigo-400/20 rounded-full" />
           <div className="h-10 sm:h-12 w-3/4 bg-slate-800 rounded-2xl" />
           <div className="h-4 w-full bg-slate-800/60 rounded" />
           <div className="h-4 w-4/5 bg-slate-800/40 rounded" />

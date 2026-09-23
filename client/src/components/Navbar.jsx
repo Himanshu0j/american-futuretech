@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useCompanyInfo from '../hooks/useCompanyInfo';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import {
   Menu,
   X,
@@ -27,11 +29,19 @@ const DEFAULT_7_PROGRAMS = [
   { title: 'Advanced Generative & Agentic AI', slug: 'advanced-generative-and-agentic-ai-master-program', badge: 'Cutting-Edge', duration: '6 Months', color: 'text-amber-700 bg-amber-50 dark:bg-amber-950/60 dark:text-amber-300' },
   { title: 'DevOps, Kubernetes & Cloud with AI', slug: 'devops-and-cloud-with-ai', badge: 'Enterprise Standard', duration: '6 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
   { title: 'AI Product Manager with Agentic AI', slug: 'ai-product-manager', badge: 'High Impact', duration: '4 Months', color: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300' },
-  { title: 'Governance, Risk, and Compliance (GRC)', slug: 'governance-risk-and-compliance-grc-with-ai', badge: 'Enterprise Security', duration: '4 Months', color: 'text-cyan-700 bg-cyan-50 dark:bg-cyan-950/60 dark:text-cyan-300' },
+  { title: 'Governance, Risk, and Compliance (GRC)', slug: 'governance-risk-and-compliance-grc-with-ai', badge: 'Enterprise Security', duration: '4 Months', color: 'text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300' },
   { title: 'Placement Support', slug: 'placement-support', badge: 'Career Accelerator', duration: '3 Months', color: 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-300' },
 ];
 
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
+  const company = useCompanyInfo();
+  const { settings } = useSiteSettings() || {};
+  // Admin → Settings → General → "Global Top Announcement Banner".
+  // `enabled` / `linkUrl` are the schema names; the legacy `active` / `link` are
+  // still honoured so an older saved document keeps working.
+  const banner = settings?.announcementBanner || {};
+  const bannerOn = banner.enabled ?? banner.active ?? true;
+  const bannerLink = banner.linkUrl || banner.link || '/courses';
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [coursesDropdown, setCoursesDropdown] = useState(false);
@@ -79,7 +89,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     { name: 'HOME', path: '/' },
     { name: 'LIVE JOBS', path: '/jobs' },
     { name: 'CAREER PROGRAMS', path: '/courses', hasDropdown: true },
-    { name: 'PERSONALIZED LEARNING', path: '/courses#personalized-learning' },
+
     { name: 'CERTIFICATIONS', path: '/certificate/AFT-CERT-AI9821' },
     { name: 'ABOUT US', path: '/about' },
   ];
@@ -136,29 +146,46 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 pointer-events-none">
       {/* 1. Institutional Topbar (Sheridan, Wyoming & US Accreditation) */}
-      <div className={`bg-[#1a361d] border-b border-[#2d5c36]/60 text-[#d8ffd2] text-[11px] font-sans py-1.5 px-4 hidden md:block transition-all duration-300 pointer-events-auto ${scrolled ? 'opacity-0 -translate-y-full h-0 py-0 overflow-hidden border-0' : 'opacity-100'}`}>
+      <div className={`relative bg-ink-gradient text-[#EFE6D6] text-[11px] font-sans py-1.5 px-4 hidden md:block transition-all duration-300 pointer-events-auto ${scrolled ? 'opacity-0 -translate-y-full h-0 py-0 overflow-hidden border-0' : 'opacity-100'}`}>
+        {/* Champagne hairline — the premium signature of the header */}
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#E5C275]/70 to-transparent" />
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-white">
+          <div className="flex items-center gap-4 min-w-0">
+            {bannerOn && banner.text && (
+              <>
+                <Link
+                  to={bannerLink}
+                  title={banner.text}
+                  className="flex items-center gap-1.5 max-w-[380px] px-2.5 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] font-bold hover:bg-white transition-colors min-w-0"
+                >
+                  {banner.badge && (
+                    <span className="text-[9px] uppercase tracking-wider opacity-70 shrink-0">{banner.badge}</span>
+                  )}
+                  <span className="truncate">{banner.text}</span>
+                </Link>
+                <span className="text-white/20 shrink-0">•</span>
+              </>
+            )}
+            <span className="flex items-center gap-1.5 text-white shrink-0">
               <span className="text-xs">🇺🇸</span>
               <strong className="font-semibold">US Registered Technology Institute</strong>
             </span>
             <span className="text-white/20">•</span>
-            <span className="flex items-center gap-1.5 text-[#d8ffd2]/90">
-              <MapPin className="w-3 h-3 text-[#76ff8a]" />
-              30 N Gould St, Sheridan, WY 82801
+            <span className="flex items-center gap-1.5 text-[#EFE6D6]/90">
+              <MapPin className="w-3 h-3 text-[#E5C275]" />
+              {company.address}
             </span>
             <span className="text-white/20">•</span>
-            <a href="tel:+18168466717" className="flex items-center gap-1 text-[#d8ffd2]/90 hover:text-white transition-colors">
-              <Phone className="w-3 h-3 text-[#76ff8a]" />
-              +1 (816) 846-6717
+            <a href={company.phoneHref} className="flex items-center gap-1 text-[#EFE6D6]/90 hover:text-white transition-colors">
+              <Phone className="w-3 h-3 text-[#E5C275]" />
+              {company.phone}
             </a>
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
             <Link
               to="/student/login"
-              className="flex items-center gap-1.5 text-[#76ff8a] hover:text-white font-semibold transition-colors"
+              className="flex items-center gap-1.5 text-[#E5C275] hover:text-white font-semibold transition-colors"
             >
               <GraduationCap className="w-3.5 h-3.5" />
               <span>Student LMS</span>
@@ -166,15 +193,15 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             <span className="text-white/20">•</span>
             <Link
               to="/certificate/AFT-CERT-AI9821"
-              className="flex items-center gap-1 text-[#d8ffd2]/90 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-[#EFE6D6]/90 hover:text-white transition-colors"
             >
-              <Award className="w-3 h-3 text-[#76ff8a]" />
+              <Award className="w-3 h-3 text-[#E5C275]" />
               <span>Verify Credential</span>
             </Link>
             <span className="text-white/20">•</span>
             <Link
               to="/admin/login"
-              className="flex items-center gap-1 text-[#d8ffd2]/70 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-[#EFE6D6]/70 hover:text-white transition-colors"
             >
               <ShieldCheck className="w-3 h-3" />
               <span>Admin Console</span>
@@ -189,7 +216,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           className={`transition-all duration-300 ${
             scrolled
               ? 'bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl px-4 sm:px-6 h-16'
-              : 'bg-[#fffff2]/95 backdrop-blur-md border-b border-slate-200/60 px-4 sm:px-6 lg:px-8 h-20'
+              : 'bg-[#F7F7F5]/95 backdrop-blur-md border-b border-slate-200/60 px-4 sm:px-6 lg:px-8 h-20'
           } flex items-center justify-between`}
         >
           {/* Logo */}
@@ -221,8 +248,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                         onClick={() => setCoursesDropdown(false)}
                         className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 whitespace-nowrap ${
                           location.pathname.startsWith('/courses')
-                            ? 'text-[#1a361d]'
-                            : 'text-slate-600 hover:text-[#1a361d]'
+                            ? 'text-[#0B1220]'
+                            : 'text-slate-600 hover:text-[#0B1220]'
                         }`}
                       >
                         <span>{link.name}</span>
@@ -245,7 +272,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                         coursesDropdown ? 'block' : 'hidden group-hover:block'
                       }`}
                     >
-                      <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] dark:text-[#76ff8a] tracking-widest border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#0B1220] dark:text-[#E5C275] tracking-widest border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <span>Flagship Career Programs</span>
                         <span className="text-emerald-600 dark:text-emerald-400 font-sans font-bold text-[10px]">All with $99 Deposit</span>
                       </div>
@@ -257,7 +284,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                           onClick={() => setCoursesDropdown(false)}
                           className="block p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group/item"
                         >
-                          <div className="flex items-center justify-between text-xs font-bold text-[#1a361d] dark:text-slate-100 group-hover/item:text-[#2d5c36] dark:group-hover/item:text-[#76ff8a]">
+                          <div className="flex items-center justify-between text-xs font-bold text-[#0B1220] dark:text-slate-100 group-hover/item:text-[#4338CA] dark:group-hover/item:text-[#E5C275]">
                             <span className="truncate pr-2">{prog.title}</span>
                             <span className="text-[10px] text-slate-500 shrink-0 font-mono font-normal">{prog.duration}</span>
                           </div>
@@ -276,10 +303,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                         <Link
                           to="/courses"
                           onClick={() => setCoursesDropdown(false)}
-                          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-[#d8ffd2]/60 dark:hover:bg-slate-700 text-[#1a361d] dark:text-white text-xs font-bold transition-colors"
+                          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-[#EFE6D6]/60 dark:hover:bg-slate-700 text-[#0B1220] dark:text-white text-xs font-bold transition-colors"
                         >
                           <span>Explore All 8 Programs</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-[#2d5c36] dark:text-[#76ff8a]" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#4338CA] dark:text-[#E5C275]" />
                         </Link>
                       </div>
                     </div>
@@ -293,13 +320,13 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                   to={link.path}
                   className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 relative whitespace-nowrap ${
                     isActive
-                      ? 'text-[#1a361d]'
-                      : 'text-slate-600 hover:text-[#1a361d]'
+                      ? 'text-[#0B1220]'
+                      : 'text-slate-600 hover:text-[#0B1220]'
                   }`}
                 >
                   <span>{link.name}</span>
                   {isActive && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#1a361d] rounded-full" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-600 to-gold-400 rounded-full" />
                   )}
                 </Link>
               );
@@ -312,7 +339,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               onMouseLeave={() => setMoreDropdown(false)}
             >
               <button
-                className="text-[12px] xl:text-[13px] font-bold text-slate-600 hover:text-[#1a361d] flex items-center gap-1 transition-colors py-1 cursor-pointer"
+                className="text-[12px] xl:text-[13px] font-bold text-slate-600 hover:text-[#0B1220] flex items-center gap-1 transition-colors py-1 cursor-pointer"
               >
                 <span>MORE</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
@@ -320,7 +347,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
 
               {moreDropdown && (
                 <div className="absolute top-full right-0 w-64 p-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50">
-                  <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#1a361d] dark:text-[#76ff8a] tracking-widest border-b border-slate-100 dark:border-slate-800">
+                  <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[#0B1220] dark:text-[#E5C275] tracking-widest border-b border-slate-100 dark:border-slate-800">
                     Institutional Governance
                   </div>
                   {moreLinks.map((item) => (
@@ -328,7 +355,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                       key={item.name}
                       to={item.path}
                       onClick={() => setMoreDropdown(false)}
-                      className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#1a361d] transition-colors"
+                      className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#0B1220] transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -342,18 +369,18 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           <div className="hidden lg:flex items-center gap-2.5 shrink-0">
             <Link
               to="/student/login"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#1a361d] bg-white hover:bg-slate-100 border border-slate-200/90 shadow-2xs transition-all hover:shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#0B1220] bg-white hover:bg-slate-100 border border-slate-200/90 shadow-2xs transition-all hover:shadow-xs"
             >
-              <GraduationCap className="w-4 h-4 text-[#2d5c36]" />
+              <GraduationCap className="w-4 h-4 text-[#4338CA]" />
               <span>LMS LOGIN</span>
             </Link>
 
             <Link
               to="/student/register"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#d8ffd2] bg-gradient-to-r from-[#1a361d] via-[#2d5c36] to-[#1a361d] hover:brightness-110 shadow-sm transition-all hover:shadow-md"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-gradient shadow-brand border border-white/15 hover:brightness-110 transition-all hover:-translate-y-px"
             >
               <span>REGISTER NOW</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#76ff8a]" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#E5C275]" />
             </Link>
           </div>
 
@@ -363,7 +390,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             aria-label="Toggle Navigation Menu"
             className="lg:hidden p-2 rounded-xl text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6 text-[#1a361d]" /> : <Menu className="w-6 h-6 text-[#1a361d]" />}
+            {mobileMenuOpen ? <X className="w-6 h-6 text-[#0B1220]" /> : <Menu className="w-6 h-6 text-[#0B1220]" />}
           </button>
         </div>
       </div>
@@ -413,7 +440,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3 flex items-center justify-between">
                   <span>Flagship Tracks</span>
-                  <span className="text-[#2d5c36] dark:text-[#76ff8a] font-bold">8 Programs</span>
+                  <span className="text-[#4338CA] dark:text-[#E5C275] font-bold">8 Programs</span>
                 </div>
                 {programList.map((prog) => (
                   <button
@@ -437,7 +464,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     <button
                       key={item.name}
                       onClick={() => handleNavClick(item.path)}
-                      className="text-left text-[11px] py-1.5 px-2 rounded text-slate-600 dark:text-slate-400 hover:text-[#1a361d] hover:bg-slate-50 dark:hover:bg-slate-800"
+                      className="text-left text-[11px] py-1.5 px-2 rounded text-slate-600 dark:text-slate-400 hover:text-[#0B1220] hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
                       {item.name}
                     </button>
@@ -451,19 +478,19 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               <Link
                 to="/student/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#1a361d] dark:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
+                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#0B1220] dark:text-white font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700"
               >
-                <GraduationCap className="w-4 h-4 text-[#2d5c36]" />
+                <GraduationCap className="w-4 h-4 text-[#4338CA]" />
                 <span>LMS LOGIN</span>
               </Link>
 
               <Link
                 to="/student/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-3 rounded-xl bg-[#1a361d] text-[#d8ffd2] font-bold text-xs flex items-center justify-center gap-2 shadow-md"
+                className="w-full py-3 rounded-xl bg-ink-gradient border border-white/10 text-[#EFE6D6] font-bold text-xs flex items-center justify-center gap-2 shadow-md"
               >
                 <span>REGISTER NOW</span>
-                <ArrowRight className="w-4 h-4 text-[#76ff8a]" />
+                <ArrowRight className="w-4 h-4 text-[#E5C275]" />
               </Link>
             </div>
           </div>

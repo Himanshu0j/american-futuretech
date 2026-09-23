@@ -37,7 +37,7 @@ export default function StudentLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-900 flex flex-col justify-center items-center px-4 py-12 relative selection:bg-[#76ff8a] selection:text-[#1a361d]">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-900 flex flex-col justify-center items-center px-4 py-12 relative selection:bg-[#E5C275] selection:text-[#0B1220]">
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
         <div className="text-center mb-8">
@@ -48,7 +48,7 @@ export default function StudentLogin() {
               className="h-12 w-auto object-contain"
             />
           </Link>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#2d5c36] mt-1 flex items-center justify-center gap-1.5">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#4338CA] mt-1 flex items-center justify-center gap-1.5">
             <GraduationCap className="w-4 h-4" />
             <span>Student Classroom Portal</span>
           </div>
@@ -56,7 +56,7 @@ export default function StudentLogin() {
 
         {/* Login Card */}
         <div className="rounded-3xl bg-white border border-slate-200 p-8 shadow-sm">
-          <h2 className="text-2xl font-heading font-black text-[#1a361d] mb-1">Learner Authentication</h2>
+          <h2 className="text-2xl font-heading font-black text-[#0B1220] mb-1">Learner Authentication</h2>
           <p className="text-xs text-slate-600 mb-6">Enter your student portal credentials to access enrolled cohorts and labs.</p>
 
           {error && (
@@ -76,7 +76,7 @@ export default function StudentLogin() {
                   placeholder="student@americanfuturetech.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 pl-10 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:bg-white transition-all"
+                  className="w-full p-3 pl-10 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"
                 />
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
@@ -93,7 +93,7 @@ export default function StudentLogin() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 pl-10 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#1a361d] focus:bg-white transition-all font-mono"
+                  className="w-full p-3 pl-10 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all font-mono"
                 />
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
@@ -102,7 +102,7 @@ export default function StudentLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-6 rounded-full bg-[#9e4f8f] hover:bg-[#582c50] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer"
+              className="w-full py-3 px-6 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer"
             >
               {loading ? 'Authenticating...' : (
                 <>
@@ -118,23 +118,23 @@ export default function StudentLogin() {
             <button
               type="button"
               onClick={handleDemoStudent}
-              className="w-full py-2.5 px-4 rounded-full bg-[#fffff2] hover:bg-slate-50 text-[#1a361d] text-xs font-bold border-2 border-[#1a361d] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-full bg-[#F7F7F5] hover:bg-slate-50 text-[#0B1220] text-xs font-bold border-2 border-[#0B1220] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#2d5c36]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#4338CA]" />
               1-Click Demo Fill (Ethan Hunt)
             </button>
           </div>
 
           <div className="mt-5 text-center text-xs text-slate-600">
             Enrolling for the first time?{' '}
-            <Link to="/student/register" className="text-[#2d5c36] hover:text-[#1a361d] font-bold hover:underline">
+            <Link to="/student/register" className="text-[#4338CA] hover:text-[#0B1220] font-bold hover:underline">
               Create Student Account
             </Link>
           </div>
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="text-xs text-slate-600 hover:text-[#1a361d] transition-colors font-semibold">
+          <Link to="/" className="text-xs text-slate-600 hover:text-[#0B1220] transition-colors font-semibold">
             &larr; Return to American FutureTech Homepage
           </Link>
         </div>

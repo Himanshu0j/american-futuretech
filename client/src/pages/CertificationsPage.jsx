@@ -71,7 +71,7 @@ export default function CertificationsPage() {
   const cert = CERTIFICATIONS[slug] || CERTIFICATIONS['ai-certification'];
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 font-sans antialiased selection:bg-[#76ff8a] selection:text-[#1a361d] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-10">
@@ -79,16 +79,16 @@ export default function CertificationsPage() {
 
         {/* Hero */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl pt-8 pb-10 text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#d8ffd2] border border-[#76ff8a]/40 text-[#1a361d] text-xs font-bold uppercase tracking-wider mb-4">
-            <Award className="w-3.5 h-3.5 text-[#2d5c36]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-4">
+            <Award className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>{cert.eyebrow}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-7">
-              <h1 className="text-3xl sm:text-5xl font-black font-heading tracking-tight text-[#1a361d] mb-2">
+              <h1 className="text-3xl sm:text-5xl font-black font-heading tracking-tight text-[#0B1220] mb-2">
                 {cert.title}{' '}
-                <span className="text-[#2d5c36] text-xl sm:text-2xl align-middle">({cert.badge})</span>
+                <span className="text-[#4338CA] text-xl sm:text-2xl align-middle">({cert.badge})</span>
               </h1>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-5 max-w-2xl">
                 {cert.subtitle}
@@ -96,10 +96,10 @@ export default function CertificationsPage() {
 
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700">
-                  <Clock className="w-3.5 h-3.5 text-[#2d5c36]" /> Duration: {cert.duration}
+                  <Clock className="w-3.5 h-3.5 text-[#4338CA]" /> Duration: {cert.duration}
                 </span>
                 <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700">
-                  <Signal className="w-3.5 h-3.5 text-[#2d5c36]" /> Level: {cert.level}
+                  <Signal className="w-3.5 h-3.5 text-[#4338CA]" /> Level: {cert.level}
                 </span>
                 <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#10b981]" /> Verifiable Credential
@@ -109,16 +109,16 @@ export default function CertificationsPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => setIsLeadModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1a361d] hover:bg-[#2d5c36] text-[#d8ffd2] font-bold text-xs shadow-md transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-[#EFE6D6] font-bold text-xs shadow-md transition-all cursor-pointer"
                 >
                   <span>Inquire About Certification</span>
-                  <ArrowRight className="w-4 h-4 text-[#76ff8a]" />
+                  <ArrowRight className="w-4 h-4 text-[#E5C275]" />
                 </button>
                 <button
                   onClick={() => setIsLeadModalOpen(true)}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200 shadow-2xs transition-colors cursor-pointer"
                 >
-                  <PhoneCall className="w-4 h-4 text-[#2d5c36]" />
+                  <PhoneCall className="w-4 h-4 text-[#4338CA]" />
                   <span>Book Free Career Consultation</span>
                 </button>
               </div>
@@ -127,7 +127,7 @@ export default function CertificationsPage() {
             {/* Program Highlights card */}
             <div className="lg:col-span-5">
               <div className="rounded-3xl bg-white border border-slate-200 shadow-lg p-6">
-                <div className="text-xs font-bold uppercase tracking-wider text-[#2d5c36] mb-4 flex items-center gap-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-[#4338CA] mb-4 flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5" /> Program Highlights
                 </div>
                 <div className="space-y-2.5">
@@ -150,16 +150,16 @@ export default function CertificationsPage() {
         {/* Overview + competencies */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-12">
           <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2d5c36] mb-3">
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#4338CA] mb-3">
               <BookOpen className="w-3.5 h-3.5" /> Comprehensive Overview
             </div>
-            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#1a361d] mb-3">About This Program</h2>
+            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] mb-3">About This Program</h2>
             <p className="text-sm text-slate-600 leading-relaxed max-w-3xl mb-8">{cert.overview}</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="flex items-center gap-2 text-sm font-bold text-[#1a361d] mb-4">
-                  <Cpu className="w-4 h-4 text-[#2d5c36]" /> Competencies You Will Build
+                <div className="flex items-center gap-2 text-sm font-bold text-[#0B1220] mb-4">
+                  <Cpu className="w-4 h-4 text-[#4338CA]" /> Competencies You Will Build
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {cert.competencies.map((c, i) => (
@@ -171,8 +171,8 @@ export default function CertificationsPage() {
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-sm font-bold text-[#1a361d] mb-4">
-                  <Target className="w-4 h-4 text-[#2d5c36]" /> Target Career Roles
+                <div className="flex items-center gap-2 text-sm font-bold text-[#0B1220] mb-4">
+                  <Target className="w-4 h-4 text-[#4338CA]" /> Target Career Roles
                 </div>
                 <div className="space-y-2">
                   {cert.roles.map((r, i) => (
@@ -190,7 +190,7 @@ export default function CertificationsPage() {
 
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-br from-[#1a361d] via-[#132815] to-[#0d1c0e] text-white p-6 sm:p-7 text-center shadow-2xl border border-[#2d5c36]">
+          <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-6 sm:p-7 text-center shadow-2xl border border-[#4338CA]">
             <h3 className="text-xl sm:text-2xl font-black font-heading mb-3">
               Advance Your Career with American FutureTech
             </h3>
@@ -200,7 +200,7 @@ export default function CertificationsPage() {
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => setIsLeadModalOpen(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#76ff8a] hover:bg-white text-[#1a361d] font-bold text-xs shadow-lg transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#E5C275] hover:bg-white text-[#0B1220] font-bold text-xs shadow-lg transition-all cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 <span>Request Syllabus PDF</span>

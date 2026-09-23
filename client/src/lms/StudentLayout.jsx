@@ -26,11 +26,11 @@ export default function StudentLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fffff2] text-slate-800 flex flex-col lg:flex-row antialiased">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 flex flex-col lg:flex-row antialiased">
       {/* Mobile Top Header */}
-      <header className="lg:hidden h-16 bg-[#1a361d] border-b border-[#2d5c36] px-4 flex items-center justify-between z-30 sticky top-0 text-white">
+      <header className="lg:hidden h-16 bg-[#0B1220] border-b border-[#4338CA] px-4 flex items-center justify-between z-30 sticky top-0 text-white">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#2d5c36] border border-[#76ff8a]/30 flex items-center justify-center font-bold text-white text-xs">
+          <div className="w-8 h-8 rounded-lg bg-[#4338CA] border border-[#E5C275]/30 flex items-center justify-center font-bold text-white text-xs">
             AF
           </div>
           <span className="font-display font-bold text-sm text-white">Student Classroom</span>
@@ -45,13 +45,13 @@ export default function StudentLayout() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-40 w-72 bg-[#1a361d] text-white border-r border-[#2d5c36] flex flex-col justify-between
+        fixed inset-y-0 left-0 z-40 w-72 bg-[#0B1220] text-white border-r border-[#4338CA] flex flex-col justify-between
         transition-transform duration-300 lg:translate-x-0 lg:static
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div>
           {/* Brand Header */}
-          <div className="p-5 border-b border-[#2d5c36] flex items-center justify-between">
+          <div className="p-5 border-b border-[#4338CA] flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               <img
                 src="/images/logo-horizontal-white.webp"
@@ -62,16 +62,16 @@ export default function StudentLayout() {
           </div>
 
           {/* Student Profile Strip */}
-          <div className="p-4 border-b border-[#2d5c36] flex items-center gap-3 bg-[#132815] text-left">
+          <div className="p-4 border-b border-[#4338CA] flex items-center gap-3 bg-[#0B1220] text-left">
             <img
               src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'}
               alt={user?.name || 'Student'}
-              className="w-10 h-10 rounded-full object-cover border-2 border-[#76ff8a]"
+              className="w-10 h-10 rounded-full object-cover border-2 border-[#E5C275]"
             />
             <div className="min-w-0">
               <div className="font-display font-bold text-xs text-white truncate">{user?.name || 'Ethan Hunt'}</div>
               <div className="text-[11px] text-emerald-200/80 truncate">{user?.email || 'student@americanfuturetech.com'}</div>
-              <div className="text-[10px] text-[#76ff8a] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
+              <div className="text-[10px] text-[#E5C275] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
             </div>
           </div>
 
@@ -87,12 +87,12 @@ export default function StudentLayout() {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all
                     ${isActive
-                      ? 'bg-[#2d5c36] text-white font-bold border-l-4 border-[#76ff8a] shadow-xs'
-                      : 'text-emerald-100/90 hover:bg-[#2d5c36]/50 hover:text-white'
+                      ? 'bg-[#4338CA] text-white font-bold border-l-4 border-[#E5C275] shadow-xs'
+                      : 'text-emerald-100/90 hover:bg-[#4338CA]/50 hover:text-white'
                     }
                   `}
                 >
-                  <Icon className="w-4 h-4 shrink-0 text-[#76ff8a]" />
+                  <Icon className="w-4 h-4 shrink-0 text-[#E5C275]" />
                   <span>{item.name}</span>
                 </NavLink>
               );
@@ -101,10 +101,10 @@ export default function StudentLayout() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-[#2d5c36] space-y-1.5 text-left">
+        <div className="p-4 border-t border-[#4338CA] space-y-1.5 text-left">
           <Link
             to="/"
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-emerald-200/80 hover:bg-[#2d5c36]/50 hover:text-white transition-colors"
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-emerald-200/80 hover:bg-[#4338CA]/50 hover:text-white transition-colors"
           >
             <span>Return to Public Site</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -120,7 +120,7 @@ export default function StudentLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-[#fffff2]">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-[#F7F7F5]">
         <Outlet />
       </main>
     </div>

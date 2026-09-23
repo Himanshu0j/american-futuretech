@@ -27,7 +27,7 @@ export default function ThemeSwitcher() {
           onClick={() => setThemeMode('cyber')}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-300 cursor-pointer ${
             themeMode === 'cyber'
-              ? 'bg-gradient-to-r from-sky-500 to-cyan-400 text-black font-bold shadow-[0_0_15px_rgba(14,165,233,0.5)] scale-102'
+              ? 'bg-gradient-to-r from-indigo-500 to-indigo-400 text-black font-bold shadow-[0_0_15px_rgba(14,165,233,0.5)] scale-102'
               : 'text-[#86868b] hover:text-white'
           }`}
           title="Switch to Cyberpunk Neon 3D Laptop Design"

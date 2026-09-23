@@ -312,7 +312,7 @@ export default function StaffRBAC() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-mono font-bold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono font-bold mb-2">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>SuperAdmin Executive Console • Enterprise RBAC</span>
           </div>
@@ -334,7 +334,7 @@ export default function StaffRBAC() {
             setFormPermissions(ROLE_PRESETS[1].permissions); // Default to Content Editor
             setCreateModalOpen(true);
           }}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 text-white font-bold text-xs shadow-lg shadow-sky-500/20 flex items-center gap-2 transition-all cursor-pointer shrink-0"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Create New Admin</span>
@@ -347,7 +347,7 @@ export default function StaffRBAC() {
           onClick={() => setActiveTab('staff')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'staff'
-              ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+              ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
           }`}
         >
@@ -359,7 +359,7 @@ export default function StaffRBAC() {
           onClick={() => setActiveTab('audit')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'audit'
-              ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+              ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
           }`}
         >
@@ -375,7 +375,7 @@ export default function StaffRBAC() {
         <div className="space-y-4">
           
           {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[#0f172a]/70 border border-white/[0.08]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[#0B1220]/70 border border-white/[0.08]">
             <div className="relative w-full sm:w-80">
               <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -383,7 +383,7 @@ export default function StaffRBAC() {
                 placeholder="Search staff by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-sky-500"
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -392,7 +392,7 @@ export default function StaffRBAC() {
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500 cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
               >
                 <option value="ALL">All Roles</option>
                 <option value="SUPERADMIN">SuperAdmin</option>
@@ -404,10 +404,10 @@ export default function StaffRBAC() {
           </div>
 
           {/* Table */}
-          <div className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
+          <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#0b101d] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+                <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
                   <tr>
                     <th className="px-6 py-4 font-bold">Administrator / Staff</th>
                     <th className="px-6 py-4 font-bold">System Email</th>
@@ -421,7 +421,7 @@ export default function StaffRBAC() {
                   {loading ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
-                        <div className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                        <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                         <span className="text-xs font-mono">Loading staff & permission profiles...</span>
                       </td>
                     </tr>
@@ -446,7 +446,7 @@ export default function StaffRBAC() {
                                 className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white text-xs shadow-md shrink-0 ${
                                   isSuper
                                     ? 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black'
-                                    : 'bg-gradient-to-tr from-sky-500 to-blue-600'
+                                    : 'bg-gradient-to-tr from-indigo-500 to-blue-600'
                                 }`}
                               >
                                 {member.name ? member.name.charAt(0).toUpperCase() : 'A'}
@@ -455,7 +455,7 @@ export default function StaffRBAC() {
                                 <div className="font-bold text-white text-sm flex items-center gap-2">
                                   <span>{member.name}</span>
                                   {isSelf && (
-                                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
                                       YOU
                                     </span>
                                   )}
@@ -478,7 +478,7 @@ export default function StaffRBAC() {
                               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold uppercase ${
                                 isSuper
                                   ? 'bg-amber-500/10 text-amber-300 border border-amber-500/30'
-                                  : 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+                                  : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30'
                               }`}
                             >
                               <Shield className="w-3 h-3" />
@@ -497,7 +497,7 @@ export default function StaffRBAC() {
                               <button
                                 type="button"
                                 onClick={() => handleOpenPermissions(member)}
-                                className="inline-flex items-center gap-1.5 text-[11px] font-mono text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 rounded-lg border border-sky-500/30 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1.5 text-[11px] font-mono text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/30 transition-colors cursor-pointer"
                               >
                                 <Key className="w-3 h-3" />
                                 <span>{permissionsCount} {permissionsCount === 1 ? 'Permission' : 'Permissions'}</span>
@@ -527,7 +527,7 @@ export default function StaffRBAC() {
                                 <button
                                   type="button"
                                   onClick={() => handleOpenPermissions(member)}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-sky-400 hover:bg-sky-500/10 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer"
                                   title="Edit Granular Permissions"
                                 >
                                   <Key className="w-3.5 h-3.5" />
@@ -598,7 +598,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {activeTab === 'audit' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-2xl bg-[#0f172a]/70 border border-white/[0.08]">
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-[#0B1220]/70 border border-white/[0.08]">
             <span className="text-xs font-mono text-slate-400">
               Showing recent administrative actions and security events.
             </span>
@@ -611,10 +611,10 @@ export default function StaffRBAC() {
             </button>
           </div>
 
-          <div className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
+          <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#0b101d] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+                <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
                   <tr>
                     <th className="px-6 py-4 font-bold">Timestamp</th>
                     <th className="px-6 py-4 font-bold">Actor</th>
@@ -627,7 +627,7 @@ export default function StaffRBAC() {
                   {auditLoading ? (
                     <tr>
                       <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
-                        <div className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                        <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
                         <span className="text-xs font-mono">Loading system audit records...</span>
                       </td>
                     </tr>
@@ -644,11 +644,11 @@ export default function StaffRBAC() {
                           {new Date(log.createdAt).toLocaleString()}
                         </td>
                         <td className="px-6 py-3.5 font-bold text-white whitespace-nowrap">
-                          <span className="text-sky-400">{log.actorName}</span>
+                          <span className="text-indigo-400">{log.actorName}</span>
                           <span className="text-[10px] text-slate-500 font-mono block">({log.actorRole})</span>
                         </td>
                         <td className="px-6 py-3.5 whitespace-nowrap">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
                             {log.action}
                           </span>
                         </td>
@@ -673,11 +673,11 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-heading flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-sky-400" />
+                  <ShieldCheck className="w-5 h-5 text-indigo-400" />
                   Create New Administrator Account
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -702,7 +702,7 @@ export default function StaffRBAC() {
                     placeholder="e.g. Rachel Adams"
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-sky-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -713,7 +713,7 @@ export default function StaffRBAC() {
                     placeholder="r.adams@americanfuturetech.com"
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -727,7 +727,7 @@ export default function StaffRBAC() {
                     placeholder="••••••••"
                     value={formPassword}
                     onChange={(e) => setFormPassword(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -737,7 +737,7 @@ export default function StaffRBAC() {
                     placeholder="+1 (555) 234-5678"
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -747,7 +747,7 @@ export default function StaffRBAC() {
                 <select
                   value={formRole}
                   onChange={(e) => setFormRole(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500 cursor-pointer"
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="ADMIN">ADMIN (Granular Permission Governed)</option>
                   <option value="COUNSELOR">COUNSELOR (Admissions Focus)</option>
@@ -759,14 +759,14 @@ export default function StaffRBAC() {
               <div className="p-3 rounded-2xl bg-slate-950 border border-white/10 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-300 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                     <span>Quick Permission Presets:</span>
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={handleSelectAllPermissions}
-                      className="text-[10px] font-mono font-bold text-sky-400 hover:underline cursor-pointer"
+                      className="text-[10px] font-mono font-bold text-indigo-400 hover:underline cursor-pointer"
                     >
                       Select All
                     </button>
@@ -787,7 +787,7 @@ export default function StaffRBAC() {
                       key={preset.name}
                       type="button"
                       onClick={() => handleApplyPreset(preset)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-sky-500/20 border border-white/10 hover:border-sky-500/40 text-slate-300 hover:text-white text-[10px] font-mono transition-colors cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-500/20 border border-white/10 hover:border-indigo-500/40 text-slate-300 hover:text-white text-[10px] font-mono transition-colors cursor-pointer"
                     >
                       {preset.name}
                     </button>
@@ -803,7 +803,7 @@ export default function StaffRBAC() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {PERMISSION_MODULES.map((mod) => (
                     <div key={mod.id} className="p-2.5 rounded-xl bg-slate-950/60 border border-white/5 space-y-1.5">
-                      <span className="font-bold text-sky-300 text-[11px] block">{mod.label}</span>
+                      <span className="font-bold text-indigo-300 text-[11px] block">{mod.label}</span>
                       <div className="space-y-1">
                         {mod.permissions.map((p) => {
                           const checked = formPermissions.includes(p.id);
@@ -816,7 +816,7 @@ export default function StaffRBAC() {
                                 type="checkbox"
                                 checked={checked}
                                 onChange={() => togglePermission(p.id)}
-                                className="rounded bg-slate-900 border-white/20 text-sky-500 focus:ring-0 cursor-pointer"
+                                className="rounded bg-slate-900 border-white/20 text-indigo-500 focus:ring-0 cursor-pointer"
                               />
                               <span className="text-[11px] font-mono">{p.label}</span>
                             </label>
@@ -838,7 +838,7 @@ export default function StaffRBAC() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold shadow-md cursor-pointer transition-colors"
+                  className="px-6 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold shadow-md cursor-pointer transition-colors"
                 >
                   Create Administrator
                 </button>
@@ -853,11 +853,11 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {permissionsModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-heading flex items-center gap-2">
-                  <Key className="w-5 h-5 text-sky-400" />
+                  <Key className="w-5 h-5 text-indigo-400" />
                   Edit Permissions: {selectedUser.name}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 font-mono">
@@ -876,14 +876,14 @@ export default function StaffRBAC() {
             <div className="p-3 rounded-2xl bg-slate-950 border border-white/10 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                   <span>Assign Permission Preset:</span>
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handleSelectAllPermissions}
-                    className="text-[10px] font-mono font-bold text-sky-400 hover:underline cursor-pointer"
+                    className="text-[10px] font-mono font-bold text-indigo-400 hover:underline cursor-pointer"
                   >
                     Select All
                   </button>
@@ -904,7 +904,7 @@ export default function StaffRBAC() {
                     key={preset.name}
                     type="button"
                     onClick={() => handleApplyPreset(preset)}
-                    className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-sky-500/20 border border-white/10 hover:border-sky-500/40 text-slate-300 hover:text-white text-[10px] font-mono transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-500/20 border border-white/10 hover:border-indigo-500/40 text-slate-300 hover:text-white text-[10px] font-mono transition-colors cursor-pointer"
                   >
                     {preset.name}
                   </button>
@@ -917,7 +917,7 @@ export default function StaffRBAC() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {PERMISSION_MODULES.map((mod) => (
                   <div key={mod.id} className="p-3 rounded-xl bg-slate-950/60 border border-white/5 space-y-1.5">
-                    <span className="font-bold text-sky-300 text-xs block">{mod.label}</span>
+                    <span className="font-bold text-indigo-300 text-xs block">{mod.label}</span>
                     <div className="space-y-1.5">
                       {mod.permissions.map((p) => {
                         const checked = formPermissions.includes(p.id);
@@ -930,7 +930,7 @@ export default function StaffRBAC() {
                               type="checkbox"
                               checked={checked}
                               onChange={() => togglePermission(p.id)}
-                              className="rounded bg-slate-900 border-white/20 text-sky-500 focus:ring-0 cursor-pointer"
+                              className="rounded bg-slate-900 border-white/20 text-indigo-500 focus:ring-0 cursor-pointer"
                             />
                             <span className="font-mono text-[11px]">{p.label}</span>
                           </label>
@@ -957,7 +957,7 @@ export default function StaffRBAC() {
                 <button
                   type="button"
                   onClick={handleSavePermissions}
-                  className="px-6 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-md cursor-pointer transition-colors"
+                  className="px-6 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs shadow-md cursor-pointer transition-colors"
                 >
                   Save Permissions
                 </button>
@@ -972,7 +972,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {editModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
+          <div className="relative w-full max-w-md rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <h3 className="text-base font-bold text-white font-heading">
                 Edit Staff Member Details
@@ -993,7 +993,7 @@ export default function StaffRBAC() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-sky-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -1003,7 +1003,7 @@ export default function StaffRBAC() {
                   type="text"
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500"
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -1012,7 +1012,7 @@ export default function StaffRBAC() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-sky-500 cursor-pointer"
+                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="ADMIN">ADMIN</option>
                   <option value="COUNSELOR">COUNSELOR</option>
@@ -1030,7 +1030,7 @@ export default function StaffRBAC() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold cursor-pointer"
                 >
                   Save Details
                 </button>
@@ -1045,7 +1045,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {passwordModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
+          <div className="relative w-full max-w-md rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
                 <Lock className="w-4 h-4 text-amber-400" />

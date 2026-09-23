@@ -93,15 +93,15 @@ export default function StudentsManager() {
             placeholder="Search student or invoice..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-sky-400"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-indigo-400"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0b101d] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+          <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
             <tr>
               <th className="px-6 py-4 font-bold">Student Info</th>
               <th className="px-6 py-4 font-bold">Enrolled Cohort</th>
@@ -122,7 +122,7 @@ export default function StudentsManager() {
                 </td>
 
                 <td className="px-6 py-4">
-                  <span className="font-bold text-sky-400">{student.batchCode}</span>
+                  <span className="font-bold text-indigo-400">{student.batchCode}</span>
                   <div className="text-slate-400 text-[10px]">{student.courseTitle}</div>
                 </td>
 
@@ -166,7 +166,7 @@ export default function StudentsManager() {
                 <td className="px-6 py-4 text-right">
                   <button
                     onClick={() => openInvoiceModal(student.invoiceId)}
-                    className="p-2 rounded-lg bg-slate-800 text-sky-300 hover:text-white hover:bg-slate-700 transition-colors inline-flex items-center gap-1.5"
+                    className="p-2 rounded-lg bg-slate-800 text-indigo-300 hover:text-white hover:bg-slate-700 transition-colors inline-flex items-center gap-1.5"
                     title="View & Print Invoice"
                   >
                     <FileText className="w-3.5 h-3.5" />
@@ -190,7 +190,7 @@ export default function StudentsManager() {
       {/* Dynamic Printable PDF Invoice Modal */}
       {invoiceModalOpen && activeInvoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-xl rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-8 text-left text-xs overflow-hidden">
+          <div className="relative w-full max-w-xl rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-8 text-left text-xs overflow-hidden">
             
             {/* Action Bar (Top) */}
             <div className="flex items-center justify-between pb-6 border-b border-white/[0.08] mb-6">
@@ -204,7 +204,7 @@ export default function StudentsManager() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="px-3.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 hover:bg-sky-500/30 flex items-center gap-1.5 font-semibold"
+                  className="px-3.5 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 flex items-center gap-1.5 font-semibold"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print / Save PDF</span>
@@ -230,7 +230,7 @@ export default function StudentsManager() {
                   <p className="text-slate-400 font-mono">{activeInvoice.company.email}</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold font-mono text-sky-400">{activeInvoice.invoiceNumber}</div>
+                  <div className="text-lg font-bold font-mono text-indigo-400">{activeInvoice.invoiceNumber}</div>
                   <div className="text-[11px] text-slate-400 mt-1">
                     Date: {new Date(activeInvoice.issueDate).toLocaleDateString()}
                   </div>

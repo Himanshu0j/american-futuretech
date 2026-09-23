@@ -100,7 +100,7 @@ export default function BatchesManager() {
 
         <button
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>Schedule New Cohort</span>
@@ -111,7 +111,7 @@ export default function BatchesManager() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl bg-[#0f172a]/80 border border-white/[0.08] p-6 space-y-4">
+            <div key={i} className="rounded-2xl bg-[#0B1220]/80 border border-white/[0.08] p-6 space-y-4">
               <div className="flex justify-between">
                 <div className="h-6 w-24 bg-slate-800 rounded-full" />
                 <div className="h-5 w-16 bg-slate-800 rounded" />
@@ -132,12 +132,12 @@ export default function BatchesManager() {
           return (
             <div
               key={batch._id}
-              className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:border-sky-400/40"
+              className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:border-indigo-400/40"
             >
               {/* Top Details */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold">
+                  <span className="px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-400 text-xs font-mono font-bold">
                     {batch.batchCode}
                   </span>
 
@@ -158,12 +158,12 @@ export default function BatchesManager() {
 
                 <div className="mt-4 space-y-2 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5 text-sky-400" />
+                    <Calendar className="w-3.5 h-3.5 text-indigo-400" />
                     <span>Starts: {new Date(batch.startDate).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-sky-400" />
+                    <Clock className="w-3.5 h-3.5 text-indigo-400" />
                     <span>{batch.timing}</span>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export default function BatchesManager() {
                     <div
                       style={{ width: `${percentFull}%` }}
                       className={`h-full rounded-full transition-all duration-500 ${
-                        percentFull > 80 ? 'bg-rose-500' : 'bg-sky-500'
+                        percentFull > 80 ? 'bg-rose-500' : 'bg-indigo-500'
                       }`}
                     />
                   </div>
@@ -218,7 +218,7 @@ export default function BatchesManager() {
       {/* Schedule Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl p-7 text-left">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl p-7 text-left">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-white">Schedule New Cohort</h3>
               <button
@@ -316,7 +316,7 @@ export default function BatchesManager() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold"
+                  className="px-6 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold"
                 >
                   Publish Cohort
                 </button>

@@ -70,11 +70,11 @@ export default function ImageUploadInput({
       {label && (
         <div className="flex items-center justify-between">
           <label className="text-[11px] font-mono uppercase text-slate-400 font-bold flex items-center gap-1.5">
-            <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+            <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
             <span>{label}</span>
           </label>
           {uploading && (
-            <span className="text-[10px] font-mono text-cyan-400 flex items-center gap-1">
+            <span className="text-[10px] font-mono text-indigo-400 flex items-center gap-1">
               <RefreshCw className="w-3 h-3 animate-spin" />
               <span>Uploading asset...</span>
             </span>
@@ -128,7 +128,7 @@ export default function ImageUploadInput({
                   setPreviewError(false);
                 }}
                 placeholder={placeholder}
-                className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -146,7 +146,7 @@ export default function ImageUploadInput({
               type="button"
               disabled={uploading}
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+              className="px-3 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
               title="Upload PNG, JPG, or SVG from computer"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -157,7 +157,7 @@ export default function ImageUploadInput({
           {/* Quick Presets / Authentic Asset Selector */}
           <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-400">
             <span className="font-mono text-slate-500 flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-cyan-400" /> Presets:
+              <Sparkles className="w-2.5 h-2.5 text-indigo-400" /> Presets:
             </span>
             {COMMON_PRESETS.slice(0, 6).map((preset) => (
               <button
@@ -169,7 +169,7 @@ export default function ImageUploadInput({
                 }}
                 className={`px-1.5 py-0.5 rounded transition-all cursor-pointer font-mono ${
                   value === preset.url
-                    ? 'bg-cyan-500 text-slate-950 font-bold'
+                    ? 'bg-indigo-500 text-slate-950 font-bold'
                     : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
                 }`}
               >

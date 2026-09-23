@@ -35,12 +35,26 @@ export default function CoursesCMS() {
   const [basePrice, setBasePrice] = useState(2499);
   const [discountedPrice, setDiscountedPrice] = useState(1899);
   const [highlights, setHighlights] = useState(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
+
+  // Which "ways to learn" this course offers, and the per-course "Who Can Apply" block.
+  const [viewOptions, setViewOptions] = useState({ groupBatch: true, personalizedMentor: true });
+  const [eligibility, setEligibility] = useState({
+    eyebrow: 'Eligibility & Candidate Profile',
+    title: 'Who Can Apply for this Course?',
+    subtitle: 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.',
+    points: [],
+    certificationTitle: 'Globally Recognised Certification',
+    certificationText: 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.',
+    certificationPoints: [],
+    audiences: [],
+  });
   const [modules, setModules] = useState([
     { moduleNumber: 1, moduleTitle: 'Module 1: Foundations', topics: 'Topic 1, Topic 2, Topic 3', hours: 30 },
   ]);
 
   // Capstone showcase cards — editable from the same course modal, saved via /api/settings
   const [capstoneProjects, setCapstoneProjects] = useState([]);
+  const [saveFeedback, setSaveFeedback] = useState(null);
 
   const fetchCourses = async () => {
     try {
@@ -83,13 +97,24 @@ export default function CoursesCMS() {
     setBasePrice(2499);
     setDiscountedPrice(1899);
     setHighlights(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
+    setViewOptions({ groupBatch: true, personalizedMentor: true });
+    setEligibility({
+      eyebrow: 'Eligibility & Candidate Profile',
+      title: 'Who Can Apply for this Course?',
+      subtitle: 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.',
+      points: [],
+      certificationTitle: 'Globally Recognised Certification',
+      certificationText: 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.',
+      certificationPoints: [],
+      audiences: [],
+    });
     setModules([
       { moduleNumber: 1, moduleTitle: 'Module 1: Foundations & Architecture', topics: 'Topic 1, Topic 2, Topic 3', hours: 32 },
     ]);
     setModalOpen(true);
   };
 
-  const openEditModal = (course) => {
+  const openEditModal = async (course) => {
     setEditingCourse(course);
     setTitle(course.title);
     setSlug(course.slug);
@@ -100,6 +125,22 @@ export default function CoursesCMS() {
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
+    setViewOptions({
+      groupBatch: course.viewOptions?.groupBatch !== false,
+      personalizedMentor: course.viewOptions?.personalizedMentor !== false,
+    });
+    setEligibility({
+      eyebrow: course.eligibility?.eyebrow || 'Eligibility & Candidate Profile',
+      title: course.eligibility?.title || 'Who Can Apply for this Course?',
+      subtitle: course.eligibility?.subtitle
+        || 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.',
+      points: course.eligibility?.points || [],
+      certificationTitle: course.eligibility?.certificationTitle || 'Globally Recognised Certification',
+      certificationText: course.eligibility?.certificationText
+        || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.',
+      certificationPoints: course.eligibility?.certificationPoints || [],
+      audiences: course.eligibility?.audiences || [],
+    });
     setModules(
       course.curriculum?.map((m) => ({
         moduleNumber: m.moduleNumber,
@@ -109,6 +150,32 @@ export default function CoursesCMS() {
       })) || []
     );
     setModalOpen(true);
+
+    // Modules live in their own collection — that is what the course page and
+    // the student LMS render. The embedded copy on the course can be stale or
+    // empty, so load the real curriculum and prefill the composer from it.
+    try {
+      const res = await api.get(`/curriculum/courses/${course._id}`);
+      const live = res.data?.modules;
+      if (Array.isArray(live)) {
+        setModules(
+          live.map((m, idx) => ({
+            _id: m._id,
+            moduleNumber: m.moduleNumber || idx + 1,
+            moduleTitle: m.title || `Module ${idx + 1}`,
+            topics: (m.lessons || []).map((l) => l.title).filter(Boolean).join(', '),
+            // Kept so an untouched save round-trips the lessons exactly. Joining
+            // them with commas and splitting again would break any lesson whose
+            // own title contains a comma.
+            lessonTitles: (m.lessons || []).map((l) => l.title).filter(Boolean),
+            topicsDirty: false,
+            hours: m.durationHours || 30,
+          }))
+        );
+      }
+    } catch (err) {
+      console.error('Could not load the live curriculum — using the embedded copy:', err);
+    }
   };
 
   const handleTogglePublish = async (course) => {
@@ -169,9 +236,18 @@ export default function CoursesCMS() {
     e.preventDefault();
 
     const formattedModules = modules.map((m, idx) => ({
+      // The id lets the server update the existing module/lessons in place
+      // instead of recreating them (which would drop lesson videos).
+      _id: m._id,
       moduleNumber: idx + 1,
       moduleTitle: m.moduleTitle,
-      topics: m.topics.split(',').map((t) => t.trim()).filter(Boolean),
+      // Untouched rows send the lesson titles verbatim; edited rows are split on
+      // commas, which is the contract the composer's placeholder documents.
+      topics: !m.topicsDirty && Array.isArray(m.lessonTitles)
+        ? m.lessonTitles
+        : (Array.isArray(m.topics) ? m.topics : String(m.topics || '').split(','))
+            .map((t) => String(t).trim())
+            .filter(Boolean),
       hours: Number(m.hours) || 30,
     }));
 
@@ -194,6 +270,13 @@ export default function CoursesCMS() {
       },
       highlights: formattedHighlights,
       curriculum: formattedModules,
+      viewOptions,
+      eligibility: {
+        ...eligibility,
+        points: eligibility.points.filter((p) => p && String(p).trim()),
+        certificationPoints: eligibility.certificationPoints.filter((p) => p && String(p).trim()),
+        audiences: eligibility.audiences.filter((a) => a && String(a).trim()),
+      },
     };
 
     try {
@@ -203,25 +286,52 @@ export default function CoursesCMS() {
         await api.post('/courses', payload);
       }
 
-      // Persist capstone edits from the same modal (they power the Capstone section on course pages)
+      // Persist the capstone showcase cards from the same modal. Only the
+      // capstone branch is sent (the endpoint merges), so a concurrent save from
+      // SettingsCMS cannot be clobbered. The course is already saved at this
+      // point, so any failure here must be surfaced instead of swallowed.
+      let feedback = null;
       try {
         const settingsRes = await api.get('/settings');
-        if (settingsRes.data.success) {
-          const current = settingsRes.data.settings || {};
-          await api.put('/settings', {
-            ...current,
-            capstone: { ...(current.capstone || {}), projects: capstoneProjects },
-          });
+        const currentCapstone = settingsRes.data?.settings?.capstone || {};
+        const putRes = await api.put('/settings', {
+          capstone: {
+            ...currentCapstone,
+            projects: capstoneProjects.map((proj, idx) => ({ ...proj, order: idx + 1, active: proj.active !== false })),
+          },
+        });
+        if (putRes.data?.ignoredPaths?.length) {
+          feedback = {
+            type: 'error',
+            message: `Capstone cards saved, but the server ignored these fields: ${putRes.data.ignoredPaths.join(', ')}`,
+          };
         }
       } catch (capErr) {
         console.error('Capstone save failed:', capErr);
+        feedback = {
+          type: 'error',
+          message: `The course was saved, but the capstone cards could NOT be saved: ${
+            capErr.response?.data?.message || capErr.message
+          }`,
+        };
       }
+
+      setSaveFeedback(
+        feedback || {
+          type: 'success',
+          message: `Course saved. ${capstoneProjects.length} capstone card(s) published to the course pages.`,
+        },
+      );
 
       setModalOpen(false);
       fetchCourses();
       fetchCapstones();
     } catch (err) {
       console.error('Save course failed:', err);
+      setSaveFeedback({
+        type: 'error',
+        message: `Save failed: ${err.response?.data?.message || err.message}`,
+      });
     }
   };
 
@@ -243,7 +353,22 @@ export default function CoursesCMS() {
 
   return (
     <div className="space-y-6 text-left">
-      
+      {/* Save feedback — admins must never be told "saved" for data the server dropped */}
+      {saveFeedback && (
+        <div
+          className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs font-semibold ${
+            saveFeedback.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+          }`}
+        >
+          <span>{saveFeedback.message}</span>
+          <button type="button" onClick={() => setSaveFeedback(null)} className="text-slate-400 hover:text-white shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -257,7 +382,7 @@ export default function CoursesCMS() {
 
         <button
           onClick={openCreateModal}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>Create New Program</span>
@@ -265,9 +390,9 @@ export default function CoursesCMS() {
       </div>
 
       {/* Course Catalog Table */}
-      <div className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#0b101d] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+          <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
             <tr>
               <th className="px-6 py-4 font-bold">Course Title & Category</th>
               <th className="px-6 py-4 font-bold">Theme & Badge</th>
@@ -305,7 +430,7 @@ export default function CoursesCMS() {
                   <select
                     value={course.badge || ''}
                     onChange={(e) => handleQuickBadgeChange(course, e.target.value)}
-                    className="p-1.5 rounded-lg bg-slate-900 border border-white/10 text-[11px] text-sky-300 font-bold focus:outline-none"
+                    className="p-1.5 rounded-lg bg-slate-900 border border-white/10 text-[11px] text-indigo-300 font-bold focus:outline-none"
                   >
                     <option value="">No Badge</option>
                     <option value="Most Popular">Most Popular</option>
@@ -330,7 +455,9 @@ export default function CoursesCMS() {
 
                 {/* Curriculum summary */}
                 <td className="px-6 py-4 text-slate-300">
-                  <span className="font-semibold text-sky-400">{course.curriculum?.length || 0} Modules</span>
+                  <span className="font-semibold text-indigo-400">
+                    {course.moduleCount ?? course.curriculum?.length ?? 0} Modules
+                  </span>
                 </td>
 
                 {/* Publish Toggle */}
@@ -367,10 +494,10 @@ export default function CoursesCMS() {
       {/* Course & Curriculum Visual Composer Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[#0f172a] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
+          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
             
             {/* Modal Header */}
-            <div className="p-6 bg-[#0b101d] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-6 bg-[#070C17] border-b border-white/[0.08] flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold text-white">
                   {editingCourse ? `Edit Course: ${editingCourse.title}` : 'Create New Certification Track'}
@@ -400,7 +527,7 @@ export default function CoursesCMS() {
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-sky-400"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-400"
                   />
                 </div>
 
@@ -411,7 +538,7 @@ export default function CoursesCMS() {
                     placeholder="auto-generated-if-blank"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-sky-400"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-400"
                   />
                 </div>
               </div>
@@ -486,6 +613,123 @@ export default function CoursesCMS() {
                   items={highlights}
                   onChange={setHighlights}
                   placeholder="Enter program highlight or outcome..."
+                />
+              </div>
+
+              {/* Learning options + Who Can Apply (per course) */}
+              <div className="space-y-4 pt-4 border-t border-white/[0.08]">
+                <div>
+                  <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-indigo-400" />
+                    Learning Options On This Course Page
+                  </h4>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Tick karo jo website par dikhana hai — dono, ya sirf ek. Unticked option course page par nahi aayega.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="flex items-center justify-between gap-3 rounded-xl bg-slate-900 border border-white/10 px-4 py-3 cursor-pointer">
+                    <span className="text-xs">
+                      <span className="block font-bold text-white">Group Batch</span>
+                      <span className="block text-[11px] text-slate-400 mt-0.5">Full immersive journey card</span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={viewOptions.groupBatch}
+                      onChange={(e) => setViewOptions((v) => ({ ...v, groupBatch: e.target.checked }))}
+                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-indigo-500 focus:ring-0"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between gap-3 rounded-xl bg-slate-900 border border-white/10 px-4 py-3 cursor-pointer">
+                    <span className="text-xs">
+                      <span className="block font-bold text-white">Personalized Mentor</span>
+                      <span className="block text-[11px] text-slate-400 mt-0.5">1-on-1 mentor track card</span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={viewOptions.personalizedMentor}
+                      onChange={(e) => setViewOptions((v) => ({ ...v, personalizedMentor: e.target.checked }))}
+                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-indigo-500 focus:ring-0"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Section Eyebrow</label>
+                    <input
+                      type="text"
+                      value={eligibility.eyebrow}
+                      onChange={(e) => setEligibility((prev) => ({ ...prev, eyebrow: e.target.value }))}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Section Title</label>
+                    <input
+                      type="text"
+                      value={eligibility.title}
+                      onChange={(e) => setEligibility((prev) => ({ ...prev, title: e.target.value }))}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Section Subtitle</label>
+                  <textarea
+                    rows={2}
+                    value={eligibility.subtitle}
+                    onChange={(e) => setEligibility((prev) => ({ ...prev, subtitle: e.target.value }))}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  />
+                </div>
+
+                <ListItemsEditor
+                  label="Who Can Apply — Numbered Points"
+                  helperText="Har course ke liye alag ho sakta hai. 'Paste Multiple Lines' se ek saath kaafi points daal sakte ho."
+                  items={eligibility.points}
+                  onChange={(items) => setEligibility((prev) => ({ ...prev, points: items }))}
+                  placeholder="Individuals already working in IT, software development…"
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Certification Card Title</label>
+                    <input
+                      type="text"
+                      value={eligibility.certificationTitle}
+                      onChange={(e) => setEligibility((prev) => ({ ...prev, certificationTitle: e.target.value }))}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Certification Card Text</label>
+                    <textarea
+                      rows={2}
+                      value={eligibility.certificationText}
+                      onChange={(e) => setEligibility((prev) => ({ ...prev, certificationText: e.target.value }))}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                </div>
+
+                <ListItemsEditor
+                  label="Certification Bullet Points"
+                  helperText="Khali chhodne par default diploma/exam bullets dikhte hain."
+                  items={eligibility.certificationPoints}
+                  onChange={(items) => setEligibility((prev) => ({ ...prev, certificationPoints: items }))}
+                  placeholder="Official American FutureTech US Fellowship Diploma"
+                />
+
+                <ListItemsEditor
+                  label="Target Audiences (coloured chips)"
+                  helperText="Jaise: Graduates, Working Professionals, Career Switchers, Fresh Learners."
+                  items={eligibility.audiences}
+                  onChange={(items) => setEligibility((prev) => ({ ...prev, audiences: items }))}
+                  placeholder="Working Professionals"
                 />
               </div>
 
@@ -566,7 +810,7 @@ export default function CoursesCMS() {
                         />
                         <input
                           type="text"
-                          placeholder="Gradient (e.g. from-blue-500 to-cyan-500)"
+                          placeholder="Gradient (e.g. from-blue-500 to-indigo-500)"
                           value={proj.color || ''}
                           onChange={(e) => updateCapstone(idx, 'color', e.target.value)}
                           className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs font-mono"
@@ -581,14 +825,14 @@ export default function CoursesCMS() {
               <div className="space-y-4 pt-4 border-t border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-sky-400" />
+                    <Layers className="w-4 h-4 text-indigo-400" />
                     <span>Curriculum Module Composer</span>
                   </h4>
 
                   <button
                     type="button"
                     onClick={addModuleField}
-                    className="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-sky-500/30"
+                    className="px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-500/30"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Module</span>
@@ -599,7 +843,7 @@ export default function CoursesCMS() {
                   {modules.map((mod, index) => (
                     <div key={index} className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="font-bold text-sky-400">Module {index + 1}</span>
+                        <span className="font-bold text-indigo-400">Module {index + 1}</span>
                         <button
                           type="button"
                           onClick={() => removeModuleField(index)}
@@ -646,7 +890,11 @@ export default function CoursesCMS() {
                           value={mod.topics}
                           onChange={(e) => {
                             const updated = [...modules];
-                            updated[index].topics = e.target.value;
+                            updated[index] = {
+                              ...updated[index],
+                              topics: e.target.value,
+                              topicsDirty: true,
+                            };
                             setModules(updated);
                           }}
                           className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-300 text-xs"
@@ -668,7 +916,7 @@ export default function CoursesCMS() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 text-white font-bold flex items-center gap-2 shadow-lg"
+                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 text-white font-bold flex items-center gap-2 shadow-lg"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Course</span>

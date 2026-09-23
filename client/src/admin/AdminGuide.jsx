@@ -2,7 +2,7 @@ import React from 'react';
 import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
-  ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save
+  ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ const SECTIONS = [
     title: '3. Curriculum & Courses CMS',
     path: '/admin/courses',
     what: 'Saare career programs — title, price, duration, badge, curriculum modules, capstone projects.',
-    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai. Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain.',
+    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai — module add/rename/delete karo, course page turant badal jata hai (lessons bhi wahin se bante hain). Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain. Course list mein ab sahi module count dikhta hai.',
   },
   {
     icon: Calendar,
@@ -62,6 +62,11 @@ const SECTIONS = [
     path: '/admin/content',
     what: 'Blogs, FAQs, aur Success Stories jo public pages par dikhte hain.',
     how: 'Har card type ke liye Add / Edit / Delete available hai. FAQ mein category set karna mat bhoolo (e.g. "Live Jobs") taaki wo sahi page par filter ho.',
+    notes: [
+      'Success Story mein naam, role, company, salary hike %, course, rating aur graduation year — ye sab website ke card par dikhte hain.',
+      '"Show on the public Success Stories page" tick hona zaroori hai — untick story website par nahi aayegi (badge "Not on site" dikhega). Isi tarah blog/FAQ mein "Published" tick rakho.',
+      'Admin se daali gayi story turant /success-stories page par live ho jati hai.',
+    ],
   },
   {
     icon: LifeBuoy,
@@ -78,15 +83,22 @@ const SECTIONS = [
     how: 'Tabs use karo: General (phone/email/address + top announcement banner), Homepage Sections (kisi bhi section ko Hide/Show), Homepage Hero (headline, subheadline, CTA buttons), Company Logos (marquee mein kaunsi companies dikhein — upload ya URL), Career Programs (section ka badge/headline), Personalized (apna alag price/duration), Capstone & Tools (tools grid + capstone project cards), Roadmap Steps, About & Mission, Global CTAs ($99 reserve buttons, urgency text). Har change ke baad neeche "Publish Changes" dabana zaroori hai.',
   },
   {
+    icon: Layers,
+    title: '11. Website Editor (Har Text Aur Image)',
+    path: '/admin/website-editor',
+    what: 'Website ka koi bhi lafz ya image — jo Settings aur Course CMS mein nahi hai (headings, buttons, labels, footer, banners) — wo yahan se badalta hai. Bilkul wahi page jaisa customer dekhta hai, usi par click karke.',
+    how: 'Ispage par page ki list dikhti hai + kis page par kitne change hue hain. Jis page ko badalna hai uske saamne "Edit on site" dabao → naya tab khulega. Wahan jo bhi text ya image editable hai wo halki indigo line se outline ho jayegi — us par click karo, naya text likho (ya image upload karo) → "Stage change" → phir neeche panel mein "Publish". Change turant sabhi visitors ko dikhne lagta hai. Galti ho gaya to us element par "Revert", ya poore page par "Reset" dabao. Panel ke top par dropdown se kisi bhi page par seedha jump kar sakte ho.',
+  },
+  {
     icon: ImageIcon,
-    title: '11. Images / PNG Upload Kaise Karein',
+    title: '12. Images / PNG Upload Kaise Karein',
     path: '/admin/settings',
     what: 'Company logos, course banners, job logos — sab ImageUploadInput field se.',
     how: 'Jahan bhi image field ho: "Choose File" se apna PNG/JPG/SVG upload karo (max 10MB) — URL automatically fill ho jayega — ya seedha koi image URL paste kar do. Preview turant dikh jata hai. Publish karne par website par live.',
   },
   {
     icon: ShieldAlert,
-    title: '12. Staff & Security RBAC',
+    title: '13. Staff & Security RBAC',
     path: '/admin/users',
     what: 'Team members ke accounts, roles aur granular permissions.',
     how: 'New staff add karo → role chuno (SuperAdmin / Admin / Counselor / Instructor) aur checkboxes se specific permissions do (e.g. sirf JOBS_EDIT). Deactivated user login nahi kar sakta. Audit Trail tab (Settings mein) har admin action ka record rakhta hai.',
@@ -98,6 +110,7 @@ const TIPS = [
   { icon: MousePointerClick, text: 'Kisi bhi card/row par hover karoge to Edit aur Delete buttons saamne aa jate hain.' },
   { icon: ImageIcon, text: 'Sabse pehle image upload tabhi URL field bharna — direct URL bhi chalega.' },
   { icon: HelpCircle, text: 'Kuch samajh na aaye to is page ko dobara khol lo ya Audit Trail check karo ki pehle kya change hua tha.' },
+  { icon: Layers, text: 'Kisi bhi live page ke address ke aage ?edit=1 laga do (jaise /courses?edit=1) — wahi page editor ke saath khul jayega.' },
 ];
 
 export default function AdminGuide() {
@@ -172,6 +185,17 @@ export default function AdminGuide() {
                 <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">How to use (Hinglish)</div>
                 <p className="text-xs text-slate-400 leading-relaxed">{sec.how}</p>
               </div>
+
+              {sec.notes && (
+                <ul className="space-y-1.5 border-t border-slate-800 pt-3">
+                  {sec.notes.map((note) => (
+                    <li key={note} className="flex items-start gap-2 text-[11px] text-amber-200/80 leading-relaxed">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           );
         })}
@@ -186,6 +210,10 @@ export default function AdminGuide() {
         <p className="text-xs text-slate-300 leading-relaxed">
           <strong className="text-white">Career Programs</strong> ka price/duration <em>Admin → Courses</em> se edit hota hai (har course ka apna).{' '}
           <strong className="text-white">Personalized Learning</strong> ka alag price, deposit aur duration <em>Admin → Settings → Personalized tab</em> se edit hota hai. Dono independent hain — ek change karne se dusra affect nahi hota.
+        </p>
+        <p className="text-xs text-slate-400 leading-relaxed">
+          <BookOpen className="w-3.5 h-3.5 inline text-amber-400 mr-1" />
+          <strong className="text-white">Curriculum</strong> ka poora control ab <em>Courses → Edit</em> ke "Curriculum Module Composer" se hai: module ka naam, topics (lessons), aur hours. Jitne topics comma se likhoge, utne lessons us module mein ban jayenge, aur course page par wahi dikhenge. Kisi topic ko hata diya to uska lesson bhi hat jayega.
         </p>
         <p className="text-xs text-slate-400 leading-relaxed">
           <Layers className="w-3.5 h-3.5 inline text-amber-400 mr-1" />

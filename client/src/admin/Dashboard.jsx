@@ -115,13 +115,13 @@ export default function Dashboard() {
             disabled={refreshing}
             className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-slate-500 text-xs font-semibold text-slate-300 flex items-center gap-2 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-sky-400' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-indigo-400' : ''}`} />
             <span>Refresh Telemetry</span>
           </button>
 
           <Link
             to="/admin/leads"
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-bold shadow-[0_0_20px_rgba(14,165,233,0.3)] transition-all flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white text-xs font-bold shadow-[0_0_20px_rgba(14,165,233,0.3)] transition-all flex items-center gap-1.5"
           >
             <span>Open CRM Pipeline</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -136,13 +136,13 @@ export default function Dashboard() {
           return (
             <div
               key={idx}
-              className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] p-5 relative overflow-hidden transition-all duration-300 hover:border-sky-400/40 hover:shadow-[0_0_25px_rgba(14,165,233,0.15)] flex flex-col justify-between"
+              className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-5 relative overflow-hidden transition-all duration-300 hover:border-indigo-400/40 hover:shadow-[0_0_25px_rgba(14,165,233,0.15)] flex flex-col justify-between"
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                   {kpi.title}
                 </span>
-                <div className="w-9 h-9 rounded-xl bg-slate-800/80 border border-white/5 flex items-center justify-center text-sky-400">
+                <div className="w-9 h-9 rounded-xl bg-slate-800/80 border border-white/5 flex items-center justify-center text-indigo-400">
                   <Icon className="w-4 h-4" />
                 </div>
               </div>
@@ -167,7 +167,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Monthly Lead Conversion Funnel */}
-        <div className="lg:col-span-8 rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
+        <div className="lg:col-span-8 rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold font-heading text-white">
@@ -177,7 +177,7 @@ export default function Dashboard() {
                 Visitor to Enrolled Student drop-off velocity
               </p>
             </div>
-            <span className="text-[11px] px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 font-mono font-semibold">
+            <span className="text-[11px] px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-400/30 text-indigo-400 font-mono font-semibold">
               Conversion: 3.2%
             </span>
           </div>
@@ -193,7 +193,7 @@ export default function Dashboard() {
                 <XAxis type="number" stroke="#64748b" tick={{ fontSize: 11 }} />
                 <YAxis dataKey="stage" type="category" stroke="#94a3b8" tick={{ fontSize: 11 }} width={110} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0b101d', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#070C17', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
                 />
                 <Bar dataKey="count" radius={[0, 8, 8, 0]}>
                   {(data?.funnelData || defaultFunnel).map((entry, index) => (
@@ -206,7 +206,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Distribution Donut */}
-        <div className="lg:col-span-4 rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
+        <div className="lg:col-span-4 rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
           <div className="mb-4">
             <h3 className="text-base font-bold font-heading text-white">
               Course Distribution
@@ -233,7 +233,7 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0b101d', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#070C17', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -264,7 +264,7 @@ export default function Dashboard() {
       </div>
 
       {/* Real-Time Incoming Student Applications Feed */}
-      <div className="rounded-2xl bg-[#0f172a]/80 backdrop-blur-xl border border-white/[0.08] p-6">
+      <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -274,7 +274,7 @@ export default function Dashboard() {
           </div>
           <Link
             to="/admin/leads"
-            className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 font-semibold"
+            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-semibold"
           >
             <span>View Full CRM Table</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -285,7 +285,7 @@ export default function Dashboard() {
           {(data?.recentLeadsStream || []).map((lead) => (
             <div key={lead.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center font-bold text-sky-400">
+                <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center font-bold text-indigo-400">
                   {lead.name ? lead.name.charAt(0) : 'L'}
                 </div>
                 <div>
@@ -302,7 +302,7 @@ export default function Dashboard() {
                 <span
                   className={`px-2.5 py-1 rounded-full font-bold ${
                     lead.status === 'New'
-                      ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                      ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40'
                       : lead.status === 'Enrolled'
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                       : lead.status === 'Counseling Scheduled'

@@ -20,6 +20,7 @@ import {
   Settings,
   GraduationCap,
   HelpCircle,
+  PencilLine,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,6 +43,7 @@ export default function AdminLayout() {
     { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase, permission: 'JOBS_VIEW' },
     { name: 'Content & FAQs CMS', path: '/admin/content', icon: FileText, permission: 'FAQ_VIEW' },
     { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy, permission: 'STUDENTS_VIEW' },
+    { name: 'Website Editor (Text & Images)', path: '/admin/website-editor', icon: PencilLine, permission: null },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
     { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },
@@ -60,10 +62,10 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080a0f] text-slate-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-[#070C17] text-slate-100 flex flex-col md:flex-row antialiased">
       
       {/* Mobile Topbar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0c0f17] border-b border-white/[0.08] sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0B1220] border-b border-white/[0.08] sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 border border-white/15 flex items-center justify-center font-bold text-white text-xs">
             AF
@@ -78,11 +80,21 @@ export default function AdminLayout() {
         </button>
       </div>
 
+      {/* Mobile drawer backdrop — tap anywhere outside the menu to close it */}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30"
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <aside
         className={`${
           mobileOpen ? 'block' : 'hidden'
-        } md:flex flex-col flex-shrink-0 bg-[#0c0f17] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
+        } md:flex flex-col flex-shrink-0 bg-[#0B1220] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -115,8 +127,8 @@ export default function AdminLayout() {
 
         {/* User Quick Info */}
         <div className="p-3 border-b border-white/[0.06]">
-          <div className={`p-2.5 rounded-xl bg-[#0e121a] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 rounded-lg bg-[#141923] border border-white/10 flex items-center justify-center font-bold text-xs text-sky-400 flex-shrink-0">
+          <div className={`p-2.5 rounded-xl bg-[#0B1220] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
+            <div className="w-8 h-8 rounded-lg bg-[#111A2E] border border-white/10 flex items-center justify-center font-bold text-xs text-indigo-400 flex-shrink-0">
               {user?.name ? user.name.charAt(0) : 'A'}
             </div>
             {!collapsed && (
@@ -124,7 +136,7 @@ export default function AdminLayout() {
                 <div className="text-xs font-bold text-white truncate">{user?.name || 'Administrator'}</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] font-mono text-sky-400">{user?.role || 'SuperAdmin'}</span>
+                  <span className="text-[10px] font-mono text-indigo-400">{user?.role || 'SuperAdmin'}</span>
                 </div>
               </div>
             )}
@@ -146,12 +158,12 @@ export default function AdminLayout() {
                 onClick={() => setMobileOpen(false)}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group ${
                   isActive
-                    ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-sky-400 shadow-sm'
+                    ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-indigo-400 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 } ${collapsed ? 'justify-center' : ''}`}
                 title={collapsed ? item.name : undefined}
               >
-                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-sky-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
                 {!collapsed && <span>{item.name}</span>}
               </Link>
             );
@@ -161,6 +173,19 @@ export default function AdminLayout() {
         {/* Sidebar Footer */}
         <div className="p-3 border-t border-white/[0.08] space-y-1">
           <a
+            href="/?edit=1"
+            target="_blank"
+            rel="noreferrer"
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-300 hover:text-amber-200 hover:bg-amber-400/10 border border-amber-400/20 transition-colors ${
+              collapsed ? 'justify-center' : ''
+            }`}
+            title="Edit any text or image directly on the live site"
+          >
+            <PencilLine className="w-3.5 h-3.5 flex-shrink-0" />
+            {!collapsed && <span>Edit Website Content</span>}
+          </a>
+
+          <a
             href="/"
             target="_blank"
             rel="noreferrer"
@@ -169,7 +194,7 @@ export default function AdminLayout() {
             }`}
             title="View Live Landing Page"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+            <ExternalLink className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
             {!collapsed && <span>Live Public Site</span>}
           </a>
 
@@ -190,37 +215,40 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header Bar */}
-        <header className="h-16 px-6 sm:px-8 bg-[#080a0f]/90 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
+        <header className="h-16 px-6 sm:px-8 bg-[#070C17]/90 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-2 text-left">
-            <span className="text-xs font-mono text-slate-500">Executive /</span>
+            <span className="text-xs font-mono text-slate-400">Executive /</span>
             <span className="text-sm font-semibold text-white">
               {navItems.find((n) => location.pathname.startsWith(n.path))?.name || 'Admin Console'}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Gateway Nominal</span>
+              <span>System Online</span>
             </div>
 
-            <Link
-              to="/"
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#141923] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
+            <a
+              href="/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#111A2E] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
+              title="Open the live site in a new tab (keeps you signed in here)"
             >
               <span>Landing Page</span>
-              <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
-            </Link>
+              <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
+            </a>
           </div>
         </header>
 
         {/* Body Content */}
-        <main className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#080a0f]">
+        <main className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#070C17]">
           {(() => {
             const matchedNav = navItems.find((n) => location.pathname.startsWith(n.path));
             if (matchedNav && !hasItemAccess(matchedNav)) {
               return (
-                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#0f172a] border border-rose-500/30 text-center space-y-4 shadow-2xl">
+                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#0B1220] border border-rose-500/30 text-center space-y-4 shadow-2xl">
                   <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
                     <ShieldAlert className="w-7 h-7" />
                   </div>
@@ -233,7 +261,7 @@ export default function AdminLayout() {
                   <div className="pt-2">
                     <Link
                       to="/admin/dashboard"
-                      className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-colors inline-block"
+                      className="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 text-xs font-bold transition-colors inline-block"
                     >
                       Return to Executive Dashboard
                     </Link>

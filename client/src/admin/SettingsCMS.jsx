@@ -48,14 +48,18 @@ export default function SettingsCMS() {
 
   // Full Settings State
   const [settings, setSettings] = useState({
-    brandName: 'American FutureTech LLC',
-    phone: '+1 (816) 846-6717',
-    email: 'info@americantechgloballlc.com',
-    address: '30 N Gould St Ste R, Sheridan, WY 82801, United States',
+    siteName: 'American FutureTech',
+    legalName: 'American FutureTech LLC',
+    tagline: 'Empowering Next-Gen Tech Leaders with AI, Cyber Security & Cloud',
+    contactPhone: '+1 (816) 846-6717',
+    contactEmail: 'info@americantechgloballlc.com',
+    headquartersAddress: '30 N Gould St Ste R, Sheridan, WY 82801, United States',
+    socialLinks: { linkedin: '', youtube: '', instagram: '', twitter: '' },
+    isMaintenanceMode: false,
     announcementBanner: {
-      active: true,
+      enabled: true,
       text: '🚀 Spring Cohort 2026 Admissions Open — $99 Seat Reservation Now Available!',
-      link: '/courses',
+      linkUrl: '/courses',
     },
     admissionNotice: 'Next Cohort Starts March 2026. Limited to 25 seats per track.',
     hero: {
@@ -232,7 +236,13 @@ export default function SettingsCMS() {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.success) {
-        setFeedback({ type: 'success', message: 'Site CMS configuration saved and live on production!' });
+        // The API reports fields the schema could not store, so a "saved" state
+        // is never claimed for data that was silently dropped.
+        if (res.data.warning) {
+          setFeedback({ type: 'error', message: res.data.warning });
+        } else {
+          setFeedback({ type: 'success', message: 'Site CMS configuration saved and live on production!' });
+        }
         if (res.data.settings) {
           setSettings(prev => ({ ...prev, ...res.data.settings }));
         }
@@ -505,7 +515,7 @@ export default function SettingsCMS() {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-2">
             <Settings className="w-3.5 h-3.5" />
             Central Site Administration
           </div>
@@ -521,7 +531,7 @@ export default function SettingsCMS() {
           <button
             onClick={handleSaveSettings}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-cyan-500/20 cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-indigo-500/20 cursor-pointer shrink-0"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Publishing Live...' : 'Publish Changes'}
@@ -540,7 +550,7 @@ export default function SettingsCMS() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
+                  ? 'bg-indigo-500 text-slate-950 font-bold shadow-md shadow-indigo-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent'
               }`}
             >
@@ -577,65 +587,122 @@ export default function SettingsCMS() {
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                  <Building className="w-4 h-4 text-cyan-400" />
+                  <Building className="w-4 h-4 text-indigo-400" />
                   Corporate Identity & Legal Entity
                 </h3>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Ye values website ke header, footer, contact page aur WhatsApp button par turant apply hoti hain.
+                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Brand / Site Name</label>
+                    <input
+                      type="text"
+                      value={settings.siteName || ''}
+                      onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Legal Entity Name</label>
                     <input
                       type="text"
-                      value={settings.brandName || ''}
-                      onChange={(e) => setSettings({ ...settings, brandName: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      value={settings.legalName || ''}
+                      onChange={(e) => setSettings({ ...settings, legalName: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-slate-400 uppercase mb-1.5">Site Tagline</label>
+                    <input
+                      type="text"
+                      value={settings.tagline || ''}
+                      onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Official US Contact Phone</label>
                     <input
                       type="text"
-                      value={settings.phone || ''}
-                      onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      value={settings.contactPhone || ''}
+                      onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Admissions Email</label>
                     <input
                       type="email"
-                      value={settings.email || ''}
-                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      value={settings.contactEmail || ''}
+                      onChange={(e) => setSettings({ ...settings, contactEmail: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="block text-slate-400 uppercase mb-1.5">Registered Wyoming Office</label>
                     <input
                       type="text"
-                      value={settings.address || ''}
-                      onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      value={settings.headquartersAddress || ''}
+                      onChange={(e) => setSettings({ ...settings, headquartersAddress: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
+
+                <div className="pt-2 border-t border-slate-800">
+                  <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-3">Social profiles (footer icons)</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    {['linkedin', 'youtube', 'instagram', 'twitter'].map((key) => (
+                      <div key={key}>
+                        <label className="block text-slate-400 uppercase mb-1.5">{key}</label>
+                        <input
+                          type="text"
+                          value={settings.socialLinks?.[key] || ''}
+                          onChange={(e) => setSettings({
+                            ...settings,
+                            socialLinks: { ...(settings.socialLinks || {}), [key]: e.target.value },
+                          })}
+                          placeholder="https://..."
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <label className="flex items-center justify-between gap-3 rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 cursor-pointer">
+                  <span className="text-xs">
+                    <span className="block font-bold text-white">Maintenance mode</span>
+                    <span className="block text-[11px] text-slate-400 mt-0.5">
+                      On karne par visitors ko maintenance screen dikhegi — admin panel chalta rahega.
+                    </span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={settings.isMaintenanceMode || false}
+                    onChange={(e) => setSettings({ ...settings, isMaintenanceMode: e.target.checked })}
+                    className="rounded bg-slate-950 border-slate-800 text-indigo-500 focus:ring-0 w-4 h-4"
+                  />
+                </label>
               </div>
 
               {/* Announcement Banner */}
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-cyan-400" />
+                    <Bell className="w-4 h-4 text-indigo-400" />
                     Global Top Announcement Banner
                   </h3>
                   <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={settings.announcementBanner?.active || false}
+                      checked={settings.announcementBanner?.enabled ?? true}
                       onChange={(e) => setSettings({
                         ...settings,
-                        announcementBanner: { ...settings.announcementBanner, active: e.target.checked }
+                        announcementBanner: { ...settings.announcementBanner, enabled: e.target.checked }
                       })}
-                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0"
+                      className="rounded bg-slate-950 border-slate-800 text-indigo-500 focus:ring-0"
                     />
                     <span>Show Banner</span>
                   </label>
@@ -650,19 +717,19 @@ export default function SettingsCMS() {
                         ...settings,
                         announcementBanner: { ...settings.announcementBanner, text: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Action Target Link</label>
                     <input
                       type="text"
-                      value={settings.announcementBanner?.link || ''}
+                      value={settings.announcementBanner?.linkUrl || ''}
                       onChange={(e) => setSettings({
                         ...settings,
-                        announcementBanner: { ...settings.announcementBanner, link: e.target.value }
+                        announcementBanner: { ...settings.announcementBanner, linkUrl: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -678,7 +745,7 @@ export default function SettingsCMS() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-cyan-400" />
+                    <Eye className="w-4 h-4 text-indigo-400" />
                     Homepage Section Visibility & Toggles
                   </h3>
                   <p className="text-xs text-slate-400 mt-1">
@@ -732,7 +799,7 @@ export default function SettingsCMS() {
                       key={prop}
                       className={`p-4 rounded-xl border transition-all flex items-start justify-between gap-4 ${
                         isVisible
-                          ? 'bg-slate-950/80 border-cyan-500/30 shadow-xs'
+                          ? 'bg-slate-950/80 border-indigo-500/30 shadow-xs'
                           : 'bg-slate-950/30 border-slate-800 opacity-60'
                       }`}
                     >
@@ -765,7 +832,7 @@ export default function SettingsCMS() {
                         }}
                         className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                           isVisible
-                            ? 'bg-cyan-500 text-slate-950 hover:bg-cyan-400 shadow-sm'
+                            ? 'bg-indigo-500 text-slate-950 hover:bg-indigo-400 shadow-sm'
                             : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                         }`}
                       >
@@ -784,7 +851,7 @@ export default function SettingsCMS() {
           {activeTab === 'hero' && (
             <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <Sparkles className="w-4 h-4 text-indigo-400" />
                 Homepage Hero Section Copy & CTAs
               </h3>
               <div className="space-y-4 text-xs font-mono">
@@ -797,7 +864,7 @@ export default function SettingsCMS() {
                       ...settings,
                       hero: { ...settings.hero, eyebrowBadgeText: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -810,7 +877,7 @@ export default function SettingsCMS() {
                       ...settings,
                       hero: { ...settings.hero, headline: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -823,7 +890,7 @@ export default function SettingsCMS() {
                       ...settings,
                       hero: { ...settings.hero, subheadline: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -837,7 +904,7 @@ export default function SettingsCMS() {
                         ...settings,
                         hero: { ...settings.hero, primaryCtaText: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -849,7 +916,7 @@ export default function SettingsCMS() {
                         ...settings,
                         hero: { ...settings.hero, primaryCtaLink: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -864,7 +931,7 @@ export default function SettingsCMS() {
                         ...settings,
                         hero: { ...settings.hero, secondaryCtaText: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -876,7 +943,7 @@ export default function SettingsCMS() {
                         ...settings,
                         hero: { ...settings.hero, secondaryCtaLink: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -890,7 +957,7 @@ export default function SettingsCMS() {
                       ...settings,
                       hero: { ...settings.hero, statsBadgeText: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -905,13 +972,13 @@ export default function SettingsCMS() {
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <Award className="w-4 h-4 text-cyan-400" />
+                    <Award className="w-4 h-4 text-indigo-400" />
                     Global Enterprise Brand & Company Logos Marquee
                   </h3>
                   <button
                     type="button"
                     onClick={handleAddCompany}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-950 text-xs font-bold transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Company</span>
@@ -928,7 +995,7 @@ export default function SettingsCMS() {
                         ...settings,
                         trustedCompanies: { ...settings.trustedCompanies, heading: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
@@ -941,7 +1008,7 @@ export default function SettingsCMS() {
                         ...settings,
                         trustedCompanies: { ...settings.trustedCompanies, subheading: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -963,7 +1030,7 @@ export default function SettingsCMS() {
                             value={comp.name || ''}
                             onChange={(e) => handleUpdateCompany(idx, 'name', e.target.value)}
                             placeholder="Company Name"
-                            className="flex-1 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-white font-sans font-bold text-xs focus:outline-none focus:border-cyan-500 mr-2"
+                            className="flex-1 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-white font-sans font-bold text-xs focus:outline-none focus:border-indigo-500 mr-2"
                           />
                           <div className="flex items-center gap-2 shrink-0">
                             <label className="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
@@ -971,7 +1038,7 @@ export default function SettingsCMS() {
                                 type="checkbox"
                                 checked={comp.active !== false}
                                 onChange={(e) => handleUpdateCompany(idx, 'active', e.target.checked)}
-                                className="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0"
+                                className="rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-0"
                               />
                               <span>Active</span>
                             </label>
@@ -1010,7 +1077,7 @@ export default function SettingsCMS() {
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                  <Award className="w-4 h-4 text-cyan-400" />
+                  <Award className="w-4 h-4 text-indigo-400" />
                   Career Programs Section — Homepage Content
                 </h3>
                 <p className="text-xs text-slate-400 font-mono">
@@ -1025,7 +1092,7 @@ export default function SettingsCMS() {
                       value={settings.courses?.badgeText || ''}
                       onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, badgeText: e.target.value } })}
                       placeholder="e.g. 6-Month Career Training Programs · Dual US & Microsoft Credentials"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1035,7 +1102,7 @@ export default function SettingsCMS() {
                       value={settings.courses?.headline || ''}
                       onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, headline: e.target.value } })}
                       placeholder="e.g. Fellowship Specializations"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1045,14 +1112,14 @@ export default function SettingsCMS() {
                       value={settings.courses?.subheadline || ''}
                       onChange={(e) => setSettings({ ...settings, courses: { ...settings.courses, subheadline: e.target.value } })}
                       placeholder="Short description shown below the headline..."
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-slate-800">
                   <div className="text-xs text-slate-400 font-mono bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-                    <span className="font-bold text-cyan-400">ℹ Course Cards Management:</span> Individual course cards (title, price, duration, curriculum) are managed in the{' '}
+                    <span className="font-bold text-indigo-400">ℹ Course Cards Management:</span> Individual course cards (title, price, duration, curriculum) are managed in the{' '}
                     <span className="font-bold text-white">Admin → Courses</span> section.
                   </div>
                 </div>
@@ -1068,7 +1135,7 @@ export default function SettingsCMS() {
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-cyan-400" />
+                    <DollarSign className="w-4 h-4 text-indigo-400" />
                     Personalized Learning Track & Independent Fee ($2,199)
                   </h3>
                   <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
@@ -1082,7 +1149,7 @@ export default function SettingsCMS() {
                           enabled: e.target.checked
                         }
                       })}
-                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0"
+                      className="rounded bg-slate-950 border-slate-800 text-indigo-500 focus:ring-0"
                     />
                     <span>Track Active</span>
                   </label>
@@ -1101,7 +1168,7 @@ export default function SettingsCMS() {
                           price: Number(e.target.value)
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1116,7 +1183,7 @@ export default function SettingsCMS() {
                           originalPrice: Number(e.target.value)
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1131,7 +1198,7 @@ export default function SettingsCMS() {
                           depositPrice: Number(e.target.value)
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -1149,7 +1216,7 @@ export default function SettingsCMS() {
                           duration: e.target.value
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1164,7 +1231,7 @@ export default function SettingsCMS() {
                           badgeText: e.target.value
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -1182,7 +1249,7 @@ export default function SettingsCMS() {
                           headline: e.target.value
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1197,7 +1264,7 @@ export default function SettingsCMS() {
                           subheadline: e.target.value
                         }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -1247,7 +1314,7 @@ export default function SettingsCMS() {
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-cyan-400" />
+                  <Cpu className="w-4 h-4 text-indigo-400" />
                   Capstone Section Headings & Outcomes
                 </h3>
 
@@ -1261,7 +1328,7 @@ export default function SettingsCMS() {
                         ...settings,
                         capstone: { ...settings.capstone, title: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1273,7 +1340,7 @@ export default function SettingsCMS() {
                         ...settings,
                         capstone: { ...settings.capstone, subtitle: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -1298,7 +1365,7 @@ export default function SettingsCMS() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-cyan-400" />
+                      <Layers className="w-4 h-4 text-indigo-400" />
                       Capstone Tools & Technologies (Live Logos)
                     </h3>
                     <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -1308,7 +1375,7 @@ export default function SettingsCMS() {
                   <button
                     type="button"
                     onClick={handleAddTool}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Tool
                   </button>
@@ -1331,7 +1398,7 @@ export default function SettingsCMS() {
                           </div>
                           <div>
                             <span className="text-xs font-bold text-white font-sans">{tool.name || `Tool #${idx + 1}`}</span>
-                            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded ml-2">
+                            <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded ml-2">
                               {tool.category || 'General'}
                             </span>
                           </div>
@@ -1343,7 +1410,7 @@ export default function SettingsCMS() {
                               type="checkbox"
                               checked={tool.active !== false}
                               onChange={(e) => handleUpdateTool(idx, 'active', e.target.checked)}
-                              className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+                              className="rounded bg-slate-900 border-slate-800 text-indigo-500"
                             />
                             <span>Active</span>
                           </label>
@@ -1365,7 +1432,7 @@ export default function SettingsCMS() {
                             value={tool.name || ''}
                             onChange={(e) => handleUpdateTool(idx, 'name', e.target.value)}
                             placeholder="e.g. Docker"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -1375,7 +1442,7 @@ export default function SettingsCMS() {
                             value={tool.category || ''}
                             onChange={(e) => handleUpdateTool(idx, 'category', e.target.value)}
                             placeholder="e.g. Infrastructure"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -1385,7 +1452,7 @@ export default function SettingsCMS() {
                             value={tool.logoUrl || ''}
                             onChange={(e) => handleUpdateTool(idx, 'logoUrl', e.target.value)}
                             placeholder="https://...logo.svg"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                       </div>
@@ -1399,7 +1466,7 @@ export default function SettingsCMS() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-cyan-400" />
+                      <Layers className="w-4 h-4 text-indigo-400" />
                       Capstone Project Showcase Cards
                     </h3>
                     <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -1409,7 +1476,7 @@ export default function SettingsCMS() {
                   <button
                     type="button"
                     onClick={handleAddCapstoneProject}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Project
                   </button>
@@ -1427,7 +1494,7 @@ export default function SettingsCMS() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-white">{proj.title || `Project #${idx + 1}`}</span>
-                          <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">{proj.tag || 'Category'}</span>
+                          <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">{proj.tag || 'Category'}</span>
                         </div>
                         <button type="button" onClick={() => handleDeleteCapstoneProject(idx)}
                           className="p-1.5 text-rose-400 hover:text-rose-300 rounded hover:bg-slate-900 cursor-pointer">
@@ -1439,33 +1506,33 @@ export default function SettingsCMS() {
                           <label className="block text-slate-500 uppercase mb-1">Category Tag</label>
                           <input type="text" value={proj.tag || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'tag', e.target.value)}
                             placeholder="e.g. Computer Vision"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Project Title</label>
                           <input type="text" value={proj.title || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'title', e.target.value)}
                             placeholder="e.g. US Health Care Analysis"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
                       <div>
                         <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Description</label>
                         <textarea rows={2} value={proj.desc || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'desc', e.target.value)}
                           placeholder="What do students build?"
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Tech Stack (comma-separated)</label>
                           <input type="text" value={(proj.stack || []).join(', ')} onChange={(e) => handleUpdateCapstoneProject(idx, 'stack', e.target.value)}
                             placeholder="e.g. Python, TensorFlow, OpenCV"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Gradient Color</label>
                           <input type="text" value={proj.color || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'color', e.target.value)}
-                            placeholder="from-blue-500 to-cyan-500"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-cyan-500" />
+                            placeholder="from-blue-500 to-indigo-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
                     </div>
@@ -1483,13 +1550,13 @@ export default function SettingsCMS() {
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <Target className="w-4 h-4 text-cyan-400" />
+                    <Target className="w-4 h-4 text-indigo-400" />
                     Career Placement Roadmap Milestones
                   </h3>
                   <button
                     type="button"
                     onClick={handleAddRoadmapStep}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Phase
                   </button>
@@ -1505,7 +1572,7 @@ export default function SettingsCMS() {
                         ...settings,
                         roadmap: { ...settings.roadmap, title: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -1517,7 +1584,7 @@ export default function SettingsCMS() {
                         ...settings,
                         roadmap: { ...settings.roadmap, subtitle: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -1530,7 +1597,7 @@ export default function SettingsCMS() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 font-bold text-xs font-mono flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs font-mono flex items-center justify-center">
                             {idx + 1}
                           </span>
                           <span className="text-xs font-bold text-white">{step.title || `Step ${idx + 1}`}</span>
@@ -1555,7 +1622,7 @@ export default function SettingsCMS() {
                             value={step.phaseName || ''}
                             onChange={(e) => handleUpdateRoadmapStep(idx, 'phaseName', e.target.value)}
                             placeholder="e.g. Phase 01"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -1565,7 +1632,7 @@ export default function SettingsCMS() {
                             value={step.title || ''}
                             onChange={(e) => handleUpdateRoadmapStep(idx, 'title', e.target.value)}
                             placeholder="e.g. Diagnostic & Fundamentals"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -1575,7 +1642,7 @@ export default function SettingsCMS() {
                             value={step.duration || ''}
                             onChange={(e) => handleUpdateRoadmapStep(idx, 'duration', e.target.value)}
                             placeholder="e.g. Weeks 1-2"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                       </div>
@@ -1586,7 +1653,7 @@ export default function SettingsCMS() {
                           rows={2}
                           value={step.description || ''}
                           onChange={(e) => handleUpdateRoadmapStep(idx, 'description', e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
                         />
                       </div>
 
@@ -1613,7 +1680,7 @@ export default function SettingsCMS() {
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-cyan-400" />
+                  <Globe className="w-4 h-4 text-indigo-400" />
                   About American FutureTech — Narrative Copy
                 </h3>
 
@@ -1627,7 +1694,7 @@ export default function SettingsCMS() {
                         ...settings,
                         aboutCMS: { ...settings.aboutCMS, headline: e.target.value }
                       })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
                   </div>
 
@@ -1665,7 +1732,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, missionTitle: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <div>
@@ -1677,7 +1744,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, missionText: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <div>
@@ -1689,7 +1756,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, missionTarget: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                   </div>
@@ -1711,7 +1778,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, visionTitle: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <div>
@@ -1723,7 +1790,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, visionText: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                     <div>
@@ -1735,7 +1802,7 @@ export default function SettingsCMS() {
                           ...settings,
                           aboutCMS: { ...settings.aboutCMS, visionTagline: e.target.value }
                         })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                       />
                     </div>
                   </div>
@@ -1754,7 +1821,7 @@ export default function SettingsCMS() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                      <Users className="w-4 h-4 text-cyan-400" />
+                      <Users className="w-4 h-4 text-indigo-400" />
                       Leadership &amp; Faculty Roster (About Page)
                     </h3>
                     <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -1764,7 +1831,7 @@ export default function SettingsCMS() {
                   <button
                     type="button"
                     onClick={handleAddLeader}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs font-mono transition-colors cursor-pointer shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Member
                   </button>
@@ -1781,7 +1848,7 @@ export default function SettingsCMS() {
                               type="checkbox"
                               checked={person.active !== false}
                               onChange={(e) => handleUpdateLeader(idx, 'active', e.target.checked)}
-                              className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+                              className="rounded bg-slate-900 border-slate-800 text-indigo-500"
                             />
                             <span>Active</span>
                           </label>
@@ -1795,37 +1862,37 @@ export default function SettingsCMS() {
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Full Name</label>
                           <input type="text" value={person.name || ''} onChange={(e) => handleUpdateLeader(idx, 'name', e.target.value)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Role / Title</label>
                           <input type="text" value={person.role || ''} onChange={(e) => handleUpdateLeader(idx, 'role', e.target.value)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">Experience Badge</label>
                           <input type="text" value={person.experience || ''} onChange={(e) => handleUpdateLeader(idx, 'experience', e.target.value)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
 
                       <div>
                         <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Bio</label>
                         <textarea rows={3} value={person.bio || ''} onChange={(e) => handleUpdateLeader(idx, 'bio', e.target.value)}
-                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                         <div className="sm:col-span-2">
                           <label className="block text-slate-500 uppercase mb-1">Skills (comma-separated)</label>
                           <input type="text" value={(person.skills || []).join(', ')} onChange={(e) => handleUpdateLeader(idx, 'skills', e.target.value)}
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
                           <label className="block text-slate-500 uppercase mb-1">LinkedIn URL</label>
                           <input type="url" value={person.linkedin || ''} onChange={(e) => handleUpdateLeader(idx, 'linkedin', e.target.value)}
                             placeholder="https://linkedin.com/in/..."
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-500" />
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-mono text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
                     </div>
@@ -1837,13 +1904,13 @@ export default function SettingsCMS() {
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <Handshake className="w-4 h-4 text-cyan-400" />
+                    <Handshake className="w-4 h-4 text-indigo-400" />
                     Sister Staffing Company / Strategic Alliance
                   </h3>
                   <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
                     <input type="checkbox" checked={settings.sisterCompany?.enabled !== false}
                       onChange={(e) => handleUpdateSister('enabled', e.target.checked)}
-                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0" />
+                      className="rounded bg-slate-950 border-slate-800 text-indigo-500 focus:ring-0" />
                     <span>Show Section</span>
                   </label>
                 </div>
@@ -1852,31 +1919,31 @@ export default function SettingsCMS() {
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Company Name</label>
                     <input type="text" value={settings.sisterCompany?.name || ''} onChange={(e) => handleUpdateSister('name', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Location Line</label>
                     <input type="text" value={settings.sisterCompany?.location || ''} onChange={(e) => handleUpdateSister('location', e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                   </div>
                 </div>
 
                 <div className="text-xs font-mono">
                   <label className="block text-slate-400 uppercase mb-1.5">Headline</label>
                   <input type="text" value={settings.sisterCompany?.headline || ''} onChange={(e) => handleUpdateSister('headline', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="text-xs font-mono">
                   <label className="block text-slate-400 uppercase mb-1.5">Tagline (quote)</label>
                   <input type="text" value={settings.sisterCompany?.tagline || ''} onChange={(e) => handleUpdateSister('tagline', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="text-xs font-mono">
                   <label className="block text-slate-400 uppercase mb-1.5">Description</label>
                   <textarea rows={3} value={settings.sisterCompany?.description || ''} onChange={(e) => handleUpdateSister('description', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs font-mono">
@@ -1887,7 +1954,7 @@ export default function SettingsCMS() {
                   ].map(([vKey, lKey]) => (
                     <div key={vKey} className="space-y-2">
                       <input type="text" value={settings.sisterCompany?.stats?.[vKey] || ''} onChange={(e) => handleUpdateSisterStat(vKey, e.target.value)}
-                        placeholder="Value" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs" />
+                        placeholder="Value" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-mono text-xs" />
                       <input type="text" value={settings.sisterCompany?.stats?.[lKey] || ''} onChange={(e) => handleUpdateSisterStat(lKey, e.target.value)}
                         placeholder="Label" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
                     </div>
@@ -1898,7 +1965,7 @@ export default function SettingsCMS() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Staffing Services ({(settings.sisterCompany?.services || []).length})</span>
                     <button type="button" onClick={handleAddSisterService}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold cursor-pointer hover:bg-cyan-500/30">
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold cursor-pointer hover:bg-indigo-500/30">
                       <Plus className="w-3.5 h-3.5" /> Add Service
                     </button>
                   </div>
@@ -1923,13 +1990,13 @@ export default function SettingsCMS() {
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-cyan-400" />
+                    <GraduationCap className="w-4 h-4 text-indigo-400" />
                     "Build-First" Pedagogy &amp; Institutional Stats
                   </h3>
                   <label className="flex items-center gap-2 text-xs font-mono text-slate-300 cursor-pointer">
                     <input type="checkbox" checked={settings.pedagogy?.enabled !== false}
                       onChange={(e) => handleUpdatePedagogy('enabled', e.target.checked)}
-                      className="rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0" />
+                      className="rounded bg-slate-950 border-slate-800 text-indigo-500 focus:ring-0" />
                     <span>Show Section</span>
                   </label>
                 </div>
@@ -1937,25 +2004,25 @@ export default function SettingsCMS() {
                 <div className="text-xs font-mono">
                   <label className="block text-slate-400 uppercase mb-1.5">Section Title</label>
                   <input type="text" value={settings.pedagogy?.title || ''} onChange={(e) => handleUpdatePedagogy('title', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="text-xs font-mono">
                   <label className="block text-slate-400 uppercase mb-1.5">Description</label>
                   <textarea rows={3} value={settings.pedagogy?.description || ''} onChange={(e) => handleUpdatePedagogy('description', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500" />
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Hands-On %</label>
                     <input type="number" value={settings.pedagogy?.handsOnPercent || 70} onChange={(e) => handleUpdatePedagogy('handsOnPercent', Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500" />
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Theory %</label>
                     <input type="number" value={settings.pedagogy?.theoryPercent || 30} onChange={(e) => handleUpdatePedagogy('theoryPercent', Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500" />
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500" />
                   </div>
                 </div>
 
@@ -1974,7 +2041,7 @@ export default function SettingsCMS() {
                   {(settings.pedagogy?.stats || []).map((st, idx) => (
                     <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
                       <input type="text" value={st.value || ''} onChange={(e) => handleUpdatePedagogyStat(idx, 'value', e.target.value)}
-                        placeholder="2,000+" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-cyan-300 font-mono text-xs" />
+                        placeholder="2,000+" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-mono text-xs" />
                       <input type="text" value={st.label || ''} onChange={(e) => handleUpdatePedagogyStat(idx, 'label', e.target.value)}
                         placeholder="Students Trained" className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs" />
                     </div>
@@ -1990,7 +2057,7 @@ export default function SettingsCMS() {
           {activeTab === 'globalCtas' && (
             <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-                <Zap className="w-4 h-4 text-cyan-400" />
+                <Zap className="w-4 h-4 text-indigo-400" />
                 Contextual $99 Reservation CTAs & Urgency Notices
               </h3>
 
@@ -2004,7 +2071,7 @@ export default function SettingsCMS() {
                       ...settings,
                       globalCtas: { ...settings.globalCtas, reserveSeatText: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -2016,7 +2083,7 @@ export default function SettingsCMS() {
                       ...settings,
                       globalCtas: { ...settings.globalCtas, reserveSeatPrice: Number(e.target.value) }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -2028,7 +2095,7 @@ export default function SettingsCMS() {
                       ...settings,
                       globalCtas: { ...settings.globalCtas, reserveSeatUrl: e.target.value }
                     })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -2042,7 +2109,7 @@ export default function SettingsCMS() {
                     ...settings,
                     globalCtas: { ...settings.globalCtas, urgencyBannerText: e.target.value }
                   })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -2053,7 +2120,7 @@ export default function SettingsCMS() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-cyan-500/20 cursor-pointer"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-indigo-500/20 cursor-pointer"
             >
               <Save className="w-4 h-4" />
               {saving ? 'Publishing Changes...' : 'Publish CMS Changes'}
@@ -2073,7 +2140,7 @@ export default function SettingsCMS() {
             </div>
             <button
               onClick={fetchData}
-              className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:underline font-mono cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:underline font-mono cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" /> Refresh Logs
             </button>
@@ -2107,7 +2174,7 @@ export default function SettingsCMS() {
                         {log.actorName || 'System Admin'}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
                           {log.action}
                         </span>
                       </td>

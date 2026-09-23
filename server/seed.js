@@ -2,6 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const User = require('./models/User');
+const { generateSecurePassword } = require('./utils/passwords');
 const Course = require('./models/Course');
 const Lead = require('./models/Lead');
 const Batch = require('./models/Batch');
@@ -17,11 +18,17 @@ const seedData = async () => {
     await Batch.deleteMany();
 
     // 1. Create SuperAdmin and Counselors
+    // Random, policy-compliant passwords per account — never a shared default.
+    const forcedSeedPassword = (process.env.SEED_ADMIN_PASSWORD || '').trim();
+    const adminPassword = forcedSeedPassword || generateSecurePassword();
+    const counselorPassword = forcedSeedPassword || generateSecurePassword();
+    const instructorPassword = forcedSeedPassword || generateSecurePassword();
+
     console.log('[Seeding]: Creating Staff & RBAC Accounts...');
     const superAdmin = await User.create({
       name: 'Alexander Pierce (Principal Admin)',
       email: 'admin@americanfuturetech.com',
-      password: 'admin123',
+      password: adminPassword,
       role: 'SuperAdmin',
       isActive: true,
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -30,7 +37,7 @@ const seedData = async () => {
     const counselor1 = await User.create({
       name: 'Sarah Jenkins',
       email: 'counselor@americanfuturetech.com',
-      password: 'admin123',
+      password: counselorPassword,
       role: 'Counselor',
       isActive: true,
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
@@ -39,13 +46,13 @@ const seedData = async () => {
     const instructor1 = await User.create({
       name: 'Dr. Marcus Vance (Head of AI)',
       email: 'instructor@americanfuturetech.com',
-      password: 'admin123',
+      password: instructorPassword,
       role: 'Instructor',
       isActive: true,
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     });
 
-    console.log('✓ SuperAdmin created: admin@americanfuturetech.com / admin123');
+    console.log('✓ Staff accounts created with generated passwords (printed at the end).');
 
     // 2. Create the 2 Primary Programs matching user's visual reference
     console.log('[Seeding]: Creating Core Programs...');
@@ -411,9 +418,11 @@ const seedData = async () => {
 =============================================================
   AMERICAN FUTURETECH SEED COMPLETED SUCCESSFULLY!
   -----------------------------------------------------------
-  SuperAdmin: admin@americanfuturetech.com / admin123
-  Counselor:  counselor@americanfuturetech.com / admin123
-  Instructor: instructor@americanfuturetech.com / admin123
+  Credentials (shown once — they cannot be recovered):
+    SuperAdmin: admin@americanfuturetech.com    / ${forcedSeedPassword || adminPassword}
+    Counselor:  counselor@americanfuturetech.com / ${forcedSeedPassword || counselorPassword}
+    Instructor: instructor@americanfuturetech.com / ${forcedSeedPassword || instructorPassword}
+  ⚠️  Change these before going live.
 =============================================================
     `);
 

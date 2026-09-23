@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { generateSecurePassword, validatePassword } = require('./passwords');
 const Course = require('../models/Course');
 const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
@@ -19,17 +20,27 @@ const autoSeedIfEmpty = async () => {
   try {
     const courseCount = await Course.countDocuments();
     if (courseCount > 0) {
-      console.log(`[Database Ready]: ${courseCount} courses already present in database.`);
+      console.log(
+        `[Database Ready]: ${courseCount} courses already present — auto-seed skipped. Existing content (admin edits, curriculum, images) is never overwritten or deleted by the code.`
+      );
       return;
     }
 
     console.log('[Auto-Seed Triggered]: Populating comprehensive American FutureTech enterprise dataset...');
 
     // 1. Staff & Demo Users
+    // Passwords are NEVER hardcoded: each demo account gets its own random,
+    // policy-compliant password that is printed once below. Set
+    // SEED_ADMIN_PASSWORD to force a specific value (used by automated tests).
+    const forcedSeedPassword = (process.env.SEED_ADMIN_PASSWORD || '').trim();
+    const adminPassword = forcedSeedPassword || generateSecurePassword();
+    const counselorPassword = forcedSeedPassword || generateSecurePassword();
+    const studentPassword = forcedSeedPassword || generateSecurePassword();
+
     const superAdmin = await User.create({
       name: 'Alexander Pierce',
       email: 'admin@americanfuturetech.com',
-      password: 'admin123',
+      password: adminPassword,
       role: 'SUPERADMIN',
       isActive: true,
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -39,7 +50,7 @@ const autoSeedIfEmpty = async () => {
     const counselor = await User.create({
       name: 'Sarah Jenkins',
       email: 'counselor@americanfuturetech.com',
-      password: 'admin123',
+      password: counselorPassword,
       role: 'COUNSELOR',
       isActive: true,
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
@@ -49,7 +60,7 @@ const autoSeedIfEmpty = async () => {
     const demoStudent = await User.create({
       name: 'Ethan Hunt',
       email: 'student@americanfuturetech.com',
-      password: 'admin123',
+      password: studentPassword,
       phone: '+1 (415) 555-0192',
       role: 'STUDENT',
       isActive: true,
@@ -59,6 +70,33 @@ const autoSeedIfEmpty = async () => {
         targetCareer: 'Senior AI Engineer',
       },
     });
+
+    // Credentials are shown exactly once, here in the server log — never in the
+    // repository, and never in an API response.
+    if (forcedSeedPassword) {
+      const strength = validatePassword(forcedSeedPassword, { email: 'admin@americanfuturetech.com' });
+      if (!strength.valid) {
+        console.warn(
+          `\n⚠️  [Seed] SEED_ADMIN_PASSWORD does not meet the password policy (${strength.errors[0]})\n` +
+          '   Change it after first login, or omit SEED_ADMIN_PASSWORD to get random passwords.\n',
+        );
+      }
+      console.log(
+        `\n[Seed] Demo accounts created with SEED_ADMIN_PASSWORD:\n` +
+        `   SUPERADMIN  admin@americanfuturetech.com\n` +
+        `   COUNSELOR   counselor@americanfuturetech.com\n` +
+        `   STUDENT     student@americanfuturetech.com\n` +
+        `   ⚠️  Rotate these before going live (Admin → Staff & RBAC → Reset password).\n`,
+      );
+    } else {
+      console.log(
+        `\n[Seed] Demo accounts created with RANDOM passwords (shown once, stored hashed):\n` +
+        `   SUPERADMIN  admin@americanfuturetech.com      / ${adminPassword}\n` +
+        `   COUNSELOR   counselor@americanfuturetech.com  / ${counselorPassword}\n` +
+        `   STUDENT     student@americanfuturetech.com    / ${studentPassword}\n` +
+        `   ⚠️  Save these now — they cannot be recovered. Change them after first login.\n`,
+      );
+    }
 
     // 2. Global Site Settings
     await SiteSettings.create({

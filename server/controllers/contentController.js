@@ -150,9 +150,44 @@ const getSuccessStories = async (req, res) => {
   }
 };
 
+/**
+ * The success-story model (and the public page that renders it) uses
+ * studentName / testimonial / photo / course / salaryHikePercent. Older admin
+ * bundles posted name / quote / image / courseTitle / salaryHike, which failed
+ * validation on create and were silently dropped on update. Accept both so a
+ * cached bundle can never lose data again.
+ */
+const STORY_ALIASES = {
+  name: 'studentName',
+  quote: 'testimonial',
+  image: 'photo',
+  courseTitle: 'course',
+  salaryHike: 'salaryHikePercent',
+};
+
+const normalizeStoryPayload = (body = {}) => {
+  const out = { ...body };
+  Object.entries(STORY_ALIASES).forEach(([legacy, current]) => {
+    if (out[current] === undefined && out[legacy] !== undefined) {
+      out[current] = out[legacy];
+    }
+    delete out[legacy];
+  });
+
+  // "+140%" → 140, and never leak an empty photo (it would override the default).
+  if (out.salaryHikePercent !== undefined) {
+    const parsed = parseInt(String(out.salaryHikePercent).replace(/[^0-9-]/g, ''), 10);
+    out.salaryHikePercent = Number.isNaN(parsed) ? undefined : parsed;
+    if (out.salaryHikePercent === undefined) delete out.salaryHikePercent;
+  }
+  if (out.photo !== undefined && !String(out.photo).trim()) delete out.photo;
+
+  return out;
+};
+
 const createSuccessStory = async (req, res) => {
   try {
-    const story = await SuccessStory.create(req.body);
+    const story = await SuccessStory.create(normalizeStoryPayload(req.body));
     return res.status(201).json({ success: true, story });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -161,7 +196,11 @@ const createSuccessStory = async (req, res) => {
 
 const updateSuccessStory = async (req, res) => {
   try {
-    const story = await SuccessStory.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const story = await SuccessStory.findByIdAndUpdate(
+      req.params.id,
+      normalizeStoryPayload(req.body),
+      { new: true, runValidators: true },
+    );
     return res.status(200).json({ success: true, story });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

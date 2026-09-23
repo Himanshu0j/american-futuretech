@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const {
   registerStudent,
@@ -13,8 +14,36 @@ const {
 } = require('../controllers/authController');
 const { protect, checkPermission } = require('../middleware/auth');
 
-router.post('/register', registerStudent);
-router.post('/login', login);
+// Layer 1 of brute-force defence: per-IP limits on the credential endpoints.
+// Layer 2 (per-account lock) lives in authController.login.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Only failed attempts count, so normal logins are never throttled.
+  skipSuccessfulRequests: true,
+  message: {
+    success: false,
+    code: 'RATE_LIMITED',
+    message: 'Too many failed login attempts from this network. Please try again in 15 minutes.',
+  },
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    code: 'RATE_LIMITED',
+    message: 'Too many accounts created from this network. Please try again later.',
+  },
+});
+
+router.post('/register', registerLimiter, registerStudent);
+router.post('/login', loginLimiter, login);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 

@@ -35,7 +35,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   tier: {
     type: String,
-    enum: ['deposit', 'full', 'installment'],
+    enum: ['deposit', 'full', 'personalized', 'installment'],
     default: 'deposit',
   },
   amount: {
@@ -59,8 +59,10 @@ const PaymentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Paid', 'Pending', 'Failed', 'Refunded'],
-    default: 'Paid',
+    // Payments are created as Pending and may only become Paid once Stripe
+    // confirms the charge through a signature-verified webhook.
+    enum: ['Paid', 'Pending', 'Failed', 'Expired', 'Refunded'],
+    default: 'Pending',
   },
   transactionId: {
     type: String,
@@ -80,8 +82,45 @@ const PaymentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  // ── Gateway / settlement tracking (kept for audit + idempotency) ──
+  provider: {
+    type: String,
+    default: 'stripe',
+  },
+  checkoutSessionId: {
+    type: String,
+    default: '',
+    index: true,
+  },
+  checkoutSessionUrl: {
+    type: String,
+    default: '',
+  },
+  stripePaymentIntentId: {
+    type: String,
+    default: '',
+  },
+  couponLabel: {
+    type: String,
+    default: '',
+  },
+  paidAt: {
+    type: Date,
+  },
+  failureReason: {
+    type: String,
+    default: '',
+  },
+  // Stripe event ids already processed — guarantees a retried webhook can never
+  // enroll the same student twice.
+  webhookEventIds: {
+    type: [String],
+    default: [],
+  },
 }, {
   timestamps: true,
 });
+
+PaymentSchema.index({ status: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Payment', PaymentSchema);

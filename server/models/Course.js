@@ -112,6 +112,37 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     default: 'Only 3 seats remaining for this cohort',
   },
+
+  // ── "Choose your learning experience" block on the course detail page ──
+  // Admin ticks decide which of the two ways to learn this course offers.
+  // Both default to true so an existing course keeps showing both cards.
+  viewOptions: {
+    groupBatch: { type: Boolean, default: true },
+    personalizedMentor: { type: Boolean, default: true },
+  },
+
+  // ── "Who Can Apply for this Course?" block ──
+  // Different for every course, so it is edited on the course itself.
+  eligibility: {
+    eyebrow: { type: String, default: 'Eligibility & Candidate Profile' },
+    title: { type: String, default: 'Who Can Apply for this Course?' },
+    subtitle: {
+      type: String,
+      default: 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.',
+    },
+    points: [{ type: String }],
+    certificationTitle: { type: String, default: 'Globally Recognised Certification' },
+    certificationText: {
+      type: String,
+      default: 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.',
+    },
+    certificationPoints: [{
+      type: String,
+    }],
+    audiences: [{
+      type: String,
+    }],
+  },
 }, {
   timestamps: true,
 });

@@ -21,6 +21,21 @@ const RoadmapStepSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true });
 
+// Capstone showcase card (rendered on every course detail page when filled in).
+// NOTE: this schema MUST stay in sync with the admin editors in
+// CoursesCMS (course modal) and SettingsCMS (Capstone tab) — a field the UI can
+// write but the schema does not declare is silently discarded by mongoose
+// strict mode, which is exactly how capstone edits used to disappear.
+const CapstoneProjectSchema = new mongoose.Schema({
+  tag: { type: String, default: 'Machine Learning' },
+  title: { type: String, required: true },
+  desc: { type: String, default: '' },
+  stack: [{ type: String }],
+  color: { type: String, default: 'from-indigo-500 to-blue-500' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: true });
+
 const CompanyLogoSchema = new mongoose.Schema({
   name: { type: String, required: true },
   logoUrl: { type: String, default: '' },
@@ -137,6 +152,11 @@ const SiteSettingsSchema = new mongoose.Schema({
     type: String,
     default: 'American FutureTech',
   },
+  // Legal entity printed in the footer and on the policy pages.
+  legalName: {
+    type: String,
+    default: 'American FutureTech LLC',
+  },
   tagline: {
     type: String,
     default: 'Empowering Next-Gen Tech Leaders with AI, Cyber Security & Cloud',
@@ -159,6 +179,9 @@ const SiteSettingsSchema = new mongoose.Schema({
     badge: { type: String, default: 'New Cohort' },
     linkText: { type: String, default: 'Explore Programs' },
     linkUrl: { type: String, default: '/courses' },
+    // Older admin UI wrote these names; kept so an existing document still resolves.
+    active: { type: Boolean },
+    link: { type: String },
   },
   socialLinks: {
     linkedin: { type: String, default: 'https://linkedin.com/company/american-futuretech' },
@@ -169,6 +192,30 @@ const SiteSettingsSchema = new mongoose.Schema({
   depositPriceUSD: {
     type: Number,
     default: 99,
+  },
+
+  // 🌟 CAREER PROGRAMS SECTION CMS (headline + badge above the course grid)
+  courses: {
+    headline: { type: String, default: 'Flagship Career Programs' },
+    subheadline: { type: String, default: 'Live, mentor-led fellowships engineered for hire-ready technical competence.' },
+    badgeText: { type: String, default: 'Career Programs' },
+  },
+
+  // 🌟 VISUAL "EDIT ANYTHING" OVERRIDES
+  // Free-form, route-scoped maps written by the inline site editor so an admin
+  // can change any single text or image on the public site without a code edit.
+  //
+  //   textOverrides:  { "/courses": { "main>section>h1#0": { original, value, updatedAt } } }
+  //   imageOverrides: { "/about":   { "main>img#0":           { original, value, updatedAt } } }
+  //
+  // Shape and size limits are enforced in settingsController before saving.
+  textOverrides: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
+  },
+  imageOverrides: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
   },
   isMaintenanceMode: {
     type: Boolean,
@@ -209,6 +256,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     title: { type: String, default: 'Personalized 1-on-1 Applied Mentorship Track' },
     subtitle: { type: String, default: 'Customized Curriculum Tailored to Your Prior Background & Target Tech Role' },
     duration: { type: String, default: 'Custom / 3 to 6 Months' },
+    badgeText: { type: String, default: 'Exclusive 1-on-1 Mentorship Track' },
     fee: { type: Number, default: 5499 },
     price: { type: Number, default: 5499 },
     originalFee: { type: Number, default: 6999 },
@@ -266,6 +314,12 @@ const SiteSettingsSchema = new mongoose.Schema({
         { name: 'Kubernetes', category: 'DevOps & Cloud', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg', badge: 'Orchestration', order: 10, active: true, description: 'Automated container deployment, scaling, and cluster management.' }
       ]
     },
+    // Empty by default so each course keeps showing its own curated capstone
+    // cards until the admin publishes site-wide showcase cards here.
+    projects: {
+      type: [CapstoneProjectSchema],
+      default: [],
+    },
     ctaText: { type: String, default: 'Reserve Capstone Seat — $99' },
     ctaLink: { type: String, default: '/checkout' },
   },
@@ -290,6 +344,11 @@ const SiteSettingsSchema = new mongoose.Schema({
   // 🌟 ABOUT / MISSION / VISION CMS
   aboutCMS: {
     aboutTitle: { type: String, default: 'Pioneering Applied Emerging Tech Education for the Global Workforce.' },
+    // Read by the About page hero; without these the admin's About tab could not save at all.
+    headline: { type: String, default: 'Bridging the Divide Between Academia and Global Industry' },
+    bodyParagraphs: { type: [String], default: [] },
+    missionTarget: { type: String, default: 'Target: 100,000+ Certified Tech Leaders' },
+    visionTagline: { type: String, default: 'Global Workforce Transformation Standard' },
     aboutText: { type: String, default: 'Founded with a singular standard: technical excellence forged through hands-on production code, verified by accredited US credentials, and accelerated into elite technology careers.' },
     missionTitle: { type: String, default: 'Building the next generation of applied technology leaders.' },
     missionText: { type: String, default: 'We combine the academic rigor of premier North American computer science curricula with the pragmatic urgency of Silicon Valley engineering sprints.' },
@@ -358,6 +417,11 @@ const SiteSettingsSchema = new mongoose.Schema({
     enrollButtonText: { type: String, default: 'Enroll Now — $99' },
     seatsUrgencyText: { type: String, default: 'Spring 2026 Cohort • Limited to 25 Seats per Track' },
     careerAssistanceNotice: { type: String, default: '100% Placement Support & Direct Partner Introductions' },
+    // Global reserve-seat controls used by the homepage CTAs.
+    reserveSeatText: { type: String, default: 'Reserve Your Seat' },
+    reserveSeatUrl: { type: String, default: '/checkout' },
+    reserveSeatPrice: { type: Number, default: 99 },
+    urgencyBannerText: { type: String, default: '' },
   },
 
   // 🌟 BRAND & COMPANY LOGOS CMS

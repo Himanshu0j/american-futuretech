@@ -1,5 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getJwtSecret } = require('../config/auth');
+
+// `passwordChangedAt` is stamped after hashing and the replacement token is
+// signed after that, so a fresh token always carries iat >= passwordChangedAt.
+// No grace window is needed — every older session dies immediately.
 
 const protect = async (req, res, next) => {
   let token;
@@ -16,14 +21,28 @@ const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'american_futuretech_jwt_secret_ultra_secure_key_2026');
+    // No fallback secret: config/auth.js throws in production when it is missing
+    // or unsafe, so a forged token cannot be signed with a published key.
+    const decoded = jwt.verify(token, getJwtSecret());
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'The user belonging to this token no longer exists.',
+        message: 'Not authorized to access this route. Invalid or expired token.',
       });
+    }
+
+    // Rotating a password revokes every session that started before it.
+    if (req.user.passwordChangedAt && decoded.iat) {
+      const changedAtSeconds = Math.floor(req.user.passwordChangedAt.getTime() / 1000);
+      if (changedAtSeconds > decoded.iat) {
+        return res.status(401).json({
+          success: false,
+          code: 'PASSWORD_CHANGED',
+          message: 'Your password was changed. Please log in again.',
+        });
+      }
     }
 
     if (!req.user.isActive) {

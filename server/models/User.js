@@ -39,6 +39,22 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  // Brute-force protection: failed attempts are counted per account and a
+  // temporary lock is applied once the limit is crossed.
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+  },
+  lockUntil: {
+    type: Date,
+    default: null,
+  },
+  // Timestamp of the last password change; tokens issued before it are refused
+  // so rotating a password also revokes every existing session.
+  passwordChangedAt: {
+    type: Date,
+    default: null,
+  },
   avatar: {
     type: String,
     default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -64,11 +80,25 @@ UserSchema.pre('save', async function (next) {
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  // Only a *change* invalidates existing sessions — a brand-new document must
+  // not reject the token issued moments later by its own login.
+  if (!this.isNew) {
+    this.passwordChangedAt = new Date();
+  }
   next();
 });
 
 UserSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return bcrypt.compare(enteredPassword, this.password);
+};
+
+// Alias: profile/reset flows referenced this name but only matchPassword existed.
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+  return bcrypt.compare(enteredPassword, this.password);
+};
+
+UserSchema.methods.isLocked = function () {
+  return Boolean(this.lockUntil && this.lockUntil.getTime() > Date.now());
 };
 
 module.exports = mongoose.model('User', UserSchema);

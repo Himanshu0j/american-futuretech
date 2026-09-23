@@ -27,6 +27,9 @@ tunnel.ps1
 live_audit_*.js
 live_audit_*.json
 
+# Content backups (contain student/lead personal data — never commit)
+backups/
+
 # OS files
 .DS_Store
 Thumbs.db

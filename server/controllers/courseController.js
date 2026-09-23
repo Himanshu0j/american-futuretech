@@ -1,5 +1,7 @@
 const Course = require('../models/Course');
 const AuditLog = require('../models/AuditLog');
+const Module = require('../models/Module');
+const { syncCourseCurriculum, normalizeCurriculumForEmbed } = require('../utils/curriculumSync');
 
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
@@ -26,10 +28,22 @@ const getPublishedCourses = async (req, res) => {
 const getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find().sort({ createdAt: -1 });
+
+    // The module count must come from the real curriculum collection, not the
+    // embedded mirror — otherwise the CMS listed "0 Modules" for courses whose
+    // modules the website was happily rendering.
+    const counts = await Module.aggregate([
+      { $group: { _id: '$course', total: { $sum: 1 } } },
+    ]);
+    const countByCourse = new Map(counts.map((c) => [String(c._id), c.total]));
+
     return res.status(200).json({
       success: true,
       count: courses.length,
-      courses,
+      courses: courses.map((c) => ({
+        ...c.toObject(),
+        moduleCount: countByCourse.get(String(c._id)) || 0,
+      })),
     });
   } catch (error) {
     return res.status(500).json({
@@ -68,7 +82,7 @@ const getCourseBySlug = async (req, res) => {
 // @access  Private (SuperAdmin, Counselor)
 const createCourse = async (req, res) => {
   try {
-    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText } = req.body;
+    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility } = req.body;
 
     const courseSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -89,11 +103,22 @@ const createCourse = async (req, res) => {
       duration,
       pricing,
       highlights,
-      curriculum,
+      curriculum: normalizeCurriculumForEmbed(curriculum),
       brochureUrl,
       isPublished: isPublished !== undefined ? isPublished : true,
       seatsUrgencyText,
+      // Per-course "Choose your learning experience" ticks + the eligibility block.
+      // Without these the create call silently dropped them and the admin's
+      // ticks appeared to "save" but never reached the course page.
+      viewOptions,
+      eligibility,
     });
+
+    // Mirror the composer's modules into the real curriculum the site renders.
+    let curriculumSummary = null;
+    if (curriculum !== undefined) {
+      curriculumSummary = await syncCourseCurriculum(course._id, curriculum);
+    }
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -108,6 +133,7 @@ const createCourse = async (req, res) => {
     return res.status(201).json({
       success: true,
       course,
+      curriculumSummary,
     });
   } catch (error) {
     return res.status(500).json({
@@ -130,10 +156,24 @@ const updateCourse = async (req, res) => {
       });
     }
 
-    course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+    // The module composer edits `curriculum`; push it into the Module/Lesson
+    // collections that the course page and the student LMS actually read.
+    const { curriculum } = req.body || {};
+    const coursePatch = { ...req.body };
+    delete coursePatch.curriculum;
+
+    course = await Course.findByIdAndUpdate(req.params.id, coursePatch, {
       new: true,
       runValidators: true,
     });
+
+    let curriculumSummary = null;
+    if (curriculum !== undefined) {
+      curriculumSummary = await syncCourseCurriculum(course._id, curriculum);
+      // Keep the embedded mirror in step for anything still reading it.
+      course.curriculum = normalizeCurriculumForEmbed(curriculum);
+      await course.save();
+    }
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -148,6 +188,7 @@ const updateCourse = async (req, res) => {
     return res.status(200).json({
       success: true,
       course,
+      curriculumSummary,
     });
   } catch (error) {
     return res.status(500).json({

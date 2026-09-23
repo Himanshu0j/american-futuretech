@@ -1,7 +1,12 @@
 const Lead = require('../models/Lead');
 const Course = require('../models/Course');
 const Batch = require('../models/Batch');
-const { sendLeadConfirmationEmail, sendAdminLeadAlert } = require('../utils/emailService');
+const {
+  sendLeadConfirmationEmail,
+  sendAdminLeadAlert,
+  sendEnrollmentCredentialsEmail,
+} = require('../utils/emailService');
+const { generateSecurePassword } = require('../utils/passwords');
 
 // @desc    Submit new lead / application
 // @route   POST /api/leads/apply
@@ -278,13 +283,17 @@ const convertToStudent = async (req, res) => {
     batch.enrolledStudents.push(studentRecord);
     await batch.save();
 
-    // Create or find student user account
+    // Create or find student user account. The temporary password is random per
+    // student and is delivered by email — never a shared default, never logged
+    // in plain text inside the CRM call log.
     let studentUser = await User.findOne({ email: lead.email.toLowerCase() });
+    let tempPassword = null;
     if (!studentUser) {
+      tempPassword = generateSecurePassword();
       studentUser = await User.create({
         name: lead.fullName,
         email: lead.email.toLowerCase(),
-        password: 'Password@123',
+        password: tempPassword,
         phone: lead.phone,
         role: 'STUDENT',
         studentDetails: {
@@ -318,11 +327,31 @@ const convertToStudent = async (req, res) => {
     lead.status = 'Enrolled';
     lead.callLogs.unshift({
       caller: req.user ? req.user.name : 'System',
-      note: `Converted to Student in cohort ${batch.batchCode}. Student Account: ${studentUser.email} (Temp Pass: Password@123). Invoice #${invoiceId}.`,
+      note: `Converted to Student in cohort ${batch.batchCode}. Student Account: ${studentUser.email} (temporary password emailed to the student). Invoice #${invoiceId}.`,
       callOutcome: 'Counseling Scheduled',
       timestamp: new Date(),
     });
     await lead.save();
+
+    // Email the fresh credentials so the student (and nobody else) receives them.
+    if (tempPassword) {
+      const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, '');
+      sendEnrollmentCredentialsEmail({
+        payment: {
+          email: studentUser.email,
+          studentName: studentUser.name,
+          courseTitle: lead.targetCourse?.title || 'Technology Program',
+          invoiceNumber: invoiceId,
+          transactionId: invoiceId,
+          amount: studentRecord.feePaid,
+          currency: 'USD',
+          tier: 'full',
+          discountAmount: 0,
+        },
+        tempPassword,
+        loginUrl: `${clientUrl}/student/login`,
+      }).catch((err) => console.error('[Email] conversion credentials failed:', err.message));
+    }
 
     // Audit log
     await AuditLog.create({

@@ -6,11 +6,30 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
+const { getDbInfo } = require('./config/db');
+const { getPaymentStatus } = require('./config/payments');
+const { assertAuthConfig } = require('./config/auth');
 const { autoSeedIfEmpty } = require('./utils/seeder');
 const errorHandler = require('./middleware/errorHandler');
 
+// Fail fast: an unsafe/missing JWT secret must stop the boot in production
+// instead of silently falling back to a secret that is published in this repo.
+let authStatus = null;
+try {
+  authStatus = assertAuthConfig();
+} catch (authError) {
+  console.error(`\n${authError.message}\n`);
+  process.exit(1);
+}
+
 // Initialize database and auto-seed if empty
 connectDB().then(() => {
+  // Set SEED_ON_BOOT=false once the database holds real content and you never
+  // want the demo dataset re-created on a fresh/empty database.
+  if (process.env.SEED_ON_BOOT === 'false') {
+    console.log('[Seeder Skipped]: SEED_ON_BOOT=false.');
+    return;
+  }
   autoSeedIfEmpty();
 });
 
@@ -38,15 +57,39 @@ const applyLimiter = rateLimit({
 });
 
 // Parsers
-app.use(express.json());
+// `verify` keeps the untouched request body around so the Stripe webhook can be
+// validated against its signature (a re-serialized body would break the hash).
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 
-// Healthcheck
+// Healthcheck — also reports whether stored content is durable across restarts
 app.get('/api/health', (req, res) => {
+  const db = getDbInfo();
+  const payments = getPaymentStatus();
+  const warnings = [];
+  if (db.ephemeral) {
+    warnings.push(
+      'Ephemeral in-memory database: admin content is wiped on every restart/redeploy. Set MONGODB_URI to a persistent MongoDB (e.g. MongoDB Atlas).',
+    );
+  }
+  if (payments.warning) warnings.push(payments.warning);
+
   res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
     service: 'American FutureTech Enterprise Core API',
+    uptimeSeconds: Math.round(process.uptime()),
+    database: db,
+    payments,
+    auth: authStatus,
+    warnings,
+    warning: warnings[0] || null,
   });
 });
 

@@ -369,23 +369,27 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   key={course._id || course.slug}
                   className="elms-card flex flex-col justify-between group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-indigo-500/40 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden"
                 >
-                  <div>
+                  {/* Phones: compact horizontal row (thumbnail beside the text) so the
+                      course list stops eating several screens. sm+: original stacked card. */}
+                  <div className="flex sm:block">
                     {/* Visual Thumbnail Header */}
-                    <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-950">
+                    <div className="relative w-24 shrink-0 self-stretch sm:w-full sm:h-36 sm:self-auto min-h-[104px] overflow-hidden bg-slate-950">
                       <img
                         src={getCourseImage(course)}
                         alt={course.title}
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/30" />
 
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-emerald-300 border border-emerald-500/20">
+                      {/* These overlays need a full-width image, so they are desktop-only.
+                          The same info is repeated in the mobile meta row below. */}
+                      <div className="absolute top-3 left-3 hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-emerald-300 border border-emerald-500/20">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-mint-dot" />
                         <span>Admissions Open</span>
                       </div>
 
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
+                      <div className="absolute bottom-3 left-3 right-3 hidden sm:flex items-center justify-between text-xs">
                         <span className="text-[10px] font-mono font-bold text-white bg-indigo-600/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full">
                           {course.duration || '6-Month Career Training'}
                         </span>
@@ -396,10 +400,23 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </div>
                     </div>
 
-                    <div className="p-6 relative">
+                    <div className="p-4 sm:p-6 relative flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                          {course.category || 'Specialization Track'}
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                            {course.category || 'Specialization Track'}
+                          </div>
+                          {/* Mobile meta — on desktop this lives in the image badges */}
+                          <div className="flex sm:hidden flex-wrap items-center gap-1 mt-1">
+                            <span className="text-[9px] font-mono font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded-full">
+                              {(course.duration || '6 Months').split('·')[0].trim()}
+                            </span>
+                            {course.badge ? (
+                              <span className="text-[9px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 px-1.5 py-0.5 rounded-full">
+                                {course.badge}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
                         <div className="w-9 h-9 p-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 shrink-0">
                           <img src={getCourseIllustration(course)} alt="" className="w-full h-full object-contain" />
@@ -407,7 +424,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </div>
 
                       <Link to={`/courses/${course.slug}`} className="block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                        <h4 className="text-lg font-bold text-slate-900 dark:text-white font-heading tracking-tight leading-snug">
+                        <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-heading tracking-tight leading-snug">
                           {course.title}
                         </h4>
                       </Link>
@@ -417,7 +434,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </p>
 
                       {/* Tech Stack Strip */}
-                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-1.5">
+                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 hidden sm:flex flex-wrap gap-1.5">
                         {(course.skills?.slice(0, 4) || ['Kali Linux', 'Metasploit', 'Burp Suite', 'Python']).map(
                           (skill, sIdx) => (
                             <span
@@ -433,8 +450,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   </div>
 
                   {/* Bottom Tuition & CTAs */}
-                  <div className="p-6 pt-0">
-                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                  <div className="p-4 pt-0 sm:p-6 sm:pt-0">
+                    <div className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap">
                       <div>
                         <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
                           Reserve with $99
@@ -446,7 +463,13 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {/* No public syllabus download — View Details opens the curriculum */}
+                        {/* No public syllabus download — View Details opens the course page */}
+                        <Link
+                          to={`/courses/${course.slug}`}
+                          className="text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 px-2 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors whitespace-nowrap"
+                        >
+                          View Details
+                        </Link>
 
                         <Link
                           to={`/checkout?tier=deposit&courseId=${course._id}`}

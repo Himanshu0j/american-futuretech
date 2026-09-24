@@ -150,12 +150,14 @@ export default function AIChatbox() {
           <button
             onClick={() => setIsOpen(true)}
             aria-label="Open AI Advisor Chat"
-            className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#E5C275]/40 group cursor-pointer"
+            className="flex items-center justify-center sm:justify-start gap-2.5 w-14 h-14 sm:w-auto sm:h-auto sm:px-4 sm:py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#E5C275]/40 group cursor-pointer"
           >
-            <div className="w-6 h-6 rounded-full bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold">
+            <div className="w-6 h-6 rounded-full bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold shrink-0">
               <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             </div>
-            <span className="text-xs font-bold font-sans tracking-wide">Ask AI Advisor</span>
+            {/* The label is dropped on phones: at 390px the wide pill sat on top of
+                card headings. A 56px circle matches the WhatsApp button below it. */}
+            <span className="hidden sm:inline text-xs font-bold font-sans tracking-wide whitespace-nowrap">Ask AI Advisor</span>
           </button>
         )}
       </div>

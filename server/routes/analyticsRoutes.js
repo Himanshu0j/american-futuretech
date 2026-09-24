@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { getDashboardAnalytics } = require('../controllers/analyticsController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorizeScoped } = require('../middleware/auth');
 
-router.get('/dashboard', protect, authorize('SUPERADMIN', 'ADMIN', 'COUNSELOR', 'SuperAdmin', 'Counselor'), getDashboardAnalytics);
+// The panel gates the Executive Dashboard with DASHBOARD_VIEW. COUNSELOR keeps
+// its documented role scope; an ADMIN now needs the permission itself.
+router.get('/dashboard', protect, authorizeScoped(['SUPERADMIN', 'ADMIN', 'COUNSELOR'], ['DASHBOARD_VIEW']), getDashboardAnalytics);
 
 module.exports = router;

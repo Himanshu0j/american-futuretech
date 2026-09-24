@@ -15,8 +15,10 @@ import {
   GraduationCap,
   Plus,
   RefreshCw,
+  ShieldCheck,
 } from 'lucide-react';
 import api from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function LeadsCRM() {
   const [leads, setLeads] = useState([]);
@@ -25,6 +27,17 @@ export default function LeadsCRM() {
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedLead, setSelectedLead] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Mirrors `authorizeScoped` in server/middleware/auth.js: COUNSELOR keeps its
+  // documented role scope, SUPERADMIN is unrestricted, and a normal admin needs
+  // the matching grant. Controls that would answer 403 are not rendered — a
+  // read-only account still sees the full lead record, just no write actions.
+  const { user } = useAuth();
+  const crmRole = (user?.role || '').toUpperCase();
+  const crmPermissions = user?.permissions || [];
+  const crmCounselorScope = crmRole === 'SUPERADMIN' || crmRole === 'COUNSELOR';
+  const canEditLeads = crmCounselorScope || crmPermissions.includes('LEADS_EDIT');
+  const canExportLeads = crmCounselorScope || crmPermissions.includes('LEADS_EXPORT');
 
   // Call log form state
   const [callNote, setCallNote] = useState('');
@@ -154,13 +167,15 @@ export default function LeadsCRM() {
             <RefreshCw className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-400/50 text-indigo-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
-          </button>
+          {canExportLeads && (
+            <button
+              onClick={handleExportCSV}
+              className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-400/50 text-indigo-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -222,7 +237,7 @@ export default function LeadsCRM() {
                   <td className="px-5 py-4">
                     <div className="font-bold text-white text-sm">{lead.fullName}</div>
                     <div className="text-slate-400 text-[11px]">{lead.email}</div>
-                    <div className="text-slate-500 text-[10px] font-mono">{lead.phone}</div>
+                    <div className="text-slate-400 text-[10px] font-mono">{lead.phone}</div>
                   </td>
 
                   {/* Target Program */}
@@ -301,7 +316,7 @@ export default function LeadsCRM() {
 
               {leads.length === 0 && !loading && (
                 <tr>
-                  <td colSpan="7" className="px-5 py-10 text-center text-slate-500 text-xs">
+                  <td colSpan="7" className="px-5 py-10 text-center text-slate-400 text-xs">
                     No applicants matching current filter criteria.
                   </td>
                 </tr>
@@ -342,7 +357,12 @@ export default function LeadsCRM() {
             <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
               
               {/* Convert to Student Action Banner */}
-              {selectedLead.status !== 'Enrolled' ? (
+              {!canEditLeads ? (
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 text-slate-400 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>Read-only access — LEADS_EDIT is required to record activity or convert this lead.</span>
+                </div>
+              ) : selectedLead.status !== 'Enrolled' ? (
                 <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-500/30 flex items-center justify-between gap-3">
                   <div>
                     <h4 className="font-bold text-emerald-400 text-sm">
@@ -381,25 +401,26 @@ export default function LeadsCRM() {
                 </h4>
                 <div className="grid grid-cols-2 gap-3 text-slate-300">
                   <div>
-                    <span className="text-slate-500 block text-[10px]">Phone:</span>
+                    <span className="text-slate-400 block text-[10px]">Phone:</span>
                     <span className="font-semibold">{selectedLead.phone}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px]">Marketing Source:</span>
+                    <span className="text-slate-400 block text-[10px]">Marketing Source:</span>
                     <span className="font-semibold">{selectedLead.marketingSource || 'Landing Page'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px]">Program:</span>
+                    <span className="text-slate-400 block text-[10px]">Program:</span>
                     <span className="font-semibold">{selectedLead.targetCourse?.title || 'Data Science / Cyber'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[10px]">Preferred Batch:</span>
+                    <span className="text-slate-400 block text-[10px]">Preferred Batch:</span>
                     <span className="font-semibold">{selectedLead.preferredBatch}</span>
                   </div>
                 </div>
               </div>
 
               {/* Call Log Recorder */}
+              {canEditLeads && (
               <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
                 <h4 className="font-bold uppercase tracking-wider text-[10px] text-indigo-400 flex items-center gap-1.5">
                   <PhoneCall className="w-3.5 h-3.5" />
@@ -456,6 +477,7 @@ export default function LeadsCRM() {
                   </button>
                 </form>
               </div>
+              )}
 
               {/* Call Log History Timeline */}
               <div className="space-y-3">
@@ -476,7 +498,7 @@ export default function LeadsCRM() {
                         </span>
                       </div>
                       <p className="text-slate-300 text-[11px]">{log.note}</p>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-slate-400">
                         {new Date(log.timestamp).toLocaleString()}
                         {log.followUpDate && (
                           <span className="ml-2 text-amber-400">
@@ -488,7 +510,7 @@ export default function LeadsCRM() {
                   ))}
 
                   {(!selectedLead.callLogs || selectedLead.callLogs.length === 0) && (
-                    <p className="text-slate-500 text-[11px]">No call notes recorded yet.</p>
+                    <p className="text-slate-400 text-[11px]">No call notes recorded yet.</p>
                   )}
                 </div>
               </div>

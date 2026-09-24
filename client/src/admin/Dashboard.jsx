@@ -201,7 +201,7 @@ export default function Dashboard() {
 
           <div className="h-64 sm:h-72 w-full">
             {funnel.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-xs text-slate-500">
+              <div className="h-full flex items-center justify-center text-xs text-slate-400">
                 No applications recorded yet — the funnel fills up as enquiries arrive.
               </div>
             ) : (
@@ -241,14 +241,29 @@ export default function Dashboard() {
 
           <div className="h-56 w-full flex items-center justify-center relative">
             {donut.length === 0 ? (
-              <div className="text-center text-xs text-slate-500 px-6">
+              <div className="text-center text-xs text-slate-400 px-6">
                 No applications have been linked to a programme yet.
               </div>
             ) : (
+            /* A screen reader cannot read a pie chart, and axe flags the raw
+               sectors as unnamed graphics. Expose the same numbers as text on a
+               labelled image role, and hide the decorative geometry. */
+            <div
+              role="img"
+              aria-label={`Course distribution by programme: ${donut
+                .map((entry) => `${entry.name} — ${entry.value} application(s)`)
+                .join('; ')}`}
+              className="w-full h-full"
+            >
+            <div aria-hidden="true" className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart accessibilityLayer={false}>
                 <Pie
                   data={donut}
+                  // The chart is decorative here: its numbers are exposed as text
+                  // on the labelled wrapper above, so its own keyboard layer must
+                  // not be focusable (it would sit inside an aria-hidden region).
+                  rootTabIndex={-1}
                   cx="50%"
                   cy="50%"
                   innerRadius={55}
@@ -265,6 +280,8 @@ export default function Dashboard() {
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
+            </div>
             )}
 
             {/* Inner Center Label */}
@@ -282,11 +299,11 @@ export default function Dashboard() {
               <div key={idx} className="flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color || (idx === 0 ? '#0ea5e9' : '#f43f5e'), opacity: item.value ? 1 : 0.35 }} />
-                  <span className={`truncate ${item.value ? 'text-slate-300' : 'text-slate-500'} font-medium`} title={item.fullName || item.name}>
+                  <span className={`truncate ${item.value ? 'text-slate-300' : 'text-slate-400'} font-medium`} title={item.fullName || item.name}>
                     {item.name}
                   </span>
                 </div>
-                <span className={`shrink-0 ${item.value ? 'text-white font-bold' : 'text-slate-500 font-medium'}`}>
+                <span className={`shrink-0 ${item.value ? 'text-white font-bold' : 'text-slate-400 font-medium'}`}>
                   {item.value === 0 ? 'No leads yet' : `${item.value} ${item.value === 1 ? 'Lead' : 'Leads'}`}
                 </span>
               </div>
@@ -346,7 +363,7 @@ export default function Dashboard() {
                   {lead.status}
                 </span>
 
-                <span className="text-slate-500 text-[11px] hidden sm:block">
+                <span className="text-slate-400 text-[11px] hidden sm:block">
                   {new Date(lead.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -354,7 +371,7 @@ export default function Dashboard() {
           ))}
 
           {(!data?.recentLeadsStream || data.recentLeadsStream.length === 0) && (
-            <div className="py-6 text-center text-slate-500 text-xs">
+            <div className="py-6 text-center text-slate-400 text-xs">
               No recent leads recorded yet. Applications will stream here automatically.
             </div>
           )}

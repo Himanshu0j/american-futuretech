@@ -57,9 +57,9 @@ export default function AdminLogin() {
       <div className="relative w-full max-w-md rounded-3xl bg-[#0B1220]/90 backdrop-blur-2xl border border-white/[0.1] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(14,165,233,0.15)] p-8 sm:p-9 z-10">
         
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold font-heading text-white tracking-tight">
+          <h1 className="text-2xl font-bold font-heading text-white tracking-tight">
             Staff Authentication
-          </h2>
+          </h1>
           <p className="text-xs text-slate-400 mt-1">
             Access CMS, Lead CRM pipeline, cohorts, and analytics.
           </p>
@@ -137,7 +137,7 @@ export default function AdminLogin() {
 
       </div>
 
-      <div className="mt-6 text-xs text-slate-500 relative z-10">
+      <div className="mt-6 text-xs text-slate-400 relative z-10">
         <Link to="/" className="text-indigo-400 hover:underline">
           ← Back to Public Website
         </Link>

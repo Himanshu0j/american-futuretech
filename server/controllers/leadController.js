@@ -7,6 +7,7 @@ const {
   sendEnrollmentCredentialsEmail,
 } = require('../utils/emailService');
 const { generateSecurePassword } = require('../utils/passwords');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Submit new lead / application
 // @route   POST /api/leads/apply
@@ -49,10 +50,7 @@ const createLead = async (req, res) => {
       leadId: newLead._id,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -108,10 +106,7 @@ const getLeads = async (req, res) => {
       leads,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -136,10 +131,7 @@ const getLeadById = async (req, res) => {
       lead,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -168,10 +160,7 @@ const updateLeadStatus = async (req, res) => {
       lead,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -221,10 +210,7 @@ const addCallLog = async (req, res) => {
       lead,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -372,10 +358,7 @@ const convertToStudent = async (req, res) => {
       accountEmail: studentUser.email,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -398,10 +381,7 @@ const exportLeadsCsv = async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="leads_export.csv"');
     return res.status(200).send(csv);
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

@@ -112,12 +112,12 @@ export default function BlogPage() {
                         {post.category}
                       </span>
                       <div className="flex items-center gap-1 text-slate-500 text-xs font-medium">
-                        <Clock className="w-3.5 h-3.5 text-[#10B981]" />
+                        <Clock className="w-3.5 h-3.5 text-[#047857]" />
                         <span>{post.readTimeMinutes} min</span>
                       </div>
                     </div>
 
-                    <h3 className="text-lg font-display font-bold text-[#0B1220] mb-2.5 group-hover:text-[#10B981] transition-colors leading-snug">
+                    <h3 className="text-lg font-display font-bold text-[#0B1220] mb-2.5 group-hover:text-[#047857] transition-colors leading-snug">
                       {post.title}
                     </h3>
 

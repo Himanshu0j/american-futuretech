@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
 
       <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-left">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-500 mb-6">
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-600 mb-6">
           <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-slate-900 font-semibold">Privacy Policy</span>
@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#0B1220]">
             Privacy Policy
           </h1>
-          <p className="text-slate-500 text-xs sm:text-sm font-mono mt-3">
+          <p className="text-slate-600 text-xs sm:text-sm font-mono mt-3">
             Last Updated: January 1, 2026 • American Futuretech LLC (Wyoming, USA)
           </p>
         </div>

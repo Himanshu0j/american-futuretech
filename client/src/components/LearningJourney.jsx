@@ -144,7 +144,7 @@ export default function LearningJourney() {
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] border border-[#10b981]/30 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#10b981]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
             <span>Interactive 5-Step Story</span>
           </div>
 
@@ -192,7 +192,7 @@ export default function LearningJourney() {
                           ? 'bg-[#0B1220] text-[#E5C275]'
                           : isPast
                           ? 'bg-[#EFE6D6] text-[#0B1220]'
-                          : 'bg-gray-100 text-gray-500'
+                          : 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {step.number}
@@ -240,7 +240,7 @@ export default function LearningJourney() {
             {/* Left Narrative Column */}
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-[#10b981] uppercase tracking-wider px-3 py-1 rounded-full bg-[#EFE6D6]/70 border border-[#10b981]/20">
+                <span className="text-xs font-mono font-bold text-[#047857] uppercase tracking-wider px-3 py-1 rounded-full bg-[#EFE6D6]/70 border border-[#10b981]/20">
                   {current.tag}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">Step {current.number} of 05</span>
@@ -347,7 +347,7 @@ export default function LearningJourney() {
 
                   <div className="p-3 rounded-xl bg-white border border-gray-200 text-xs flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#10b981]" />
+                      <Sparkles className="w-4 h-4 text-[#047857]" />
                       <span className="font-semibold text-[#0B1220]">Recommended Path:</span>
                       <span className="text-gray-600">Advanced AI & Systems Track (24 Wks)</span>
                     </div>
@@ -516,7 +516,7 @@ export default function LearningJourney() {
                           <div className="text-xs text-gray-600 font-medium">
                             6-Month Comprehensive Fellowship in Applied AI
                           </div>
-                          <div className="text-xs font-bold text-[#10b981]">
+                          <div className="text-xs font-bold text-[#047857]">
                             Conferred with Highest Academic Honors · GPA 3.96
                           </div>
                         </div>
@@ -534,7 +534,7 @@ export default function LearningJourney() {
                       <span>30 N Gould St, Sheridan, WY</span>
                       <Link
                         to="/certificate/AFT-CERT-AI9821"
-                        className="font-mono text-[#10b981] font-bold hover:underline flex items-center gap-1"
+                        className="font-mono text-[#047857] font-bold hover:underline flex items-center gap-1"
                       >
                         <span>Open Public Registry</span>
                         <ExternalLink className="w-3 h-3" />

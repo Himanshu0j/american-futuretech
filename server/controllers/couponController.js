@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Coupon = require('../models/Coupon');
 const Course = require('../models/Course');
 const AuditLog = require('../models/AuditLog');
+const { sendError } = require('../utils/apiError');
 const {
   normalizeCode,
   evaluateCoupon,
@@ -138,7 +139,7 @@ const getCoupons = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -217,7 +218,7 @@ const toggleCoupon = async (req, res) => {
     );
     return res.status(200).json({ success: true, coupon });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -232,7 +233,7 @@ const deleteCoupon = async (req, res) => {
     await logCouponAction(req, 'COUPON_DELETED', coupon, `Deleted coupon ${coupon.code}`);
     return res.status(200).json({ success: true, message: 'Coupon deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -263,7 +264,7 @@ const previewCoupon = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -275,7 +276,7 @@ const getCouponPrograms = async (req, res) => {
     const courses = await Course.find().select('title slug category').sort({ title: 1 }).lean();
     return res.status(200).json({ success: true, courses });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

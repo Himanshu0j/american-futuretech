@@ -14,7 +14,7 @@ const {
   resetStudentAccess,
   getAssignmentOptions,
 } = require('../controllers/studentAdminController');
-const { protect, authorize, checkPermission } = require('../middleware/auth');
+const { protect, authorize, checkPermission, authorizeScoped } = require('../middleware/auth');
 
 // ── Admin management (declare before /:id style routes so they never clash) ──
 router.get(
@@ -61,7 +61,9 @@ router.delete(
 );
 
 // ── Legacy batch-scoped endpoints (unchanged contract) ──
-router.get('/', protect, authorize('SuperAdmin', 'Counselor', 'SUPERADMIN', 'ADMIN'), getAllStudents);
+// Same STUDENTS_VIEW capability as the newer /admin directory; COUNSELOR keeps
+// its documented role scope, an ADMIN needs the grant.
+router.get('/', protect, authorizeScoped(['SUPERADMIN', 'ADMIN', 'COUNSELOR'], ['STUDENTS_VIEW', 'ADMIN_MANAGEMENT_VIEW']), getAllStudents);
 router.patch('/:batchId/:studentId/payment', protect, authorize('SuperAdmin', 'SUPERADMIN'), updateStudentPayment);
 router.get('/:invoiceId/invoice', protect, getStudentInvoice);
 

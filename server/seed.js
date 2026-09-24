@@ -1,15 +1,37 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
+const { getDbInfo } = require('./config/db');
 const User = require('./models/User');
-const { generateSecurePassword } = require('./utils/passwords');
+const { generateSecurePassword, validatePassword } = require('./utils/passwords');
 const Course = require('./models/Course');
 const Lead = require('./models/Lead');
 const Batch = require('./models/Batch');
 
+// This script DELETES every user, course, lead and batch it finds. That is fine
+// on a throwaway database and catastrophic on the live one, so a non-ephemeral
+// target needs an explicit opt-in.
+const CONFIRMED = process.argv.includes('--yes-destroy-data')
+  || String(process.env.SEED_ALLOW_DESTRUCTIVE || '').toLowerCase() === 'true';
+
 const seedData = async () => {
   try {
     await connectDB();
+
+    const dbInfo = getDbInfo();
+    if (!dbInfo.ephemeral && !CONFIRMED) {
+      console.error(
+        `\n🚨 Refusing to run.\n` +
+        `   This script DELETES all users, courses, leads and batches, and the target\n` +
+        `   database is NOT a throwaway one (${dbInfo.mode} @ ${dbInfo.host || 'unknown host'}/${dbInfo.database || '?'}).\n` +
+        '   That includes every admin edit, course, curriculum and student the client owns.\n\n' +
+        '   If you truly mean to wipe it, re-run with:  npm run seed -- --yes-destroy-data\n' +
+        '   To reload demo data safely, point MONGODB_URI at a local/throwaway database instead.\n',
+      );
+      await mongoose.disconnect();
+      process.exit(1);
+    }
+
     console.log('[Seeding Started]: Clearing existing collections...');
 
     await User.deleteMany();
@@ -19,10 +41,26 @@ const seedData = async () => {
 
     // 1. Create SuperAdmin and Counselors
     // Random, policy-compliant passwords per account — never a shared default.
+    // A SEED_ADMIN_PASSWORD that fails the password policy is refused outright,
+    // because re-creating a published default would undo every rotation.
     const forcedSeedPassword = (process.env.SEED_ADMIN_PASSWORD || '').trim();
-    const adminPassword = forcedSeedPassword || generateSecurePassword();
-    const counselorPassword = forcedSeedPassword || generateSecurePassword();
-    const instructorPassword = forcedSeedPassword || generateSecurePassword();
+    let seedPassword = forcedSeedPassword;
+    if (forcedSeedPassword && !dbInfo.ephemeral) {
+      const strength = validatePassword(forcedSeedPassword, {
+        email: 'admin@americanfuturetech.com',
+        name: 'Alexander Pierce',
+      });
+      if (!strength.valid) {
+        console.warn(
+          `\n🚨 SEED_ADMIN_PASSWORD was REFUSED — ${strength.errors[0]}\n` +
+          '   Random, policy-compliant passwords are being generated instead.\n',
+        );
+        seedPassword = '';
+      }
+    }
+    const adminPassword = seedPassword || generateSecurePassword();
+    const counselorPassword = seedPassword || generateSecurePassword();
+    const instructorPassword = seedPassword || generateSecurePassword();
 
     console.log('[Seeding]: Creating Staff & RBAC Accounts...');
     const superAdmin = await User.create({
@@ -419,9 +457,9 @@ const seedData = async () => {
   AMERICAN FUTURETECH SEED COMPLETED SUCCESSFULLY!
   -----------------------------------------------------------
   Credentials (shown once — they cannot be recovered):
-    SuperAdmin: admin@americanfuturetech.com    / ${forcedSeedPassword || adminPassword}
-    Counselor:  counselor@americanfuturetech.com / ${forcedSeedPassword || counselorPassword}
-    Instructor: instructor@americanfuturetech.com / ${forcedSeedPassword || instructorPassword}
+    SuperAdmin: admin@americanfuturetech.com    / ${seedPassword || adminPassword}
+    Counselor:  counselor@americanfuturetech.com / ${seedPassword || counselorPassword}
+    Instructor: instructor@americanfuturetech.com / ${seedPassword || instructorPassword}
   ⚠️  Change these before going live.
 =============================================================
     `);

@@ -105,7 +105,7 @@ export default function ListItemsEditor({
             </span>
           </label>
           {helperText && (
-            <p className="text-[11px] text-slate-500 mt-0.5">{helperText}</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">{helperText}</p>
           )}
         </div>
 
@@ -139,7 +139,7 @@ export default function ListItemsEditor({
           onClick={handleAddItem}
           className="p-5 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 hover:border-indigo-500/40 text-center cursor-pointer transition-colors group"
         >
-          <div className="text-xs text-slate-500 group-hover:text-indigo-400 flex items-center justify-center gap-2">
+          <div className="text-xs text-slate-400 group-hover:text-indigo-400 flex items-center justify-center gap-2">
             <ListPlus className="w-4 h-4" />
             <span>No points added yet. Click to add the first pointer or use "Paste Multiple Lines".</span>
           </div>
@@ -152,7 +152,7 @@ export default function ListItemsEditor({
               className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950 border border-slate-800/90 focus-within:border-indigo-500/50 transition-colors shadow-inner"
             >
               {/* Order Indicator */}
-              <span className="w-6 text-center text-[10px] font-mono font-bold text-slate-500 shrink-0">
+              <span className="w-6 text-center text-[10px] font-mono font-bold text-slate-400 shrink-0">
                 {idx + 1}.
               </span>
 
@@ -162,7 +162,7 @@ export default function ListItemsEditor({
                 value={item}
                 onChange={(e) => handleUpdateItem(idx, e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 bg-transparent text-xs text-white placeholder:text-slate-600 focus:outline-none"
+                className="flex-1 bg-transparent text-xs text-white placeholder:text-slate-400 focus:outline-none"
               />
 
               {/* Reorder Buttons */}
@@ -171,7 +171,7 @@ export default function ListItemsEditor({
                   type="button"
                   disabled={idx === 0}
                   onClick={() => handleMoveUp(idx)}
-                  className="p-1 rounded-md text-slate-500 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors"
                   title="Move Up"
                 >
                   <ChevronUp className="w-3.5 h-3.5" />
@@ -180,7 +180,7 @@ export default function ListItemsEditor({
                   type="button"
                   disabled={idx === currentItems.length - 1}
                   onClick={() => handleMoveDown(idx)}
-                  className="p-1 rounded-md text-slate-500 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors"
                   title="Move Down"
                 >
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -191,7 +191,7 @@ export default function ListItemsEditor({
               <button
                 type="button"
                 onClick={() => handleDeleteItem(idx)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors shrink-0"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors shrink-0"
                 title="Remove Item"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -232,7 +232,7 @@ export default function ListItemsEditor({
               value={pasteContent}
               onChange={(e) => setPasteContent(e.target.value)}
               placeholder="Build React applications&#10;Work with REST APIs&#10;Create reusable components&#10;Deploy to production on AWS"
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 leading-relaxed"
+              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 leading-relaxed"
             />
 
             {/* Mode selection & submit */}

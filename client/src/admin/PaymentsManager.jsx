@@ -33,7 +33,8 @@ export default function PaymentsManager() {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      // Same lookup order as the shared api client: the admin token wins.
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const res = await axios.get('/api/payments', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -120,7 +121,7 @@ export default function PaymentsManager() {
           <div className="text-2xl font-black text-emerald-400 font-mono">
             ${totalRevenue.toLocaleString()} USD
           </div>
-          <div className="text-[11px] text-slate-500 font-mono mt-1">Verified gross deposits</div>
+          <div className="text-[11px] text-slate-400 font-mono mt-1">Verified gross deposits</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
@@ -129,7 +130,7 @@ export default function PaymentsManager() {
             <Receipt className="w-4 h-4 text-indigo-400" />
           </div>
           <div className="text-2xl font-black text-white font-mono">{payments.length}</div>
-          <div className="text-[11px] text-slate-500 font-mono mt-1">All recorded payments</div>
+          <div className="text-[11px] text-slate-400 font-mono mt-1">All recorded payments</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
@@ -138,7 +139,7 @@ export default function PaymentsManager() {
             <CreditCard className="w-4 h-4 text-blue-400" />
           </div>
           <div className="text-2xl font-black text-blue-400 font-mono">{depositCount}</div>
-          <div className="text-[11px] text-slate-500 font-mono mt-1">High-intent reserved seats</div>
+          <div className="text-[11px] text-slate-400 font-mono mt-1">High-intent reserved seats</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
@@ -147,20 +148,20 @@ export default function PaymentsManager() {
             <CheckCircle2 className="w-4 h-4 text-purple-400" />
           </div>
           <div className="text-2xl font-black text-purple-400 font-mono">{fullTuitionCount}</div>
-          <div className="text-[11px] text-slate-500 font-mono mt-1">100% upfront tuition</div>
+          <div className="text-[11px] text-slate-400 font-mono mt-1">100% upfront tuition</div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by student, invoice #, or course..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-400"
           />
         </div>
 
@@ -188,7 +189,7 @@ export default function PaymentsManager() {
             Loading financial ledger...
           </div>
         ) : filteredPayments.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 text-sm">
+          <div className="p-12 text-center text-slate-400 text-sm">
             No transactions found matching criteria.
           </div>
         ) : (
@@ -214,7 +215,7 @@ export default function PaymentsManager() {
                     </td>
                     <td className="py-3.5 px-5 font-sans font-medium text-white">
                       <div>{p.student?.name || p.studentName || 'Guest Checkout'}</div>
-                      <div className="text-[11px] text-slate-500 font-mono">{p.student?.email || p.email}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{p.student?.email || p.email}</div>
                     </td>
                     <td className="py-3.5 px-5 font-sans text-slate-300">
                       {p.course?.title || p.courseTitle || 'Technical Program'}
@@ -295,12 +296,12 @@ export default function PaymentsManager() {
               <div className="space-y-4 text-xs font-mono text-slate-300">
                 <div className="grid grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
                   <div>
-                    <span className="text-slate-500 block">STUDENT:</span>
+                    <span className="text-slate-400 block">STUDENT:</span>
                     <span className="text-white font-bold">{selectedInvoice.student?.name || 'Guest'}</span>
                     <div className="text-slate-400">{selectedInvoice.student?.email || selectedInvoice.email}</div>
                   </div>
                   <div>
-                    <span className="text-slate-500 block">TRANSACTION ID:</span>
+                    <span className="text-slate-400 block">TRANSACTION ID:</span>
                     <span className="text-indigo-400 font-bold break-all">{selectedInvoice.transactionId || selectedInvoice._id}</span>
                   </div>
                 </div>

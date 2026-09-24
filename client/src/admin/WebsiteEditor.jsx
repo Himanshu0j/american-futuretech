@@ -158,7 +158,7 @@ export default function WebsiteEditor() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+        <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
         <input
           type="text"
           value={search}
@@ -179,7 +179,7 @@ export default function WebsiteEditor() {
           <div className="px-5 py-3 border-b border-white/[0.08] flex items-center gap-2">
             <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
             <span className="text-xs font-bold text-white uppercase tracking-wider">{groupName}</span>
-            <span className="text-[10px] text-slate-500">({pages.length})</span>
+            <span className="text-[10px] text-slate-400">({pages.length})</span>
           </div>
 
           <div className="divide-y divide-white/[0.05]">
@@ -190,7 +190,7 @@ export default function WebsiteEditor() {
                 <div key={page.path} className="px-5 py-3.5 flex flex-wrap items-center gap-3 hover:bg-white/[0.02]">
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-semibold text-white truncate">{page.label}</div>
-                    <div className="text-[10px] font-mono text-slate-500 truncate">{page.path}</div>
+                    <div className="text-[10px] font-mono text-slate-400 truncate">{page.path}</div>
                     {edited && stats.samples?.length > 0 && (
                       <div className="text-[10px] text-slate-400 truncate mt-1">
                         e.g. “{String(stats.samples[0].original).slice(0, 40)}” → “{String(stats.samples[0].value).slice(0, 40)}”
@@ -204,7 +204,7 @@ export default function WebsiteEditor() {
                         <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-300">
                           {stats.textCount} text · {stats.imageCount} image
                         </span>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-slate-400">
                           {stats.updatedAt ? new Date(stats.updatedAt).toLocaleDateString() : ''}
                         </span>
                       </>
@@ -249,7 +249,7 @@ export default function WebsiteEditor() {
         </div>
       )}
 
-      <p className="text-[11px] text-slate-500 leading-relaxed">
+      <p className="text-[11px] text-slate-400 leading-relaxed">
         Tip: the editor also opens from the public page itself — add <span className="font-mono text-slate-400">?edit=1</span> to any
         address, or use <Link to="/admin/guide" className="text-indigo-400 underline">How to Use Admin</Link> for the full walkthrough.
         Everything you publish is stored permanently in the database and shown to every visitor.

@@ -2,6 +2,7 @@ const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Course = require('../models/Course');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Get full curriculum (modules + lessons + quizzes) for a course
 // @route   GET /api/curriculum/courses/:courseId
@@ -52,7 +53,7 @@ const getCourseCurriculum = async (req, res) => {
       totalQuizzes: quizzes.length,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -72,7 +73,7 @@ const createModule = async (req, res) => {
     });
     return res.status(201).json({ success: true, module: newModule });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -85,7 +86,7 @@ const updateModule = async (req, res) => {
     if (!updated) return res.status(404).json({ success: false, message: 'Module not found' });
     return res.status(200).json({ success: true, module: updated });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -101,7 +102,7 @@ const deleteModule = async (req, res) => {
     await mod.deleteOne();
     return res.status(200).json({ success: true, message: 'Module and associated lessons deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -113,7 +114,7 @@ const createLesson = async (req, res) => {
     const newLesson = await Lesson.create(req.body);
     return res.status(201).json({ success: true, lesson: newLesson });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -126,7 +127,7 @@ const updateLesson = async (req, res) => {
     if (!updated) return res.status(404).json({ success: false, message: 'Lesson not found' });
     return res.status(200).json({ success: true, lesson: updated });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -139,7 +140,7 @@ const deleteLesson = async (req, res) => {
     if (!lesson) return res.status(404).json({ success: false, message: 'Lesson not found' });
     return res.status(200).json({ success: true, message: 'Lesson deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -165,7 +166,7 @@ const createOrUpdateQuiz = async (req, res) => {
     }
     return res.status(200).json({ success: true, quiz });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

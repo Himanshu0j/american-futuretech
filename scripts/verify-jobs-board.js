@@ -19,7 +19,7 @@ const mongoose = require('mongoose');
 
 const PORT = 5203;
 const BASE = `http://127.0.0.1:${PORT}`;
-const SEED_ADMIN_PASSWORD = 'Admin-Jobs-Check-2026!z';
+const SEED_ADMIN_PASSWORD = 'Vertex-Jobs-Check-2026!z';
 const DB_NAME = `aft_jobstest_${Date.now()}`;
 const MONGO_URI = `mongodb://127.0.0.1:27018/${DB_NAME}`;
 const PAGE_SIZE = 8;

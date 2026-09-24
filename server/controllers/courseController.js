@@ -2,6 +2,7 @@ const Course = require('../models/Course');
 const AuditLog = require('../models/AuditLog');
 const Module = require('../models/Module');
 const { syncCourseCurriculum, normalizeCurriculumForEmbed } = require('../utils/curriculumSync');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
@@ -15,10 +16,7 @@ const getPublishedCourses = async (req, res) => {
       courses,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -46,10 +44,7 @@ const getAllCourses = async (req, res) => {
       })),
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -70,10 +65,7 @@ const getCourseBySlug = async (req, res) => {
       course,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -84,7 +76,13 @@ const createCourse = async (req, res) => {
   try {
     const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility } = req.body;
 
-    const courseSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Without a title this used to throw on `title.toLowerCase()` and answer
+    // 500; an incomplete form is the caller's mistake and must be a 400.
+    if (!title || !String(title).trim()) {
+      return res.status(400).json({ success: false, message: 'Course title is required.' });
+    }
+
+    const courseSlug = slug || String(title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
     const existing = await Course.findOne({ slug: courseSlug });
     if (existing) {
@@ -136,10 +134,7 @@ const createCourse = async (req, res) => {
       curriculumSummary,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -191,10 +186,7 @@ const updateCourse = async (req, res) => {
       curriculumSummary,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -222,10 +214,7 @@ const toggleBadge = async (req, res) => {
       course,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -259,10 +248,7 @@ const deleteCourse = async (req, res) => {
       message: 'Course deleted successfully',
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

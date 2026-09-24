@@ -12,7 +12,10 @@ const COMMON_PRESETS = [
   { name: 'Infosys Logo', url: '/images/companies/infosys.svg' },
   { name: 'Accenture Logo', url: '/images/companies/accenture.svg' },
   { name: 'US Crest Gold Seal', url: '/images/gold-seal-medal.webp' },
-  { name: 'Diploma Emblem', url: '/images/certificates/american-diploma-crest.svg' },
+  // Points at the crest that actually exists in /public — the previous path
+  // (american-diploma-crest.svg) was never shipped, so picking this preset
+  // produced a broken image on the public page.
+  { name: 'Diploma Emblem', url: '/images/logo-crest.webp' },
   { name: 'Cockpit Lab', url: '/images/floating-laptop-code.webp' },
 ];
 
@@ -119,7 +122,7 @@ export default function ImageUploadInput({
         <div className="flex-1 space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <LinkIcon className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <LinkIcon className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={value}
@@ -156,7 +159,7 @@ export default function ImageUploadInput({
 
           {/* Quick Presets / Authentic Asset Selector */}
           <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-400">
-            <span className="font-mono text-slate-500 flex items-center gap-1">
+            <span className="font-mono text-slate-400 flex items-center gap-1">
               <Sparkles className="w-2.5 h-2.5 text-indigo-400" /> Presets:
             </span>
             {COMMON_PRESETS.slice(0, 6).map((preset) => (

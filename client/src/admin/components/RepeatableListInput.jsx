@@ -84,7 +84,7 @@ export default function RepeatableListInput({
           {label} ({list.length})
         </label>
         {helperText && (
-          <span className="text-[11px] text-slate-500">{helperText}</span>
+          <span className="text-[11px] text-slate-400">{helperText}</span>
         )}
       </div>
 

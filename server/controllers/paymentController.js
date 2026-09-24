@@ -12,6 +12,7 @@ const { resolveCoupon, redeemCoupon } = require('../utils/couponEngine');
 const { generateSecurePassword } = require('../utils/passwords');
 const gateway = require('../utils/paymentGateway');
 const { isStripeConfigured, isWebhookConfigured, getPaymentStatus } = require('../config/payments');
+const { searchRegex } = require('../utils/search');
 const {
   sendPaymentReceiptEmail,
   sendEnrollmentCredentialsEmail,
@@ -554,11 +555,11 @@ const getAllPayments = async (req, res) => {
     if (status && status !== 'All') query.status = status;
     if (search) {
       query.$or = [
-        { studentName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { transactionId: { $regex: search, $options: 'i' } },
-        { invoiceNumber: { $regex: search, $options: 'i' } },
-        { courseTitle: { $regex: search, $options: 'i' } },
+        { studentName: searchRegex(search) },
+        { email: searchRegex(search) },
+        { transactionId: searchRegex(search) },
+        { invoiceNumber: searchRegex(search) },
+        { courseTitle: searchRegex(search) },
       ];
     }
 

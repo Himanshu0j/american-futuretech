@@ -46,7 +46,7 @@ export default function WhyChooseUs() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#10B981] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
               01 — The Dedicated Academy Portal
             </span>
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
@@ -130,7 +130,7 @@ export default function WhyChooseUs() {
               {/* Active Program Card */}
               <div className="p-4 rounded-xl bg-[#F7F7F5] border border-[#4338CA]/20 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[11px] font-bold text-[#10B981] uppercase tracking-wide font-heading">Primary Track</span>
+                  <span className="text-[11px] font-bold text-[#047857] uppercase tracking-wide font-heading">Primary Track</span>
                   <span className="text-[11px] font-mono text-[#0B1220] font-bold">68% Complete</span>
                 </div>
                 <div className="text-base font-bold text-[#0B1220]">Data Science with AI Integration</div>
@@ -148,12 +148,12 @@ export default function WhyChooseUs() {
               {/* Micro Upcoming Milestones */}
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="text-[10px] uppercase font-bold text-gray-400">Next Live Lab</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-700">Next Live Lab</div>
                   <div className="font-bold text-[#0B1220] mt-1">Saturday, 10:00 AM EST</div>
                   <div className="text-[11px] text-gray-500">LangGraph Multi-Agent</div>
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="text-[10px] uppercase font-bold text-gray-400">Office Hours</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-600">Office Hours</div>
                   <div className="font-bold text-[#0B1220] mt-1">1-on-1 Mentor Session</div>
                   <div className="text-[11px] text-[#4338CA] font-semibold">Booked for Thursday</div>
                 </div>
@@ -204,7 +204,7 @@ export default function WhyChooseUs() {
 
                 {/* Terminal / Code Editor Mockup */}
                 <div className="p-3.5 rounded-xl bg-black/60 border border-[#4338CA]/50 font-mono text-xs space-y-1.5 text-[#EFE6D6]">
-                  <div className="text-[10px] text-gray-500">// production_agent.py</div>
+                  <div className="text-[10px] text-gray-400">// production_agent.py</div>
                   <div className="text-[#E5C275]">$ python -m pytest tests/test_rag_pipeline.py</div>
                   <div className="text-gray-300">================ test session starts ================</div>
                   <div className="text-emerald-400">PASSED tests/test_rag_pipeline.py::test_vector_similarity</div>
@@ -230,7 +230,7 @@ export default function WhyChooseUs() {
 
           {/* Text Content */}
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#10B981] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
               02 — Distraction-Free Classroom
             </span>
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
@@ -284,7 +284,7 @@ export default function WhyChooseUs() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#10B981] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
               03 — Verifiable US Credentials
             </span>
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
@@ -383,7 +383,7 @@ export default function WhyChooseUs() {
                   </div>
                   <div className="text-right">
                     <div className="font-mono text-[10px] text-gray-400">STATUS</div>
-                    <div className="font-bold text-[#10B981]">Graduated with Honors</div>
+                    <div className="font-bold text-[#047857]">Graduated with Honors</div>
                   </div>
                 </div>
 
@@ -435,15 +435,15 @@ export default function WhyChooseUs() {
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                    <CheckCircle2 className="w-4 h-4 text-[#047857]" />
                     <span className="font-bold text-[#0B1220]">ATS Technical Resume Engineering</span>
                   </div>
-                  <span className="font-mono font-bold text-[#10B981]">Score: 98/100</span>
+                  <span className="font-mono font-bold text-[#047857]">Score: 98/100</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                    <CheckCircle2 className="w-4 h-4 text-[#047857]" />
                     <span className="font-bold text-[#0B1220]">Executive LinkedIn & GitHub Audit</span>
                   </div>
                   <span className="text-gray-500 font-semibold">Approved</span>
@@ -464,7 +464,7 @@ export default function WhyChooseUs() {
                     <Briefcase className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-600 font-medium">Direct Partner Referrals</span>
                   </div>
-                  <span className="text-xs text-gray-400">200+ Network</span>
+                  <span className="text-xs text-gray-600">200+ Network</span>
                 </div>
               </div>
 
@@ -476,7 +476,7 @@ export default function WhyChooseUs() {
 
           {/* Text Content */}
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#10B981] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
               04 — Career Placement Acceleration
             </span>
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">

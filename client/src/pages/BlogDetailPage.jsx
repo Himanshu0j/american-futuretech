@@ -66,7 +66,7 @@ export default function BlogDetailPage() {
               {blog.category}
             </span>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-              <Clock className="w-3.5 h-3.5 text-[#10B981]" />
+              <Clock className="w-3.5 h-3.5 text-[#047857]" />
               <span>{blog.readTimeMinutes} min read</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">

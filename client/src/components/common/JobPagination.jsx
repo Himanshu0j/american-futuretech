@@ -24,7 +24,7 @@ export default function JobPagination({ pagination, onPageChange, label = 'openi
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-      <div className="text-xs text-slate-500 font-mono">
+      <div className="text-xs text-slate-600 font-mono">
         Showing <strong className="text-slate-900 dark:text-white">{firstIndex}–{lastIndex}</strong> of{' '}
         <strong className="text-slate-900 dark:text-white">{total}</strong> {label}
       </div>

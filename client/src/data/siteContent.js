@@ -198,8 +198,22 @@ export const DEFAULT_CAREER_SUPPORT = {
 /**
  * Enterprise tool stack grouped by discipline (Courses page "Tools & Tech Stack").
  * Icon URLs use the same CDN pattern as the capstone tools CMS.
+ *
+ * IMPORTANT (verified 2026-09-24 against the live CDNs): only logo URLs that
+ * actually resolve are kept. Brand icons pulled from Simple Icons/Devicon for
+ * trademark reasons (and the Devicon Wireshark path, which jsDelivr refuses to
+ * serve) return 404/403 and rendered as broken images. Those entries ship with
+ * `logo: ''` and the Courses page renders a letter monogram tile instead, so the
+ * grid can never show a broken image. Non-empty URLs still win: the admin
+ * "Capstone & Tools" CMS can supply a replacement logo at any time.
  */
 const DEV = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons';
+
+/** Verified 200 on 2026-09-24: cdn.jsdelivr.net devicons + live Simple Icons. */
+export const VERIFIED_DEAD_TOOL_LOGOS = [
+  'nmap', 'wireshark', 'powerbi', 'tableau', 'openai', 'onetrust', 'servicenow',
+  'drata', 'vanta', 'bigid', 'collibra', 'productboard',
+];
 
 export const DEFAULT_TOOL_CATEGORIES = [
   {
@@ -208,9 +222,9 @@ export const DEFAULT_TOOL_CATEGORIES = [
     color: 'rose',
     tools: [
       { name: 'Kali Linux', logo: `${DEV}/linux/linux-original.svg` },
-      { name: 'Wireshark', logo: `${DEV}/wireshark/wireshark-original.svg` },
+      { name: 'Wireshark', logo: '' },
       { name: 'Python', logo: `${DEV}/python/python-original.svg` },
-      { name: 'Nmap', logo: 'https://cdn.simpleicons.org/nmap/4682B4' },
+      { name: 'Nmap', logo: '' },
       { name: 'Burp Suite', logo: 'https://cdn.simpleicons.org/portswigger/FF6633' },
       { name: 'Metasploit', logo: 'https://cdn.simpleicons.org/metasploit/2596CD' },
     ],
@@ -224,8 +238,8 @@ export const DEFAULT_TOOL_CATEGORIES = [
       { name: 'PyTorch', logo: `${DEV}/pytorch/pytorch-original.svg` },
       { name: 'pandas', logo: `${DEV}/pandas/pandas-original.svg` },
       { name: 'NumPy', logo: `${DEV}/numpy/numpy-original.svg` },
-      { name: 'Power BI', logo: 'https://cdn.simpleicons.org/powerbi/F2C811' },
-      { name: 'Tableau', logo: 'https://cdn.simpleicons.org/tableau/E97627' },
+      { name: 'Power BI', logo: '' },
+      { name: 'Tableau', logo: '' },
     ],
   },
   {
@@ -234,7 +248,7 @@ export const DEFAULT_TOOL_CATEGORIES = [
     color: 'violet',
     tools: [
       { name: 'LangChain', logo: 'https://cdn.simpleicons.org/langchain/1C3C3C' },
-      { name: 'OpenAI', logo: 'https://cdn.simpleicons.org/openai/412991' },
+      { name: 'OpenAI', logo: '' },
       { name: 'Claude', logo: 'https://cdn.simpleicons.org/anthropic/D97757' },
       { name: 'Gemini', logo: 'https://cdn.simpleicons.org/googlegemini/8E75B2' },
       { name: 'Docker', logo: `${DEV}/docker/docker-original.svg` },
@@ -246,12 +260,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Governance, Risk & Compliance',
     color: 'emerald',
     tools: [
-      { name: 'OneTrust', logo: 'https://cdn.simpleicons.org/onetrust/6ABE45' },
-      { name: 'ServiceNow GRC', logo: 'https://cdn.simpleicons.org/servicenow/62D84E' },
-      { name: 'Drata', logo: 'https://cdn.simpleicons.org/drata/FF5A5F' },
-      { name: 'Vanta', logo: 'https://cdn.simpleicons.org/vanta/1B1B1B' },
-      { name: 'BigID', logo: 'https://cdn.simpleicons.org/bigid/0057FF' },
-      { name: 'Collibra', logo: 'https://cdn.simpleicons.org/collibra/0072CE' },
+      { name: 'OneTrust', logo: '' },
+      { name: 'ServiceNow GRC', logo: '' },
+      { name: 'Drata', logo: '' },
+      { name: 'Vanta', logo: '' },
+      { name: 'BigID', logo: '' },
+      { name: 'Collibra', logo: '' },
     ],
   },
   {
@@ -263,7 +277,7 @@ export const DEFAULT_TOOL_CATEGORIES = [
       { name: 'Figma', logo: `${DEV}/figma/figma-original.svg` },
       { name: 'Notion', logo: `${DEV}/notion/notion-original.svg` },
       { name: 'Miro', logo: 'https://cdn.simpleicons.org/miro/050038' },
-      { name: 'Productboard', logo: 'https://cdn.simpleicons.org/productboard/4C6EF5' },
+      { name: 'Productboard', logo: '' },
       { name: 'Mixpanel', logo: 'https://cdn.simpleicons.org/mixpanel/7856FF' },
     ],
   },

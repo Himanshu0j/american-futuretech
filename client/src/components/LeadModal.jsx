@@ -206,6 +206,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                   Select Program Track
                 </label>
                 <select
+                  aria-label="Select program track"
                   value={targetCourse}
                   onChange={(e) => setTargetCourse(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
@@ -232,6 +233,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                 <div className="relative">
                   <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <select
+                    aria-label="Preferred batch timing"
                     value={preferredBatch}
                     onChange={(e) => setPreferredBatch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"
@@ -246,7 +248,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
 
               {/* Security guarantee */}
               <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
-                <Lock className="w-3.5 h-3.5 text-[#10B981]" />
+                <Lock className="w-3.5 h-3.5 text-[#047857]" />
                 <span>Zero spam guarantee. Your details are strictly confidential.</span>
               </div>
 

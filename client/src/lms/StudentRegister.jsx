@@ -44,7 +44,7 @@ export default function StudentRegister() {
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-[#F7F7F5] border border-slate-200">
-              <ShieldCheck className="w-4 h-4 text-[#10b981] mb-2" />
+              <ShieldCheck className="w-4 h-4 text-[#047857] mb-2" />
               <div className="text-xs font-bold text-[#0B1220]">Access is assigned</div>
               <p className="text-[11px] text-slate-600 mt-1">
                 Program, batch and course access is granted by staff — you only ever see what you are enrolled in.

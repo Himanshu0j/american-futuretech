@@ -327,7 +327,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       <span className="text-2xl font-black text-slate-900 dark:text-white font-mono">
                         ${flagship.pricing?.discountedPrice || 499}
                       </span>
-                      <span className="text-sm text-slate-400 line-through font-mono">
+                      <span className="text-sm text-slate-500 line-through font-mono">
                         ${flagship.pricing?.originalPrice || 1299}
                       </span>
                       <Link
@@ -458,7 +458,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                         </div>
                         <div className="flex items-baseline gap-1.5 mt-0.5">
                           <span className="text-lg font-black text-slate-900 dark:text-white font-mono">${tuition}</span>
-                          <span className="text-xs text-slate-400 line-through font-mono">${originalTuition}</span>
+                          <span className="text-xs text-slate-500 line-through font-mono">${originalTuition}</span>
                         </div>
                       </div>
 

@@ -449,6 +449,7 @@ export default function CheckoutPage() {
                   </h3>
                 </div>
                 <select
+                  aria-label="Select tech specialization"
                   value={selectedCourseId}
                   onChange={(e) => { setSelectedCourseId(e.target.value); resetCoupon(); }}
                   className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all cursor-pointer"

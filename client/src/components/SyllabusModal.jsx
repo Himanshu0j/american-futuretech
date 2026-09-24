@@ -61,7 +61,7 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
               {course.badge || 'Official Curriculum'}
             </span>
             <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-              <Clock className="w-3.5 h-3.5 text-[#10B981]" />
+              <Clock className="w-3.5 h-3.5 text-[#047857]" />
               {course.duration || '6 Months'} Intensive
             </span>
           </div>
@@ -84,7 +84,7 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {course.highlights?.map((h, i) => (
                 <div key={i} className="flex items-center gap-2.5 text-xs text-slate-700">
-                  <CheckCircle2 className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#047857] flex-shrink-0" />
                   <span>{h}</span>
                 </div>
               ))}

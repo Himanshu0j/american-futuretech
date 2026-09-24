@@ -119,5 +119,63 @@ const checkPermission = (...requiredPermissions) => {
   };
 };
 
-module.exports = { protect, authorize, checkPermission };
+/**
+ * Role + granular-permission guard for the endpoints the Admin Permission
+ * Matrix also governs.
+ *
+ * Why this exists: several modules were gated by ROLE only
+ * (`authorize('SUPERADMIN', 'ADMIN')`), so an ADMIN holding a single module's
+ * permissions — or a read-only auditor — could still read settlements, every
+ * lead, the whole support queue and dashboard analytics, and could author
+ * curriculum. The panel hides those modules from such an account, but the API
+ * handed the data out anyway. Hiding a button is not authorization.
+ *
+ * Semantics, matching the matrix exactly:
+ *   - SUPERADMIN: unrestricted.
+ *   - A listed role other than ADMIN (COUNSELOR on leads/support, INSTRUCTOR on
+ *     curriculum) keeps its documented scope and is not asked for a permission
+ *     — those roles were never governed by the matrix.
+ *   - ADMIN: allowed only when it actually holds one of `permissions`. Nothing
+ *     is granted by role alone, and nothing is silently broadened.
+ *
+ * @param {string[]} roles roles that may reach this endpoint at all
+ * @param {string[]} permissions permissions an ADMIN must hold at least one of
+ */
+const authorizeScoped = (roles, permissions) => {
+  const allowedRoles = roles.map((role) => String(role).toLowerCase());
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required.',
+      });
+    }
+
+    const role = String(req.user.role || '').toLowerCase();
+
+    // SuperAdmin has unconditional authority.
+    if (role === 'superadmin') return next();
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Role '${req.user.role}' is not authorized to perform this action.`,
+      });
+    }
+
+    // Documented non-admin scopes (Counselor, Instructor) are role-based.
+    if (role !== 'admin') return next();
+
+    const granted = req.user.permissions || [];
+    if (permissions.some((permission) => granted.includes(permission))) return next();
+
+    return res.status(403).json({
+      success: false,
+      message: `Forbidden: you do not possess the required permission (${permissions.join(' or ')}) to perform this action.`,
+      requiredPermissions: permissions,
+    });
+  };
+};
+
+module.exports = { protect, authorize, checkPermission, authorizeScoped };
 

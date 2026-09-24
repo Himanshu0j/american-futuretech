@@ -370,8 +370,17 @@ const verifyCertificate = async (req, res) => {
       });
     }
 
+    // A showcase record resolves, but it is labelled as such so no screen can
+    // render it as a conferred credential. The flag lives on the document (see
+    // models/Certificate.js), so it survives any future redesign of this page.
+    const isSample = cert.isSample === true;
+
     return res.status(200).json({
       success: true,
+      sample: isSample,
+      notice: isSample
+        ? 'Sample credential record kept for demonstration. It is not evidence of a conferred qualification.'
+        : null,
       certificate: cert,
     });
   } catch (error) {

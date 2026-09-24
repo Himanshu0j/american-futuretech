@@ -33,7 +33,9 @@ const DEMO_CERTIFICATES = {
     category: 'Artificial Intelligence & Machine Learning',
     grade: 'Conferred with Highest Academic Honors · GPA 3.96',
     issueDate: '2026-03-15T00:00:00.000Z',
-    completionHash: '0xe84a91b2c7f4e8832a8947b1df2847c94b293818e918c72834b928198f8271a4',
+    // Deliberately NOT a plausible ledger hash: this record is a design
+    // specimen, and the page labels it as one wherever it is displayed.
+    completionHash: 'sample-record-no-ledger-entry',
     institution: 'American FutureTech Institute of Applied Technology',
     charter: 'State of Wyoming Registry · Charter #2024-0012984',
     credits: '24.0 Continuing Education Units (CEU)'
@@ -73,17 +75,21 @@ export default function CertificateVerificationPage() {
       if (res.data?.certificate) {
         const fetchedCourse = res.data.certificate.course?.title || res.data.certificate.courseTitle || res.data.certificate.course?.category || '';
         setSelectedMicrosoftCert(getAlignedMicrosoftCert(fetchedCourse));
+        // `exampleRecord` is the server's own sample flag. When it is set, the
+        // page must not decorate the record with any verification claim.
+        const exampleRecord = res.data.sample === true || res.data.certificate.isSample === true;
         setCert({
           certificateId: res.data.certificate.certificateId,
+          isSample: exampleRecord,
           studentName: res.data.certificate.student?.name || res.data.certificate.studentName || 'Fellow Graduate',
           courseTitle: res.data.certificate.course?.title || res.data.certificate.courseTitle || 'Executive Fellowship Track',
           category: res.data.certificate.course?.category || 'Emerging Technology',
           grade: res.data.certificate.grade || 'Graduated with Honors',
           issueDate: res.data.certificate.issueDate || new Date().toISOString(),
-          completionHash: res.data.certificate.hash || '0x71a4...verified',
+          completionHash: res.data.certificate.hash || '',
           institution: 'American FutureTech Institute of Applied Technology',
           charter: 'State of Wyoming Registry · Charter #2024-0012984',
-          credits: '24.0 Continuing Education Units (CEU)'
+          credits: exampleRecord ? '' : '24.0 Continuing Education Units (CEU)'
         });
       } else {
         throw new Error('Record not found');
@@ -116,6 +122,10 @@ export default function CertificateVerificationPage() {
 
       <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
+        {/* The credential document itself carries the visual title, so the page
+            heading is exposed to assistive tech only. */}
+        <h1 className="sr-only">Certificate verification — American FutureTech public credential registry</h1>
+
         <CompanyMarquee />        {/* Navigation & Action Bar */}
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
           <Link
@@ -132,7 +142,7 @@ export default function CertificateVerificationPage() {
                 onClick={handlePrint}
                 className="py-2 px-5 rounded-full border border-[#0B1220] text-[#0B1220] bg-white hover:bg-gray-50 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
               >
-                <Printer className="w-3.5 h-3.5 text-[#10b981]" />
+                <Printer className="w-3.5 h-3.5 text-[#047857]" />
                 <span>Print / Save PDF</span>
               </button>
 
@@ -219,8 +229,8 @@ export default function CertificateVerificationPage() {
               </div>
 
               <div className="text-[11px] font-mono text-slate-500 px-2 hidden sm:flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Dual Verified: US Institutional Senate + Microsoft Certified Partner</span>
+                <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse`} />
+                <span>{cert.isSample ? 'Sample record — demonstration only, not a verification source' : 'Dual Verified: US Institutional Senate + Microsoft Certified Partner'}</span>
               </div>
             </div>
 
@@ -241,7 +251,7 @@ export default function CertificateVerificationPage() {
                       className="w-12 h-12 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-md"
                     />
                     <div>
-                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#10b981]">
+                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#047857]">
                         Accredited Technical Education
                       </div>
                       <div className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] mt-0.5">
@@ -254,20 +264,36 @@ export default function CertificateVerificationPage() {
                   </div>
 
                   <div className="flex flex-col items-center sm:items-end gap-1.5">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#10b981]/40 text-[#0B1220] text-xs font-bold shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-                      <span>Officially Verified Credential</span>
-                    </div>
-                    <span className="text-[10px] font-mono text-gray-500">Registry Status: Active &amp; Conferred</span>
+                    {cert.isSample ? (
+                      <>
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-400/60 text-amber-900 text-xs font-bold shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                          <span>Sample Record — Not a Verified Credential</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-gray-500">Registry Status: Demonstration Only</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#10b981]/40 text-[#0B1220] text-xs font-bold shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                          <span>Officially Verified Credential</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-gray-500">Registry Status: Active &amp; Conferred</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
                 {/* A showcase record is not a graduate. Say so, so nobody can quote
                     this page as proof of a real conferred credential. */}
                 {cert.isSample && (
-                  <div className="mt-4 rounded-lg border border-amber-400/60 bg-amber-50 px-4 py-2.5 text-center text-[11px] font-semibold text-amber-900">
-                    Sample credential shown for demonstration. This ID is a design specimen, not a record of
-                    an issued graduate credential — only IDs issued by the institution resolve to real records.
+                  <div className="mt-4 rounded-lg border border-amber-400/60 bg-amber-50 px-4 py-3 text-center text-[11px] font-semibold text-amber-900 space-y-1">
+                    <div className="font-bold uppercase tracking-wide">Sample credential — for demonstration only</div>
+                    <div className="font-medium">
+                      This ID is a design specimen. It is not evidence of a conferred qualification, and the
+                      names, grades, dates and reference numbers shown on this page are illustrative. Only IDs
+                      issued by the institution resolve to real records.
+                    </div>
                   </div>
                 )}
 
@@ -309,7 +335,7 @@ export default function CertificateVerificationPage() {
                   {/* Left Column: Metadata */}
                   <div className="text-center sm:text-left space-y-1">
                     <div>
-                      <span className="text-gray-400 font-mono text-[10px] block">CONFERRAL DATE</span>
+                      <span className="text-gray-600 font-mono text-[10px] block">CONFERRAL DATE</span>
                       <strong className="text-[#0B1220] font-medium">
                         {new Date(cert.issueDate).toLocaleDateString('en-US', {
                           month: 'long',
@@ -319,7 +345,7 @@ export default function CertificateVerificationPage() {
                       </strong>
                     </div>
                     <div>
-                      <span className="text-gray-400 font-mono text-[10px] block">PERMANENT REGISTRY ID</span>
+                      <span className="text-gray-600 font-mono text-[10px] block">PERMANENT REGISTRY ID</span>
                       <strong className="font-mono text-[#0B1220] font-black">{cert.certificateId}</strong>
                     </div>
                   </div>
@@ -342,7 +368,7 @@ export default function CertificateVerificationPage() {
                     <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">
                       Dean & Academic Director
                     </div>
-                    <div className="text-[10px] text-gray-400 font-mono">
+                    <div className="text-[10px] text-gray-500 font-mono">
                       American FutureTech Academic Senate
                     </div>
                   </div>
@@ -351,12 +377,16 @@ export default function CertificateVerificationPage() {
                 {/* Cryptographic Hash Strip */}
                 <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-gray-500 bg-gray-50/80 -mx-6 -mb-6 sm:-mx-14 sm:-mb-10 p-4 px-6 sm:px-14">
                   <div className="flex items-center gap-1.5">
-                    <Lock className="w-3 h-3 text-[#10b981]" />
-                    <span className="text-gray-600">SHA-256 Ledger Hash:</span>
+                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-amber-500' : 'text-[#047857]'}`} />
+                    <span className="text-gray-600">
+                      {cert.isSample ? 'Reference (illustrative, no ledger entry):' : 'SHA-256 Ledger Hash:'}
+                    </span>
                     <span className="text-gray-800 break-all">{cert.completionHash}</span>
                   </div>
-                  <div className="text-[#10b981] font-bold shrink-0">
-                    Verified Cryptographic Signature &bull; US Jurisdiction
+                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-amber-600' : 'text-[#047857]'}`}>
+                    {cert.isSample
+                      ? 'Sample Record \u2022 Not a Cryptographic Proof'
+                      : 'Verified Cryptographic Signature \u2022 US Jurisdiction'}
                   </div>
                 </div>
               </div>
@@ -388,9 +418,15 @@ export default function CertificateVerificationPage() {
                   </div>
 
                   <div className="flex flex-col items-center sm:items-end gap-1.5">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>Certified Active & Validated</span>
+                    <div
+                      className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold shadow-xs ${
+                        cert.isSample
+                          ? 'bg-amber-500/20 border border-amber-400/40 text-amber-200'
+                          : 'bg-emerald-500/20 border border-emerald-400/30 text-emerald-300'
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
+                      <span>{cert.isSample ? 'Framework Illustration Only' : 'Certified Active & Validated'}</span>
                     </div>
                     <span className="text-[10px] font-mono text-slate-400">Exam Track: {selectedMicrosoftCert.code}</span>
                   </div>
@@ -492,12 +528,14 @@ export default function CertificateVerificationPage() {
                 {/* Cryptographic Hash Strip */}
                 <div className="mt-4 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-slate-400 bg-slate-950/80 -mx-6 -mb-6 sm:-mx-12 sm:-mb-12 p-4 px-6 sm:px-12 relative z-10">
                   <div className="flex items-center gap-1.5">
-                    <Lock className="w-3 h-3 text-indigo-400" />
-                    <span>Microsoft Partner Verification Hash:</span>
+                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-amber-400' : 'text-indigo-400'}`} />
+                    <span>{cert.isSample ? 'Reference (illustrative):' : 'Microsoft Partner Verification Hash:'}</span>
                     <span className="text-slate-200 break-all">{cert.completionHash}</span>
                   </div>
-                  <div className="text-indigo-400 font-bold shrink-0">
-                    Dual Verified &bull; Conferred via American FutureTech
+                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-amber-300' : 'text-indigo-400'}`}>
+                    {cert.isSample
+                      ? 'Sample Record \u2022 Not a Verification Source'
+                      : 'Dual Verified \u2022 Conferred via American FutureTech'}
                   </div>
                 </div>
               </div>

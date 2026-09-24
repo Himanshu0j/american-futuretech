@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
@@ -165,6 +165,11 @@ export default function SettingsCMS() {
   useEffect(() => {
     fetchData();
   }, [activeTab]);
+
+  const formRootRef = useRef(null);
+
+  // Accessible names for this panel's fields come from the shared admin hook in
+  // AdminLayout (useAutoFieldLabels), which also covers modals and later tabs.
 
   const fetchData = async () => {
     try {
@@ -514,7 +519,7 @@ export default function SettingsCMS() {
   ];
 
   return (
-    <div className="space-y-6 max-w-6xl pb-16">
+    <div ref={formRootRef} className="space-y-6 max-w-6xl pb-16">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -1429,7 +1434,7 @@ export default function SettingsCMS() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Tool Name</label>
+                          <label className="block text-slate-400 uppercase mb-1">Tool Name</label>
                           <input
                             type="text"
                             value={tool.name || ''}
@@ -1439,7 +1444,7 @@ export default function SettingsCMS() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Category</label>
+                          <label className="block text-slate-400 uppercase mb-1">Category</label>
                           <input
                             type="text"
                             value={tool.category || ''}
@@ -1449,7 +1454,7 @@ export default function SettingsCMS() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Logo URL (SVG / PNG)</label>
+                          <label className="block text-slate-400 uppercase mb-1">Logo URL (SVG / PNG)</label>
                           <input
                             type="url"
                             value={tool.logoUrl || ''}
@@ -1486,7 +1491,7 @@ export default function SettingsCMS() {
                 </div>
 
                 {(settings.capstone?.projects || []).length === 0 && (
-                  <div className="text-xs text-slate-500 font-mono py-4 text-center border border-dashed border-slate-700 rounded-xl">
+                  <div className="text-xs text-slate-400 font-mono py-4 text-center border border-dashed border-slate-700 rounded-xl">
                     No admin projects set — course pages use their built-in default projects.
                   </div>
                 )}
@@ -1506,33 +1511,33 @@ export default function SettingsCMS() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Category Tag</label>
+                          <label className="block text-slate-400 uppercase mb-1">Category Tag</label>
                           <input type="text" value={proj.tag || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'tag', e.target.value)}
                             placeholder="e.g. Computer Vision"
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Project Title</label>
+                          <label className="block text-slate-400 uppercase mb-1">Project Title</label>
                           <input type="text" value={proj.title || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'title', e.target.value)}
                             placeholder="e.g. US Health Care Analysis"
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Description</label>
+                        <label className="block text-slate-400 uppercase mb-1 text-xs font-mono">Description</label>
                         <textarea rows={2} value={proj.desc || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'desc', e.target.value)}
                           placeholder="What do students build?"
                           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Tech Stack (comma-separated)</label>
+                          <label className="block text-slate-400 uppercase mb-1">Tech Stack (comma-separated)</label>
                           <input type="text" value={(proj.stack || []).join(', ')} onChange={(e) => handleUpdateCapstoneProject(idx, 'stack', e.target.value)}
                             placeholder="e.g. Python, TensorFlow, OpenCV"
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Gradient Color</label>
+                          <label className="block text-slate-400 uppercase mb-1">Gradient Color</label>
                           <input type="text" value={proj.color || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'color', e.target.value)}
                             placeholder="from-blue-500 to-indigo-500"
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-indigo-500" />
@@ -1619,7 +1624,7 @@ export default function SettingsCMS() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Phase Tag</label>
+                          <label className="block text-slate-400 uppercase mb-1">Phase Tag</label>
                           <input
                             type="text"
                             value={step.phaseName || ''}
@@ -1629,7 +1634,7 @@ export default function SettingsCMS() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Title</label>
+                          <label className="block text-slate-400 uppercase mb-1">Title</label>
                           <input
                             type="text"
                             value={step.title || ''}
@@ -1639,7 +1644,7 @@ export default function SettingsCMS() {
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Timeline / Duration</label>
+                          <label className="block text-slate-400 uppercase mb-1">Timeline / Duration</label>
                           <input
                             type="text"
                             value={step.duration || ''}
@@ -1651,7 +1656,7 @@ export default function SettingsCMS() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Description</label>
+                        <label className="block text-slate-400 uppercase mb-1 text-xs font-mono">Description</label>
                         <textarea
                           rows={2}
                           value={step.description || ''}
@@ -1911,36 +1916,36 @@ export default function SettingsCMS() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Full Name</label>
+                          <label className="block text-slate-400 uppercase mb-1">Full Name</label>
                           <input type="text" value={person.name || ''} onChange={(e) => handleUpdateLeader(idx, 'name', e.target.value)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Role / Title</label>
+                          <label className="block text-slate-400 uppercase mb-1">Role / Title</label>
                           <input type="text" value={person.role || ''} onChange={(e) => handleUpdateLeader(idx, 'role', e.target.value)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">Experience Badge</label>
+                          <label className="block text-slate-400 uppercase mb-1">Experience Badge</label>
                           <input type="text" value={person.experience || ''} onChange={(e) => handleUpdateLeader(idx, 'experience', e.target.value)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-slate-500 uppercase mb-1 text-xs font-mono">Bio</label>
+                        <label className="block text-slate-400 uppercase mb-1 text-xs font-mono">Bio</label>
                         <textarea rows={3} value={person.bio || ''} onChange={(e) => handleUpdateLeader(idx, 'bio', e.target.value)}
                           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                         <div className="sm:col-span-2">
-                          <label className="block text-slate-500 uppercase mb-1">Skills (comma-separated)</label>
+                          <label className="block text-slate-400 uppercase mb-1">Skills (comma-separated)</label>
                           <input type="text" value={(person.skills || []).join(', ')} onChange={(e) => handleUpdateLeader(idx, 'skills', e.target.value)}
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500" />
                         </div>
                         <div>
-                          <label className="block text-slate-500 uppercase mb-1">LinkedIn URL</label>
+                          <label className="block text-slate-400 uppercase mb-1">LinkedIn URL</label>
                           <input type="url" value={person.linkedin || ''} onChange={(e) => handleUpdateLeader(idx, 'linkedin', e.target.value)}
                             placeholder="https://linkedin.com/in/..."
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300 font-mono text-xs focus:outline-none focus:border-indigo-500" />
@@ -2209,7 +2214,7 @@ export default function SettingsCMS() {
           {loading ? (
             <div className="p-12 text-center text-slate-400 text-xs font-mono">Loading audit logs...</div>
           ) : auditLogs.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 text-xs font-mono">
+            <div className="p-12 text-center text-slate-400 text-xs font-mono">
               No recent audit trail entries found.
             </div>
           ) : (

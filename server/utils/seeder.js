@@ -43,8 +43,28 @@ const autoSeedIfEmpty = async () => {
     // ephemeral mode we pin a known demo password instead. On a persistent
     // database the random, printed-once behaviour is unchanged.
     const DEMO_FALLBACK_PASSWORD = 'admin123';
-    const ephemeralDemoMode = !forcedSeedPassword && getDbInfo().ephemeral;
-    const pinnedPassword = forcedSeedPassword || (ephemeralDemoMode ? DEMO_FALLBACK_PASSWORD : '');
+    const dbInfo = getDbInfo();
+    const ephemeralDemoMode = !forcedSeedPassword && dbInfo.ephemeral;
+
+    // A weak SEED_ADMIN_PASSWORD is refused on a persistent database. This
+    // platform shipped a shared default ("admin123") in the past, and it was
+    // published on a public login page — so re-creating it after a database
+    // reset would silently undo every rotation performed in the admin panel.
+    // Throwaway in-memory databases are unaffected: they hold no real data.
+    let acceptedSeedPassword = forcedSeedPassword;
+    let refusedSeedPassword = null;
+    if (forcedSeedPassword && !dbInfo.ephemeral) {
+      const strength = validatePassword(forcedSeedPassword, {
+        email: 'admin@americanfuturetech.com',
+        name: 'Alexander Pierce',
+      });
+      if (!strength.valid) {
+        refusedSeedPassword = strength.errors[0];
+        acceptedSeedPassword = '';
+      }
+    }
+
+    const pinnedPassword = acceptedSeedPassword || (ephemeralDemoMode ? DEMO_FALLBACK_PASSWORD : '');
 
     const adminPassword = pinnedPassword || generateSecurePassword();
     const counselorPassword = pinnedPassword || generateSecurePassword();
@@ -86,14 +106,20 @@ const autoSeedIfEmpty = async () => {
 
     // Credentials are shown exactly once, here in the server log — never in the
     // repository, and never in an API response.
-    if (forcedSeedPassword) {
-      const strength = validatePassword(forcedSeedPassword, { email: 'admin@americanfuturetech.com' });
-      if (!strength.valid) {
-        console.warn(
-        `\n⚠️  [Seed] SEED_ADMIN_PASSWORD does not meet the password policy (${strength.errors[0]})\n` +
-        '   Forcing it anyway for this seed (administrators can rotate it in the panel later).\n',
-        );
-      }
+    if (refusedSeedPassword) {
+      console.warn(
+        `\n🚨 [Seed] SEED_ADMIN_PASSWORD was REFUSED — ${refusedSeedPassword}\n` +
+        '   A guessable seed password is never written to a persistent database.\n' +
+        '   Random, policy-compliant passwords were generated instead (below).\n',
+      );
+      console.log(
+        `\n[Seed] Demo accounts created with RANDOM passwords (shown once, stored hashed):\n` +
+        `   SUPERADMIN  admin@americanfuturetech.com      / ${adminPassword}\n` +
+        `   COUNSELOR   counselor@americanfuturetech.com  / ${counselorPassword}\n` +
+        `   STUDENT     student@americanfuturetech.com    / ${studentPassword}\n` +
+        `   ⚠️  Save these now — they cannot be recovered. Change them after first login.\n`,
+      );
+    } else if (forcedSeedPassword) {
       console.log(
         `\n[Seed] Demo accounts created with SEED_ADMIN_PASSWORD:\n` +
         `   SUPERADMIN  admin@americanfuturetech.com\n` +
@@ -731,6 +757,8 @@ const autoSeedIfEmpty = async () => {
       grade: 'Distinction with Honors',
       verificationUrl: '/certificate/AFT-CERT-AI9821',
       issueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      // Seeded demo record — must never read as a real conferred credential.
+      isSample: true,
     });
 
     // Demo Payment & Invoice

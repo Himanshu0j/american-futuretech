@@ -421,7 +421,7 @@ export default function JobsManager() {
               ))}
             </div>
           ) : jobs.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-sm bg-slate-900/40 rounded-2xl border border-slate-800 p-8">
+            <div className="text-center py-12 text-slate-400 text-sm bg-slate-900/40 rounded-2xl border border-slate-800 p-8">
               No job postings found. Click &quot;Post New Partner Job&quot; to publish positions.
             </div>
           ) : (
@@ -469,7 +469,7 @@ export default function JobsManager() {
                               <span className="max-w-[180px] truncate">{job.recommendedCourseTitle || job.recommendedCourse?.title}</span>
                             </span>
                           ) : (
-                            <span className="text-slate-500 font-mono text-[11px]">General / None</span>
+                            <span className="text-slate-400 font-mono text-[11px]">General / None</span>
                           )}
                         </td>
 
@@ -477,7 +477,7 @@ export default function JobsManager() {
                           <div className="font-mono text-emerald-400 font-bold">
                             {job.salaryMin && job.salaryMax ? `$${Number(job.salaryMin).toLocaleString()} - $${Number(job.salaryMax).toLocaleString()}` : job.salaryRange || 'N/A'}
                           </div>
-                          <div className="text-slate-500 text-[11px]">{job.location || 'Remote'}</div>
+                          <div className="text-slate-400 text-[11px]">{job.location || 'Remote'}</div>
                         </td>
 
                         <td className="py-4 px-5">
@@ -547,9 +547,9 @@ export default function JobsManager() {
       {activeTab === 'applications' && (
         <div className="space-y-4">
           {loading ? (
-            <div className="p-8 text-center text-slate-500 font-mono">Loading candidate resumes...</div>
+            <div className="p-8 text-center text-slate-400 font-mono">Loading candidate resumes...</div>
           ) : applications.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-sm bg-slate-900/40 rounded-2xl border border-slate-800 p-8">
+            <div className="text-center py-12 text-slate-400 text-sm bg-slate-900/40 rounded-2xl border border-slate-800 p-8">
               No applications submitted yet. Candidate submissions from the Live Jobs board appear here.
             </div>
           ) : (
@@ -570,7 +570,7 @@ export default function JobsManager() {
                       <tr key={app._id} className="hover:bg-slate-800/40 transition-colors">
                         <td className="py-4 px-5">
                           <div className="font-bold text-white text-sm">{app.applicantName}</div>
-                          <div className="text-slate-500 text-[11px] font-mono">
+                          <div className="text-slate-400 text-[11px] font-mono">
                             {new Date(app.createdAt).toLocaleDateString()}
                           </div>
                         </td>
@@ -912,7 +912,7 @@ export default function JobsManager() {
                       onChange={(e) => setJobForm({ ...jobForm, postedAt: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1 font-sans">
+                    <p className="text-[10px] text-slate-400 mt-1 font-sans">
                       Drives the public &ldquo;Posted 2 hours ago&rdquo; label. Empty = today. Future dates are rejected.
                     </p>
                   </div>
@@ -924,7 +924,7 @@ export default function JobsManager() {
                       onChange={(e) => setJobForm({ ...jobForm, order: Number(e.target.value) || 0 })}
                       className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1 font-sans">Lower number shows first when sorting by order.</p>
+                    <p className="text-[10px] text-slate-400 mt-1 font-sans">Lower number shows first when sorting by order.</p>
                   </div>
                   <div className="flex flex-col justify-center gap-2">
                     <label className="inline-flex items-center gap-2 text-slate-300 cursor-pointer">

@@ -108,7 +108,7 @@ export default function CareerSupportPage() {
                 <div className="pt-4 border-t border-slate-100 space-y-2">
                   {p.features.map((f, fIdx) => (
                     <div key={fIdx} className="flex items-start gap-2 text-xs text-slate-600">
-                      <Check className="w-3.5 h-3.5 text-[#10B981] shrink-0 mt-0.5" />
+                      <Check className="w-3.5 h-3.5 text-[#047857] shrink-0 mt-0.5" />
                       <span>{f}</span>
                     </div>
                   ))}
@@ -151,7 +151,7 @@ export default function CareerSupportPage() {
                   <div className="space-y-2 pt-3 border-t border-slate-100 flex-1">
                     {(st.points || []).map((pt, pi) => (
                       <div key={pi} className="flex items-start gap-2 text-[11px] text-slate-700 leading-relaxed">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#047857] shrink-0 mt-0.5" />
                         <span>{pt}</span>
                       </div>
                     ))}
@@ -179,7 +179,7 @@ export default function CareerSupportPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-6 rounded-2xl bg-[#f7f9f6] border border-slate-200">
                 <div className="flex items-center gap-2 text-sm font-bold text-[#0B1220] mb-4">
-                  <CheckCircle2 className="w-4 h-4 text-[#10b981]" />
+                  <CheckCircle2 className="w-4 h-4 text-[#047857]" />
                   What We Provide
                 </div>
                 <div className="space-y-3">

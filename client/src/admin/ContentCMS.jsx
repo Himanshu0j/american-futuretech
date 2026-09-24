@@ -194,7 +194,7 @@ export default function ContentCMS() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this content record?')) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
       if (activeTab === 'blogs') {
         await axios.delete(`/api/content/blogs/${id}`, { headers });
@@ -214,7 +214,7 @@ export default function ContentCMS() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
 
       if (activeTab === 'blogs') {
@@ -317,7 +317,7 @@ export default function ContentCMS() {
               <div key={n} className="h-64 rounded-2xl bg-slate-900/50 border border-slate-800 animate-pulse" />
             ))
           ) : blogs.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-500 text-sm">
+            <div className="col-span-full py-12 text-center text-slate-400 text-sm">
               No blog articles found. Click &quot;Add Article&quot; to publish your first post.
             </div>
           ) : (
@@ -329,7 +329,7 @@ export default function ContentCMS() {
                 <div>
                   <div className="flex items-center justify-between text-xs font-mono text-indigo-400 mb-2">
                     <span>{b.category}</span>
-                    <span className="text-slate-500">{b.readTime}</span>
+                    <span className="text-slate-400">{b.readTime}</span>
                   </div>
                   <h3 className="text-base font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors line-clamp-2">
                     {b.title}
@@ -340,21 +340,23 @@ export default function ContentCMS() {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
-                  <span className="text-[11px] text-slate-500 font-mono">
+                  <span className="text-[11px] text-slate-400 font-mono">
                     /{b.slug}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleOpenEdit(b)}
+                      aria-label={`Edit article: ${b.title}`}
                       className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <button
                       onClick={() => handleDelete(b._id)}
+                      aria-label={`Delete article: ${b.title}`}
                       className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -370,7 +372,7 @@ export default function ContentCMS() {
           {loading ? (
             <div className="p-12 text-center text-slate-400 font-mono text-xs">Loading FAQs...</div>
           ) : faqs.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 text-sm">No FAQs found.</div>
+            <div className="p-12 text-center text-slate-400 text-sm">No FAQs found.</div>
           ) : (
             <div className="divide-y divide-slate-800/60">
               {faqs.map((f) => (
@@ -458,7 +460,7 @@ export default function ContentCMS() {
               <div key={n} className="h-56 rounded-2xl bg-slate-900/50 border border-slate-800 animate-pulse" />
             ))
           ) : stories.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-500 text-sm">
+            <div className="col-span-full py-12 text-center text-slate-400 text-sm">
               No alumni stories found. Click &quot;Add Alumni Review&quot; to publish testimonials.
             </div>
           ) : (
@@ -490,21 +492,23 @@ export default function ContentCMS() {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-4">
-                  <span className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                  <span className="text-[11px] text-slate-400 truncate max-w-[180px]">
                     {s.course}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleOpenEdit(s)}
+                      aria-label={`Edit alumni review from ${s.studentName}`}
                       className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <button
                       onClick={() => handleDelete(s._id)}
+                      aria-label={`Delete alumni review from ${s.studentName}`}
                       className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
                 </div>

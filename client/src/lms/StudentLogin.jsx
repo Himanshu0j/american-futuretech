@@ -51,7 +51,7 @@ export default function StudentLogin() {
 
         {/* Login Card */}
         <div className="rounded-3xl bg-white border border-slate-200 p-8 shadow-sm">
-          <h2 className="text-2xl font-heading font-black text-[#0B1220] mb-1">Learner Authentication</h2>
+          <h1 className="text-2xl font-heading font-black text-[#0B1220] mb-1">Learner Authentication</h1>
           <p className="text-xs text-slate-600 mb-6">Enter your student portal credentials to access enrolled cohorts and labs.</p>
 
           {error && (

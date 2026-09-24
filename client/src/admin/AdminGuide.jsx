@@ -177,12 +177,12 @@ export default function AdminGuide() {
               </div>
 
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">What it does</div>
+                <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">What it does</div>
                 <p className="text-xs text-slate-300 leading-relaxed">{sec.what}</p>
               </div>
 
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1">How to use (Hinglish)</div>
+                <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">How to use (Hinglish)</div>
                 <p className="text-xs text-slate-400 leading-relaxed">{sec.how}</p>
               </div>
 

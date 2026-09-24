@@ -22,8 +22,13 @@
     "verify:coupons": "node scripts/verify-coupons.js",
     "verify:students": "node scripts/verify-student-access.js",
     "verify:analytics": "node scripts/verify-analytics-honesty.js",
+    "verify:credentials": "node scripts/verify-credential-guard.js",
+    "verify:security": "node scripts/verify-security-hardening.js",
+    "verify:rbac": "node scripts/verify-rbac-matrix.js",
     "verify:db": "node scripts/verify-db.js",
     "verify:live": "node scripts/verify-live-qa.js",
+    "audit:a11y": "node scripts/audit-accessibility.js",
+    "audit:browser": "node scripts/audit-live-browser.js",
     "audit:testdata": "node scripts/audit-test-data.js"
   },
   "devDependencies": {

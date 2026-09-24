@@ -316,6 +316,12 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     return (
                       <button
                         key={tab.id}
+                        type="button"
+                        // The label is visually hidden below the `sm` breakpoint, which
+                        // left these icon-only buttons with no accessible name. The
+                        // aria-label keeps them announced at every width.
+                        aria-label={tab.label}
+                        aria-pressed={isActive}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           isActive
@@ -375,7 +381,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       </div>
                       <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Placement</div>
-                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">Live Job Board</div>
+                        <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">Live Job Board</div>
                         <div className="text-[10px] text-slate-500">Direct hiring pipeline</div>
                       </div>
                     </div>

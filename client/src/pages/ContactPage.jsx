@@ -183,6 +183,7 @@ export default function ContactPage() {
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Preferred Batch Format</label>
                       <select
+                        aria-label="Preferred batch format"
                         value={preferredBatch}
                         onChange={(e) => setPreferredBatch(e.target.value)}
                         className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all"

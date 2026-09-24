@@ -176,7 +176,7 @@ export default function FooterManager() {
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   if (loading || !footer) {
-    return <div className="p-10 text-center text-slate-500 font-mono text-xs">Loading footer CMS…</div>;
+    return <div className="p-10 text-center text-slate-400 font-mono text-xs">Loading footer CMS…</div>;
   }
 
   const sortedColumns = sortByOrder(footer.columns);
@@ -261,7 +261,7 @@ export default function FooterManager() {
                 onChange={(e) => patch({ logoWidth: Number(e.target.value) })}
                 className="w-full mt-2 accent-indigo-500"
               />
-              <p className="text-[10px] text-slate-500 mt-1 font-sans">Height scales automatically — the logo never stretches.</p>
+              <p className="text-[10px] text-slate-400 mt-1 font-sans">Height scales automatically — the logo never stretches.</p>
             </div>
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[64px]">
               {footer.logo ? (
@@ -272,7 +272,7 @@ export default function FooterManager() {
                   className="max-w-full object-contain"
                 />
               ) : (
-                <span className="text-[11px] text-slate-500">No logo selected</span>
+                <span className="text-[11px] text-slate-400">No logo selected</span>
               )}
             </div>
           </div>
@@ -366,7 +366,7 @@ export default function FooterManager() {
       <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-white font-heading">
-            Footer columns <span className="text-slate-500 font-normal">({sortedColumns.length})</span>
+            Footer columns <span className="text-slate-400 font-normal">({sortedColumns.length})</span>
           </h2>
           <button
             onClick={() => {
@@ -395,11 +395,12 @@ export default function FooterManager() {
                 <div className="flex flex-wrap items-center gap-2 p-3">
                   <GripVertical className="w-4 h-4 text-slate-600" />
                   <input
+                    aria-label={`Footer column ${index + 1} title`}
                     value={column.title}
                     onChange={(e) => updateColumn(column._key, { title: e.target.value })}
                     className="flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-bold focus:outline-none focus:border-indigo-500"
                   />
-                  <span className="text-[10px] font-mono text-slate-500">{links.length} link(s)</span>
+                  <span className="text-[10px] font-mono text-slate-400">{links.length} link(s)</span>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => moveColumn(index, -1)}
@@ -421,7 +422,7 @@ export default function FooterManager() {
                       onClick={() => updateColumn(column._key, { active: !column.active })}
                       title={column.active ? 'Hide column' : 'Show column'}
                       className={`p-1.5 rounded-lg cursor-pointer ${
-                        column.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-500'
+                        column.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'
                       }`}
                     >
                       {column.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -445,7 +446,7 @@ export default function FooterManager() {
                 {isOpen && (
                   <div className="border-t border-slate-800 p-3 space-y-2">
                     {links.length === 0 && (
-                      <p className="text-[11px] text-slate-500">No links yet. Add one below.</p>
+                      <p className="text-[11px] text-slate-400">No links yet. Add one below.</p>
                     )}
                     {links.map((link, linkIndex) => (
                       <div key={link._key} className="flex flex-wrap items-center gap-2">
@@ -481,7 +482,7 @@ export default function FooterManager() {
                           <button
                             onClick={() => updateLink(column._key, link._key, { active: !link.active })}
                             className={`p-1.5 rounded-lg cursor-pointer ${
-                              link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-500'
+                              link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'
                             }`}
                             title={link.active ? 'Hide link' : 'Show link'}
                           >
@@ -538,6 +539,7 @@ export default function FooterManager() {
           {sortedLegal.map((link, index) => (
             <div key={link._key} className="flex flex-wrap items-center gap-2">
               <input
+                aria-label={`Legal link ${index + 1} label`}
                 value={link.label}
                 onChange={(e) => setFooter((prev) => ({
                   ...prev,
@@ -546,6 +548,7 @@ export default function FooterManager() {
                 className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
               />
               <input
+                aria-label={`Legal link ${index + 1} URL`}
                 value={link.url}
                 onChange={(e) => setFooter((prev) => ({
                   ...prev,
@@ -558,12 +561,12 @@ export default function FooterManager() {
                   ...prev,
                   legalLinks: prev.legalLinks.map((l) => (l._key === link._key ? { ...l, active: !l.active } : l)),
                 }))}
-                className={`p-1.5 rounded-lg cursor-pointer ${link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-500'}`}
+                className={`p-1.5 rounded-lg cursor-pointer ${link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'}`}
                 title={link.active ? 'Hide' : 'Show'}
               >
                 {link.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
               </button>
-              <span className="text-[10px] font-mono text-slate-500">#{index + 1}</span>
+              <span className="text-[10px] font-mono text-slate-400">#{index + 1}</span>
               <button
                 onClick={() => setFooter((prev) => ({
                   ...prev,

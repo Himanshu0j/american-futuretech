@@ -2,6 +2,8 @@ const BlogPost = require('../models/BlogPost');
 const FAQ = require('../models/FAQ');
 const SuccessStory = require('../models/SuccessStory');
 const AuditLog = require('../models/AuditLog');
+const { searchRegex } = require('../utils/search');
+const { sendError } = require('../utils/apiError');
 
 // BLOGS
 const getBlogs = async (req, res) => {
@@ -11,15 +13,15 @@ const getBlogs = async (req, res) => {
     if (category && category !== 'All') query.category = category;
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
+        { title: searchRegex(search) },
+        { content: searchRegex(search) },
+        { tags: searchRegex(search) },
       ];
     }
     const blogs = await BlogPost.find(query).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, count: blogs.length, blogs });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -31,7 +33,7 @@ const getBlogBySlug = async (req, res) => {
     await blog.save();
     return res.status(200).json({ success: true, blog });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -40,7 +42,7 @@ const createBlog = async (req, res) => {
     const blog = await BlogPost.create(req.body);
     return res.status(201).json({ success: true, blog });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -50,7 +52,7 @@ const updateBlog = async (req, res) => {
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
     return res.status(200).json({ success: true, blog });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -59,7 +61,7 @@ const deleteBlog = async (req, res) => {
     await BlogPost.findByIdAndDelete(req.params.id);
     return res.status(200).json({ success: true, message: 'Blog post deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -75,7 +77,7 @@ const getFaqs = async (req, res) => {
     const faqs = await FAQ.find(query).sort({ order: 1, createdAt: -1 });
     return res.status(200).json({ success: true, count: faqs.length, faqs });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -95,7 +97,7 @@ const createFaq = async (req, res) => {
 
     return res.status(201).json({ success: true, faq });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -116,7 +118,7 @@ const updateFaq = async (req, res) => {
 
     return res.status(200).json({ success: true, faq });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -136,7 +138,7 @@ const deleteFaq = async (req, res) => {
 
     return res.status(200).json({ success: true, message: 'FAQ deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -146,7 +148,7 @@ const getSuccessStories = async (req, res) => {
     const stories = await SuccessStory.find({ isFeatured: true }).sort({ rating: -1, createdAt: -1 });
     return res.status(200).json({ success: true, count: stories.length, stories });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -190,7 +192,7 @@ const createSuccessStory = async (req, res) => {
     const story = await SuccessStory.create(normalizeStoryPayload(req.body));
     return res.status(201).json({ success: true, story });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -203,7 +205,7 @@ const updateSuccessStory = async (req, res) => {
     );
     return res.status(200).json({ success: true, story });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -212,7 +214,7 @@ const deleteSuccessStory = async (req, res) => {
     await SuccessStory.findByIdAndDelete(req.params.id);
     return res.status(200).json({ success: true, message: 'Story deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

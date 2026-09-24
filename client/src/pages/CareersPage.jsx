@@ -422,8 +422,9 @@ export default function CareersPage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
                 {/* 1. Job Type */}
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Job Type</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Job Type</label>
                   <select
+                    aria-label="Job type"
                     value={selectedJobType}
                     onChange={(e) => setSelectedJobType(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
@@ -434,8 +435,9 @@ export default function CareersPage() {
 
                 {/* 2. Experience Level */}
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Experience</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Experience</label>
                   <select
+                    aria-label="Experience level"
                     value={selectedExp}
                     onChange={(e) => setSelectedExp(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
@@ -446,8 +448,9 @@ export default function CareersPage() {
 
                 {/* 3. Location */}
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Location</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Location</label>
                   <select
+                    aria-label="Location"
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
@@ -458,8 +461,9 @@ export default function CareersPage() {
 
                 {/* 4. Recommended Course */}
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Course Track</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Course Track</label>
                   <select
+                    aria-label="Course track"
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220] truncate"
@@ -477,8 +481,9 @@ export default function CareersPage() {
               {/* Secondary Filters: Department, Salary, Remote, Sort */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Department</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Department</label>
                   <select
+                    aria-label="Department"
                     value={selectedDepartment}
                     onChange={(e) => setSelectedDepartment(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220] truncate"
@@ -488,8 +493,9 @@ export default function CareersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Salary</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Salary</label>
                   <select
+                    aria-label="Salary band"
                     value={selectedSalary}
                     onChange={(e) => setSelectedSalary(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
@@ -499,8 +505,9 @@ export default function CareersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-400 font-bold mb-1">Sort By</label>
+                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Sort By</label>
                   <select
+                    aria-label="Sort jobs by"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B1220]"
@@ -575,10 +582,10 @@ export default function CareersPage() {
 
               {/* Filter Telemetry & Clear Filters Button */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                <div className="text-slate-500 font-mono">
+                <div className="text-slate-600 font-mono">
                   Showing <strong className="text-slate-900">{pagination.total}</strong> matching partner position{pagination.total === 1 ? '' : 's'}
                   {pagination.totalPages > 1 && (
-                    <span className="text-slate-400"> · page {pagination.page} of {pagination.totalPages}</span>
+                    <span className="text-slate-500"> · page {pagination.page} of {pagination.totalPages}</span>
                   )}
                 </div>
 
@@ -727,6 +734,7 @@ export default function CareersPage() {
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 mb-1">Target Track</label>
                         <select
+                          aria-label="Target track"
                           value={fastTrackDomain}
                           onChange={(e) => setFastTrackDomain(e.target.value)}
                           className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#0B1220]"
@@ -741,6 +749,7 @@ export default function CareersPage() {
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 mb-1">Experience</label>
                         <select
+                          aria-label="Experience level"
                           value={fastTrackExp}
                           onChange={(e) => setFastTrackExp(e.target.value)}
                           className="w-full p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-[11px] focus:outline-none focus:border-[#0B1220]"

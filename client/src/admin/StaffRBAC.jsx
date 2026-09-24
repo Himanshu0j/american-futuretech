@@ -377,19 +377,20 @@ export default function StaffRBAC() {
           {/* Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[#0B1220]/70 border border-white/[0.08]">
             <div className="relative w-full sm:w-80">
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search staff by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-xs text-slate-400 font-mono">Role:</span>
               <select
+                aria-label="Filter staff by role"
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="px-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 cursor-pointer"
@@ -574,7 +575,7 @@ export default function StaffRBAC() {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteUser(member)}
-                                  className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                                   title="Delete Staff Account"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -645,7 +646,7 @@ export default function StaffRBAC() {
                         </td>
                         <td className="px-6 py-3.5 font-bold text-white whitespace-nowrap">
                           <span className="text-indigo-400">{log.actorName}</span>
-                          <span className="text-[10px] text-slate-500 font-mono block">({log.actorRole})</span>
+                          <span className="text-[10px] text-slate-400 font-mono block">({log.actorRole})</span>
                         </td>
                         <td className="px-6 py-3.5 whitespace-nowrap">
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">

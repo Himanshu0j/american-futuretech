@@ -248,11 +248,11 @@ export default function CouponsManager() {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Live coupons</span>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Live coupons</span>
             <span className="text-lg font-bold text-emerald-300">{stats.live}</span>
           </div>
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Redemptions</span>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Redemptions</span>
             <span className="text-lg font-bold text-indigo-300">{stats.redemptions}</span>
           </div>
           <button
@@ -278,7 +278,7 @@ export default function CouponsManager() {
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -289,6 +289,7 @@ export default function CouponsManager() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          aria-label="Filter coupons by status"
           className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
         >
           <option value="all">All statuses</option>
@@ -300,7 +301,7 @@ export default function CouponsManager() {
       </div>
 
       {loading ? (
-        <div className="p-10 text-center text-slate-500 font-mono text-xs">Loading coupons…</div>
+        <div className="p-10 text-center text-slate-400 font-mono text-xs">Loading coupons…</div>
       ) : filtered.length === 0 ? (
         <div className="p-10 text-center text-slate-400 text-sm bg-slate-900/60 rounded-2xl border border-slate-800">
           {coupons.length === 0
@@ -327,18 +328,18 @@ export default function CouponsManager() {
                     <td className="py-3 px-4">
                       <div className="font-mono font-bold text-white flex items-center gap-2">
                         {coupon.code}
-                        <button onClick={() => copyCode(coupon.code)} title="Copy code" className="text-slate-500 hover:text-white cursor-pointer">
+                        <button onClick={() => copyCode(coupon.code)} title="Copy code" className="text-slate-400 hover:text-white cursor-pointer">
                           <Copy className="w-3 h-3" />
                         </button>
                       </div>
-                      <div className="text-[11px] text-slate-500">{coupon.description || '—'}</div>
+                      <div className="text-[11px] text-slate-400">{coupon.description || '—'}</div>
                     </td>
                     <td className="py-3 px-4 font-mono text-emerald-300 font-bold">
                       {coupon.discountType === 'percent'
                         ? `${coupon.discountValue}% OFF`
                         : `$${Number(coupon.discountValue).toLocaleString()} OFF`}
                       {coupon.maxDiscount > 0 && (
-                        <div className="text-[10px] text-slate-500 font-sans">capped at ${coupon.maxDiscount}</div>
+                        <div className="text-[10px] text-slate-400 font-sans">capped at ${coupon.maxDiscount}</div>
                       )}
                     </td>
                     <td className="py-3 px-4 text-[11px] text-slate-400 space-y-0.5">
@@ -350,7 +351,7 @@ export default function CouponsManager() {
                     </td>
                     <td className="py-3 px-4 font-mono">
                       <div className="text-white font-bold">{coupon.usedCount || 0}{coupon.usageLimit > 0 ? ` / ${coupon.usageLimit}` : ''}</div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-slate-400">
                         {coupon.perStudentLimit > 0 ? `${coupon.perStudentLimit} per student` : 'unlimited per student'}
                       </div>
                     </td>

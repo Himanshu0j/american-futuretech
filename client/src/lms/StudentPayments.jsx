@@ -250,7 +250,7 @@ export default function StudentPayments() {
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[#EFE6D6] text-[#0B1220] uppercase">
                       {selectedInvoice.status}
                     </span>
-                    <div className="text-xs text-slate-500 font-mono mt-2">
+                    <div className="text-xs text-slate-600 font-mono mt-2">
                       Date: {new Date(selectedInvoice.createdAt).toLocaleDateString()}
                     </div>
                   </div>

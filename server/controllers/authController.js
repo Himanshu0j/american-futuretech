@@ -7,6 +7,7 @@ const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const { getJwtSecret, getJwtExpire } = require('../config/auth');
 const { validatePassword, describePasswordPolicy } = require('../utils/passwords');
+const { sendError } = require('../utils/apiError');
 
 // Brute-force protection thresholds (per account, on top of the per-IP route limiter).
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
@@ -110,10 +111,7 @@ const registerStudent = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -124,14 +122,21 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    // Type-check before touching the database. A crafted body such as
+    // `{"email":{"$ne":null},"password":{"$gt":""}}` would otherwise be handed
+    // to Mongo as a query operator (and blow up on `.toLowerCase()`), turning a
+    // bad request into a 500.
+    const emailValue = typeof email === 'string' ? email.trim() : '';
+    const passwordValue = typeof password === 'string' ? password : '';
+
+    if (!emailValue || !passwordValue) {
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password',
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    const user = await User.findOne({ email: emailValue.toLowerCase() }).select('+password');
 
     if (!user) {
       return res.status(401).json(INVALID_CREDENTIALS);
@@ -142,7 +147,7 @@ const login = async (req, res) => {
       return res.status(423).json(lockResponse(user.lockUntil));
     }
 
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await user.matchPassword(passwordValue);
     if (!isMatch) {
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
 
@@ -198,10 +203,7 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -219,10 +221,7 @@ const getMe = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -237,10 +236,7 @@ const getAllUsers = async (req, res) => {
       users,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -312,10 +308,7 @@ const createUser = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -384,10 +377,7 @@ const updateUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -459,10 +449,7 @@ const deleteUser = async (req, res) => {
       removedLearningState,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -519,10 +506,7 @@ const resetUserPassword = async (req, res) => {
       message: 'Password reset successfully',
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

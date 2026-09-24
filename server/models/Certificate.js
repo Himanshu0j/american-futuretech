@@ -50,6 +50,13 @@ const CertificateSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  // Showcase/seed records are flagged in the database itself, not just in one
+  // screen. Every consumer (verification API, student dashboard, printed page)
+  // can then refuse to present it as a conferred credential.
+  isSample: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });

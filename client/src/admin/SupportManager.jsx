@@ -15,8 +15,19 @@ import {
   Sparkles,
   ShieldCheck
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function SupportManager() {
+  const { user } = useAuth();
+  // Changing a ticket's status is a write: the API requires STUDENTS_EDIT for a
+  // normal admin and keeps COUNSELOR on its documented role scope. Mirrors
+  // `authorizeScoped` in server/middleware/auth.js — the control is only shown
+  // to accounts that will actually be allowed to use it, so nobody is offered a
+  // button that answers 403. The read-only view keeps the status itself visible.
+  const role = (user?.role || '').toUpperCase();
+  const permissions = user?.permissions || [];
+  const canManageTickets = role === 'SUPERADMIN' || role === 'COUNSELOR' || permissions.includes('STUDENTS_EDIT');
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -32,7 +43,8 @@ export default function SupportManager() {
   const fetchTickets = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      // Same lookup order as the shared api client: the admin token wins.
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const res = await axios.get('/api/support/admin/tickets', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -51,7 +63,8 @@ export default function SupportManager() {
 
   const handleStatusChange = async (ticketId, newStatus) => {
     try {
-      const token = localStorage.getItem('token');
+      // Same lookup order as the shared api client: the admin token wins.
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const res = await axios.patch(
         `/api/support/admin/tickets/${ticketId}/status`,
         { status: newStatus },
@@ -74,7 +87,8 @@ export default function SupportManager() {
     if (!replyText.trim() || !activeTicket) return;
     try {
       setReplying(true);
-      const token = localStorage.getItem('token');
+      // Same lookup order as the shared api client: the admin token wins.
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
       const res = await axios.post(
         `/api/support/tickets/${activeTicket._id}/reply`,
         { message: replyText },
@@ -135,13 +149,13 @@ export default function SupportManager() {
           {/* Search & Filter */}
           <div className="space-y-2">
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-500" />
+              <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-400" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search ticket or student..."
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-400"
               />
             </div>
 
@@ -165,9 +179,9 @@ export default function SupportManager() {
           {/* Ticket Cards */}
           <div className="flex-1 overflow-y-auto space-y-2 max-h-[550px] pr-1">
             {loading ? (
-              <div className="p-8 text-center text-xs font-mono text-slate-500">Loading tickets...</div>
+              <div className="p-8 text-center text-xs font-mono text-slate-400">Loading tickets...</div>
             ) : filteredTickets.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-500">No support tickets found.</div>
+              <div className="p-8 text-center text-xs text-slate-400">No support tickets found.</div>
             ) : (
               filteredTickets.map((ticket) => {
                 const isSelected = activeTicket?._id === ticket._id;
@@ -202,7 +216,7 @@ export default function SupportManager() {
 
                     <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
                       <span>{ticket.student?.name || 'Student'}</span>
-                      <span className={`font-semibold ${ticket.priority === 'Urgent' ? 'text-rose-400' : 'text-slate-500'}`}>
+                      <span className={`font-semibold ${ticket.priority === 'Urgent' ? 'text-rose-400' : 'text-slate-400'}`}>
                         {ticket.priority}
                       </span>
                     </div>
@@ -224,7 +238,7 @@ export default function SupportManager() {
                     <span className="text-xs font-mono text-indigo-400 font-semibold uppercase">
                       Ticket #{activeTicket._id.slice(-6)} • {activeTicket.category}
                     </span>
-                    <span className="text-xs text-slate-500">|</span>
+                    <span className="text-xs text-slate-400">|</span>
                     <span className="text-xs text-slate-400 font-mono">
                       Student: <strong className="text-white">{activeTicket.student?.name}</strong> ({activeTicket.student?.email})
                     </span>
@@ -236,16 +250,25 @@ export default function SupportManager() {
 
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono text-slate-400 uppercase">Status:</span>
-                  <select
-                    value={activeTicket.status}
-                    onChange={(e) => handleStatusChange(activeTicket._id, e.target.value)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="Open">Open</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                    <option value="Closed">Closed</option>
-                  </select>
+                  {canManageTickets ? (
+                    <select
+                      value={activeTicket.status}
+                      onChange={(e) => handleStatusChange(activeTicket._id, e.target.value)}
+                      className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
+                    >
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  ) : (
+                    <span
+                      title="Your account has read-only access to the support desk (STUDENTS_EDIT is required to change a ticket status)."
+                      className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-slate-300"
+                    >
+                      {activeTicket.status} — read-only
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -286,7 +309,7 @@ export default function SupportManager() {
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Reply to student as official faculty / admissions..."
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-400"
                 />
                 <button
                   type="submit"
@@ -299,7 +322,7 @@ export default function SupportManager() {
               </form>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-slate-500 text-xs font-mono">
+            <div className="flex-1 flex items-center justify-center text-slate-400 text-xs font-mono">
               Select a ticket to view conversation thread.
             </div>
           )}

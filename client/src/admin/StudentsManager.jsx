@@ -309,11 +309,11 @@ export default function StudentsManager() {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Students</span>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Students</span>
             <span className="text-lg font-bold text-white">{stats.total}</span>
           </div>
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-[10px] font-mono uppercase text-slate-500">Personalized</span>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Personalized</span>
             <span className="text-lg font-bold text-amber-300">{stats.personalized}</span>
           </div>
           <button
@@ -364,7 +364,7 @@ export default function StudentsManager() {
       {/* Filters */}
       <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -372,18 +372,18 @@ export default function StudentsManager() {
             className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
           />
         </div>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={inputClass}>
+        <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={inputClass}>
           <option value="all">All statuses</option>
           <option value="active">Active</option>
           <option value="inactive">Deactivated</option>
         </select>
-        <select value={courseFilter} onChange={(e) => setCourseFilter(e.target.value)} className={inputClass}>
+        <select aria-label="Filter by program" value={courseFilter} onChange={(e) => setCourseFilter(e.target.value)} className={inputClass}>
           <option value="all">All programs</option>
           {options.courses.map((course) => (
             <option key={course._id} value={course._id}>{course.title}</option>
           ))}
         </select>
-        <select value={batchFilter} onChange={(e) => setBatchFilter(e.target.value)} className={inputClass}>
+        <select aria-label="Filter by batch" value={batchFilter} onChange={(e) => setBatchFilter(e.target.value)} className={inputClass}>
           <option value="all">All batches</option>
           {options.batches.map((batch) => (
             <option key={batch._id} value={batch._id}>{batchLabel(batch)}</option>
@@ -392,7 +392,7 @@ export default function StudentsManager() {
       </div>
 
       {loading ? (
-        <div className="p-10 text-center text-slate-500 font-mono text-xs">Loading students…</div>
+        <div className="p-10 text-center text-slate-400 font-mono text-xs">Loading students…</div>
       ) : students.length === 0 ? (
         <div className="p-10 text-center text-slate-400 text-sm bg-slate-900/60 rounded-2xl border border-slate-800">
           No students match these filters. Use “Add Student” to create an account and assign access.
@@ -423,7 +423,7 @@ export default function StudentsManager() {
                       <td className="py-3 px-4">
                         <div className="font-bold text-white">{student.name}</div>
                         <div className="text-[11px] text-slate-400 font-mono">{student.email}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">
+                        <div className="text-[10px] text-slate-400 font-mono">
                           {student.enrollmentNumber || 'No ID'} {student.phone ? `· ${student.phone}` : ''}
                         </div>
                       </td>
@@ -452,7 +452,7 @@ export default function StudentsManager() {
                             <Sparkles className="w-3 h-3" /> 1-on-1
                           </span>
                         ) : (
-                          <span className="text-[11px] text-slate-500">Group</span>
+                          <span className="text-[11px] text-slate-400">Group</span>
                         )}
                       </td>
                       <td className="py-3 px-4">
@@ -485,7 +485,7 @@ export default function StudentsManager() {
                           <button
                             onClick={() => toggleActive(student)}
                             title={student.isActive ? 'Deactivate' : 'Activate'}
-                            className={`p-1.5 rounded-lg cursor-pointer ${student.isActive ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-500'}`}
+                            className={`p-1.5 rounded-lg cursor-pointer ${student.isActive ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'}`}
                           >
                             <Power className="w-3.5 h-3.5" />
                           </button>
@@ -612,7 +612,7 @@ export default function StudentsManager() {
                     />
                     Account active (student can log in)
                   </label>
-                  <p className="text-[11px] text-slate-500 font-sans">
+                  <p className="text-[11px] text-slate-400 font-sans">
                     Passwords are hashed before storage — the plaintext is never saved. Students can rotate it from their profile.
                   </p>
                 </div>
@@ -639,7 +639,7 @@ export default function StudentsManager() {
                           <BookOpen className="w-3.5 h-3.5" />
                           {course.title}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
                           {course.category || 'Program'} · {course.duration || 'Flexible'}
                         </div>
                       </button>
@@ -754,7 +754,7 @@ export default function StudentsManager() {
             </div>
 
             <div className="flex items-center justify-between gap-3 p-4 border-t border-slate-800">
-              <div className="text-[10px] text-slate-500 font-mono">
+              <div className="text-[10px] text-slate-400 font-mono">
                 {step === 1 && 'Name + email are required.'}
                 {step === 3 && 'Access is enforced by the API — not just hidden in the UI.'}
                 {step === 6 && 'Review, then create the account.'}
@@ -806,7 +806,7 @@ export default function StudentsManager() {
 
             <div className="p-5 space-y-5 text-xs">
               <section className="space-y-2">
-                <h4 className="text-[10px] font-mono uppercase text-slate-500">Profile & account</h4>
+                <h4 className="text-[10px] font-mono uppercase text-slate-400">Profile & account</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     ['Student ID', detail.student.enrollmentNumber || '—'],
@@ -817,7 +817,7 @@ export default function StudentsManager() {
                     ['Target career', detail.student.targetCareer || '—'],
                   ].map(([label, value]) => (
                     <div key={label} className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
-                      <div className="text-[10px] text-slate-500 font-mono uppercase">{label}</div>
+                      <div className="text-[10px] text-slate-400 font-mono uppercase">{label}</div>
                       <div className="text-white font-semibold">{value}</div>
                     </div>
                   ))}
@@ -825,7 +825,7 @@ export default function StudentsManager() {
               </section>
 
               <section className="space-y-2">
-                <h4 className="text-[10px] font-mono uppercase text-slate-500">Assigned programs & progress</h4>
+                <h4 className="text-[10px] font-mono uppercase text-slate-400">Assigned programs & progress</h4>
                 {detail.student.courses.length === 0 && (
                   <p className="text-slate-400">No program assigned — this student cannot open any course.</p>
                 )}
@@ -833,20 +833,20 @@ export default function StudentsManager() {
                   <div key={String(course.courseId)} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
                     <div>
                       <div className="text-white font-bold">{course.title}</div>
-                      <div className="text-[10px] text-slate-500 font-mono">
+                      <div className="text-[10px] text-slate-400 font-mono">
                         {course.duration || 'Flexible'} · {course.batchCode || 'No batch'} · {course.status}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-indigo-300 font-bold font-mono">{course.progressPercent || 0}%</div>
-                      <div className="text-[10px] text-slate-500">completed</div>
+                      <div className="text-[10px] text-slate-400">completed</div>
                     </div>
                   </div>
                 ))}
               </section>
 
               <section className="space-y-2">
-                <h4 className="text-[10px] font-mono uppercase text-slate-500">Payments & enrollment</h4>
+                <h4 className="text-[10px] font-mono uppercase text-slate-400">Payments & enrollment</h4>
                 {(detail.detail?.payments || []).length === 0 ? (
                   <p className="text-slate-400">No payment records yet.</p>
                 ) : (
@@ -857,7 +857,7 @@ export default function StudentsManager() {
                           <CreditCard className="w-3.5 h-3.5 text-indigo-400" />
                           {payment.courseTitle}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono">
+                        <div className="text-[10px] text-slate-400 font-mono">
                           {payment.invoiceNumber} · {payment.tier}
                           {payment.couponCode ? ` · coupon ${payment.couponCode}` : ''}
                         </div>
@@ -874,7 +874,7 @@ export default function StudentsManager() {
               </section>
 
               <section className="space-y-2">
-                <h4 className="text-[10px] font-mono uppercase text-slate-500">Certificates</h4>
+                <h4 className="text-[10px] font-mono uppercase text-slate-400">Certificates</h4>
                 {(detail.detail?.certificates || []).length === 0 ? (
                   <p className="text-slate-400">No certificates issued yet.</p>
                 ) : (
@@ -883,7 +883,7 @@ export default function StudentsManager() {
                       <Award className="w-4 h-4 text-amber-400" />
                       <div>
                         <div className="text-white font-bold">{cert.courseTitle}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">{cert.certificateId}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">{cert.certificateId}</div>
                       </div>
                     </div>
                   ))

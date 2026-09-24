@@ -13,6 +13,46 @@ import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
+/**
+ * Brand logos for some enterprise tools are no longer served by any public icon
+ * CDN (trademark removals), so a tile may have no `logo` or the request may fail
+ * at runtime. In that case we render a letter monogram instead of a broken
+ * image. The logo really loading is the only path that shows a picture.
+ */
+const toolMonogram = (name) =>
+  (name || '?')
+    .split(/[\s&/-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
+
+function ToolLogo({ name, logo }) {
+  const [broken, setBroken] = useState(false);
+  return (
+    <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-1.5 mb-1.5">
+      {logo && !broken ? (
+        <img
+          src={logo}
+          alt=""
+          aria-hidden="true"
+          className="w-6 h-6 object-contain"
+          loading="lazy"
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="text-[11px] font-black font-heading tracking-tight text-slate-500 dark:text-slate-400"
+        >
+          {toolMonogram(name)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,6 +151,7 @@ export default function CoursesPage() {
             </div>
             <div className="flex items-center gap-2">
               <select
+                aria-label="Sort programs by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:border-indigo-500 transition-colors"
@@ -285,15 +326,7 @@ export default function CoursesPage() {
                         key={tool.name}
                         className="group rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-indigo-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
                       >
-                        <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-1.5 mb-1.5">
-                          <img
-                            src={tool.logo}
-                            alt={tool.name}
-                            className="w-6 h-6 object-contain"
-                            loading="lazy"
-                            onError={(e) => { e.target.style.opacity = '0.25'; }}
-                          />
-                        </div>
+                        <ToolLogo name={tool.name} logo={tool.logo} />
                         <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">
                           {tool.name}
                         </span>

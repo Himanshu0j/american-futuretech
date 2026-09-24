@@ -132,7 +132,7 @@ export default function MyCertificates() {
               <Award className="w-5 h-5 text-[#4338CA]" />
               <span>US Institutional Fellowship Diplomas</span>
             </h2>
-            <span className="text-xs font-mono text-slate-500">Wyoming Digital Registry</span>
+            <span className="text-xs font-mono text-slate-600">Wyoming Digital Registry</span>
           </div>
 
           {loading ? (

@@ -20,7 +20,7 @@ const mongoose = require('mongoose');
 
 const PORT = 5205;
 const BASE = `http://127.0.0.1:${PORT}`;
-const SEED_ADMIN_PASSWORD = 'Admin-Student-Check-2026!z';
+const SEED_ADMIN_PASSWORD = 'Vertex-Student-Check-2026!z';
 const DB_NAME = `aft_studenttest_${Date.now()}`;
 const MONGO_URI = `mongodb://127.0.0.1:27018/${DB_NAME}`;
 

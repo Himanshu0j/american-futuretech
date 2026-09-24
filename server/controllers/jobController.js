@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Job = require('../models/Job');
 const JobApplication = require('../models/JobApplication');
 const AuditLog = require('../models/AuditLog');
+const { sendError } = require('../utils/apiError');
 
 // Public job board page size. The board always shows 8 postings per page.
 const JOB_PAGE_SIZE = 8;
@@ -213,7 +214,7 @@ const getPublishedJobs = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -230,7 +231,7 @@ const getJobById = async (req, res) => {
     if (!job) return res.status(404).json({ success: false, message: 'Job not found' });
     return res.status(200).json({ success: true, job });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -275,7 +276,7 @@ const applyForJob = async (req, res) => {
       applicantCount: job.applicantCount,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -307,7 +308,7 @@ const submitTalentPool = async (req, res) => {
       message: '🚀 Fast-track application received! Our Enterprise Placement Officer will review your resume within 24 hours.',
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 // @route   POST /api/jobs
@@ -339,7 +340,7 @@ const createJob = async (req, res) => {
     });
     return res.status(201).json({ success: true, job: newJob });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -380,7 +381,7 @@ const updateJob = async (req, res) => {
 
     return res.status(200).json({ success: true, job: updated });
   } catch (error) {
-    return res.status(error.statusCode || 500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -419,7 +420,7 @@ const duplicateJob = async (req, res) => {
 
     return res.status(201).json({ success: true, job: copy });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -436,7 +437,7 @@ const getJobForAdmin = async (req, res) => {
     if (!job) return res.status(404).json({ success: false, message: 'Job not found' });
     return res.status(200).json({ success: true, job });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -461,7 +462,7 @@ const deleteJob = async (req, res) => {
 
     return res.status(200).json({ success: true, message: 'Job deleted' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -476,7 +477,7 @@ const getAllApplications = async (req, res) => {
 
     return res.status(200).json({ success: true, applications });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -495,7 +496,7 @@ const updateApplicationStatus = async (req, res) => {
 
     return res.status(200).json({ success: true, application });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

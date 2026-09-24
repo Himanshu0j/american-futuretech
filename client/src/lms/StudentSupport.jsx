@@ -330,6 +330,7 @@ export default function StudentSupport() {
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Category</label>
                     <select
+                      aria-label="Ticket category"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"
@@ -346,6 +347,7 @@ export default function StudentSupport() {
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Priority</label>
                     <select
+                      aria-label="Ticket priority"
                       value={priority}
                       onChange={(e) => setPriority(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"

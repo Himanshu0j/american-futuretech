@@ -11,7 +11,7 @@ const {
   getMyPayments,
   getInvoiceDetails,
 } = require('../controllers/paymentController');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorizeScoped } = require('../middleware/auth');
 
 // Checkout endpoints are public, so they get their own abuse guards.
 const quoteLimiter = rateLimit({
@@ -50,7 +50,9 @@ router.get('/invoice/:invoiceNumber', protect, getInvoiceDetails);
 // Student receipts
 router.get('/my-payments', protect, getMyPayments);
 
-// Admin payments management
-router.get('/', protect, authorize('SUPERADMIN', 'ADMIN', 'SuperAdmin'), getAllPayments);
+// Admin payments management — the panel gates the "Tuition & Billing Ledger"
+// module with SETTINGS_VIEW, so the API requires the same permission. A role
+// alone is no longer enough: a courses-only admin used to read every invoice.
+router.get('/', protect, authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_VIEW']), getAllPayments);
 
 module.exports = router;

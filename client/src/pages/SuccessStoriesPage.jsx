@@ -68,7 +68,7 @@ export default function SuccessStoriesPage() {
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Alumni Rating</div>
-                <div className="text-xl sm:text-2xl font-display font-black text-amber-500 mt-1">4.9 / 5.0</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-amber-700 mt-1">4.9 / 5.0</div>
                 <div className="text-xs text-slate-500 mt-0.5">From 320+ verified evaluations</div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function SuccessStoriesPage() {
                       <div className="text-[11px] text-[#4338CA] font-semibold truncate">{story.role} @ {story.company}</div>
                       <div className="text-[10px] text-slate-500 truncate mt-0.5">{story.course}</div>
                       {story.graduationYear && (
-                        <div className="text-[10px] text-slate-400 truncate mt-0.5">Class of {story.graduationYear}</div>
+                        <div className="text-[10px] text-slate-600 truncate mt-0.5">Class of {story.graduationYear}</div>
                       )}
                     </div>
                   </div>

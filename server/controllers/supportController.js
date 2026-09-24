@@ -1,4 +1,5 @@
 const SupportTicket = require('../models/SupportTicket');
+const { searchRegex } = require('../utils/search');
 
 // @desc    Student: Create support ticket
 // @route   POST /api/support/tickets
@@ -102,9 +103,9 @@ const getAllTicketsAdmin = async (req, res) => {
     if (category && category !== 'All') query.category = category;
     if (search) {
       query.$or = [
-        { ticketNumber: { $regex: search, $options: 'i' } },
-        { subject: { $regex: search, $options: 'i' } },
-        { studentName: { $regex: search, $options: 'i' } },
+        { ticketNumber: searchRegex(search) },
+        { subject: searchRegex(search) },
+        { studentName: searchRegex(search) },
       ];
     }
 

@@ -121,6 +121,21 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
+// Unknown API routes answer in the API's own shape.
+//
+// Without this, a request the router did not recognise (an unsupported verb on
+// an existing path, a typo, a crawler) fell through to Express's default
+// handler and returned an HTML error page — unparseable for every JSON client,
+// and it surfaced in the admin panel as a mystery crash. This does not create
+// or change any route: it only formats the 404 that already happened.
+app.use('/api', (req, res) => {
+  res.status(404).json({
+    success: false,
+    code: 'ROUTE_NOT_FOUND',
+    message: `API route not found: ${req.method} ${req.originalUrl}`,
+  });
+});
+
 // Serve uploaded static assets
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

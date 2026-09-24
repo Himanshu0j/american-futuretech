@@ -428,6 +428,7 @@ export default function CoursesCMS() {
                 {/* Badge Switcher */}
                 <td className="px-6 py-4">
                   <select
+                    aria-label={`Badge for ${course.title}`}
                     value={course.badge || ''}
                     onChange={(e) => handleQuickBadgeChange(course, e.target.value)}
                     className="p-1.5 rounded-lg bg-slate-900 border border-white/10 text-[11px] text-indigo-300 font-bold focus:outline-none"
@@ -448,7 +449,7 @@ export default function CoursesCMS() {
                 {/* Pricing */}
                 <td className="px-6 py-4">
                   <span className="font-bold text-white">${course.pricing?.discountedPrice || 1899}</span>
-                  <span className="text-slate-500 line-through ml-2 text-[10px]">
+                  <span className="text-slate-400 line-through ml-2 text-[10px]">
                     ${course.pricing?.basePrice || 2499}
                   </span>
                 </td>
@@ -756,7 +757,7 @@ export default function CoursesCMS() {
                 </div>
 
                 {capstoneProjects.length === 0 && (
-                  <div className="text-xs text-slate-500 text-center py-4 border border-dashed border-slate-700 rounded-xl">
+                  <div className="text-xs text-slate-400 text-center py-4 border border-dashed border-slate-700 rounded-xl">
                     No capstone cards yet — add one, or course defaults will show.
                   </div>
                 )}

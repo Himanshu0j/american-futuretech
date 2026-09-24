@@ -93,7 +93,7 @@ export default function PaymentGatewayPanel() {
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   if (loading || !gateway) {
-    return <div className="p-10 text-center text-slate-500 font-mono text-xs">Loading payment gateway…</div>;
+    return <div className="p-10 text-center text-slate-400 font-mono text-xs">Loading payment gateway…</div>;
   }
 
   const ready = Boolean(status?.configured && status?.webhookConfigured);
@@ -204,13 +204,13 @@ export default function PaymentGatewayPanel() {
               <button
                 type="button"
                 onClick={() => setShowSecrets((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white cursor-pointer"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
                 aria-label={showSecrets ? 'Hide secret' : 'Show secret'}
               >
                 {showSecrets ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-slate-400 mt-1">
               Leave blank to keep the saved key. Never shown again after saving.
             </p>
           </div>
@@ -227,7 +227,7 @@ export default function PaymentGatewayPanel() {
               className={`${inputClass} font-mono`}
               autoComplete="new-password"
             />
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-slate-400 mt-1">
               Stripe → Developers → Webhooks → your endpoint → Signing secret.
             </p>
           </div>
@@ -264,15 +264,15 @@ export default function PaymentGatewayPanel() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800 text-[11px] font-mono text-slate-400">
           <div>
-            <span className="text-slate-500 uppercase text-[10px] block">Secret key source</span>
+            <span className="text-slate-400 uppercase text-[10px] block">Secret key source</span>
             {status?.source === 'environment' ? 'Environment variable' : status?.source === 'admin-panel' ? 'Admin panel (encrypted)' : 'Not configured'}
           </div>
           <div>
-            <span className="text-slate-500 uppercase text-[10px] block">Webhook</span>
+            <span className="text-slate-400 uppercase text-[10px] block">Webhook</span>
             {status?.webhookConfigured ? 'Verified — enrollments auto-confirm' : 'Missing — payments cannot be auto-confirmed'}
           </div>
           <div>
-            <span className="text-slate-500 uppercase text-[10px] block">Last updated</span>
+            <span className="text-slate-400 uppercase text-[10px] block">Last updated</span>
             {gateway.lastUpdatedAt
               ? `${new Date(gateway.lastUpdatedAt).toLocaleString()} · ${gateway.lastUpdatedBy}`
               : 'Never from the panel'}

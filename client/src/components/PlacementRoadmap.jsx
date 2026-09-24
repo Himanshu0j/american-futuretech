@@ -129,7 +129,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
                     </div>
                   </div>
 
-                  <div className="text-[11px] font-bold text-[#10B981] uppercase tracking-wider mb-1">
+                  <div className="text-[11px] font-bold text-[#047857] uppercase tracking-wider mb-1">
                     {step.tag || 'Phase Milestone'}
                   </div>
 
@@ -144,9 +144,9 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
                   />
                 </div>
 
-                <div className="pt-4 mt-6 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500 font-medium">
+                <div className="pt-4 mt-6 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-600 font-medium">
                   <span>Phase {stepNumber} Deliverable</span>
-                  <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+                  <CheckCircle2 className="w-4 h-4 text-[#047857]" />
                 </div>
               </div>
             );

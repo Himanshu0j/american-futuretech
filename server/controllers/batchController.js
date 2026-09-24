@@ -1,5 +1,6 @@
 const Batch = require('../models/Batch');
 const Course = require('../models/Course');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Get all batches
 // @route   GET /api/batches
@@ -16,10 +17,7 @@ const getBatches = async (req, res) => {
       batches,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -30,7 +28,13 @@ const createBatch = async (req, res) => {
   try {
     const { course, batchCode, startDate, timing, maxCapacity, status } = req.body;
 
-    const existing = await Batch.findOne({ batchCode: batchCode.toUpperCase() });
+    // An incomplete form used to crash on `batchCode.toUpperCase()` and answer
+    // 500 instead of telling the caller what was missing.
+    if (!batchCode || !String(batchCode).trim()) {
+      return res.status(400).json({ success: false, message: 'Batch code is required.' });
+    }
+
+    const existing = await Batch.findOne({ batchCode: String(batchCode).toUpperCase() });
     if (existing) {
       return res.status(400).json({
         success: false,
@@ -55,10 +59,7 @@ const createBatch = async (req, res) => {
       batch: populatedBatch,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -84,10 +85,7 @@ const updateBatch = async (req, res) => {
       batch,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -111,10 +109,7 @@ const deleteBatch = async (req, res) => {
       message: 'Batch removed successfully',
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -141,10 +136,7 @@ const getFrontendUrgency = async (req, res) => {
       urgency: urgencyList,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

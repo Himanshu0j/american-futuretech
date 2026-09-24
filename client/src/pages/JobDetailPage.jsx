@@ -159,13 +159,15 @@ export default function JobDetailPage() {
 
         <CompanyMarquee />        
         {/* Back Link Breadcrumb */}
-        <div className="flex items-center justify-between mb-8 text-xs font-mono text-slate-500">
-          <div className="flex items-center gap-2">
+        {/* Wraps on narrow screens: a nowrap breadcrumb + "All Openings" link
+            pushed the row 64px past a 320px viewport. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-8 text-xs font-mono text-slate-600">
+          <div className="flex items-center gap-2 min-w-0">
             <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
             <span>/</span>
             <Link to="/careers" className="hover:text-[#0B1220] transition-colors">Live Jobs</Link>
             <span>/</span>
-            <span className="text-slate-900 font-semibold truncate max-w-[200px] sm:max-w-none">{job.title}</span>
+            <span className="text-slate-900 font-semibold truncate min-w-0 max-w-[130px] sm:max-w-none">{job.title}</span>
           </div>
 
           <Link
@@ -208,7 +210,7 @@ export default function JobDetailPage() {
                     {job.employmentType || job.type || 'Full-time'}
                   </span>
                   <span className="text-slate-400">•</span>
-                  <span className="text-slate-500 dark:text-slate-400 font-mono">{job.location}</span>
+                  <span className="text-slate-600 dark:text-slate-400 font-mono">{job.location}</span>
                 </div>
               </div>
             </div>
@@ -222,7 +224,7 @@ export default function JobDetailPage() {
                 <span>Apply Now</span>
                 <ExternalLink className="w-4 h-4" />
               </button>
-              <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <div className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                 <span>Actively Reviewing Candidates</span>
               </div>
@@ -232,14 +234,14 @@ export default function JobDetailPage() {
           {/* Quick Specifications Strip */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-              <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">COMPENSATION</span>
+              <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">COMPENSATION</span>
               <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
                 {salaryText}
               </span>
             </div>
 
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-              <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">LOCATION</span>
+              <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">LOCATION</span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-rose-500" />
                 {job.location}
@@ -247,7 +249,7 @@ export default function JobDetailPage() {
             </div>
 
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-              <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">EMPLOYMENT TYPE</span>
+              <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">EMPLOYMENT TYPE</span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                 <Briefcase className="w-3.5 h-3.5 text-blue-600" />
                 {job.employmentType || job.type || 'Full-time'}
@@ -255,7 +257,7 @@ export default function JobDetailPage() {
             </div>
 
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-              <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-0.5">EXPERIENCE LEVEL</span>
+              <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">EXPERIENCE LEVEL</span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
                 {job.experienceLevel}
@@ -462,13 +464,13 @@ export default function JobDetailPage() {
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Positions on this board are offered through American FutureTech hiring partner relationships. Certified fellows receive expedited technical review.
               </p>
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 font-mono">
                 <span>Location</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">{job.location}</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
                 <span>Status</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Actively Interviewing</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">Actively Interviewing</span>
               </div>
             </div>
 

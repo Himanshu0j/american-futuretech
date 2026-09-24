@@ -21,7 +21,10 @@ const mongoose = require('mongoose');
 
 const PORT = 5201;
 const BASE = `http://127.0.0.1:${PORT}`;
-const SEED_ADMIN_PASSWORD = 'Admin-Crud-Check-2026!z';
+// Must satisfy the platform's own password policy (see utils/passwords.js):
+// the seeder now refuses a SEED_ADMIN_PASSWORD that fails it, so a fixture
+// containing "admin" would never sign in.
+const SEED_ADMIN_PASSWORD = 'Vertex-Crud-Check-2026!z';
 const DB_NAME = `aft_admintest_${Date.now()}`;
 const MONGO_URI = `mongodb://127.0.0.1:27018/${DB_NAME}`;
 

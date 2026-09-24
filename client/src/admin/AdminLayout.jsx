@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -25,6 +25,7 @@ import {
   PanelBottom,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import useAutoFieldLabels from '../hooks/useAutoFieldLabels';
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -34,6 +35,11 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const isSuperAdmin = (user?.role || '').toUpperCase() === 'SUPERADMIN';
   const userPermissions = user?.permissions || [];
+
+  // Every control an admin can reach needs an accessible name, including fields
+  // that only mount inside modals or tabs the admin opens later.
+  const contentRef = useRef(null);
+  useAutoFieldLabels(contentRef);
 
   const navItems = [
     { name: 'Executive Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, permission: 'DASHBOARD_VIEW' },
@@ -85,6 +91,9 @@ export default function AdminLayout() {
           <span className="font-bold text-sm text-white font-heading">AFT Executive Console</span>
         </div>
         <button
+          type="button"
+          aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileOpen}
           onClick={() => setMobileOpen(!mobileOpen)}
           className="p-2 rounded-lg bg-white/[0.06] text-slate-300 hover:text-white"
         >
@@ -255,7 +264,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Body Content */}
-        <main className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#070C17]">
+        <main ref={contentRef} className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#070C17]">
           {(() => {
             const matchedNav = navItems.find((n) => location.pathname.startsWith(n.path));
             if (matchedNav && !hasItemAccess(matchedNav)) {

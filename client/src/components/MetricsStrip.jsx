@@ -131,7 +131,7 @@ export default function MetricsStrip() {
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     {item.bullets.map((b, bIdx) => (
                       <div key={bIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#047857] shrink-0" />
                         <span>{b}</span>
                       </div>
                     ))}
@@ -141,7 +141,7 @@ export default function MetricsStrip() {
                 {/* Footer Tag */}
                 <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#4338CA]">
                   <span className="inline-flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#10B981]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
                     Included in All Cohorts
                   </span>
                   <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#0B1220] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -160,7 +160,7 @@ export default function MetricsStrip() {
               <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
               <span>FELLOWSHIP STANDARDS & BENCHMARKS</span>
             </div>
-            <div className="text-xs text-slate-500 font-mono hidden sm:block">
+            <div className="text-xs text-slate-600 font-mono hidden sm:block">
               US Academic Year 2026
             </div>
           </div>

@@ -80,6 +80,13 @@ app.get('/api/health', (req, res) => {
       'Ephemeral in-memory database: admin content is wiped on every restart/redeploy. Set MONGODB_URI to a persistent MongoDB (e.g. MongoDB Atlas).',
     );
   }
+  if (!db.ephemeral && !db.persistedRequired) {
+    // Durable right now, but nothing stops a missing/typo'd MONGODB_URI from
+    // silently degrading this deployment later. Lock it in.
+    warnings.push(
+      'Hardening recommended: set REQUIRE_PERSISTENT_DB=true so the API refuses to boot on a temporary database instead of silently losing admin content.',
+    );
+  }
   if (authStatus && authStatus.warning) warnings.push(authStatus.warning);
   if (payments.warning) warnings.push(payments.warning);
 

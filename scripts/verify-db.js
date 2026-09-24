@@ -59,6 +59,16 @@ const run = async () => {
   check('MONGODB_URI is configured in the deployment env', db.uriConfigured === true);
   check('Database connection is live', db.connected === true, `database=${db.database || 'n/a'}`);
 
+  // ── Degradation guard: stops a missing/typo'd URI from silently wiping data
+  if (persistent && !db.persistedRequired) {
+    warn(
+      'Persistence is not locked in yet',
+      'set REQUIRE_PERSISTENT_DB=true so the API refuses to boot on a temporary database instead of quietly losing admin content'
+    );
+  } else if (db.persistedRequired) {
+    check('Persistence is locked in', true, 'REQUIRE_PERSISTENT_DB=true — a temporary database can no longer boot');
+  }
+
   // ── Supporting config, reported so nothing is discovered in a live demo ─
   const auth = health.auth || {};
   if (auth.warning) {
@@ -86,6 +96,11 @@ const run = async () => {
   console.log(`\n${'─'.repeat(64)}`);
   if (persistent) {
     console.log('RESULT: content is stored in a real database — admin edits persist ✅');
+    if (!db.persistedRequired) {
+      console.log('\nLast step (recommended): add REQUIRE_PERSISTENT_DB=true to the deployment');
+      console.log('env. Until then a missing or mistyped MONGODB_URI at some future deploy');
+      console.log('would silently move this service onto a temporary database.');
+    }
   } else {
     console.log(`RESULT: ${failed.length} check(s) failed — THIS DEPLOYMENT LOSES DATA ON RESTART ❌`);
     console.log('\nFix: MongoDB Atlas (free M0) → copy the connection string, then on the');

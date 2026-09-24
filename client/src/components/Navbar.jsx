@@ -8,8 +8,6 @@ import {
   X,
   ArrowRight,
   ShieldCheck,
-  Phone,
-  MapPin,
   GraduationCap,
   Award,
   ChevronDown,
@@ -156,7 +154,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 <Link
                   to={bannerLink}
                   title={banner.text}
-                  className="flex items-center gap-1.5 max-w-[380px] px-2.5 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] font-bold hover:bg-white transition-colors min-w-0"
+                  className="flex items-center gap-1.5 max-w-[380px] xl:max-w-[580px] px-2.5 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] font-bold hover:bg-white transition-colors min-w-0"
                 >
                   {banner.badge && (
                     <span className="text-[9px] uppercase tracking-wider opacity-70 shrink-0">{banner.badge}</span>
@@ -170,16 +168,12 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               <span className="text-xs">🇺🇸</span>
               <strong className="font-semibold">US Registered Technology Institute</strong>
             </span>
-            <span className="text-white/20">•</span>
-            <span className="flex items-center gap-1.5 text-[#EFE6D6]/90">
-              <MapPin className="w-3 h-3 text-[#E5C275]" />
-              {company.address}
-            </span>
-            <span className="text-white/20">•</span>
-            <a href={company.phoneHref} className="flex items-center gap-1 text-[#EFE6D6]/90 hover:text-white transition-colors">
-              <Phone className="w-3 h-3 text-[#E5C275]" />
-              {company.phone}
-            </a>
+            {/* Address and phone deliberately live in the footer only.
+                The strip's container is capped at 1280px, and the announcement
+                message (which the client writes from the admin panel) needs ~540px
+                beside the trust badge — measured, it cannot share one line with the
+                contact details without cutting the message mid-sentence. The message
+                wins: it is the call to action. */}
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">

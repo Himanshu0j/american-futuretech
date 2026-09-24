@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles, GraduationCap } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, GraduationCap } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,11 +29,6 @@ export default function StudentLogin() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDemoStudent = () => {
-    setEmail('student@americanfuturetech.com');
-    setPassword('admin123');
   };
 
   return (
@@ -112,18 +107,6 @@ export default function StudentLogin() {
               )}
             </button>
           </form>
-
-          {/* 1-Click Demo Login */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={handleDemoStudent}
-              className="w-full py-2.5 px-4 rounded-full bg-[#F7F7F5] hover:bg-slate-50 text-[#0B1220] text-xs font-bold border-2 border-[#0B1220] transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#4338CA]" />
-              1-Click Demo Fill (Ethan Hunt)
-            </button>
-          </div>
 
           <div className="mt-5 text-center text-xs text-slate-600">
             Enrolling for the first time?{' '}

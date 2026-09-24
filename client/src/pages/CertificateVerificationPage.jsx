@@ -27,6 +27,7 @@ import CertificateModal from '../components/CertificateModal';
 const DEMO_CERTIFICATES = {
   'AFT-CERT-AI9821': {
     certificateId: 'AFT-CERT-AI9821',
+    isSample: true,
     studentName: 'Ethan Hunt',
     courseTitle: '6-Month Comprehensive Fellowship in Applied AI & Deep Learning',
     category: 'Artificial Intelligence & Machine Learning',
@@ -257,9 +258,18 @@ export default function CertificateVerificationPage() {
                       <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
                       <span>Officially Verified Credential</span>
                     </div>
-                    <span className="text-[10px] font-mono text-gray-500">Registry Status: Active & Conferred</span>
+                    <span className="text-[10px] font-mono text-gray-500">Registry Status: Active &amp; Conferred</span>
                   </div>
                 </div>
+
+                {/* A showcase record is not a graduate. Say so, so nobody can quote
+                    this page as proof of a real conferred credential. */}
+                {cert.isSample && (
+                  <div className="mt-4 rounded-lg border border-amber-400/60 bg-amber-50 px-4 py-2.5 text-center text-[11px] font-semibold text-amber-900">
+                    Sample credential shown for demonstration. This ID is a design specimen, not a record of
+                    an issued graduate credential — only IDs issued by the institution resolve to real records.
+                  </div>
+                )}
 
                 {/* Diploma Body */}
                 <div className="py-12 sm:py-12 text-center space-y-4">

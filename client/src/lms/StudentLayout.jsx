@@ -70,7 +70,7 @@ export default function StudentLayout() {
             />
             <div className="min-w-0">
               <div className="font-display font-bold text-xs text-white truncate">{user?.name || 'Ethan Hunt'}</div>
-              <div className="text-[11px] text-emerald-200/80 truncate">{user?.email || 'student@americanfuturetech.com'}</div>
+              <div className="text-[11px] text-emerald-200/80 truncate">{user?.email || 'Enrolled student'}</div>
               <div className="text-[10px] text-[#E5C275] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
             </div>
           </div>

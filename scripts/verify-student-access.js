@@ -374,6 +374,44 @@ const run = async () => {
       `status=${deactivatedLogin.status}`,
     );
 
+    section('7. DELETE ACCOUNT — no orphaned learning state');
+
+    // Deleting the user used to leave the student's Enrollment and Progress rows
+    // behind, where they stayed counted in completion reporting forever.
+    const Enrollment = require(path.join(__dirname, '..', 'server', 'models', 'Enrollment'));
+    const Progress = require(path.join(__dirname, '..', 'server', 'models', 'Progress'));
+
+    await request('PUT', `/api/students/admin/${student._id}`, {
+      token: adminToken,
+      body: { courseIds: [courseA._id], isActive: true },
+    });
+    await Progress.findOneAndUpdate(
+      { student: student._id, course: courseA._id },
+      { $set: { progressPercent: 10 } },
+      { upsert: true },
+    );
+
+    const enrollmentsBefore = await Enrollment.countDocuments({ student: student._id });
+    const progressBefore = await Progress.countDocuments({ student: student._id });
+    check(
+      'Learning state exists before the account is deleted',
+      enrollmentsBefore > 0 && progressBefore > 0,
+      `${enrollmentsBefore} enrollment(s), ${progressBefore} progress row(s)`,
+    );
+
+    const deleted = await request('DELETE', `/api/auth/users/${student._id}`, { token: adminToken });
+    check('SuperAdmin can delete a student account', deleted.status === 200, `status=${deleted.status}`);
+    check(
+      'The response reports what was cleaned up',
+      typeof deleted.json?.removedLearningState?.enrollments === 'number',
+      JSON.stringify(deleted.json?.removedLearningState),
+    );
+
+    const enrollmentsAfter = await Enrollment.countDocuments({ student: student._id });
+    const progressAfter = await Progress.countDocuments({ student: student._id });
+    check('Deleting the account removes its enrollments', enrollmentsAfter === 0, `${enrollmentsBefore} → ${enrollmentsAfter}`);
+    check('Deleting the account removes its progress rows', progressAfter === 0, `${progressBefore} → ${progressAfter}`);
+
     await mongoose.disconnect();
   } catch (error) {
     check('Suite ran to completion', false, error.message);

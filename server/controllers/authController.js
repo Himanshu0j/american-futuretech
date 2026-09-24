@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const SiteSettings = require('../models/SiteSettings');
+const Enrollment = require('../models/Enrollment');
+const Progress = require('../models/Progress');
+const QuizAttempt = require('../models/QuizAttempt');
 const { getJwtSecret, getJwtExpire } = require('../config/auth');
 const { validatePassword, describePasswordPolicy } = require('../utils/passwords');
 
@@ -417,6 +420,24 @@ const deleteUser = async (req, res) => {
       });
     }
 
+    // A student account owns rows in other collections. Removing only the user
+    // left those behind as orphans, where they stayed counted in progress and
+    // completion reporting forever. Certificates are deliberately kept: they are
+    // issued credentials and employers verify them by id, independent of login.
+    let removedLearningState = { enrollments: 0, progresses: 0, quizAttempts: 0 };
+    if (targetRole === 'STUDENT') {
+      const [enrollments, progresses, attempts] = await Promise.all([
+        Enrollment.deleteMany({ student: user._id }),
+        Progress.deleteMany({ student: user._id }),
+        QuizAttempt.deleteMany({ student: user._id }),
+      ]);
+      removedLearningState = {
+        enrollments: enrollments?.deletedCount || 0,
+        progresses: progresses?.deletedCount || 0,
+        quizAttempts: attempts?.deletedCount || 0,
+      };
+    }
+
     await User.findByIdAndDelete(req.params.id);
 
     await AuditLog.create({
@@ -426,12 +447,16 @@ const deleteUser = async (req, res) => {
       action: 'ADMIN_DELETED',
       entity: 'User',
       entityId: req.params.id,
-      details: `Deleted user ${user.name} (${user.email}) role=${user.role}`,
+      details: `Deleted user ${user.name} (${user.email}) role=${user.role}` +
+        (targetRole === 'STUDENT'
+          ? ` — removed ${removedLearningState.enrollments} enrollment(s), ${removedLearningState.progresses} progress record(s), ${removedLearningState.quizAttempts} quiz attempt(s)`
+          : ''),
     });
 
     return res.status(200).json({
       success: true,
       message: 'User deleted successfully',
+      removedLearningState,
     });
   } catch (error) {
     return res.status(500).json({

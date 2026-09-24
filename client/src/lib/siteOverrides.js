@@ -123,6 +123,8 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
   const imageKeys = new Set(Object.keys(images || {}));
   const touchedNodes = new Set(); // text nodes this pass has already handled
   const resolvedKeys = new Set(); // override keys whose saved position still exists
+  const touchedImgs = new Set(); // <img> elements this pass has already handled
+  const resolvedImageKeys = new Set();
 
   collectTextNodes().forEach((node) => {
     const key = pathKey(node);
@@ -190,6 +192,9 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
     const entry = key ? images[key] : null;
     if (!entry || typeof entry.value !== 'string') return;
 
+    resolvedImageKeys.add(key);
+    touchedImgs.add(img);
+
     if (!img.dataset.siteEditorOriginalSrc) {
       img.dataset.siteEditorOriginalSrc = img.getAttribute('src') || '';
     }
@@ -206,6 +211,41 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
       applied.set(key, { kind: 'image', node: img, original });
     }
   });
+
+  /* Same rescue for images: an entry whose saved position is gone is re-matched
+     by the image it was originally applied to, so swapping an image survives a
+     layout change the same way an edited sentence does. */
+  const orphanImages = Array.from(imageKeys).filter((key) => {
+    const entry = images[key];
+    return (
+      !resolvedImageKeys.has(key) &&
+      entry &&
+      typeof entry.value === 'string' &&
+      typeof entry.original === 'string' &&
+      entry.original.length > 0
+    );
+  });
+
+  if (orphanImages.length) {
+    const candidates = collectImages().filter((img) => !touchedImgs.has(img));
+    orphanImages.forEach((key) => {
+      const entry = images[key];
+      const wanted = entry.original;
+      const node = candidates.find((img) => {
+        if (touchedImgs.has(img)) return false;
+        const src = img.getAttribute('src') || '';
+        return src === wanted || src.endsWith(wanted.replace(/^\.?\//, ''));
+      });
+      if (!node) return;
+
+      touchedImgs.add(node);
+      if (!node.dataset.siteEditorOriginalSrc) {
+        node.dataset.siteEditorOriginalSrc = node.getAttribute('src') || '';
+      }
+      node.setAttribute('src', entry.value);
+      applied.set(key, { kind: 'image', node, original: node.dataset.siteEditorOriginalSrc });
+    });
+  }
 
   // Anything the admin deleted/reset goes back to the coded default.
   Array.from(applied.keys()).forEach((key) => {

@@ -20,7 +20,8 @@
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "verify:jobs": "node scripts/verify-jobs-board.js",
     "verify:coupons": "node scripts/verify-coupons.js",
-    "verify:students": "node scripts/verify-student-access.js"
+    "verify:students": "node scripts/verify-student-access.js",
+    "verify:db": "node scripts/verify-db.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

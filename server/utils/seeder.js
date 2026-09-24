@@ -147,7 +147,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Most Popular',
         cardTheme: 'cyan',
         duration: '6 Months',
-        pricing: { basePrice: 2499, discountedPrice: 1899, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Master modern Data Science from exploratory analytics to deep learning and production LLM integration.',
         description: 'Comprehensive 6-month hands-on master program engineered for career switchers and upskillers. Build enterprise predictive models, scalable analytics pipelines, and integrate state-of-the-art Generative AI with PyTorch and LangChain.',
         highlights: ['AI / ML & Deep Learning Core', 'Healthcare & Finance Capstone Projects', 'LangChain & Pinecone RAG Systems', 'US Industry Placement Assistance'],
@@ -250,7 +250,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'High Demand',
         cardTheme: 'rose',
         duration: '6 Months',
-        pricing: { basePrice: 2499, discountedPrice: 1899, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Defend enterprise infrastructure, perform penetration testing, and master offensive security tools.',
         description: 'Elite offensive and defensive cybersecurity training. Learn penetration testing methodologies, Linux security, network analysis, vulnerability assessment, web exploitation, and incident response.',
         highlights: ['Hands-on Virtual Penetration Labs', 'Real-world Bug Bounty & Active Directory Attacks', 'SOC Analyst & Incident Response Workflows', 'CompTIA Security+ & CEH Alignment'],
@@ -318,7 +318,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Industry Next-Gen',
         cardTheme: 'indigo',
         duration: '6 Months',
-        pricing: { basePrice: 2699, discountedPrice: 1999, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Leverage machine learning to detect anomalies, automate threat hunting, and secure AI systems.',
         description: 'Pioneering curriculum bridging deep cybersecurity operations with autonomous AI models. Learn adversarial machine learning, automated malware analysis, AI-driven SIEM correlation, and prompt injection defenses.',
         highlights: ['AI-driven Threat Detection & Automated SIEM', 'Adversarial Machine Learning & Model Defenses', 'Autonomous Incident Response Workflows', 'Zero Trust Architecture Integration'],
@@ -363,7 +363,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Cutting-Edge',
         cardTheme: 'purple',
         duration: '6 Months',
-        pricing: { basePrice: 2899, discountedPrice: 2199, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Architect multi-agent autonomous systems, build production RAG, and fine-tune frontier models.',
         description: 'The definitive engineering masterclass for the Agentic AI revolution. Master LangGraph, CrewAI, AutoGen, fine-tuning with LoRA/QLoRA, context-aware memory, tool calling, and enterprise orchestration.',
         highlights: ['Multi-Agent Collaboration with CrewAI & LangGraph', 'Fine-Tuning Llama 3 & Mistral with QLoRA', 'Advanced Graph RAG & Hybrid Vector Search', 'Enterprise Agent Evaluation & Guardrails'],
@@ -408,7 +408,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Enterprise Standard',
         cardTheme: 'emerald',
         duration: '6 Months',
-        pricing: { basePrice: 2499, discountedPrice: 1899, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Master modern CI/CD, Kubernetes clusters, Terraform IaC, and AIOps automated observability.',
         description: 'Engineer rock-solid cloud-native architectures on AWS and Azure. Automate infrastructure as code with Terraform, orchestrate multi-node Kubernetes clusters, and implement AIOps for self-healing infrastructure.',
         highlights: ['Production Kubernetes & Helm Deployment', 'Terraform Infrastructure as Code (IaC)', 'GitOps with ArgoCD & GitHub Actions', 'AIOps Predictive Failure Prevention'],
@@ -453,7 +453,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'High Impact',
         cardTheme: 'amber',
         duration: '4 Months',
-        pricing: { basePrice: 2299, discountedPrice: 1699, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Lead AI product strategy, user discovery, evaluation metrics, and cross-functional ML delivery.',
         description: 'Transition into high-paying AI Product Management. Learn how to write PRDs for non-deterministic AI models, manage LLM latency vs accuracy trade-offs, evaluate hallucinations, and build AI business cases.',
         highlights: ['AI PRD Writing & Evaluation Metrics', 'LLM Cost Estimation & Unit Economics', 'Human-in-the-Loop UX Design', 'Executive Product Portfolio Defense'],
@@ -497,7 +497,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Enterprise Security',
         cardTheme: 'cyan',
         duration: '4 Months',
-        pricing: { basePrice: 2199, discountedPrice: 1599, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Master NIST, ISO 27001, SOC 2, HIPAA, and EU AI Act compliance powered by automated audit tools.',
         description: 'Bridge legal compliance and information security. Learn how to audit enterprise tech stacks against NIST CSF, ISO 27001, SOC 2 Type II, and the new European EU AI Act regulations using AI compliance agents.',
         highlights: ['ISO 27001 & SOC 2 Type II Readiness Audits', 'EU AI Act & NIST AI RMF Governance Frameworks', 'Third-Party Vendor Risk Assessment Automation', 'CISO Advisory & Board Presentation Skills'],
@@ -541,7 +541,7 @@ const autoSeedIfEmpty = async () => {
         badge: 'Career Accelerator',
         cardTheme: 'emerald',
         duration: '3 Months',
-        pricing: { basePrice: 799, discountedPrice: 499, currency: '$' },
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
         shortDescription: 'Comprehensive technical placement assistance, ATS resume overhaul, mock interviews, and direct employer referrals.',
         description: 'A dedicated 3-month career engineering track. Includes line-by-line ATS resume rewrites, LinkedIn positioning, 1-on-1 mock technical interviews, portfolio development, interview drills, and direct introductions across our vetted hiring partner network.',
         highlights: ['ATS Resume Engineering & LinkedIn Optimization', '1-on-1 Mock Technical Interviews with Scorecards', 'Portfolio, GitHub & Deployable Demo Reviews', 'Direct Hiring Partner Referral Introductions'],
@@ -1398,6 +1398,19 @@ const autoSeedIfEmpty = async () => {
 
     for (const b of blogsData) {
       await BlogPost.create(b);
+    }
+
+    // Coupons are admin-managed now. The legacy promo codes are imported ONCE
+    // so existing campaigns keep working and can be edited from the panel.
+    const Coupon = require('../models/Coupon');
+    if ((await Coupon.countDocuments({})) === 0) {
+      await Coupon.insertMany([
+        { code: 'FUTURETECH10', description: 'FutureTech 10% Off', discountType: 'percent', discountValue: 10, perStudentLimit: 1 },
+        { code: 'WELCOME10', description: 'Welcome 10% Off', discountType: 'percent', discountValue: 10, perStudentLimit: 1 },
+        { code: 'AI2026', description: 'AI 2026 — $50 Off', discountType: 'flat', discountValue: 50, perStudentLimit: 1 },
+        { code: 'TECH50', description: 'Tech Cohort — $50 Off', discountType: 'flat', discountValue: 50, perStudentLimit: 1 },
+      ]);
+      console.log('[Auto-Seed] Imported 4 legacy promo codes into the Coupons manager.');
     }
 
     console.log('[Auto-Seed Completed]: All 7 flagship courses, modules, lessons, quizzes, batches, leads, jobs, blogs, and settings successfully created in database!');

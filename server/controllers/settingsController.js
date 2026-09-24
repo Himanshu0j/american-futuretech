@@ -1,5 +1,11 @@
 const SiteSettings = require('../models/SiteSettings');
 const AuditLog = require('../models/AuditLog');
+const { encryptSecret, decryptSecret, maskSecret } = require('../utils/secretVault');
+const {
+  getPaymentStatus,
+  setRuntimeSecrets,
+  setRuntimeCurrency,
+} = require('../config/payments');
 
 // @desc    Get site settings
 // @route   GET /api/settings
@@ -48,7 +54,8 @@ const getSiteSettings = async (req, res) => {
         await settings.save();
       }
     }
-    return res.status(200).json({ success: true, settings });
+    // Gateway secrets are write-only: the browser never receives them.
+    return res.status(200).json({ success: true, settings: stripGatewaySecrets(settings) });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -128,6 +135,12 @@ const updateSiteSettings = async (req, res) => {
     }
 
     const payload = sanitizeSettingsPayload(req.body);
+
+    // The gateway block is excluded from the general settings save on purpose:
+    // the browser only ever holds masked hints, so writing this key back would
+    // wipe the encrypted Stripe secrets. It is saved through the dedicated
+    // PUT /api/settings/payment-gateway endpoint instead.
+    if (payload.paymentGateway) delete payload.paymentGateway;
 
     let settings = await SiteSettings.findOne();
     if (!settings) {
@@ -412,9 +425,200 @@ const getSiteEditorSummary = async (req, res) => {
   }
 };
 
+/** Remove anything the browser must never receive. */
+const stripGatewaySecrets = (settings) => {
+  const plain = settings?.toObject ? settings.toObject() : settings;
+  if (!plain) return plain;
+  if (plain.paymentGateway) {
+    delete plain.paymentGateway.secretKeyEncrypted;
+    delete plain.paymentGateway.webhookSecretEncrypted;
+  }
+  return plain;
+};
+
+/**
+ * Current gateway status for the admin screen. Never returns a secret — only
+ * whether one exists, where it came from, and a masked hint.
+ */
+const getPaymentGatewayStatus = async (req, res) => {
+  try {
+    const settings = (await SiteSettings.findOne().lean()) || {};
+    const gateway = settings.paymentGateway || {};
+    return res.status(200).json({
+      success: true,
+      gateway: {
+        enabled: gateway.enabled !== false,
+        provider: gateway.provider || 'stripe',
+        mode: gateway.mode === 'live' ? 'live' : 'test',
+        publishableKey: gateway.publishableKey || '',
+        currency: gateway.currency || 'USD',
+        checkoutNote: gateway.checkoutNote || '',
+        disabledMessage: gateway.disabledMessage || '',
+        secretKeyConfigured: Boolean(gateway.secretKeyEncrypted) || Boolean(process.env.STRIPE_SECRET_KEY),
+        secretKeyHint: gateway.secretKeyHint || (process.env.STRIPE_SECRET_KEY ? 'set via environment' : ''),
+        webhookSecretConfigured: Boolean(gateway.webhookSecretEncrypted) || Boolean(process.env.STRIPE_WEBHOOK_SECRET),
+        webhookSecretHint: gateway.webhookSecretHint || (process.env.STRIPE_WEBHOOK_SECRET ? 'set via environment' : ''),
+        lastUpdatedBy: gateway.lastUpdatedBy || '',
+        lastUpdatedAt: gateway.lastUpdatedAt || null,
+      },
+      payments: getPaymentStatus(),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Save gateway configuration. Secrets arrive here, are encrypted immediately and
+ * are never echoed back — the response only carries masked hints.
+ */
+const updatePaymentGateway = async (req, res) => {
+  try {
+    const body = req.body || {};
+    let settings = await SiteSettings.findOne();
+    if (!settings) settings = new SiteSettings();
+    settings.paymentGateway = settings.paymentGateway || {};
+
+    const gateway = settings.paymentGateway;
+
+    // Parse the on/off switch strictly. Loose truthiness here meant a
+    // form-encoded or string "false" (or 0) switched card payments back ON
+    // after the client had deliberately turned them off.
+    if (body.enabled !== undefined) {
+      const raw = body.enabled;
+      const falsy = raw === false || raw === 0
+        || ['false', '0', 'no', 'off', ''].includes(String(raw).trim().toLowerCase());
+      gateway.enabled = !falsy;
+    }
+    if (body.mode !== undefined) gateway.mode = body.mode === 'live' ? 'live' : 'test';
+    if (body.publishableKey !== undefined) gateway.publishableKey = String(body.publishableKey || '').trim();
+    if (body.currency !== undefined) gateway.currency = String(body.currency || 'USD').toUpperCase();
+    if (body.checkoutNote !== undefined) gateway.checkoutNote = String(body.checkoutNote || '').trim();
+    if (body.disabledMessage !== undefined) gateway.disabledMessage = String(body.disabledMessage || '').trim();
+
+    let secretKeyToApply;
+    let webhookSecretToApply;
+
+    if (body.secretKey) {
+      const value = String(body.secretKey).trim();
+      if (!value.startsWith('sk_')) {
+        return res.status(400).json({
+          success: false,
+          message: 'That does not look like a Stripe secret key (it must start with "sk_").',
+        });
+      }
+      gateway.secretKeyEncrypted = encryptSecret(value);
+      gateway.secretKeyHint = maskSecret(value);
+      secretKeyToApply = value;
+    }
+
+    if (body.webhookSecret) {
+      const value = String(body.webhookSecret).trim();
+      if (!value.startsWith('whsec_')) {
+        return res.status(400).json({
+          success: false,
+          message: 'That does not look like a Stripe webhook secret (it must start with "whsec_").',
+        });
+      }
+      gateway.webhookSecretEncrypted = encryptSecret(value);
+      gateway.webhookSecretHint = maskSecret(value);
+      webhookSecretToApply = value;
+    }
+
+    if (body.clearSecrets === true) {
+      gateway.secretKeyEncrypted = '';
+      gateway.secretKeyHint = '';
+      gateway.webhookSecretEncrypted = '';
+      gateway.webhookSecretHint = '';
+      secretKeyToApply = '';
+      webhookSecretToApply = '';
+    }
+
+    // Live keys must never be mixed with test ones — a live key in test mode (or
+    // the reverse) is the classic way to charge a real card by accident.
+    const effectiveSecret = secretKeyToApply !== undefined
+      ? secretKeyToApply
+      : decryptSecret(gateway.secretKeyEncrypted) || process.env.STRIPE_SECRET_KEY || '';
+    if (effectiveSecret.startsWith('sk_live_') && gateway.mode !== 'live') {
+      return res.status(400).json({
+        success: false,
+        message: 'A live secret key can only be saved with the gateway in LIVE mode.',
+      });
+    }
+    if (effectiveSecret.startsWith('sk_test_') && gateway.mode === 'live') {
+      return res.status(400).json({
+        success: false,
+        message: 'A test secret key cannot be used in LIVE mode. Switch to TEST or paste a live key.',
+      });
+    }
+
+    gateway.lastUpdatedBy = req.user?.email || req.user?.name || 'admin';
+    gateway.lastUpdatedAt = new Date();
+
+    await settings.save();
+
+    // Apply immediately — no restart needed for the keys to take effect.
+    setRuntimeSecrets({ secretKey: secretKeyToApply, webhookSecret: webhookSecretToApply });
+    setRuntimeCurrency(gateway.currency);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Admin',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'PAYMENT_GATEWAY_UPDATED',
+      entity: 'SiteSettings',
+      entityId: String(settings._id),
+      details: `Gateway ${gateway.enabled ? 'enabled' : 'disabled'} in ${gateway.mode} mode${secretKeyToApply ? ' (secret key updated)' : ''}${webhookSecretToApply ? ' (webhook secret updated)' : ''}`,
+    }).catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      message: 'Payment gateway settings saved. Secrets are stored encrypted and never displayed again.',
+      gateway: {
+        enabled: gateway.enabled !== false,
+        mode: gateway.mode,
+        publishableKey: gateway.publishableKey,
+        currency: gateway.currency,
+        secretKeyConfigured: Boolean(gateway.secretKeyEncrypted) || Boolean(process.env.STRIPE_SECRET_KEY),
+        secretKeyHint: gateway.secretKeyHint || (process.env.STRIPE_SECRET_KEY ? 'set via environment' : ''),
+        webhookSecretConfigured: Boolean(gateway.webhookSecretEncrypted) || Boolean(process.env.STRIPE_WEBHOOK_SECRET),
+        webhookSecretHint: gateway.webhookSecretHint || (process.env.STRIPE_WEBHOOK_SECRET ? 'set via environment' : ''),
+      },
+      payments: getPaymentStatus(),
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/**
+ * Boot-time loader: decrypt the admin-stored gateway secrets into memory so the
+ * sync gateway accessors keep working, and apply the admin's currency.
+ */
+const loadPaymentGatewaySecrets = async () => {
+  try {
+    const settings = await SiteSettings.findOne().lean();
+    const gateway = settings?.paymentGateway;
+    if (!gateway) return getPaymentStatus();
+    setRuntimeSecrets({
+      secretKey: gateway.secretKeyEncrypted ? decryptSecret(gateway.secretKeyEncrypted) : '',
+      webhookSecret: gateway.webhookSecretEncrypted ? decryptSecret(gateway.webhookSecretEncrypted) : '',
+    });
+    setRuntimeCurrency(gateway.currency);
+    return getPaymentStatus();
+  } catch (error) {
+    console.warn(`[Payments] Could not load gateway secrets: ${error.message}`);
+    return getPaymentStatus();
+  }
+};
+
 module.exports = {
   getSiteSettings,
   updateSiteSettings,
+  stripGatewaySecrets,
+  getPaymentGatewayStatus,
+  updatePaymentGateway,
+  loadPaymentGatewaySecrets,
   getAuditLogs,
   getSiteEditorOverrides,
   getSiteEditorSummary,

@@ -340,14 +340,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => (onOpenSyllabusModal ? onOpenSyllabusModal(flagship) : null)}
-                      className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Download Syllabus</span>
-                    </button>
+                    {/* Public syllabus download removed at the client's request —
+                        the curriculum is viewable on screen via View Details. */}
 
                     <Link
                       to={`/checkout?tier=deposit&courseId=${flagship._id}`}
@@ -452,13 +446,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => (onOpenSyllabusModal ? onOpenSyllabusModal(course) : null)}
-                          className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
-                        >
-                          Syllabus
-                        </button>
+                        {/* No public syllabus download — View Details opens the curriculum */}
 
                         <Link
                           to={`/checkout?tier=deposit&courseId=${course._id}`}

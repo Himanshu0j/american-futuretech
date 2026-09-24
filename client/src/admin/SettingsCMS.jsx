@@ -32,11 +32,13 @@ import {
   Compass,
   Eye,
   Handshake,
-  GraduationCap
+  GraduationCap,
+  CreditCard
 } from 'lucide-react';
 import { DEFAULT_LEADERSHIP, DEFAULT_SISTER_COMPANY, DEFAULT_PEDAGOGY } from '../data/siteContent';
 import RepeatableListInput from './components/RepeatableListInput';
 import ImageUploadInput from './components/ImageUploadInput';
+import PaymentGatewayPanel from './PaymentGatewayPanel';
 
 export default function SettingsCMS() {
   const [activeTab, setActiveTab] = useState('general');
@@ -507,6 +509,7 @@ export default function SettingsCMS() {
     { id: 'roadmap', label: 'Roadmap Steps', icon: Target },
     { id: 'about', label: 'About & Mission', icon: Globe },
     { id: 'globalCtas', label: 'Global CTAs', icon: Zap },
+    { id: 'payments', label: 'Payment Gateway', icon: CreditCard },
     { id: 'audit', label: 'Audit Trail', icon: Shield },
   ];
 
@@ -1684,6 +1687,54 @@ export default function SettingsCMS() {
                   About American FutureTech — Narrative Copy
                 </h3>
 
+                {/* About page section visibility — inactive = hidden, never deleted */}
+                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3">
+                  <div>
+                    <div className="text-[11px] font-bold text-white uppercase tracking-wider">
+                      About Page Sections — Show / Hide
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                      Untick a section to hide it on the public About page. The content is kept, so you can switch it
+                      back on any time — nothing is deleted.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {[
+                      { key: 'hero', label: 'About hero' },
+                      { key: 'missionVision', label: 'Mission & Vision' },
+                      { key: 'charter', label: 'Academic charter' },
+                      { key: 'pedagogy', label: 'Build-first pedagogy & stats' },
+                      { key: 'team', label: 'Leadership team' },
+                      { key: 'sisterCompany', label: 'Sister company' },
+                      { key: 'cta', label: 'Global vision CTA' },
+                      { key: 'faqs', label: 'Admissions FAQ' },
+                    ].map((section) => {
+                      const active = settings.aboutSections?.[section.key] !== false;
+                      return (
+                        <label
+                          key={section.key}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-[11px] ${
+                            active
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-100'
+                              : 'bg-slate-900 border-slate-800 text-slate-400'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              aboutSections: { ...settings.aboutSections, [section.key]: e.target.checked }
+                            })}
+                            className="accent-emerald-500"
+                          />
+                          <span className="font-sans font-medium">{section.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="space-y-4 text-xs font-mono">
                   <div>
                     <label className="block text-slate-400 uppercase mb-1.5">Primary About Headline</label>
@@ -2115,8 +2166,8 @@ export default function SettingsCMS() {
             </div>
           )}
 
-          {/* Bottom Save Action */}
-          <div className="flex justify-end pt-4">
+          {/* Bottom Save Action (hidden on the gateway tab — it saves itself) */}
+          <div className={`flex justify-end pt-4 ${activeTab === 'payments' ? 'hidden' : ''}`}>
             <button
               type="submit"
               disabled={saving}
@@ -2127,6 +2178,15 @@ export default function SettingsCMS() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB: PAYMENT GATEWAY (Stripe) — secrets are write-only */}
+      {/* ========================================================================= */}
+      {activeTab === 'payments' && (
+        <div className="space-y-6">
+          <PaymentGatewayPanel />
+        </div>
       )}
 
       {/* ========================================================================= */}

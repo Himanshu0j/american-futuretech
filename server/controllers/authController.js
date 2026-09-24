@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
+const SiteSettings = require('../models/SiteSettings');
 const { getJwtSecret, getJwtExpire } = require('../config/auth');
 const { validatePassword, describePasswordPolicy } = require('../utils/passwords');
 
@@ -34,6 +35,21 @@ const lockResponse = (lockUntil) => {
 // @access  Public
 const registerStudent = async (req, res) => {
   try {
+    // Public self-registration is OFF by default: student accounts are created
+    // by authorized staff (Admin → Enrolled Students → Add Student) so access to
+    // programs, batches and LMS content is always an explicit assignment. The
+    // switch lives in Settings in case the client ever wants open signups again.
+    const settings = await SiteSettings.findOne().lean();
+    if (settings?.registration?.allowPublicStudentRegistration !== true) {
+      return res.status(403).json({
+        success: false,
+        code: 'REGISTRATION_CLOSED',
+        message:
+          settings?.registration?.closedMessage ||
+          'Student accounts are created by our admissions team. Please submit an admission enquiry and a counselor will set up your access.',
+      });
+    }
+
     const { name, email, password, phone } = req.body;
 
     if (!name || !email || !password) {

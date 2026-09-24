@@ -19,7 +19,13 @@ const errorHandler = require('./middleware/errorHandler');
 const authStatus = assertAuthConfig();
 
 // Initialize database and auto-seed if empty
-connectDB().then(() => {
+connectDB().then(async () => {
+  // Bring any admin-saved gateway secrets into memory before serving traffic,
+  // so real payments work without a restart after the client pastes their keys.
+  const { loadPaymentGatewaySecrets } = require('./controllers/settingsController');
+  const paymentStatus = await loadPaymentGatewaySecrets();
+  console.log(`[Payments] provider=${paymentStatus.provider} mode=${paymentStatus.mode} source=${paymentStatus.source} ready=${paymentStatus.ready}`);
+
   // Set SEED_ON_BOOT=false once the database holds real content and you never
   // want the demo dataset re-created on a fresh/empty database.
   if (process.env.SEED_ON_BOOT === 'false') {
@@ -96,6 +102,7 @@ app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/curriculum', require('./routes/curriculumRoutes'));
 app.use('/api/lms', require('./routes/lmsRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/coupons', require('./routes/couponRoutes'));
 app.use('/api/leads/apply', applyLimiter);
 app.use('/api/leads', require('./routes/leadRoutes'));
 app.use('/api/batches', require('./routes/batchRoutes'));

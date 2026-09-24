@@ -492,8 +492,12 @@ const run = async () => {
     // Derive the tab list from the settings document itself, so this stays
     // honest as blocks are added or renamed (a hardcoded list went stale once).
     const settingsDoc = (await request('GET', '/api/settings')).json?.settings || {};
+    // `paymentGateway` is deliberately NOT writable through the general save:
+    // the browser only ever receives masked key hints, so writing the block back
+    // would wipe the encrypted Stripe secrets. It has its own endpoint, tested
+    // separately below.
     const tabs = Object.keys(settingsDoc).filter(
-      (key) => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key),
+      (key) => !['_id', '__v', 'createdAt', 'updatedAt', 'paymentGateway'].includes(key),
     );
     console.log(`  settings blocks found: ${tabs.length} — ${tabs.join(', ')}`);
     const SKIP_KEYS = ['_id', '__v', 'id', 'createdAt', 'updatedAt', 'slug', 'icon', 'image', 'images', 'url', 'link', 'href', 'color', 'gradient', 'theme'];
@@ -569,6 +573,43 @@ const run = async () => {
     }
     check('Every settings tab accepts and returns a real edit', tabFailures.length === 0,
       tabFailures.length ? `failed: ${tabFailures.join(', ')}` : `${tabPass}/${tabs.length} tabs — ${tabDetails.slice(0, 3).join(', ')}…`);
+
+    /* ─────────────────── 10b. Payment gateway switch ─────────────────── */
+    const gatewayRead = async () =>
+      (await request('GET', '/api/settings/payment-gateway', { token })).json?.gateway || {};
+
+    const gatewayBefore = await gatewayRead();
+    const offSave = await request('PUT', '/api/settings/payment-gateway', {
+      token,
+      body: { enabled: false },
+    });
+    check('Admin can switch the payment gateway off',
+      offSave.status === 200 && (await gatewayRead()).enabled === false,
+      `status ${offSave.status} enabled ${(await gatewayRead()).enabled}`);
+
+    // The real defence: a string/0 payload must never be read as truthy, or a
+    // forgotten switch silently re-enables card payments.
+    await request('PUT', '/api/settings/payment-gateway', { token, body: { enabled: 'false' } });
+    check('The switch treats the string "false" as OFF, not truthy',
+      (await gatewayRead()).enabled === false, `enabled ${(await gatewayRead()).enabled}`);
+    await request('PUT', '/api/settings/payment-gateway', { token, body: { enabled: 0 } });
+    check('The switch treats 0 as OFF, not truthy',
+      (await gatewayRead()).enabled === false, `enabled ${(await gatewayRead()).enabled}`);
+
+    await request('PUT', '/api/settings/payment-gateway', { token, body: { enabled: gatewayBefore.enabled !== false } });
+    check('The gateway can be switched back on',
+      (await gatewayRead()).enabled === (gatewayBefore.enabled !== false));
+
+    const gatewayPayload = JSON.stringify((await request('GET', '/api/settings/payment-gateway', { token })).json);
+    check('Gateway secrets are never echoed back to the browser',
+      !/sk_(test|live)_[A-Za-z0-9]/.test(gatewayPayload) && !/whsec_[A-Za-z0-9]/.test(gatewayPayload));
+
+    const badKey = await request('PUT', '/api/settings/payment-gateway', {
+      token,
+      body: { publishableKey: 'pk_test_contract', secretKey: 'not-a-stripe-key' },
+    });
+    check('A malformed secret key is refused, not stored',
+      badKey.status === 400 && /sk_/.test(badKey.json?.message || ''), `status ${badKey.status}`);
 
     /* ───────────────────────── 11. Website editor ───────────────────────── */
     section('11. Website Editor (text & images)');

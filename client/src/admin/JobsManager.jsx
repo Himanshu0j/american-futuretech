@@ -26,7 +26,8 @@ import {
   GraduationCap,
   Plus,
   Minus,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Copy
 } from 'lucide-react';
 import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
@@ -69,12 +70,17 @@ export default function JobsManager() {
     isFeatured: false,
     isActive: true,
     isPublished: true,
+    postedAt: '',
+    order: 0,
     responsibilities: [],
     preferredQualifications: [],
     keyRequirements: [],
     requiredCertificates: [],
     technicalSkills: [],
-    softSkills: []
+    softSkills: [],
+    tools: [],
+    languages: [],
+    benefits: []
   });
 
   // Selected application preview
@@ -192,12 +198,17 @@ export default function JobsManager() {
         isFeatured: job.isFeatured || false,
         isActive: job.isActive !== undefined ? job.isActive : true,
         isPublished: job.isPublished !== undefined ? job.isPublished : (job.isActive !== undefined ? job.isActive : true),
+        postedAt: job.postedAt ? String(job.postedAt).slice(0, 10) : (job.createdAt ? String(job.createdAt).slice(0, 10) : ''),
+        order: job.order || 0,
         responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities : [],
         preferredQualifications: Array.isArray(job.preferredQualifications) ? job.preferredQualifications : [],
         keyRequirements: Array.isArray(job.keyRequirements) ? job.keyRequirements : [],
         requiredCertificates: Array.isArray(job.requiredCertificates) ? job.requiredCertificates : [],
         technicalSkills: Array.isArray(job.technicalSkills) ? job.technicalSkills : (Array.isArray(job.skills) ? job.skills : []),
-        softSkills: Array.isArray(job.softSkills) ? job.softSkills : []
+        softSkills: Array.isArray(job.softSkills) ? job.softSkills : [],
+        tools: Array.isArray(job.tools) ? job.tools : [],
+        languages: Array.isArray(job.languages) ? job.languages : [],
+        benefits: Array.isArray(job.benefits) ? job.benefits : []
       });
     } else {
       setEditingJob(null);
@@ -220,12 +231,17 @@ export default function JobsManager() {
         isFeatured: false,
         isActive: true,
         isPublished: true,
+        postedAt: new Date().toISOString().slice(0, 10),
+        order: 0,
         responsibilities: [],
         preferredQualifications: [],
         keyRequirements: [],
         requiredCertificates: [],
         technicalSkills: [],
-        softSkills: []
+        softSkills: [],
+        tools: [],
+        languages: [],
+        benefits: []
       });
     }
     setShowJobModal(true);
@@ -252,12 +268,18 @@ export default function JobsManager() {
         salaryMin: jobForm.salaryMin === '' ? null : Number(jobForm.salaryMin),
         salaryMax: jobForm.salaryMax === '' ? null : Number(jobForm.salaryMax),
         salaryRange: jobForm.salaryRange || '',
+        // Empty date means "posted now"; the API rejects future dates.
+        postedAt: jobForm.postedAt ? jobForm.postedAt : null,
+        order: Number(jobForm.order) || 0,
         responsibilities: cleanList(jobForm.responsibilities),
         preferredQualifications: cleanList(jobForm.preferredQualifications),
         keyRequirements: cleanList(jobForm.keyRequirements),
         requiredCertificates: cleanList(jobForm.requiredCertificates),
         technicalSkills: cleanList(jobForm.technicalSkills),
         softSkills: cleanList(jobForm.softSkills),
+        tools: cleanList(jobForm.tools),
+        languages: cleanList(jobForm.languages),
+        benefits: cleanList(jobForm.benefits),
         skills: cleanList(jobForm.technicalSkills),
         recommendedCourse: jobForm.recommendedCourse || undefined
       };
@@ -277,6 +299,21 @@ export default function JobsManager() {
     } catch (err) {
       console.error('Failed to save job:', err);
       alert(err.response?.data?.message || 'Error saving job');
+    }
+  };
+
+  const handleDuplicateJob = async (job) => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
+      const res = await axios.post(`/api/jobs/${job._id}/duplicate`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.success) {
+        setJobs([res.data.job, ...jobs]);
+      }
+    } catch (err) {
+      console.error('Failed to duplicate job:', err);
+      alert(err.response?.data?.message || 'Could not duplicate this job');
     }
   };
 
@@ -479,6 +516,13 @@ export default function JobsManager() {
                               title="Edit Job"
                             >
                               <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDuplicateJob(job)}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                              title="Duplicate as Draft"
+                            >
+                              <Copy className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteJob(job._id)}
@@ -828,6 +872,82 @@ export default function JobsManager() {
                     onChange={(items) => setJobForm(prev => ({ ...prev, softSkills: items }))}
                     placeholder="e.g. System Design, Communication..."
                   />
+
+                  {/* Tools & Platforms */}
+                  <ListItemsEditor
+                    label="Tools & Platforms"
+                    helperText="Shown as chips next to the posted time on the public job card."
+                    items={jobForm.tools || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, tools: items }))}
+                    placeholder="e.g. GitHub Actions, Datadog, Terraform..."
+                  />
+
+                  {/* Languages */}
+                  <ListItemsEditor
+                    label="Languages (spoken / programming, optional)"
+                    helperText="Leave blank when the role has no language requirement."
+                    items={jobForm.languages || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, languages: items }))}
+                    placeholder="e.g. English (fluent), Spanish (basic)..."
+                  />
+
+                  {/* Benefits */}
+                  <ListItemsEditor
+                    label="Benefits & Perks"
+                    helperText="Paste a list to auto-split into individual benefit pointers."
+                    items={jobForm.benefits || []}
+                    onChange={(items) => setJobForm(prev => ({ ...prev, benefits: items }))}
+                    placeholder="e.g. 100% remote, Health & dental, Learning stipend..."
+                  />
+                </div>
+
+                {/* Posting date, ordering and featured flag */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1">Posted Date</label>
+                    <input
+                      type="date"
+                      value={jobForm.postedAt ? String(jobForm.postedAt).slice(0, 10) : ''}
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => setJobForm({ ...jobForm, postedAt: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1 font-sans">
+                      Drives the public &ldquo;Posted 2 hours ago&rdquo; label. Empty = today. Future dates are rejected.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1">Display Order</label>
+                    <input
+                      type="number"
+                      value={jobForm.order ?? 0}
+                      onChange={(e) => setJobForm({ ...jobForm, order: Number(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1 font-sans">Lower number shows first when sorting by order.</p>
+                  </div>
+                  <div className="flex flex-col justify-center gap-2">
+                    <label className="inline-flex items-center gap-2 text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(jobForm.isFeatured)}
+                        onChange={(e) => setJobForm({ ...jobForm, isFeatured: e.target.checked })}
+                        className="accent-indigo-500"
+                      />
+                      <span className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Featured role
+                      </span>
+                    </label>
+                    <label className="inline-flex items-center gap-2 text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(jobForm.isPublished)}
+                        onChange={(e) => setJobForm({ ...jobForm, isPublished: e.target.checked })}
+                        className="accent-indigo-500"
+                      />
+                      <span>Publish on the public board</span>
+                    </label>
+                  </div>
                 </div>
 
                 {/* Published / Active Toggle */}

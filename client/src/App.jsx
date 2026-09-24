@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import MetricsStrip from './components/MetricsStrip';
@@ -68,6 +68,8 @@ const CoursesCMS = lazy(() => import('./admin/CoursesCMS'));
 const BatchesManager = lazy(() => import('./admin/BatchesManager'));
 const StudentsManager = lazy(() => import('./admin/StudentsManager'));
 const PaymentsManager = lazy(() => import('./admin/PaymentsManager'));
+const CouponsManager = lazy(() => import('./admin/CouponsManager'));
+const FooterManager = lazy(() => import('./admin/FooterManager'));
 const JobsManager = lazy(() => import('./admin/JobsManager'));
 const ContentCMS = lazy(() => import('./admin/ContentCMS'));
 const SupportManager = lazy(() => import('./admin/SupportManager'));
@@ -258,6 +260,24 @@ function LandingPage() {
   );
 }
 
+/**
+ * Admissions & support widgets belong to the public site and the student LMS.
+ *
+ * They used to be mounted globally, so the AI chat box and the WhatsApp button
+ * also floated over the admin panel — the exact widget the client asked to keep
+ * out of admin.
+ */
+function PublicFloatingWidgets() {
+  const { pathname } = useLocation();
+  if (pathname.startsWith('/admin')) return null;
+  return (
+    <>
+      <WhatsAppButton />
+      <AIChatbox />
+    </>
+  );
+}
+
 export default function App() {
   return (
     <ThemeModeProvider>
@@ -342,6 +362,8 @@ export default function App() {
                 <Route path="batches" element={<BatchesManager />} />
                 <Route path="students" element={<StudentsManager />} />
                 <Route path="payments" element={<PaymentsManager />} />
+                <Route path="coupons" element={<CouponsManager />} />
+                <Route path="footer" element={<FooterManager />} />
                 <Route path="jobs" element={<JobsManager />} />
                 <Route path="content" element={<ContentCMS />} />
                 <Route path="support" element={<SupportManager />} />
@@ -356,9 +378,8 @@ export default function App() {
             </Routes>
           </Suspense>
 
-          {/* Global Floating Admissions & Support Widgets */}
-          <WhatsAppButton />
-          <AIChatbox />
+          {/* Global Floating Admissions & Support Widgets (public + LMS only) */}
+          <PublicFloatingWidgets />
 
           {/* Shows the maintenance screen to visitors when the admin switches it on */}
           <MaintenanceScreen />

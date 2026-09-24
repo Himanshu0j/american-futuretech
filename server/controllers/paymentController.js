@@ -7,7 +7,8 @@ const Progress = require('../models/Progress');
 const AuditLog = require('../models/AuditLog');
 const SiteSettings = require('../models/SiteSettings');
 
-const { buildQuote } = require('../utils/pricing');
+const { buildQuote, resolveOrderAmount } = require('../utils/pricing');
+const { resolveCoupon, redeemCoupon } = require('../utils/couponEngine');
 const { generateSecurePassword } = require('../utils/passwords');
 const gateway = require('../utils/paymentGateway');
 const { isStripeConfigured, isWebhookConfigured, getPaymentStatus } = require('../config/payments');
@@ -39,14 +40,29 @@ const generateReference = (prefix) =>
 const generateInvoiceNumber = () =>
   `INV-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
 
-const loadCheckoutContext = async (courseId, tier, couponCode) => {
+const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}) => {
   if (!courseId) return { error: { status: 400, message: 'Please select a program to enroll in.' } };
 
   const course = await Course.findById(courseId);
   if (!course) return { error: { status: 404, message: 'Selected program could not be found.' } };
 
   const settings = (await SiteSettings.findOne().lean()) || {};
-  const quote = buildQuote({ course, tier, couponCode, settings });
+
+  // Coupons live in the database (Admin → Coupons). The undiscounted amount is
+  // resolved first so minimum-order rules are checked against the real price.
+  let resolvedCoupon = null;
+  if (couponCode) {
+    const base = resolveOrderAmount({ course, tier, settings });
+    resolvedCoupon = await resolveCoupon(couponCode, {
+      amount: base.amount,
+      tier: base.tier,
+      courseId: course._id,
+      studentId: buyer.studentId,
+      email: buyer.email,
+    });
+  }
+
+  const quote = buildQuote({ course, tier, couponCode, settings, resolvedCoupon });
 
   return { course, settings, quote };
 };
@@ -56,13 +72,18 @@ const loadCheckoutContext = async (courseId, tier, couponCode) => {
 // @access  Public
 const quoteOrder = async (req, res) => {
   try {
-    const { courseId, tier, couponCode } = req.body || {};
-    const context = await loadCheckoutContext(courseId, tier, couponCode);
+    const { courseId, tier, couponCode, email } = req.body || {};
+    const context = await loadCheckoutContext(courseId, tier, couponCode, {
+      email,
+      studentId: req.user?._id,
+    });
     if (context.error) {
       return res.status(context.error.status).json({ success: false, message: context.error.message });
     }
 
-    const { course, quote } = context;
+    const { course, quote, settings } = context;
+    const gatewaySettings = settings?.paymentGateway || {};
+
     return res.status(200).json({
       success: true,
       quote: {
@@ -70,6 +91,12 @@ const quoteOrder = async (req, res) => {
         courseId: course._id,
         courseTitle: course.title,
         courseDuration: course.duration,
+      },
+      checkout: {
+        enabled: gatewaySettings.enabled !== false,
+        message: gatewaySettings.checkoutNote || '',
+        disabledMessage: gatewaySettings.disabledMessage || '',
+        currency: gatewaySettings.currency || 'USD',
       },
       payments: getPaymentStatus(),
     });
@@ -92,11 +119,42 @@ const createCheckoutSession = async (req, res) => {
       });
     }
 
-    const context = await loadCheckoutContext(courseId, tier, couponCode);
+    const context = await loadCheckoutContext(courseId, tier, couponCode, {
+      email,
+      studentId: req.user?._id,
+    });
     if (context.error) {
       return res.status(context.error.status).json({ success: false, message: context.error.message });
     }
     const { course, quote } = context;
+
+    // An invalid/expired/exhausted coupon must never be silently ignored on a
+    // real charge — the buyer gets the exact reason instead.
+    if (couponCode && quote.couponValid === false) {
+      return res.status(400).json({
+        success: false,
+        code: quote.couponErrorCode || 'COUPON_INVALID',
+        message: quote.couponError || 'That coupon code cannot be used on this order.',
+        quote: { ...quote, courseTitle: course.title },
+      });
+    }
+
+    // Admin switch: Stripe can be turned off from Admin → Payment Gateway. When
+    // it is off (or the keys are not in place yet) we never fake a payment —
+    // the customer is routed to the manual admissions flow instead.
+    const gatewaySettings = context.settings?.paymentGateway || {};
+    if (gatewaySettings.enabled === false) {
+      return res.status(503).json({
+        success: false,
+        code: 'PAYMENTS_DISABLED',
+        message:
+          gatewaySettings.disabledMessage ||
+          'Online card payments are temporarily unavailable. Please submit an admissions enquiry and we will send you a secure payment link.',
+        fallback: 'manual-enquiry',
+        quote: { ...quote, courseTitle: course.title },
+        payments: getPaymentStatus(),
+      });
+    }
 
     // Graceful degradation before the gateway keys are added: never fake a payment.
     if (!isStripeConfigured() || !isWebhookConfigured()) {
@@ -221,6 +279,12 @@ const fulfillPaidCheckout = async ({ payment, session, clientUrl }) => {
   payment.failureReason = '';
   if (gatewayData.amountTotal != null) payment.amount = gatewayData.amountTotal;
   await payment.save();
+
+  // 1b. Count the redemption once the money is actually settled, so a coupon's
+  //     usage limit reflects paid orders only (abandoned checkouts never burn it).
+  if (payment.couponCode) {
+    await redeemCoupon(payment.couponCode).catch(() => {});
+  }
 
   // 2. Create (or reuse) the student account. The temporary password is random
   //    per student and is only ever delivered by email.

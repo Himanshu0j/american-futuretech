@@ -74,7 +74,7 @@ export default function CheckoutPage() {
    * The server owns the price. The browser only renders what POST
    * /api/payments/quote returns, so a voucher can never change the real charge.
    */
-  const fetchQuote = useCallback(async ({ courseId, nextTier, coupon }) => {
+  const fetchQuote = useCallback(async ({ courseId, nextTier, coupon, buyerEmail }) => {
     if (!courseId) return null;
     setQuoteLoading(true);
     try {
@@ -82,6 +82,9 @@ export default function CheckoutPage() {
         courseId,
         tier: nextTier,
         couponCode: coupon || undefined,
+        // The server counts per-student redemptions by email, so a coupon can
+        // never be reused by the same buyer across sessions.
+        email: buyerEmail || undefined,
       });
       if (res.data?.payments) setGatewayConfigured(Boolean(res.data.payments.configured));
       setQuote(res.data.quote);
@@ -108,12 +111,14 @@ export default function CheckoutPage() {
       return;
     }
 
-    const result = await fetchQuote({ courseId: selectedCourseId, nextTier: tier, coupon: code });
+    const result = await fetchQuote({ courseId: selectedCourseId, nextTier: tier, coupon: code, buyerEmail: email });
     if (result?.couponApplied) {
       setAppliedCoupon(result.couponCode);
     } else {
       setAppliedCoupon('');
-      setCouponError('Invalid or expired promotional code.');
+      // Show the exact server reason (expired / not started / usage limit /
+      // wrong program / minimum order) instead of one vague message.
+      setCouponError(result?.couponError || 'That promotional code is not valid.');
       fetchQuote({ courseId: selectedCourseId, nextTier: tier, coupon: '' });
     }
   };
@@ -463,7 +468,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  {/* Full Tuition Option */}
+                  {/* Career Program (register now) Option */}
                   <div
                     onClick={() => { setTier('full'); resetCoupon(); }}
                     className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
@@ -473,13 +478,15 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold text-[#4338CA] uppercase tracking-wider">Full Tuition</span>
+                      <span className="text-xs font-bold text-[#4338CA] uppercase tracking-wider">
+                        Register Now — Career Program
+                      </span>
                       <span className="text-2xl font-display font-black text-[#0B1220]">
-                        ${selectedCourse?.pricing?.discountedPrice || 1899}
+                        ${selectedCourse?.pricing?.discountedPrice || 499}
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Complete upfront payment. Unlocks instant access to labs, course repository, and 1-on-1 advisor.
+                      Group batch, per person. Complete payment unlocks instant access to labs, the course repository and your cohort advisor.
                     </p>
                   </div>
 

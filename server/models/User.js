@@ -63,12 +63,25 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  // Student-specific profile fields
+  // Student-specific profile fields.
+  // NOTE: mongoose strict mode drops anything not declared here, so the admin
+  // "Add Student" assignments (personalized track + LMS module access) MUST stay
+  // declared or the panel would report success while storing nothing.
   studentDetails: {
     enrollmentNumber: { type: String, default: '' },
     assignedBatch: { type: mongoose.Schema.Types.ObjectId, ref: 'Batch' },
     targetCareer: { type: String, default: '' },
     linkedLead: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead' },
+    personalizedLearning: { type: Boolean, default: false },
+    lmsAccess: {
+      classroom: { type: Boolean, default: true },
+      recordings: { type: Boolean, default: true },
+      assignments: { type: Boolean, default: true },
+      certificates: { type: Boolean, default: true },
+      support: { type: Boolean, default: true },
+      careerResources: { type: Boolean, default: true },
+    },
+    notes: { type: String, default: '' },
   },
 }, {
   timestamps: true,

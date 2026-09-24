@@ -1,5 +1,6 @@
 const Enrollment = require('../models/Enrollment');
 const Progress = require('../models/Progress');
+const { checkCourseAccess, denyResponse } = require('../utils/access');
 const Course = require('../models/Course');
 const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
@@ -66,7 +67,9 @@ const getStudentDashboard = async (req, res) => {
 const getMyCourses = async (req, res) => {
   try {
     const studentId = req.user._id;
-    const enrollments = await Enrollment.find({ student: studentId })
+    // Only ACTIVE enrollments are listed: revoking access in the admin panel
+    // cancels the enrollment and the course must disappear from the classroom.
+    const enrollments = await Enrollment.find({ student: studentId, status: 'Active' })
       .populate('course')
       .populate('batch')
       .sort({ enrolledAt: -1 });
@@ -107,15 +110,13 @@ const getCourseLearnData = async (req, res) => {
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
-    // Check enrollment
-    let enrollment = await Enrollment.findOne({ student: studentId, course: courseId });
-    if (!enrollment && req.user.role !== 'SUPERADMIN' && req.user.role !== 'ADMIN' && req.user.role !== 'INSTRUCTOR') {
-      // Auto-enroll if student for preview demo convenience
-      enrollment = await Enrollment.create({
-        student: studentId,
-        course: courseId,
-        status: 'Active',
-      });
+    // ACCESS CONTROL: a student may only open a course they are enrolled in.
+    // This used to silently auto-enroll the caller, which meant any logged-in
+    // student could read every course's lessons by guessing the id. It is now a
+    // hard 403 — assignment is staff-only (Admin → Enrolled Students).
+    const access = await checkCourseAccess(req.user, courseId);
+    if (!access.allowed) {
+      return denyResponse(res, access.reason);
     }
 
     const modules = await Module.find({ course: courseId, isPublished: true }).sort({ order: 1, moduleNumber: 1 });
@@ -175,6 +176,10 @@ const getLessonDetails = async (req, res) => {
 
     if (!lesson) return res.status(404).json({ success: false, message: 'Lesson not found' });
 
+    // ACCESS CONTROL: lesson content is only served for an assigned course.
+    const lessonAccess = await checkCourseAccess(req.user, lesson.course?._id || lesson.course);
+    if (!lessonAccess.allowed) return denyResponse(res, lessonAccess.reason);
+
     // Update last accessed lesson in progress
     await Progress.findOneAndUpdate(
       { student: req.user._id, course: lesson.course._id },
@@ -201,6 +206,10 @@ const completeLesson = async (req, res) => {
 
     const lesson = await Lesson.findById(lessonId);
     if (!lesson) return res.status(404).json({ success: false, message: 'Lesson not found' });
+
+    // ACCESS CONTROL: progress may only be written into an assigned course.
+    const progressAccess = await checkCourseAccess(req.user, lesson.course);
+    if (!progressAccess.allowed) return denyResponse(res, progressAccess.reason);
 
     let progress = await Progress.findOne({ student: studentId, course: lesson.course });
     if (!progress) {
@@ -272,6 +281,10 @@ const submitQuiz = async (req, res) => {
 
     const quiz = await Quiz.findById(quizId);
     if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found' });
+
+    // ACCESS CONTROL: quizzes belong to a course the student must be assigned to.
+    const quizAccess = await checkCourseAccess(req.user, quiz.course);
+    if (!quizAccess.allowed) return denyResponse(res, quizAccess.reason);
 
     let correctCount = 0;
     const evaluatedAnswers = quiz.questions.map((q, idx) => {

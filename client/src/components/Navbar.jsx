@@ -376,10 +376,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             </Link>
 
             <Link
-              to="/student/register"
+              to="/checkout"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-gradient shadow-brand border border-white/15 hover:brightness-110 transition-all hover:-translate-y-px"
             >
-              <span>REGISTER NOW</span>
+              <span>REGISTER NOW — $499</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#E5C275]" />
             </Link>
           </div>
@@ -485,11 +485,11 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               </Link>
 
               <Link
-                to="/student/register"
+                to="/checkout"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-3 rounded-xl bg-ink-gradient border border-white/10 text-[#EFE6D6] font-bold text-xs flex items-center justify-center gap-2 shadow-md"
               >
-                <span>REGISTER NOW</span>
+                <span>REGISTER NOW — $499 / PERSONALIZED</span>
                 <ArrowRight className="w-4 h-4 text-[#E5C275]" />
               </Link>
             </div>

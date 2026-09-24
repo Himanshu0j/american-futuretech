@@ -266,15 +266,35 @@ export default function CourseDetailPage() {
               <div className="lg:col-span-4 lg:sticky lg:top-28">
                 <div className="rounded-3xl bg-white text-slate-800 p-6 sm:p-5 shadow-2xl border border-slate-200/80">
                   <div className="mb-6 pb-5 border-b border-slate-100">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tuition Investment</div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                      Career Program — Register Now
+                    </div>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-3xl font-display font-black text-[#0B1220]">${course.pricing?.discountedPrice || 1899}</span>
-                      <span className="text-sm text-slate-400 line-through">${course.pricing?.basePrice || 2499}</span>
+                      <span className="text-3xl font-display font-black text-[#0B1220]">${course.pricing?.discountedPrice || 499}</span>
+                      <span className="text-sm text-slate-400 line-through">${course.pricing?.basePrice || 1299}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-600 font-semibold mt-1">
+                      Group batch · per person · {course.duration || '6 Months'}
                     </div>
                     <div className="text-xs text-[#4338CA] font-bold flex items-center gap-1.5 mt-2">
                       <Sparkles className="w-3.5 h-3.5 text-[#10B981]" />
-                      Save ${(course.pricing?.basePrice || 2499) - (course.pricing?.discountedPrice || 1899)} with institutional scholarship
+                      Save ${Math.max((course.pricing?.basePrice || 1299) - (course.pricing?.discountedPrice || 499), 0)} with institutional scholarship
                     </div>
+                    {showPersonalizedMentor && (
+                      <div className="mt-3 p-3 rounded-xl bg-[#F5F7FF] border border-[#4338CA]/20">
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#4338CA]">
+                            Personalized 1-on-1
+                          </span>
+                          <span className="text-xl font-display font-black text-[#0B1220]">
+                            ${personalizedPrice.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                          Same curriculum, private mentor pace — separate fee and duration.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Flexible Deposit Box */}
@@ -303,8 +323,17 @@ export default function CourseDetailPage() {
                     to={`/checkout?courseId=${course._id}&tier=full`}
                     className="w-full py-2.5 px-4 rounded-full border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                   >
-                    Enroll Full Tuition (${course.pricing?.discountedPrice || 1899})
+                    Register Now — ${course.pricing?.discountedPrice || 499} / Career Program
                   </Link>
+
+                  {showPersonalizedMentor && (
+                    <Link
+                      to={`/checkout?courseId=${course._id}&tier=personalized`}
+                      className="w-full py-2.5 px-4 rounded-full border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                    >
+                      Register Now — ${personalizedPrice.toLocaleString()} / Personalized
+                    </Link>
+                  )}
 
                   <button
                     onClick={() => setIsLeadModalOpen(true)}
@@ -965,11 +994,14 @@ export default function CourseDetailPage() {
               <div className="lg:col-span-5">
                 <div className="rounded-3xl bg-white text-slate-800 p-5 sm:p-6 shadow-2xl border border-white/20">
                   <div className="text-center mb-6">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Upcoming Live Cohort</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Career Program · Register Now</span>
                     <div className="text-3xl font-display font-black text-[#0B1220] mt-1">
-                      ${course.pricing?.discountedPrice || 1899}
+                      ${course.pricing?.discountedPrice || 499}
+                      <span className="text-sm font-bold text-slate-500"> / person</span>
                     </div>
-                    <span className="text-xs text-slate-500">Or get started with just a $99 deposit</span>
+                    <span className="text-xs text-slate-500">
+                      Group batch · or start with a $99 seat deposit · personalized 1-on-1 from ${personalizedPrice.toLocaleString()}
+                    </span>
                   </div>
 
                   <div className="space-y-3.5">
@@ -985,7 +1017,14 @@ export default function CourseDetailPage() {
                       to={`/checkout?courseId=${course._id}&tier=full`}
                       className="w-full py-3 px-6 rounded-2xl border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
-                      Enroll Full Tuition (${course.pricing?.discountedPrice || 1899})
+                      Register Now — ${course.pricing?.discountedPrice || 499} / Career Program
+                    </Link>
+
+                    <Link
+                      to={`/checkout?courseId=${course._id}&tier=personalized`}
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                    >
+                      Register Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
 
                     <button

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Search,
   Briefcase,
@@ -42,6 +42,7 @@ import JobCard from '../components/JobCard';
 import CompanyMarquee from '../components/CompanyMarquee';
 import BulletContent from '../components/common/BulletContent';
 import FaqAccordion from '../components/common/FaqAccordion';
+import JobPagination from '../components/common/JobPagination';
 
 export default function CareersPage() {
   const [jobs, setJobs] = useState([]);
@@ -50,6 +51,7 @@ export default function CareersPage() {
 
   // Search and Working Filters state
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedJobType, setSelectedJobType] = useState('All');
   const [selectedExp, setSelectedExp] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
@@ -58,6 +60,13 @@ export default function CareersPage() {
   const [selectedSalary, setSelectedSalary] = useState('All');
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
+
+  // Server-side pagination: the board shows 8 postings per page and the page
+  // count is always computed from the FILTERED total, never the whole table.
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 8, total: 0, totalPages: 1, hasPrev: false, hasNext: false });
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const jobsListRef = useRef(null);
 
   // Modals state
   const [selectedJobForDetails, setSelectedJobForDetails] = useState(null);
@@ -87,16 +96,40 @@ export default function CareersPage() {
   const [fastTrackSuccess, setFastTrackSuccess] = useState(false);
 
   useEffect(() => {
-    fetchJobs();
     fetchCourses();
     window.scrollTo(0, 0);
   }, []);
 
+  // Debounce the keyword so typing does not fire a request per keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const salaryBandFor = (value) => salaryBands.find((b) => b.value === value);
+
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/jobs');
+      const band = salaryBandFor(selectedSalary);
+      const res = await axios.get('/api/jobs', {
+        params: {
+          page,
+          limit: 8,
+          sort: sortBy,
+          search: debouncedSearch || undefined,
+          department: selectedDepartment !== 'All' ? selectedDepartment : undefined,
+          employmentType: selectedJobType !== 'All' ? selectedJobType : undefined,
+          experience: selectedExp !== 'All' ? selectedExp : undefined,
+          location: selectedLocation !== 'All' ? selectedLocation : undefined,
+          course: selectedCourse !== 'All' ? selectedCourse : undefined,
+          salaryMin: band && band.min > 0 ? band.min : undefined,
+          remoteOnly: remoteOnly ? 'true' : undefined,
+        },
+      });
       setJobs(res.data.jobs || []);
+      if (res.data.pagination) setPagination(res.data.pagination);
+      if (res.data.facets?.departments) setDepartmentOptions(res.data.facets.departments);
     } catch (err) {
       console.error('Failed to load jobs', err);
     } finally {
@@ -125,64 +158,49 @@ export default function CareersPage() {
   ];
 
   // Departments discovered from live job postings
-  const departments = ['All', ...Array.from(new Set(jobs.map(j => j.department).filter(Boolean)))];
+  // Departments come from the API facets (all published postings), so the
+  // dropdown never shrinks just because a page only holds 8 rows.
+  const departments = ['All', ...departmentOptions];
 
-  const jobAnnualSalary = (job) => {
-    const min = Number(job.salaryMin);
-    if (!isNaN(min) && min > 0) return min;
-    const match = String(job.salaryRange || '').replace(/,/g, '').match(/(\d{2,3})\s*K/i) || String(job.salaryRange || '').replace(/,/g, '').match(/(\d{5,6})/);
-    if (match) {
-      const raw = Number(match[1]);
-      return raw < 1000 ? raw * 1000 : raw;
+  // Any change to search/filter/sort starts from page 1 again, so a stale page
+  // number can never hide the results the user just asked for.
+  const filtersKey = [
+    debouncedSearch, selectedJobType, selectedExp, selectedLocation,
+    selectedCourse, selectedDepartment, selectedSalary, remoteOnly, sortBy,
+  ].join('|');
+  const lastFiltersKey = useRef(filtersKey);
+
+  useEffect(() => {
+    if (lastFiltersKey.current !== filtersKey) {
+      lastFiltersKey.current = filtersKey;
+      if (page !== 1) {
+        setPage(1);
+        return;
+      }
     }
-    return 0;
+    fetchJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersKey, page]);
+
+  const goToPage = (nextPage) => {
+    const target = Math.min(Math.max(nextPage, 1), pagination.totalPages || 1);
+    if (target === page) return;
+    setPage(target);
+    jobsListRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const filteredJobs = jobs.filter((job) => {
-    const term = searchTerm.trim().toLowerCase();
-    const matchesSearch = !term ||
-      job.title?.toLowerCase().includes(term) ||
-      job.company?.toLowerCase().includes(term) ||
-      job.location?.toLowerCase().includes(term) ||
-      job.experienceLevel?.toLowerCase().includes(term) ||
-      job.skills?.some(s => s.toLowerCase().includes(term)) ||
-      job.technicalSkills?.some(s => s.toLowerCase().includes(term));
-
-    const jobType = job.employmentType || job.type || 'Full-time';
-    const matchesType = selectedJobType === 'All' || jobType === selectedJobType;
-
-    const matchesExp = selectedExp === 'All' ||
-      job.experienceLevel?.toLowerCase().includes(selectedExp.toLowerCase());
-
-    const locKeyword = selectedLocation === 'All'
-      ? ''
-      : selectedLocation.split(',')[0].toLowerCase().trim();
-
-    const matchesLocation = !locKeyword ||
-      job.location?.toLowerCase().includes(locKeyword);
-
-    const matchesCourse = selectedCourse === 'All' ||
-      job.recommendedCourseTitle === selectedCourse ||
-      job.recommendedCourse?._id === selectedCourse ||
-      job.recommendedCourse?.title === selectedCourse;
-
-    const matchesDepartment = selectedDepartment === 'All' ||
-      job.department === selectedDepartment;
-
-    const salaryBand = salaryBands.find(b => b.value === selectedSalary);
-    const matchesSalary = !salaryBand || salaryBand.min === 0 ||
-      jobAnnualSalary(job) >= salaryBand.min;
-
-    const matchesRemote = !remoteOnly ||
-      String(job.location || '').toLowerCase().includes('remote');
-
-    return matchesSearch && matchesType && matchesExp && matchesLocation && matchesCourse
-      && matchesDepartment && matchesSalary && matchesRemote;
-  }).sort((a, b) => {
-    if (sortBy === 'salary') return jobAnnualSalary(b) - jobAnnualSalary(a);
-    if (sortBy === 'oldest') return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
-    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-  });
+  // Page numbers to render: 1 2 3 4 5 … 17 (never a wall of buttons)
+  const pageNumbers = (() => {
+    const total = pagination.totalPages || 1;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const current = pagination.page || 1;
+    const numbers = new Set([1, total, current]);
+    for (let offset = 1; offset <= 2; offset += 1) {
+      if (current - offset > 1) numbers.add(current - offset);
+      if (current + offset < total) numbers.add(current + offset);
+    }
+    return Array.from(numbers).sort((a, b) => a - b);
+  })();
 
   const hasActiveFilters =
     searchTerm !== '' ||
@@ -196,6 +214,7 @@ export default function CareersPage() {
 
   const handleClearFilters = () => {
     setSearchTerm('');
+    setDebouncedSearch('');
     setSelectedJobType('All');
     setSelectedExp('All');
     setSelectedLocation('All');
@@ -204,6 +223,7 @@ export default function CareersPage() {
     setSelectedSalary('All');
     setRemoteOnly(false);
     setSortBy('newest');
+    setPage(1);
   };
 
   const handleOpenDetails = (job) => {
@@ -556,7 +576,10 @@ export default function CareersPage() {
               {/* Filter Telemetry & Clear Filters Button */}
               <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                 <div className="text-slate-500 font-mono">
-                  Showing <strong className="text-slate-900">{filteredJobs.length}</strong> of {jobs.length} total partner positions
+                  Showing <strong className="text-slate-900">{pagination.total}</strong> matching partner position{pagination.total === 1 ? '' : 's'}
+                  {pagination.totalPages > 1 && (
+                    <span className="text-slate-400"> · page {pagination.page} of {pagination.totalPages}</span>
+                  )}
                 </div>
 
                 {hasActiveFilters && (
@@ -571,13 +594,14 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Job Listings (Supports 8+ Jobs naturally in desktop/mobile) */}
+            {/* Job Listings — 8 per page, page count derived from the filtered set */}
+            <div ref={jobsListRef} className="scroll-mt-28" />
             {loading ? (
               <div className="flex flex-col items-center justify-center py-12 bg-white rounded-3xl border border-slate-200 shadow-xs">
                 <div className="w-10 h-10 border-3 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin mb-3" />
                 <div className="text-xs font-mono text-slate-500">Loading career network opportunities...</div>
               </div>
-            ) : filteredJobs.length === 0 ? (
+            ) : jobs.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
                 <div className="w-36 h-36 mx-auto">
                   <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
@@ -595,7 +619,7 @@ export default function CareersPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredJobs.map((job) => (
+                {jobs.map((job) => (
                   <JobCard
                     key={job._id}
                     job={job}
@@ -603,6 +627,12 @@ export default function CareersPage() {
                     onOpenApply={handleOpenApply}
                   />
                 ))}
+
+                <JobPagination
+                  pagination={pagination}
+                  onPageChange={goToPage}
+                  label="partner positions"
+                />
               </div>
             )}
 

@@ -21,6 +21,8 @@ import {
   GraduationCap,
   HelpCircle,
   PencilLine,
+  TicketPercent,
+  PanelBottom,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -40,8 +42,10 @@ export default function AdminLayout() {
     { name: 'Batches & Urgency', path: '/admin/batches', icon: Calendar, permission: 'PROGRAMS_VIEW' },
     { name: 'Enrolled Students', path: '/admin/students', icon: GraduationCap, permission: 'STUDENTS_VIEW' },
     { name: 'Tuition & Billing Ledger', path: '/admin/payments', icon: CreditCard, permission: 'SETTINGS_VIEW' },
+    { name: 'Coupons & Promotions', path: '/admin/coupons', icon: TicketPercent, permission: 'COUPONS_VIEW' },
     { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase, permission: 'JOBS_VIEW' },
     { name: 'Content & FAQs CMS', path: '/admin/content', icon: FileText, permission: 'FAQ_VIEW' },
+    { name: 'Footer CMS', path: '/admin/footer', icon: PanelBottom, permission: 'HOMEPAGE_VIEW' },
     { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy, permission: 'STUDENTS_VIEW' },
     { name: 'Website Editor (Text & Images)', path: '/admin/website-editor', icon: PencilLine, permission: null },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
@@ -49,11 +53,19 @@ export default function AdminLayout() {
     { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },
   ];
 
+  // Legacy permission equivalences so an existing admin never loses a menu
+  // entry just because a module gained its own granular permission id.
+  const PERMISSION_FALLBACKS = {
+    COUPONS_VIEW: ['SETTINGS_VIEW', 'ANALYTICS_VIEW'],
+    HOMEPAGE_VIEW: ['SETTINGS_VIEW'],
+  };
+
   const hasItemAccess = (item) => {
     if (isSuperAdmin) return true;
     if (item.superAdminOnly) return false;
     if (!item.permission) return true;
-    return userPermissions.includes(item.permission);
+    if (userPermissions.includes(item.permission)) return true;
+    return (PERMISSION_FALLBACKS[item.permission] || []).some((perm) => userPermissions.includes(perm));
   };
 
   const handleLogout = () => {

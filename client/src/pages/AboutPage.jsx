@@ -48,6 +48,13 @@ export default function AboutPage() {
   const { settings } = useSiteSettings();
   const about = settings?.aboutCMS || {};
 
+  /**
+   * Admin → About page visibility. An inactive section is hidden on the public
+   * site but its content stays in the database, so it can be switched back on.
+   */
+  const sectionFlags = settings?.aboutSections || {};
+  const show = (key) => sectionFlags[key] !== false;
+
   // Leadership / pedagogy / sister-company content (admin override, static fallback)
   const leadership = (settings?.leadership?.length ? settings.leadership.filter(l => l.active !== false) : DEFAULT_LEADERSHIP);
   const pedagogy = { ...DEFAULT_PEDAGOGY, ...(settings?.pedagogy || {}) };
@@ -106,6 +113,7 @@ export default function AboutPage() {
         <CompanyMarquee />
 
         {/* Editorial Magazine Hero Header */}
+        {show('hero') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-6 pb-12 text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-6">
             <Building2 className="w-3.5 h-3.5 text-[#4338CA]" />
@@ -139,10 +147,12 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ========================================================================= */}
         {/* EDITORIAL 2-COLUMN STORY: STATEMENT (40%) vs CLIENT VERBATIM COPY (60%)     */}
         {/* ========================================================================= */}
+        {show('missionVision') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
           <div className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-6 lg:p-7 shadow-xl">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start">
@@ -275,8 +285,10 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* Institutional 4-Pillar Academic Charter */}
+        {show('charter') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-12 text-left">
           <div className="text-center max-w-2xl mx-auto mb-8">
             <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#0B1220] tracking-tight">
@@ -322,9 +334,10 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
+        )}
 
         {/* ── Build-First Pedagogy + Institutional Stats ─────────────────── */}
-        {pedagogy.enabled !== false && (
+        {pedagogy.enabled !== false && show('pedagogy') && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
             <div className="rounded-3xl bg-white border border-gray-200 shadow-sm p-5 sm:p-6">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -381,7 +394,7 @@ export default function AboutPage() {
         )}
 
         {/* ── Leadership & Faculty ──────────────────────────────────────── */}
-        {leadership.length > 0 && (
+        {show('team') && leadership.length > 0 && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
@@ -456,7 +469,7 @@ export default function AboutPage() {
         )}
 
         {/* ── Sister Company / Staffing Alliance ────────────────────────── */}
-        {sisterCompany.enabled !== false && (
+        {sisterCompany.enabled !== false && show('sisterCompany') && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-left">
             <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-5 sm:p-6 shadow-2xl border border-[#4338CA] relative overflow-hidden">
               <div className="pointer-events-none absolute -right-20 -top-20 w-80 h-80 rounded-full bg-[#E5C275]/10 blur-3xl" />
@@ -536,6 +549,7 @@ export default function AboutPage() {
         )}
 
         {/* Global Vision Visual Banner */}
+        {show('cta') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-center">
           <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#0B1220] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4 relative z-10">
@@ -564,14 +578,17 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* Institutional & Admissions FAQ */}
+        {show('faqs') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-10">
           <FaqAccordion
             initialCategory="Admissions"
             title="Institutional & Admissions Questions"
           />
         </section>
+        )}
       </main>
 
       <Footer />

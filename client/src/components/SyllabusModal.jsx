@@ -39,42 +39,9 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
 
   const isRose = course.cardTheme === 'rose' || course.title.toLowerCase().includes('cyber');
 
-  const handleDownloadBrochure = () => {
-    // Generate a downloadable syllabus text document as brochure simulation
-    const content = `=====================================================
-AMERICAN FUTURETECH - OFFICIAL SYLLABUS SPECIFICATION
-Course: ${course.title}
-Duration: ${course.duration || '6 Months'}
-Accreditation: US Industry Standard Capstone & Placement Included
-=====================================================
-
-HIGHLIGHTS:
-${course.highlights?.map((h) => `- ${h}`).join('\n')}
-
-CURRICULUM BREAKDOWN:
-${modules
-  ?.map(
-    (m) =>
-      `MODULE ${m.moduleNumber}: ${m.moduleTitle} (${m.hours} Hours)\nTopics Covered:\n${m.topics
-        ?.map((t) => `  * ${t}`)
-        .join('\n')}`
-  )
-  .join('\n\n')}
-
-ADMISSIONS & ENROLLMENT:
-Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
-=====================================================`;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${course.slug || 'syllabus'}_brochure.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  // The public syllabus download was removed at the client's request: the
+  // curriculum is reference material on screen only, and there is no public
+  // file endpoint that hands out the course documents.
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -161,13 +128,9 @@ Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
 
         {/* Modal Footer Actions */}
         <div className="p-5 sm:p-6 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <button
-            onClick={handleDownloadBrochure}
-            className="w-full sm:w-auto text-xs py-2.5 px-5 rounded-full border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold cursor-pointer flex items-center justify-center gap-2 transition-colors"
-          >
-            <Download className="w-4 h-4 text-[#10B981]" />
-            <span>Download PDF Syllabus</span>
-          </button>
+          <span className="text-[11px] text-slate-500 font-mono">
+            Curriculum shown for reference — contact admissions for the official document.
+          </span>
 
           <button
             onClick={() => {
@@ -176,7 +139,7 @@ Visit https://americanfuturetech.com or contact info@americantechgloballlc.com
             }}
             className="w-full sm:w-auto text-xs py-2.5 px-7 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold cursor-pointer flex items-center justify-center gap-2 shadow-sm transition-colors"
           >
-            <span>Enroll in This Track</span>
+            <span>Register Now — $499 / Program</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

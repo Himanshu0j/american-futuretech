@@ -32,8 +32,8 @@ export default function CoursesCMS() {
   const [badge, setBadge] = useState('Most Popular');
   const [cardTheme, setCardTheme] = useState('cyan');
   const [duration, setDuration] = useState('6 Months');
-  const [basePrice, setBasePrice] = useState(2499);
-  const [discountedPrice, setDiscountedPrice] = useState(1899);
+  const [basePrice, setBasePrice] = useState(1299);
+  const [discountedPrice, setDiscountedPrice] = useState(499);
   const [highlights, setHighlights] = useState(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
 
   // Which "ways to learn" this course offers, and the per-course "Who Can Apply" block.

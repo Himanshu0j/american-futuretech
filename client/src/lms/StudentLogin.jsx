@@ -127,9 +127,10 @@ export default function StudentLogin() {
 
           <div className="mt-5 text-center text-xs text-slate-600">
             Enrolling for the first time?{' '}
-            <Link to="/student/register" className="text-[#4338CA] hover:text-[#0B1220] font-bold hover:underline">
-              Create Student Account
-            </Link>
+            <Link to="/contact" className="text-[#4338CA] hover:text-[#0B1220] font-bold hover:underline">
+              Request access from admissions
+            </Link>{' '}
+            — student accounts are issued by our team.
           </div>
         </div>
 

@@ -36,6 +36,55 @@ const CapstoneProjectSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true });
 
+// ── Footer CMS ──────────────────────────────────────────────────────────────
+// The footer is fully admin-managed: columns, links, legal links, contact,
+// copyright text and logo size all come from here. Reordering / hiding is done
+// with `order` + `active`, so nothing is ever deleted just to hide it.
+const FooterLinkSchema = new mongoose.Schema({
+  label: { type: String, default: '' },
+  url: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: true });
+
+const FooterColumnSchema = new mongoose.Schema({
+  title: { type: String, default: 'New Column' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+  links: { type: [FooterLinkSchema], default: [] },
+}, { _id: true });
+
+const FooterSchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: true },
+  logo: { type: String, default: '/images/logo-horizontal-white.webp' },
+  logoWidth: { type: Number, default: 160 },
+  description: {
+    type: String,
+    default:
+      'An accredited US technology workforce institute providing rigorous cohort fellowships in applied AI engineering, offensive cybersecurity, and enterprise cloud architecture.',
+  },
+  badgeText: { type: String, default: 'Wyoming Registered Corporate Charter' },
+  copyrightText: {
+    type: String,
+    default: '© 2026 American FutureTech LLC. All rights reserved. Registered in Wyoming, USA.',
+  },
+  hiringStrip: {
+    enabled: { type: Boolean, default: true },
+    text: {
+      type: String,
+      default:
+        'Alumni Engineering at Leading Enterprise & High-Growth Technology Companies',
+    },
+  },
+  cta: {
+    enabled: { type: Boolean, default: true },
+    label: { type: String, default: 'Contact Admissions Advisor' },
+    url: { type: String, default: '' },
+  },
+  columns: { type: [FooterColumnSchema], default: [] },
+  legalLinks: { type: [FooterLinkSchema], default: [] },
+}, { _id: false });
+
 const CompanyLogoSchema = new mongoose.Schema({
   name: { type: String, required: true },
   logoUrl: { type: String, default: '' },
@@ -220,6 +269,61 @@ const SiteSettingsSchema = new mongoose.Schema({
   isMaintenanceMode: {
     type: Boolean,
     default: false,
+  },
+
+  // 🌟 PAYMENT GATEWAY (Stripe) — configured from Admin → Payment Gateway.
+  // Secrets are stored ENCRYPTED (utils/secretVault) and are never returned by
+  // any API response; the admin only ever sees a masked hint.
+  paymentGateway: {
+    enabled: { type: Boolean, default: true },
+    provider: { type: String, default: 'stripe' },
+    mode: { type: String, enum: ['test', 'live'], default: 'test' },
+    publishableKey: { type: String, default: '' },
+    currency: { type: String, default: 'USD' },
+    checkoutNote: {
+      type: String,
+      default: 'Payment is processed by Stripe with 256-bit TLS and 3-D Secure. Your enrollment is confirmed instantly.',
+    },
+    disabledMessage: {
+      type: String,
+      default:
+        'Online card payments are temporarily unavailable. Submit an admissions enquiry and our team will send you a secure payment link within 24 hours.',
+    },
+    secretKeyEncrypted: { type: String, default: '' },
+    secretKeyHint: { type: String, default: '' },
+    webhookSecretEncrypted: { type: String, default: '' },
+    webhookSecretHint: { type: String, default: '' },
+    lastUpdatedBy: { type: String, default: '' },
+    lastUpdatedAt: { type: Date, default: null },
+  },
+
+  // 🌟 REGISTRATION CONTROLS
+  // Student accounts are created by staff by default. Flip this only if the
+  // client ever wants open public signups again.
+  registration: {
+    allowPublicStudentRegistration: { type: Boolean, default: false },
+    closedMessage: {
+      type: String,
+      default:
+        'Student accounts are created by our admissions team. Please submit an admission enquiry and a counselor will set up your access.',
+    },
+  },
+
+  // 🌟 ABOUT PAGE SECTION VISIBILITY
+  // Inactive sections are hidden on the public page but never deleted, so the
+  // client can switch them back on later.
+  aboutSections: {
+    hero: { type: Boolean, default: true },
+    missionVision: { type: Boolean, default: true },
+    charter: { type: Boolean, default: true },
+    pedagogy: { type: Boolean, default: true },
+    story: { type: Boolean, default: true },
+    stats: { type: Boolean, default: true },
+    team: { type: Boolean, default: true },
+    sisterCompany: { type: Boolean, default: true },
+    certifications: { type: Boolean, default: true },
+    cta: { type: Boolean, default: true },
+    faqs: { type: Boolean, default: true },
   },
 
   // 🌟 HOMEPAGE SECTION VISIBILITY CONTROLS
@@ -409,6 +513,69 @@ const SiteSettingsSchema = new mongoose.Schema({
   careerSupport: {
     type: CareerSupportSchema,
     default: () => ({}),
+  },
+
+  // 🌟 FOOTER CMS (columns, links, legal, contact, logo size)
+  footer: {
+    type: FooterSchema,
+    default: () => ({
+      columns: [
+        {
+          title: 'Engineering Fellowships',
+          order: 1,
+          active: true,
+          links: [
+            { label: 'Data Science with AI Integration', url: '/courses/data-science-with-ai-integration', order: 1 },
+            { label: 'Cyber Security & Ethical Hacking', url: '/courses/cyber-security-with-ethical-hacking', order: 2 },
+            { label: 'Cyber Security & AI Hybrid Track', url: '/courses/cyber-security-and-artificial-intelligence', order: 3 },
+            { label: 'Advanced Generative & Agentic AI', url: '/courses/advanced-generative-and-agentic-ai-master-program', order: 4 },
+            { label: 'View All Specializations', url: '/courses', order: 5 },
+          ],
+        },
+        {
+          title: 'Company',
+          order: 2,
+          active: true,
+          links: [
+            { label: 'About Us', url: '/about', order: 1 },
+            { label: 'Registration & Tuition', url: '/checkout', order: 2 },
+            { label: 'Careers & Live Jobs', url: '/careers', order: 3 },
+            { label: 'Success Stories', url: '/success-stories', order: 4 },
+            { label: 'Insights & Blog', url: '/blog', order: 5 },
+            { label: 'Contact Admissions', url: '/contact', order: 6 },
+          ],
+        },
+        {
+          title: 'Student Resources',
+          order: 3,
+          active: true,
+          links: [
+            { label: 'Student LMS Classroom', url: '/student/login', order: 1 },
+            { label: 'Digital Credential Verification', url: '/certificate/AFT-CERT-AI9821', order: 2 },
+            { label: 'Frequently Asked Questions', url: '/faq', order: 3 },
+            { label: 'Certifications', url: '/certifications/artificial-intelligence', order: 4 },
+          ],
+        },
+        {
+          title: 'Academy Portals',
+          order: 4,
+          active: true,
+          links: [
+            { label: 'Enterprise Staff Console', url: '/admin/login', order: 1 },
+            { label: 'Verified Employer Jobs', url: '/careers', order: 2 },
+            { label: 'Career Support Framework', url: '/career-support', order: 3 },
+          ],
+        },
+      ],
+      legalLinks: [
+        { label: 'Privacy Policy', url: '/privacy', order: 1 },
+        { label: 'Refund & Return Policy', url: '/refund-policy', order: 2 },
+        { label: 'Cookie Policy', url: '/cookie-policy', order: 3 },
+        { label: 'Terms & Conditions', url: '/terms', order: 4 },
+        { label: 'About Us', url: '/about', order: 5 },
+        { label: 'Live Jobs', url: '/careers', order: 6 },
+      ],
+    }),
   },
 
   // 🌟 GLOBAL CTAs CMS

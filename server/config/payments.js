@@ -15,8 +15,32 @@
 
 let stripeClient = null;
 
-const getSecretKey = () => (process.env.STRIPE_SECRET_KEY || '').trim();
-const getWebhookSecret = () => (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
+/**
+ * Runtime secrets.
+ *
+ * Priority is deliberate: an environment variable always wins, and a secret
+ * saved from the admin panel (encrypted at rest, decrypted once at boot) is the
+ * fallback. Either way the plaintext only ever lives in server memory.
+ */
+let runtimeSecrets = { secretKey: '', webhookSecret: '' };
+
+const getSecretKey = () => (process.env.STRIPE_SECRET_KEY || runtimeSecrets.secretKey || '').trim();
+const getWebhookSecret = () => (process.env.STRIPE_WEBHOOK_SECRET || runtimeSecrets.webhookSecret || '').trim();
+
+/** Called at boot and right after an admin saves the gateway settings. */
+const setRuntimeSecrets = ({ secretKey, webhookSecret } = {}) => {
+  const next = {
+    secretKey: secretKey !== undefined ? String(secretKey || '').trim() : runtimeSecrets.secretKey,
+    webhookSecret: webhookSecret !== undefined ? String(webhookSecret || '').trim() : runtimeSecrets.webhookSecret,
+  };
+  const changed = next.secretKey !== runtimeSecrets.secretKey || next.webhookSecret !== runtimeSecrets.webhookSecret;
+  runtimeSecrets = next;
+  // A rotated key must build a fresh SDK client.
+  if (changed) stripeClient = null;
+  return getPaymentStatus();
+};
+
+const hasRuntimeSecret = () => Boolean(runtimeSecrets.secretKey);
 
 const isStripeConfigured = () => getSecretKey().startsWith('sk_');
 const isWebhookConfigured = () => getWebhookSecret().startsWith('whsec_');
@@ -39,7 +63,12 @@ const getStripe = () => {
   return stripeClient;
 };
 
-const getCurrency = () => (process.env.PAYMENT_CURRENCY || 'USD').toLowerCase();
+// Currency: env wins, then the admin's gateway setting, then USD.
+let runtimeCurrency = '';
+const setRuntimeCurrency = (currency) => {
+  runtimeCurrency = String(currency || '').trim().toLowerCase();
+};
+const getCurrency = () => (process.env.PAYMENT_CURRENCY || runtimeCurrency || 'USD').toLowerCase();
 
 /**
  * Status block surfaced by /api/health and the admin dashboard so nobody has to
@@ -49,6 +78,7 @@ const getPaymentStatus = () => {
   const configured = isStripeConfigured();
   return {
     provider: 'stripe',
+    source: process.env.STRIPE_SECRET_KEY ? 'environment' : (hasRuntimeSecret() ? 'admin-panel' : 'none'),
     mode: configured ? (isLiveMode() ? 'live' : 'test') : 'manual',
     configured,
     webhookConfigured: isWebhookConfigured(),
@@ -71,4 +101,7 @@ module.exports = {
   getPaymentStatus,
   getSecretKey,
   getWebhookSecret,
+  setRuntimeSecrets,
+  hasRuntimeSecret,
+  setRuntimeCurrency,
 };

@@ -172,7 +172,7 @@ export default function AIChatbox() {
               </div>
               <div>
                 <div className="text-sm font-bold flex items-center gap-2">
-                  <span>AFT Academic AI</span>
+                  <span>American Future Tech AI</span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 </div>
                 <div className="text-[10px] text-[#EFE6D6]/80 font-mono">

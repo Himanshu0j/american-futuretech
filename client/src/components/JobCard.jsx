@@ -12,12 +12,16 @@ import {
   Sparkles
 } from 'lucide-react';
 import SafeImage from './common/SafeImage';
+import { formatPostedLabel } from '../lib/relativeTime';
 
 export default function JobCard({
   job,
   onOpenDetails,
   onOpenApply
 }) {
+  // Real posting timestamp from the database (never a hardcoded label).
+  const postedLabel = formatPostedLabel(job.postedAt || job.createdAt);
+
   // Normalize any stored salary string so there is never a doubled "$" (e.g. "$ $100K")
   const normalizeSalary = (raw) => {
     if (!raw) return '';
@@ -62,9 +66,14 @@ export default function JobCard({
     }
   };
 
-  // Visible skills limit to 4-5
-  const visibleSkills = (job.technicalSkills?.length ? job.technicalSkills : (job.skills || [])).slice(0, 5);
-  const remainingSkillsCount = (job.technicalSkills?.length ? job.technicalSkills : (job.skills || [])).length - visibleSkills.length;
+  // Visible skills limit to 4-5 (technical skills first, then tools, then skills)
+  const skillPool = [
+    ...(job.technicalSkills?.length ? job.technicalSkills : []),
+    ...(job.tools?.length ? job.tools : []),
+    ...(!job.technicalSkills?.length && !job.tools?.length ? (job.skills || []) : []),
+  ];
+  const visibleSkills = skillPool.slice(0, 5);
+  const remainingSkillsCount = skillPool.length - visibleSkills.length;
 
   const jobId = job.id || job._id;
   const employmentType = job.employmentType || job.type || 'Full-time';
@@ -158,9 +167,9 @@ export default function JobCard({
         </div>
       )}
 
-      {/* 3. Filtered Skills (Strictly 5 tools) & Action Buttons Row */}
+      {/* 3. Filtered Skills (Strictly 5 tools) + Posted Time & Action Buttons Row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
-        {/* Skills: Showing max 5 tools */}
+        {/* Skills/tools first, then the posting time sits right after them */}
         <div className="flex flex-wrap items-center gap-1.5 flex-1">
           {visibleSkills.map((skill, i) => (
             <span
@@ -170,6 +179,21 @@ export default function JobCard({
               {skill}
             </span>
           ))}
+          {remainingSkillsCount > 0 && (
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              +{remainingSkillsCount} more
+            </span>
+          )}
+
+          {postedLabel && (
+            <span
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
+              title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
+            >
+              <Clock className="w-3 h-3 text-slate-400" />
+              {postedLabel}
+            </span>
+          )}
         </div>
 
         {/* Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}

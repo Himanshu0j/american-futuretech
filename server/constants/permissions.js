@@ -82,6 +82,12 @@ const ALL_PERMISSIONS = [
   'ADMIN_MANAGEMENT_EDIT',
   'ADMIN_MANAGEMENT_DELETE',
 
+  // Coupons & Promotions
+  'COUPONS_VIEW',
+  'COUPONS_CREATE',
+  'COUPONS_EDIT',
+  'COUPONS_DELETE',
+
   // Audit Logs
   'AUDIT_LOG_VIEW',
 ];
@@ -206,6 +212,16 @@ const PERMISSION_MODULES = [
     label: 'Business Analytics',
     permissions: [
       { id: 'ANALYTICS_VIEW', label: 'View Analytics & Revenue' },
+    ],
+  },
+  {
+    id: 'coupons',
+    label: 'Coupons & Promotions',
+    permissions: [
+      { id: 'COUPONS_VIEW', label: 'View Coupons & Usage' },
+      { id: 'COUPONS_CREATE', label: 'Create Coupons' },
+      { id: 'COUPONS_EDIT', label: 'Edit / Deactivate Coupons' },
+      { id: 'COUPONS_DELETE', label: 'Delete Coupons' },
     ],
   },
   {

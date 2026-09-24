@@ -9,6 +9,8 @@ const {
   getSiteEditorSummary,
   saveSiteEditorOverrides,
   resetSiteEditorRoute,
+  getPaymentGatewayStatus,
+  updatePaymentGateway,
 } = require('../controllers/settingsController');
 const { protect, checkPermission } = require('../middleware/auth');
 
@@ -31,6 +33,10 @@ router.get(
 router.get('/site-editor', editorReadLimiter, getSiteEditorOverrides);
 router.put('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), saveSiteEditorOverrides);
 router.delete('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), resetSiteEditorRoute);
+
+// ── Payment gateway (Stripe) — secrets go in, never come back out ────────────
+router.get('/payment-gateway', protect, checkPermission('SETTINGS_VIEW', 'SETTINGS_EDIT'), getPaymentGatewayStatus);
+router.put('/payment-gateway', protect, checkPermission('SETTINGS_EDIT'), updatePaymentGateway);
 
 // ── Whole-site settings document ─────────────────────────────────────────────
 router.get('/', getSiteSettings);

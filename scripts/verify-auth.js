@@ -248,19 +248,42 @@ const run = async () => {
     const controlAttempt = await request('GET', '/api/auth/me', { token: controlToken });
     check('Token signed with the real secret still works (control)', controlAttempt.status === 200);
 
-    // Public signup + policy
-    const weakRegister = await request('POST', '/api/auth/register', {
-      body: { name: 'Weak User', email: `weak.${Date.now()}@example.com`, password: 'admin123' },
-    });
-    check('Public signup rejects a weak password', weakRegister.status === 400 && /common|least/i.test(weakRegister.json?.message || ''),
-      weakRegister.json?.message);
-
+    // Public self-registration is closed on purpose — students are created by
+    // the admissions team from the admin panel. That panel is therefore where
+    // the password policy has to hold, so it is tested there instead.
     const testEmail = `lockout.${Date.now()}@example.com`;
     const strongPassword = 'Copper-Lantern-88!';
-    const registered = await request('POST', '/api/auth/register', {
+
+    const closedSignup = await request('POST', '/api/auth/register', {
+      body: { name: 'Public Attempt', email: testEmail, password: strongPassword },
+    });
+    check('Public self-registration is closed',
+      closedSignup.status === 403 && closedSignup.json?.code === 'REGISTRATION_CLOSED',
+      `status ${closedSignup.status} code ${closedSignup.json?.code}`);
+    check('The closed-signup message points to admissions, not a dead end',
+      /admission|enquiry|counselor/i.test(closedSignup.json?.message || ''), closedSignup.json?.message);
+
+    const weakAdminCreate = await request('POST', '/api/students/admin', {
+      token: adminToken,
+      body: { name: 'Weak Student', email: `weak.${Date.now()}@example.com`, password: 'admin123' },
+    });
+    check('A weak password is refused when an admin creates a student',
+      weakAdminCreate.status === 400,
+      `status ${weakAdminCreate.status} ${weakAdminCreate.json?.message || ''}`);
+
+    const createdStudent = await request('POST', '/api/students/admin', {
+      token: adminToken,
       body: { name: 'Lockout Probe', email: testEmail, password: strongPassword },
     });
-    check('Public signup accepts a strong password', registered.status === 201 || registered.status === 200);
+    check('Admin can create a student with a strong password',
+      createdStudent.status === 201 || createdStudent.status === 200,
+      `status ${createdStudent.status} ${createdStudent.json?.message || ''}`);
+
+    const registered = await request('POST', '/api/auth/login', {
+      body: { email: testEmail, password: strongPassword },
+    });
+    check('The admin-created student can sign in',
+      registered.status === 200 && Boolean(registered.json?.token), `status ${registered.status}`);
     let probeToken = registered.json?.token || '';
 
     // Account lockout

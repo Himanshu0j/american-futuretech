@@ -13,6 +13,7 @@
  */
 
 const path = require('path');
+const http = require('http');
 const crypto = require('crypto');
 const { spawn } = require('child_process');
 
@@ -421,6 +422,179 @@ const run = async () => {
     const stillLive = await request('GET', '/api/courses');
     check('A legitimate API route still answers normally', stillLive.status === 200 && Boolean(stillLive.json?.courses),
       `HTTP ${stillLive.status}`);
+
+    // ══════════════════════════════════════════════════════════════════════
+    section('7. CORS origin allowlist');
+
+    // The API used to reflect any Origin (`origin: true`). Every check below
+    // fails against that old behaviour, so this section is the regression.
+    const corsConfig = require(path.join(__dirname, '..', 'server', 'config', 'cors'));
+    const { getAllowedOrigins, isOriginAllowed, buildCorsOptions, __resetForTests } = corsConfig;
+    const CANONICAL = 'https://american-futuretech.vercel.app';
+    const UNEXPECTED = 'https://evil.example.com';
+    const withConfig = (env, fn) => {
+      const saved = {};
+      for (const [key, value] of Object.entries(env)) {
+        saved[key] = process.env[key];
+        if (value === undefined) delete process.env[key]; else process.env[key] = value;
+      }
+      __resetForTests();
+      try {
+        return fn();
+      } finally {
+        for (const [key, value] of Object.entries(saved)) {
+          if (value === undefined) delete process.env[key]; else process.env[key] = value;
+        }
+        __resetForTests();
+      }
+    };
+
+    withConfig({ NODE_ENV: 'production', CLIENT_URL: 'https://american-futuretech.vercel.app' }, () => {
+      const allowed = getAllowedOrigins();
+      check('Production allowlist contains the canonical frontend origin', allowed.includes(CANONICAL), allowed.join(', '));
+      check(
+        'Production allowlist keeps the project\'s configured custom domains',
+        allowed.includes('https://americanfuturetech.com') && allowed.includes('https://www.americanfuturetech.com'),
+      );
+      check('Production allowlist has no localhost origin', allowed.every((o) => !/localhost|127\.0\.0\.1/.test(o)), allowed.join(', '));
+      check('Production allowlist is never a wildcard', allowed.every((o) => o !== '*'), allowed.join(', '));
+      check('An unexpected origin is refused in production', isOriginAllowed(UNEXPECTED) === false);
+      check('A local dev port is refused in production', isOriginAllowed('http://127.0.0.1:5273') === false);
+      check('A request with no Origin is not cross-origin and is allowed', isOriginAllowed(undefined) === true);
+    });
+
+    withConfig({ NODE_ENV: 'production', CLIENT_URL: 'https://staging.american-futuretech.example' }, () => {
+      check(
+        'A non-local CLIENT_URL is honoured in production',
+        isOriginAllowed('https://staging.american-futuretech.example') === true,
+        getAllowedOrigins().join(', '),
+      );
+    });
+
+    withConfig({ NODE_ENV: 'production', CLIENT_URL: 'http://localhost:5173' }, () => {
+      check(
+        'A localhost CLIENT_URL is ignored in production',
+        isOriginAllowed('http://localhost:5173') === false,
+        getAllowedOrigins().join(', '),
+      );
+    });
+
+    withConfig({ NODE_ENV: 'development', CLIENT_URL: 'http://localhost:5173' }, () => {
+      check('The local dev origin is allowed in development', isOriginAllowed('http://localhost:5173') === true);
+      check('A non-standard local dev port is allowed in development', isOriginAllowed('http://127.0.0.1:5273') === true);
+      check('An unexpected origin is still refused in development', isOriginAllowed(UNEXPECTED) === false);
+      check('Development allows unprompted tooling too (no Origin)', isOriginAllowed(undefined) === true);
+    });
+
+    // ── Over the wire, against the real production-configured server ──────
+    const probe = (method, pathname, headers = {}) => new Promise((resolve, reject) => {
+      const req = http.request(
+        { method, hostname: '127.0.0.1', port: PORT, path: pathname, headers },
+        (res) => {
+          let body = '';
+          res.on('data', (chunk) => { body += chunk; });
+          res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body }));
+        },
+      );
+      req.on('error', reject);
+      req.end();
+    });
+
+    const preflight = await probe('OPTIONS', '/api/auth/login', {
+      Origin: CANONICAL,
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type,authorization',
+    });
+    check(
+      'Preflight from the canonical origin is approved',
+      preflight.status === 204 && preflight.headers['access-control-allow-origin'] === CANONICAL,
+      `HTTP ${preflight.status} ACAO=${preflight.headers['access-control-allow-origin']}`,
+    );
+    check(
+      'Preflight advertises credentials without a wildcard origin',
+      preflight.headers['access-control-allow-credentials'] === 'true' && preflight.headers['access-control-allow-origin'] !== '*',
+    );
+    check(
+      'Preflight advertises the methods and headers the app uses',
+      /PATCH/.test(preflight.headers['access-control-allow-methods'] || '')
+        && /Authorization/.test(preflight.headers['access-control-allow-headers'] || ''),
+      `${preflight.headers['access-control-allow-methods']} | ${preflight.headers['access-control-allow-headers']}`,
+    );
+
+    const allowedRead = await probe('GET', '/api/courses', { Origin: CANONICAL });
+    check(
+      'An allowed origin is reflected exactly (never "*") on a real response',
+      allowedRead.status === 200
+        && allowedRead.headers['access-control-allow-origin'] === CANONICAL
+        && allowedRead.headers['access-control-allow-credentials'] === 'true',
+      `HTTP ${allowedRead.status} ACAO=${allowedRead.headers['access-control-allow-origin']}`,
+    );
+
+    const refusedRead = await probe('GET', '/api/courses', { Origin: UNEXPECTED });
+    check(
+      'An unexpected origin gets no CORS grant on a real response',
+      refusedRead.headers['access-control-allow-origin'] === undefined,
+      `ACAO=${refusedRead.headers['access-control-allow-origin']}`,
+    );
+
+    const refusedPreflight = await probe('OPTIONS', '/api/leads', {
+      Origin: UNEXPECTED,
+      'Access-Control-Request-Method': 'POST',
+    });
+    check(
+      'An unexpected origin is never approved at preflight',
+      refusedPreflight.headers['access-control-allow-origin'] === undefined,
+      `HTTP ${refusedPreflight.status} ACAO=${refusedPreflight.headers['access-control-allow-origin']}`,
+    );
+
+    const noOrigin = await probe('GET', '/api/courses');
+    check(
+      'Same-origin / rewrite / tooling traffic (no Origin) still works',
+      noOrigin.status === 200 && noOrigin.headers['access-control-allow-origin'] === undefined,
+      `HTTP ${noOrigin.status}`,
+    );
+
+    // ── The development-mode branch, through the real middleware ──────────
+    const express = require('express');
+    const cors = require('cors');
+    const devApp = express();
+    let devServer = null;
+    const savedNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    __resetForTests();
+    devApp.use(cors(buildCorsOptions()));
+    devApp.get('/api/ping', (req, res) => res.json({ ok: true }));
+    await new Promise((resolve) => { devServer = devApp.listen(0, '127.0.0.1', resolve); });
+    const devPort = devServer.address().port;
+    try {
+      const devProbe = (method, pathname, headers = {}) => new Promise((resolve, reject) => {
+        const req = http.request({ method, hostname: '127.0.0.1', port: devPort, path: pathname, headers }, (res) => {
+          res.on('data', () => {});
+          res.on('end', () => resolve({ status: res.statusCode, headers: res.headers }));
+        });
+        req.on('error', reject);
+        req.end();
+      });
+      const devPreflight = await devProbe('OPTIONS', '/api/ping', {
+        Origin: 'http://localhost:5173',
+        'Access-Control-Request-Method': 'GET',
+      });
+      check(
+        'In development the local dev origin is approved over the wire',
+        devPreflight.status === 204 && devPreflight.headers['access-control-allow-origin'] === 'http://localhost:5173',
+        `HTTP ${devPreflight.status} ACAO=${devPreflight.headers['access-control-allow-origin']}`,
+      );
+      const devRefused = await devProbe('GET', '/api/ping', { Origin: UNEXPECTED });
+      check(
+        'In development an unexpected origin is still refused',
+        devRefused.headers['access-control-allow-origin'] === undefined,
+        `ACAO=${devRefused.headers['access-control-allow-origin']}`,
+      );
+    } finally {
+      if (devServer) await new Promise((resolve) => devServer.close(resolve));
+      if (savedNodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = savedNodeEnv;
+      __resetForTests();
+    }
 
     // ══════════════════════════════════════════════════════════════════════
     check('The server never logged a Stripe secret', !serverLog.includes(SECRET_KEY));

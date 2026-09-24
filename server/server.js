@@ -10,6 +10,7 @@ const { getDbInfo } = require('./config/db');
 const { getPaymentStatus } = require('./config/payments');
 const { assertAuthConfig } = require('./config/auth');
 const { autoSeedIfEmpty } = require('./utils/seeder');
+const { buildCorsOptions } = require('./config/cors');
 const errorHandler = require('./middleware/errorHandler');
 
 // Resolve the JWT signing secret at boot. A missing or unsafe value never stops
@@ -42,11 +43,10 @@ app.use(helmet({
   crossOriginResourcePolicy: false,
 }));
 
-// CORS Configuration
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
+// CORS Configuration — an explicit allowlist, never a reflected origin.
+// Allowed origins live in server/config/cors.js; an unlisted origin gets no
+// CORS headers, so the browser refuses to let the calling page read the reply.
+app.use(cors(buildCorsOptions()));
 
 // Rate limiting for public leads apply endpoint
 const applyLimiter = rateLimit({

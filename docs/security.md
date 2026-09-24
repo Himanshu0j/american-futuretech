@@ -46,6 +46,24 @@ lowercase/uppercase/digits/symbols, no common password (including the old `admin
 
 **5. Session revocation** — changing a password stamps `passwordChangedAt`; every token issued before that moment is rejected with `code: "PASSWORD_CHANGED"`. The device that made the change receives a replacement token so it stays signed in.
 
+**6. CORS origin allowlist** (`server/config/cors.js`)
+
+- The API previously used `origin: true`, which reflected whatever `Origin` a caller sent — any site a
+  signed-in admin or student happened to visit could read this API's responses from their browser.
+- Only the frontends this project ships are allowed: `https://american-futuretech.vercel.app`,
+  `https://americanfuturetech.com`, `https://www.americanfuturetech.com`, plus whatever `CLIENT_URL`
+  names. In production a **localhost `CLIENT_URL` is ignored**, so the dev origins cannot leak in on a
+  copied sample value.
+- Local dev origins (`localhost:5173`, `127.0.0.1:5173`, `:4173`, `:3000`) are allowed **only** outside
+  production.
+- A request with no `Origin` — same-origin navigation, CI/tooling, and the Vercel `/api/*` rewrite,
+  which proxies server-side — is not cross-origin and is unaffected.
+- An unlisted origin is never reflected and receives no CORS headers, so the browser refuses to hand
+  the response to the calling page. `Access-Control-Allow-Origin: *` is never sent while credentials
+  are enabled.
+- Regression: `npm run verify:security`, section 7 (22 checks: preflight, credentials, dev-only local
+  origins, and rejection of unexpected origins).
+
 ## Required environment variables
 
 ```bash

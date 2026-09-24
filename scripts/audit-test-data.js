@@ -17,6 +17,10 @@
  *   npm run audit:testdata                       # uses MONGODB_URI from the env
  *   MONGODB_URI="mongodb+srv://..." npm run audit:testdata
  *   npm run audit:testdata -- --clean            # remove the listed leftovers
+ *   npm run audit:testdata -- --clean-orphans     # remove unreachable child rows
+ *
+ * Credentials and free-text notes are the one thing this script will not print,
+ * so it stays safe to run against production. The connection string is masked.
  */
 
 const path = require('path');
@@ -61,6 +65,59 @@ const looksLikeTestData = (doc) => PATTERNS.some((rx) => rx.test(JSON.stringify(
 const SINGLETON_COLLECTIONS = new Set(['sitesettings', 'systemconfigs', 'systemsettings']);
 
 const CLEAN = process.argv.includes('--clean');
+const CLEAN_ORPHANS = process.argv.includes('--clean-orphans');
+
+/**
+ * Child collections and the parent they must point at. A row here whose parent
+ * is gone can never be shown to anyone — it is either a leftover from deleting a
+ * student before cascade-delete existed, or a bug in a delete path.
+ */
+const REFERENCES = [
+  { collection: 'enrollments', field: 'student', parent: 'users' },
+  { collection: 'enrollments', field: 'course', parent: 'courses' },
+  { collection: 'enrollments', field: 'batch', parent: 'batches' },
+  { collection: 'progresses', field: 'student', parent: 'users' },
+  { collection: 'progresses', field: 'course', parent: 'courses' },
+  { collection: 'certificates', field: 'student', parent: 'users' },
+  { collection: 'payments', field: 'student', parent: 'users' },
+  { collection: 'quizattempts', field: 'student', parent: 'users' },
+  { collection: 'lessons', field: 'module', parent: 'modules' },
+  { collection: 'jobapplications', field: 'job', parent: 'jobs' },
+  { collection: 'jobapplications', field: 'applicant', parent: 'users' },
+];
+
+/**
+ * Walks every declared child→parent link and returns the rows that point at a
+ * document which no longer exists.
+ */
+const findOrphans = async (db) => {
+  const parentIds = new Map();
+  const parentIdSet = async (name) => {
+    if (!parentIds.has(name)) {
+      const rows = await db.collection(name).find({}).project({ _id: 1 }).toArray();
+      parentIds.set(name, new Set(rows.map((row) => String(row._id))));
+    }
+    return parentIds.get(name);
+  };
+
+  const orphans = [];
+  for (const link of REFERENCES) {
+    const exists = await db.listCollections({ name: link.collection }).hasNext();
+    if (!exists) continue;
+    const parentExists = await db.listCollections({ name: link.parent }).hasNext();
+    if (!parentExists) continue;
+    const valid = await parentIdSet(link.parent);
+    const docs = await db.collection(link.collection).find({}).toArray();
+    for (const doc of docs) {
+      const value = doc[link.field];
+      if (!value) continue;
+      if (!valid.has(String(value))) {
+        orphans.push({ collection: link.collection, id: String(doc._id), field: link.field, parent: link.parent, pointsAt: String(value) });
+      }
+    }
+  }
+  return orphans;
+};
 
 const label = (doc) =>
   doc.email || doc.title || doc.code || doc.batchCode || doc.name || doc.question || '';
@@ -87,6 +144,31 @@ const run = async () => {
   }
 
   console.log(`\n${totalFlagged === 0 ? '✅ No test data found.' : `⚠  ${totalFlagged} record(s) flagged for review.`}`);
+
+  // ── Referential integrity ────────────────────────────────────────────────
+  const orphans = await findOrphans(db);
+  if (orphans.length === 0) {
+    console.log('✅ No unreachable records — every enrollment, progress row and application points at a document that exists.');
+  } else {
+    console.log(`⚠  ${orphans.length} unreachable record(s):`);
+    for (const item of orphans) {
+      console.log(`     ${item.collection}/${item.id} → ${item.field} ${item.pointsAt} (no such ${item.parent} row)`);
+    }
+    if (CLEAN_ORPHANS) {
+      // One row can be reported under several broken links (a missing student
+      // and a missing batch), so count distinct documents, not links.
+      const distinct = [...new Map(orphans.map((o) => [`${o.collection}/${o.id}`, o])).values()];
+      console.log(`\n${CLEAN_HEADING}REMOVING ${distinct.length} unreachable document(s)${CLEAN_RESET}`);
+      let removed = 0;
+      for (const item of distinct) {
+        const res = await db.collection(item.collection).deleteOne({ _id: new mongoose.Types.ObjectId(item.id) });
+        removed += res.deletedCount;
+      }
+      console.log(`  removed ${removed} of ${distinct.length}`);
+    } else {
+      console.log('  Re-run with `--clean-orphans` to remove them (they cannot be reached from any screen).');
+    }
+  }
 
   if (totalFlagged && !CLEAN) {
     console.log('\nNothing was deleted. Review the list above, then remove the rows you');

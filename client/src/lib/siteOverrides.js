@@ -121,11 +121,16 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
 
   const textKeys = new Set(Object.keys(text || {}));
   const imageKeys = new Set(Object.keys(images || {}));
+  const touchedNodes = new Set(); // text nodes this pass has already handled
+  const resolvedKeys = new Set(); // override keys whose saved position still exists
 
   collectTextNodes().forEach((node) => {
     const key = pathKey(node);
     const entry = key ? text[key] : null;
     if (!entry || typeof entry.value !== 'string') return;
+
+    resolvedKeys.add(key);
+    touchedNodes.add(node);
 
     const current = node.nodeValue;
     const trimmed = current.trim();
@@ -141,6 +146,44 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
     node.nodeValue = current.replace(trimmed, entry.value);
     applied.set(key, { kind: 'text', node, original: hasOriginal ? entry.original : trimmed });
   });
+
+  /*
+   * Position-independent rescue.
+   *
+   * An edit is keyed by where its text sat in the DOM, so adding or reordering
+   * anything earlier on the page — an ordinary code change — shifts the key and
+   * the saved edit quietly stopped applying: the site went back to the coded
+   * wording while the edit was still stored in the database, which looks exactly
+   * like "the admin's changes vanished after an update". These orphans are
+   * re-matched by their own stored original wording, so a saved edit only needs
+   * the text to still exist somewhere on the route, not to sit at the same index.
+   */
+  const orphans = Array.from(textKeys).filter((key) => {
+    const entry = text[key];
+    return (
+      !resolvedKeys.has(key) &&
+      entry &&
+      typeof entry.value === 'string' &&
+      typeof entry.original === 'string' &&
+      entry.original.trim().length > 1
+    );
+  });
+
+  if (orphans.length) {
+    const candidates = collectTextNodes().filter((node) => !touchedNodes.has(node));
+    orphans.forEach((key) => {
+      const entry = text[key];
+      const wanted = entry.original.trim();
+      const node = candidates.find((n) => !touchedNodes.has(n) && n.nodeValue.trim() === wanted);
+      if (!node) return;
+
+      touchedNodes.add(node);
+      const current = node.nodeValue;
+      const trimmed = current.trim();
+      if (trimmed !== entry.value) node.nodeValue = current.replace(trimmed, entry.value);
+      applied.set(key, { kind: 'text', node, original: entry.original });
+    });
+  }
 
   collectImages().forEach((img) => {
     const key = pathKey(img);

@@ -2,29 +2,60 @@ const Lead = require('../models/Lead');
 const Batch = require('../models/Batch');
 const Course = require('../models/Course');
 
+/**
+ * Midnight on the day `daysAgo` before today.
+ * All buckets below share this helper so “today” means the same thing in every
+ * number on the dashboard.
+ */
+const dayStart = (daysAgo = 0) => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() - daysAgo);
+  return date;
+};
+
 // @desc    Get executive analytics for admin dashboard
 // @route   GET /api/analytics/dashboard
 // @access  Private
+//
+// Every figure here is derived from real records. Nothing on this endpoint is
+// synthesised: if the database has no data for a bucket, the bucket reports 0
+// and the client shows an empty state rather than a plausible-looking number.
 const getDashboardAnalytics = async (req, res) => {
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const todayStart = dayStart(0);
+    const yesterdayStart = dayStart(1);
+    const weekStart = dayStart(6); // rolling 7 days, today included
+    const lastWeekStart = dayStart(13);
 
     const [
       totalLeads,
       todayLeads,
+      yesterdayLeads,
       enrolledLeads,
       courses,
       batches,
       recentLeads,
+      twoWeekLeads,
+      leadsByCourse,
     ] = await Promise.all([
       Lead.countDocuments(),
       Lead.countDocuments({ createdAt: { $gte: todayStart } }),
+      Lead.countDocuments({ createdAt: { $gte: yesterdayStart, $lt: todayStart } }),
       Lead.countDocuments({ status: 'Enrolled' }),
       Course.find(),
       Batch.find().populate('course', 'title'),
       Lead.find().populate('targetCourse', 'title').sort({ createdAt: -1 }).limit(8),
+      // Two weeks of leads power both the 7-day flow chart and the
+      // week-over-week comparison. One query instead of seven.
+      Lead.find({ createdAt: { $gte: lastWeekStart } }).select('createdAt status').lean(),
+      Lead.aggregate([
+        { $match: { targetCourse: { $ne: null } } },
+        { $group: { _id: '$targetCourse', count: { $sum: 1 } } },
+      ]),
     ]);
+
+    const leadCountByCourse = new Map(leadsByCourse.map((row) => [String(row._id), row.count]));
 
     // Calculate Active Batches
     const activeBatchesCount = batches.filter(b => b.status === 'Upcoming' || b.status === 'In Progress').length;
@@ -44,46 +75,66 @@ const getDashboardAnalytics = async (req, res) => {
     const contactedLeads = await Lead.countDocuments({ status: { $in: ['Contacted', 'Counseling Scheduled', 'Enrolled'] } });
     const scheduledLeads = await Lead.countDocuments({ status: { $in: ['Counseling Scheduled', 'Enrolled'] } });
 
+    // Only stages the database actually records. Page views are not tracked
+    // anywhere in this codebase, so a “Visits” bar would have to be invented.
     const funnelData = [
-      { stage: 'Landing Visits', count: totalLeads * 14 + 1250, fill: '#38bdf8' },
       { stage: 'Lead Enquiries', count: totalLeads, fill: '#0ea5e9' },
       { stage: 'Counselor Calls', count: contactedLeads, fill: '#6366f1' },
       { stage: 'Doubt & Interview', count: scheduledLeads, fill: '#8b5cf6' },
       { stage: 'Enrolled Students', count: enrolledLeads, fill: '#10b981' },
     ];
 
-    // Course Distribution (Donut)
-    const courseDistribution = [];
-    for (const c of courses) {
-      const leadCount = await Lead.countDocuments({ targetCourse: c._id });
-      courseDistribution.push({
-        name: c.title.includes('Data Science') ? 'Data Science + AI' : 'Cyber Security',
-        fullName: c.title,
-        value: leadCount || 1,
-        color: c.cardTheme === 'rose' ? '#f43f5e' : '#0ea5e9',
-      });
+    // Course distribution — the real programme title with its real lead count.
+    const courseDistribution = courses.map((c) => ({
+      name: c.title,
+      fullName: c.title,
+      value: leadCountByCourse.get(String(c._id)) || 0,
+      color: c.cardTheme === 'rose' ? '#f43f5e' : '#0ea5e9',
+    }));
+
+    // 7-day flow, bucketed from the real timestamps we just read. Keys are the
+    // local-midnight epoch of each day, so a lead and its bucket are always
+    // compared in the same timezone (an ISO string would drift by a day in
+    // negative UTC offsets).
+    const localDay = (value) => {
+      const d = new Date(value);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+    const flowDays = Array.from({ length: 7 }, (_, index) => dayStart(6 - index));
+    const weeklyFlow = flowDays.map((date) => ({
+      day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+      leads: 0,
+      enrollments: 0,
+    }));
+    const flowByDay = new Map(flowDays.map((date, index) => [date.getTime(), weeklyFlow[index]]));
+
+    for (const lead of twoWeekLeads) {
+      const bucket = flowByDay.get(localDay(lead.createdAt));
+      if (!bucket) continue;
+      bucket.leads += 1;
+      if (lead.status === 'Enrolled') bucket.enrollments += 1;
     }
 
-    // Weekly Lead Flow (for sparklines / charts)
-    const weeklyFlow = [
-      { day: 'Mon', leads: Math.max(2, Math.floor(todayLeads * 0.8) + 3), enrollments: 1 },
-      { day: 'Tue', leads: Math.max(3, Math.floor(todayLeads * 1.1) + 4), enrollments: 2 },
-      { day: 'Wed', leads: Math.max(1, Math.floor(todayLeads * 0.9) + 2), enrollments: 1 },
-      { day: 'Thu', leads: Math.max(4, Math.floor(todayLeads * 1.3) + 5), enrollments: 3 },
-      { day: 'Fri', leads: Math.max(3, Math.floor(todayLeads * 1.2) + 4), enrollments: 2 },
-      { day: 'Sat', leads: Math.max(5, Math.floor(todayLeads * 1.5) + 6), enrollments: 4 },
-      { day: 'Sun', leads: Math.max(todayLeads, 4), enrollments: 2 },
-    ];
+    const leadsThisWeek = weeklyFlow.reduce((sum, row) => sum + row.leads, 0);
+    const leadsLastWeek = twoWeekLeads.length - leadsThisWeek;
 
     return res.status(200).json({
       success: true,
       kpis: {
         totalLeadsToday: todayLeads,
+        totalLeadsYesterday: yesterdayLeads,
+        totalLeadsThisWeek: leadsThisWeek,
+        totalLeadsLastWeek: leadsLastWeek,
         totalLeadsAllTime: totalLeads,
         admissionsRate: `${admissionsRate}%`,
+        admissionsRateValue: Number(admissionsRate),
         activeBatches: activeBatchesCount,
         totalRevenuePipeline: `$${totalRevenue.toLocaleString()}`,
+        totalRevenueValue: totalRevenue,
         totalEnrolled: enrolledLeads,
+        monitoredCourses: courses.length,
       },
       funnelData,
       courseDistribution,

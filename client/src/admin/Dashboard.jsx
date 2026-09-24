@@ -4,11 +4,6 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
-  ArrowUpRight,
-  ArrowDownRight,
-  Clock,
-  Sparkles,
-  ExternalLink,
   ChevronRight,
   RefreshCw,
   ArrowRight,
@@ -23,8 +18,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
   CartesianGrid,
 } from 'recharts';
 import api from '../lib/api';
@@ -34,6 +27,7 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const fetchAnalytics = async () => {
     try {
@@ -41,9 +35,15 @@ export default function Dashboard() {
       const res = await api.get('/analytics/dashboard');
       if (res.data.success) {
         setData(res.data);
+        setFailed(false);
+      } else {
+        setFailed(true);
       }
     } catch (err) {
       console.error('Failed to load dashboard analytics:', err);
+      // Never fall back to sample figures: an admin must be able to trust that
+      // what is on screen came from the database.
+      setFailed(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -54,50 +54,65 @@ export default function Dashboard() {
     fetchAnalytics();
   }, []);
 
+  const kpis = data?.kpis || {};
+  const leadsTrend = dayOverDay(kpis.totalLeadsToday, kpis.totalLeadsYesterday);
+  const hasData = Boolean(data);
+
   const kpiList = [
     {
       title: 'Total Leads Today',
-      value: data?.kpis?.totalLeadsToday ?? 4,
-      subValue: `All time: ${data?.kpis?.totalLeadsAllTime ?? 10}`,
+      value: hasData ? kpis.totalLeadsToday ?? 0 : '—',
+      subValue: `All time: ${kpis.totalLeadsAllTime ?? 0}`,
       icon: Users,
-      trend: '+24.5%',
-      isPositive: true,
+      trend: leadsTrend?.label,
+      isPositive: leadsTrend?.isPositive,
       color: 'sky',
     },
     {
       title: 'Admissions Rate',
-      value: data?.kpis?.admissionsRate ?? '33.3%',
-      subValue: `${data?.kpis?.totalEnrolled ?? 3} confirmed students`,
+      value: hasData ? kpis.admissionsRate ?? '0.0%' : '—',
+      subValue: `${kpis.totalEnrolled ?? 0} of ${kpis.totalLeadsAllTime ?? 0} leads enrolled`,
       icon: TrendingUp,
-      trend: '+5.2%',
-      isPositive: true,
+      // A real period-over-period rate needs historical snapshots, which this
+      // database does not keep — so no change badge is shown at all.
+      trend: null,
+      isPositive: null,
       color: 'emerald',
     },
     {
       title: 'Active Cohorts',
-      value: data?.kpis?.activeBatches ?? 2,
-      subValue: 'DS & Cyber tracks',
+      value: hasData ? kpis.activeBatches ?? 0 : '—',
+      subValue: `${kpis.monitoredCourses ?? 0} programmes tracked`,
       icon: Calendar,
-      trend: '100% On Schedule',
-      isPositive: true,
+      trend: null,
+      isPositive: null,
       color: 'purple',
     },
     {
       title: 'Revenue Pipeline',
-      value: data?.kpis?.totalRevenuePipeline ?? '$9,495',
+      value: hasData ? kpis.totalRevenuePipeline ?? '$0' : '—',
       subValue: 'Enrolled tuition fees',
       icon: DollarSign,
-      trend: '+18.4%',
-      isPositive: true,
+      trend: null,
+      isPositive: null,
       color: 'rose',
     },
   ];
 
+  const funnel = data?.funnelData || [];
+  const donut = (data?.courseDistribution || []).filter((row) => row.value > 0);
   const funnelColors = ['#38bdf8', '#0ea5e9', '#6366f1', '#8b5cf6', '#10b981'];
 
   return (
     <div className="space-y-8 text-left">
-      
+
+      {failed && (
+        <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+          Live analytics could not be loaded from the server, so no figures are shown here. Nothing on
+          this page is sample data — use <span className="font-semibold">Refresh Telemetry</span> to try again.
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -153,9 +168,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.05] text-xs">
                   <span className="text-slate-400">{kpi.subValue}</span>
-                  <span className={`font-semibold flex items-center gap-0.5 ${kpi.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {kpi.trend}
-                  </span>
+                  {kpi.trend && (
+                    <span className={`font-semibold flex items-center gap-0.5 ${kpi.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {kpi.trend}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -166,26 +183,31 @@ export default function Dashboard() {
       {/* Visual Charts Grid: Lead Funnel & Course Distribution Donut */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Monthly Lead Conversion Funnel */}
+        {/* Lead Conversion Funnel — all-time, straight from the leads table */}
         <div className="lg:col-span-8 rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold font-heading text-white">
-                Monthly Lead Conversion Funnel
+                Lead Conversion Funnel
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">
-                Visitor to Enrolled Student drop-off velocity
+                Enquiry to Enrolled Student drop-off velocity
               </p>
             </div>
             <span className="text-[11px] px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-400/30 text-indigo-400 font-mono font-semibold">
-              Conversion: 3.2%
+              Conversion: {kpis.admissionsRate ?? '0.0%'}
             </span>
           </div>
 
           <div className="h-64 sm:h-72 w-full">
+            {funnel.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-xs text-slate-500">
+                No applications recorded yet — the funnel fills up as enquiries arrive.
+              </div>
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={data?.funnelData || defaultFunnel}
+                data={funnel}
                 layout="vertical"
                 margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
               >
@@ -196,12 +218,13 @@ export default function Dashboard() {
                   contentStyle={{ backgroundColor: '#070C17', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
                 />
                 <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-                  {(data?.funnelData || defaultFunnel).map((entry, index) => (
+                  {funnel.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={funnelColors[index % funnelColors.length]} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -212,15 +235,20 @@ export default function Dashboard() {
               Course Distribution
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Interest ratio: AI vs Cyber Security
+              Applications received per programme
             </p>
           </div>
 
           <div className="h-56 w-full flex items-center justify-center relative">
+            {donut.length === 0 ? (
+              <div className="text-center text-xs text-slate-500 px-6">
+                No applications have been linked to a programme yet.
+              </div>
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data?.courseDistribution || defaultDonut}
+                  data={donut}
                   cx="50%"
                   cy="50%"
                   innerRadius={55}
@@ -228,7 +256,7 @@ export default function Dashboard() {
                   paddingAngle={6}
                   dataKey="value"
                 >
-                  {(data?.courseDistribution || defaultDonut).map((entry, index) => (
+                  {(donut).map((entry, index) => (
                     <Cell key={`donut-${index}`} fill={entry.color || (index === 0 ? '#0ea5e9' : '#f43f5e')} />
                   ))}
                 </Pie>
@@ -237,25 +265,30 @@ export default function Dashboard() {
                 />
               </PieChart>
             </ResponsiveContainer>
+            )}
 
             {/* Inner Center Label */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-xs text-slate-400 font-medium">Active</span>
+              <span className="text-xs text-slate-400 font-medium">Leads</span>
               <span className="text-lg font-extrabold text-white font-heading">
-                {data?.kpis?.totalLeadsAllTime ?? 10}
+                {kpis.totalLeadsAllTime ?? 0}
               </span>
             </div>
           </div>
 
           {/* Legend */}
           <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-2">
-            {(data?.courseDistribution || defaultDonut).map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color || (idx === 0 ? '#0ea5e9' : '#f43f5e') }} />
-                  <span className="text-slate-300 font-medium">{item.name}</span>
+            {(data?.courseDistribution || []).map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color || (idx === 0 ? '#0ea5e9' : '#f43f5e'), opacity: item.value ? 1 : 0.35 }} />
+                  <span className={`truncate ${item.value ? 'text-slate-300' : 'text-slate-500'} font-medium`} title={item.fullName || item.name}>
+                    {item.name}
+                  </span>
                 </div>
-                <span className="text-white font-bold">{item.value} Leads</span>
+                <span className={`shrink-0 ${item.value ? 'text-white font-bold' : 'text-slate-500 font-medium'}`}>
+                  {item.value === 0 ? 'No leads yet' : `${item.value} ${item.value === 1 ? 'Lead' : 'Leads'}`}
+                </span>
               </div>
             ))}
           </div>
@@ -332,15 +365,17 @@ export default function Dashboard() {
   );
 }
 
-const defaultFunnel = [
-  { stage: 'Landing Visits', count: 1250 },
-  { stage: 'Lead Enquiries', count: 85 },
-  { stage: 'Counselor Calls', count: 62 },
-  { stage: 'Doubt & Interview', count: 34 },
-  { stage: 'Enrolled Students', count: 18 },
-];
-
-const defaultDonut = [
-  { name: 'Data Science + AI', value: 6, color: '#0ea5e9' },
-  { name: 'Cyber Security', value: 4, color: '#f43f5e' },
-];
+/**
+ * Day-over-day change for a count. Returns null when there is nothing to
+ * compare against, so the caller can leave the badge off instead of showing a
+ * percentage that was never measured.
+ */
+const dayOverDay = (today, yesterday) => {
+  if (typeof today !== 'number' || typeof yesterday !== 'number') return null;
+  if (yesterday === 0) return null;
+  const change = ((today - yesterday) / yesterday) * 100;
+  return {
+    label: `${change >= 0 ? '+' : ''}${change.toFixed(1)}% vs yesterday`,
+    isPositive: change >= 0,
+  };
+};

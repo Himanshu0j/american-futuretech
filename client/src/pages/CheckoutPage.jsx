@@ -41,7 +41,10 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState('');
   const [quote, setQuote] = useState(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
-  const [gatewayConfigured, setGatewayConfigured] = useState(true);
+  // Fail closed: until the server confirms a gateway is live, this page must never
+  // claim it is about to charge a card. `/api/settings` already carries the real
+  // status, so the correct value is normally known on the very first paint.
+  const [gatewayConfigured, setGatewayConfigured] = useState(() => settings?.payments?.configured === true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 'form' | 'verifying' | 'paid' | 'failed' | 'cancelled' | 'manual'
@@ -54,6 +57,15 @@ export default function CheckoutPage() {
     fetchCourses();
     window.scrollTo(0, 0);
   }, []);
+
+  // Keep every Stripe claim below tied to the admin's actual gateway toggle. The
+  // quote endpoint corrects this again, but this covers a settings response that
+  // lands after the first paint (e.g. a cold cache).
+  useEffect(() => {
+    if (typeof settings?.payments?.configured === 'boolean') {
+      setGatewayConfigured(settings.payments.configured);
+    }
+  }, [settings]);
 
   const fetchCourses = async () => {
     try {
@@ -251,9 +263,19 @@ export default function CheckoutPage() {
 
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-3">
-            <Lock className="w-3.5 h-3.5 text-[#4338CA]" />
-            <span>Payments secured by Stripe · PCI-DSS Level 1</span>
+          <div
+            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold mb-3 ${
+              gatewayConfigured
+                ? 'bg-[#EFE6D6] border-[#E5C275]/40 text-[#0B1220]'
+                : 'bg-amber-50 border-amber-300 text-amber-900'
+            }`}
+          >
+            <Lock className={`w-3.5 h-3.5 ${gatewayConfigured ? 'text-[#4338CA]' : 'text-amber-700'}`} />
+            <span>
+              {gatewayConfigured
+                ? 'Payments secured by Stripe · PCI-DSS Level 1'
+                : 'Secure request · No card charged on this page'}
+            </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-[#0B1220] mb-3">
             Secure Enrollment & <span className="highlight">Seat Reservation</span>
@@ -578,10 +600,13 @@ export default function CheckoutPage() {
                 <div className="flex items-start gap-3 p-4 rounded-xl border-2 border-[#0B1220] bg-slate-50">
                   <CreditCard className="w-5 h-5 text-[#4338CA] mt-0.5 shrink-0" />
                   <div>
-                    <div className="text-sm font-bold text-[#0B1220]">Card · Apple Pay · Google Pay</div>
+                    <div className="text-sm font-bold text-[#0B1220]">
+                      {gatewayConfigured ? 'Card · Apple Pay · Google Pay' : 'Secure Stripe payment link'}
+                    </div>
                     <p className="text-xs text-slate-600 leading-relaxed mt-1">
-                      You will be redirected to Stripe's secure hosted page to complete the payment. Your card details
-                      are entered on Stripe and are never seen or stored by American FutureTech.
+                      {gatewayConfigured
+                        ? "You will be redirected to Stripe's secure hosted page to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech."
+                        : 'We email you an encrypted Stripe payment link to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech.'}
                     </p>
                   </div>
                 </div>
@@ -684,11 +709,11 @@ export default function CheckoutPage() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Opening secure payment page…
+                      {gatewayConfigured ? 'Opening secure payment page…' : 'Submitting your request…'}
                     </>
                   ) : (
                     <>
-                      Continue to Secure Payment — ${finalAmount} USD
+                      {gatewayConfigured ? 'Continue to Secure Payment' : 'Request Secure Payment Link'} — ${finalAmount} USD
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -698,8 +723,9 @@ export default function CheckoutPage() {
                   <div className="flex items-start gap-2">
                     <Shield className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                     <span>
-                      Payment is processed by Stripe with 256-bit TLS and 3-D Secure. Your enrollment is confirmed
-                      automatically once the payment is verified.
+                      {gatewayConfigured
+                        ? 'Payment is processed by Stripe with 256-bit TLS and 3-D Secure. Your enrollment is confirmed automatically once the payment is verified.'
+                        : 'No card details are collected on this page. Your seat is confirmed once the emailed Stripe payment has been completed.'}
                     </span>
                   </div>
                   <div className="flex items-start gap-2">

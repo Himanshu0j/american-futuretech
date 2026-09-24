@@ -21,7 +21,10 @@
     "verify:jobs": "node scripts/verify-jobs-board.js",
     "verify:coupons": "node scripts/verify-coupons.js",
     "verify:students": "node scripts/verify-student-access.js",
-    "verify:db": "node scripts/verify-db.js"
+    "verify:analytics": "node scripts/verify-analytics-honesty.js",
+    "verify:db": "node scripts/verify-db.js",
+    "verify:live": "node scripts/verify-live-qa.js",
+    "audit:testdata": "node scripts/audit-test-data.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

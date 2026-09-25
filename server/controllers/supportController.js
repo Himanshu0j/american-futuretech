@@ -1,5 +1,6 @@
 const SupportTicket = require('../models/SupportTicket');
 const { searchRegex } = require('../utils/search');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Student: Create support ticket
 // @route   POST /api/support/tickets
@@ -38,7 +39,7 @@ const createTicket = async (req, res) => {
 
     return res.status(201).json({ success: true, ticket });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -50,7 +51,7 @@ const getMyTickets = async (req, res) => {
     const tickets = await SupportTicket.find({ student: req.user._id }).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, count: tickets.length, tickets });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -88,7 +89,7 @@ const replyToTicket = async (req, res) => {
 
     return res.status(200).json({ success: true, ticket });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -112,7 +113,7 @@ const getAllTicketsAdmin = async (req, res) => {
     const tickets = await SupportTicket.find(query).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, count: tickets.length, tickets });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -131,7 +132,7 @@ const updateTicketStatus = async (req, res) => {
     await ticket.save();
     return res.status(200).json({ success: true, ticket });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

@@ -1,6 +1,7 @@
 const SiteSettings = require('../models/SiteSettings');
 const AuditLog = require('../models/AuditLog');
 const { encryptSecret, decryptSecret, maskSecret } = require('../utils/secretVault');
+const { sendError } = require('../utils/apiError');
 const {
   getPaymentStatus,
   setRuntimeSecrets,
@@ -57,7 +58,7 @@ const getSiteSettings = async (req, res) => {
     // Gateway secrets are write-only: the browser never receives them.
     return res.status(200).json({ success: true, settings: stripGatewaySecrets(settings) });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -168,7 +169,7 @@ const updateSiteSettings = async (req, res) => {
         : null,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -181,7 +182,7 @@ const getAuditLogs = async (req, res) => {
     const logs = await AuditLog.find().sort({ createdAt: -1 }).limit(100);
     return res.status(200).json({ success: true, count: logs.length, logs });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -212,28 +213,47 @@ const isSafeImageUrl = (value) => {
   return /^(https?:\/\/|\/)[^\s"'<>]+$/i.test(url);
 };
 
-/** Normalise one override entry; returns null when the input is unusable. */
+const OVERRIDE_KEY_PATTERN = /^[A-Za-z0-9_\-:#>.]+$/;
+
+/**
+ * Normalise one override entry.
+ *
+ * Returns `{ entry }` when it can be stored, or `{ reason }` when it cannot. The
+ * reason travels back to the editor so the admin is told WHICH entry failed and
+ * WHY — previously a too-long key or value was dropped with nothing but an
+ * anonymous "N were rejected" count to go on.
+ */
 const normalizeEntry = (key, entry, kind) => {
-  if (!key || String(key).length > EDITOR_LIMITS.keyLength) return null;
-  if (!/^[A-Za-z0-9_\-:#>.]+$/.test(String(key))) return null;
+  const keyStr = String(key ?? '');
+  if (!keyStr) return { reason: 'the element key is empty' };
+  if (keyStr.length > EDITOR_LIMITS.keyLength) {
+    return { reason: `its key is ${keyStr.length} characters long, over the ${EDITOR_LIMITS.keyLength}-character limit` };
+  }
+  if (!OVERRIDE_KEY_PATTERN.test(keyStr)) {
+    return { reason: 'its key contains characters the editor cannot store' };
+  }
 
   const value = typeof entry === 'string' ? entry : entry?.value;
-  if (typeof value !== 'string') return null;
+  if (typeof value !== 'string') return { reason: 'no value was captured for it' };
 
   const trimmed = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
   if (kind === 'image') {
-    if (!isSafeImageUrl(trimmed)) return null;
+    if (!isSafeImageUrl(trimmed)) {
+      return { reason: `the image URL must start with https:// (or /) and stay under ${EDITOR_LIMITS.imageUrlLength} characters` };
+    }
   } else if (trimmed.length > EDITOR_LIMITS.textLength) {
-    return null;
+    return { reason: `the text is ${trimmed.length} characters long, over the ${EDITOR_LIMITS.textLength}-character limit` };
   }
 
   const original = typeof entry?.original === 'string' ? entry.original.slice(0, EDITOR_LIMITS.textLength) : '';
 
   return {
-    key: String(key),
-    value: trimmed,
-    original,
-    updatedAt: new Date(),
+    entry: {
+      key: keyStr,
+      value: trimmed,
+      original,
+      updatedAt: new Date(),
+    },
   };
 };
 
@@ -255,7 +275,7 @@ const getSiteEditorOverrides = async (req, res) => {
       images: settings?.imageOverrides?.[route] || {},
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -280,19 +300,28 @@ const saveSiteEditorOverrides = async (req, res) => {
     const routeText = { ...(textMap[route] || {}) };
     const routeImages = { ...(imageMap[route] || {}) };
 
-    const rejected = [];
+    const rejected = [];      // legacy: ["text.<key>", ...] — kept for older clients
+    const rejections = [];    // { kind, key, reason } — what the editor now reports
     let accepted = 0;
 
     for (const [key, entry] of Object.entries(text)) {
-      const normalized = normalizeEntry(key, entry, 'text');
-      if (!normalized) { rejected.push(`text.${key}`); continue; }
+      const { entry: normalized, reason } = normalizeEntry(key, entry, 'text');
+      if (!normalized) {
+        rejected.push(`text.${key}`);
+        rejections.push({ kind: 'text', key: String(key), reason });
+        continue;
+      }
       routeText[normalized.key] = { original: normalized.original, value: normalized.value, updatedAt: normalized.updatedAt };
       accepted += 1;
     }
 
     for (const [key, entry] of Object.entries(images)) {
-      const normalized = normalizeEntry(key, entry, 'image');
-      if (!normalized) { rejected.push(`image.${key}`); continue; }
+      const { entry: normalized, reason } = normalizeEntry(key, entry, 'image');
+      if (!normalized) {
+        rejected.push(`image.${key}`);
+        rejections.push({ kind: 'image', key: String(key), reason });
+        continue;
+      }
       routeImages[normalized.key] = { original: normalized.original, value: normalized.value, updatedAt: normalized.updatedAt };
       accepted += 1;
     }
@@ -339,9 +368,10 @@ const saveSiteEditorOverrides = async (req, res) => {
       images: routeImages,
       saved: accepted,
       rejected,
+      rejections,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -383,7 +413,7 @@ const resetSiteEditorRoute = async (req, res) => {
 
     return res.status(200).json({ success: true, route, text: {}, images: {}, removedText, removedImages });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -421,7 +451,7 @@ const getSiteEditorSummary = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -464,7 +494,7 @@ const getPaymentGatewayStatus = async (req, res) => {
       payments: getPaymentStatus(),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -587,7 +617,7 @@ const updatePaymentGateway = async (req, res) => {
       payments: getPaymentStatus(),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

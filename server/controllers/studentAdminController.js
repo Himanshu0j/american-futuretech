@@ -8,6 +8,7 @@ const Payment = require('../models/Payment');
 const Certificate = require('../models/Certificate');
 const AuditLog = require('../models/AuditLog');
 const { generateSecurePassword, validatePassword } = require('../utils/passwords');
+const { sendError } = require('../utils/apiError');
 
 /**
  * Admin → Enrolled Students.
@@ -187,7 +188,7 @@ const listStudents = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -226,7 +227,7 @@ const getStudentDetail = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -411,7 +412,7 @@ const revokeAccess = async (req, res) => {
 
     return res.status(200).json({ success: true, message: 'All course access revoked for this student.' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -439,7 +440,7 @@ const resetStudentAccess = async (req, res) => {
       message: 'New credentials generated. Share them securely — they are shown only once.',
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -468,7 +469,7 @@ const getAssignmentOptions = async (req, res) => {
       })),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

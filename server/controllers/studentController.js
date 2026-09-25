@@ -1,4 +1,5 @@
 const Batch = require('../models/Batch');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Get all confirmed students across batches
 // @route   GET /api/students
@@ -35,10 +36,7 @@ const getAllStudents = async (req, res) => {
       students: studentList,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -77,10 +75,7 @@ const updateStudentPayment = async (req, res) => {
       student,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 
@@ -148,10 +143,7 @@ const getStudentInvoice = async (req, res) => {
       invoice: invoiceData,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

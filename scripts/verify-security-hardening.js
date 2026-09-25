@@ -715,6 +715,83 @@ const run = async () => {
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════════════════
+    section('9. A 5xx answers with nothing internal in it');
+
+    // A real outage in local testing answered `connect ECONNREFUSED
+    // 127.0.0.1:27018` inside a 500 body: a host, a port and the driver's
+    // wording handed to anyone who triggers a failure. Both mappers own that
+    // now, so the whole server is covered rather than one controller at a time.
+    const { sendError } = require(path.join(__dirname, '..', 'server', 'utils', 'apiError'));
+    const errorHandler = require(path.join(__dirname, '..', 'server', 'middleware', 'errorHandler'));
+
+    const capture = () => {
+      const box = {};
+      const res = {
+        statusCode: 200,
+        status(code) { box.status = code; return this; },
+        json(body) { box.body = body; return this; },
+      };
+      return { box, res };
+    };
+
+    const mongoDown = Object.assign(new Error('connect ECONNREFUSED 127.0.0.1:27018'), {
+      name: 'MongoServerSelectionError',
+    });
+
+    const viaController = capture();
+    sendError(viaController.res, mongoDown);
+    check(
+      'A database outage is a plain 500, never the driver text',
+      viaController.box.status === 500
+        && viaController.box.body?.message === 'Internal Server Error'
+        && !/ECONNREFUSED|27018|mongo/i.test(JSON.stringify(viaController.box.body)),
+      JSON.stringify(viaController.box.body).slice(0, 80),
+    );
+
+    // The handler decides whether to attach a stack from NODE_ENV, and this
+    // call is in-process while the suite's own server runs in production.
+    const viaHandler = capture();
+    const savedEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    try {
+      errorHandler(mongoDown, {}, viaHandler.res, () => {});
+    } finally {
+      if (savedEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = savedEnv;
+    }
+    check(
+      'The global handler hides driver internals as well',
+      viaHandler.box.status === 500
+        && !/ECONNREFUSED|27018|node_modules/i.test(JSON.stringify(viaHandler.box.body))
+        && viaHandler.box.body?.stack === null,
+      JSON.stringify(viaHandler.box.body).slice(0, 80),
+    );
+
+    const badCast = Object.assign(
+      new Error('Cast to ObjectId failed for value "x" (type string) at path "targetCourse" for model "Lead"'),
+      { name: 'CastError', path: 'targetCourse' },
+    );
+    const viaCast = capture();
+    sendError(viaCast.res, badCast);
+    check(
+      'A CastError is a 400 VALIDATION_ERROR that names no model',
+      viaCast.box.status === 400
+        && viaCast.box.body?.code === 'VALIDATION_ERROR'
+        && !/mongoose|model|Cast to ObjectId|at path/i.test(JSON.stringify(viaCast.box.body)),
+      JSON.stringify(viaCast.box.body),
+    );
+
+    const dup = Object.assign(new Error('E11000 duplicate key error collection: aft.users index: email_1'), {
+      code: 11000,
+    });
+    const viaDup = capture();
+    sendError(viaDup.res, dup);
+    check(
+      'A duplicate key is a 409 that names no collection or index',
+      viaDup.box.status === 409 && !/E11000|collection|index/i.test(JSON.stringify(viaDup.box.body)),
+      JSON.stringify(viaDup.box.body).slice(0, 80),
+    );
+
     check('The server never logged a Stripe secret', !serverLog.includes(SECRET_KEY));
   } finally {
     await shutdown();

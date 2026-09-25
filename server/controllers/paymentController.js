@@ -13,6 +13,7 @@ const { generateSecurePassword } = require('../utils/passwords');
 const gateway = require('../utils/paymentGateway');
 const { isStripeConfigured, isWebhookConfigured, getPaymentStatus } = require('../config/payments');
 const { searchRegex } = require('../utils/search');
+const { sendError } = require('../utils/apiError');
 const {
   sendPaymentReceiptEmail,
   sendEnrollmentCredentialsEmail,
@@ -102,7 +103,7 @@ const quoteOrder = async (req, res) => {
       payments: getPaymentStatus(),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -237,7 +238,7 @@ const createCheckoutSession = async (req, res) => {
       message: 'Redirecting you to our secure Stripe payment page…',
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -541,7 +542,7 @@ const getCheckoutStatus = async (req, res) => {
       credentialsEmailSentTo: fresh.status === 'Paid' ? fresh.email : null,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -577,7 +578,7 @@ const getAllPayments = async (req, res) => {
       gateway: getPaymentStatus(),
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -589,7 +590,7 @@ const getMyPayments = async (req, res) => {
     const payments = await Payment.find({ student: req.user._id }).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, payments });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -617,7 +618,7 @@ const getInvoiceDetails = async (req, res) => {
 
     return res.status(200).json({ success: true, invoice: payment });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

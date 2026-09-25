@@ -170,6 +170,60 @@ const run = async () => {
     check('Rejected entries are not stored', Object.keys(stillThree.json?.text || {}).length === 3,
       `${Object.keys(stillThree.json?.text || {}).length} text entries`);
 
+    /*
+     * Regression — a refusal must name the entry AND say why.
+     *
+     * The editor used to report only "N were rejected". A key over the 90-char
+     * limit was therefore dropped with no way to tell which element on the page
+     * was the problem, which is exactly the kind of silent loss that makes an
+     * admin think the editor is broken.
+     */
+    const TIDY_ROUTE = '/faq';
+    const LONG_KEY = `div0>${'a'.repeat(95)}>span1#t0`;
+    const longKeyRes = await request('PUT', '/api/settings/site-editor', {
+      token,
+      body: { route: TIDY_ROUTE, text: { [LONG_KEY]: { original: 'Old heading', value: 'New heading' } } },
+    });
+    check('A key past the 90-character limit is rejected by name',
+      longKeyRes.status === 200 && (longKeyRes.json?.rejected || []).includes(`text.${LONG_KEY}`),
+      `${LONG_KEY.length} chars, rejected ${JSON.stringify(longKeyRes.json?.rejected)}`);
+    const longKeyReason = (longKeyRes.json?.rejections || []).find((r) => r.key === LONG_KEY);
+    check('The rejection explains that the key is too long',
+      longKeyReason?.kind === 'text' && /90/.test(longKeyReason?.reason || ''),
+      JSON.stringify(longKeyReason));
+
+    const GOOD_KEY = 'main0>section1>h2#t0';
+    const GOOD_VALUE = 'Cohort starts 6 October.';
+    const mixed = await request('PUT', '/api/settings/site-editor', {
+      token,
+      body: {
+        route: TIDY_ROUTE,
+        text: {
+          [GOOD_KEY]: { original: 'Frequently asked questions', value: GOOD_VALUE },
+          [LONG_KEY]: { original: 'Old heading', value: 'New heading' },
+        },
+        images: { 'main0>img0': { original: '', value: 'javascript:alert(1)' } },
+      },
+    });
+    check('A mixed batch still publishes the entries it can',
+      mixed.status === 200 && mixed.json?.saved === 1 && (mixed.json?.rejections || []).length === 2,
+      `saved ${mixed.json?.saved}, rejected ${JSON.stringify(mixed.json?.rejected)}`);
+    check('Every rejection names the entry and gives a reason',
+      (mixed.json?.rejections || []).every((r) => ['text', 'image'].includes(r.kind) && r.key && r.reason),
+      JSON.stringify(mixed.json?.rejections));
+    const imageReason = (mixed.json?.rejections || []).find((r) => r.kind === 'image');
+    check('The image rejection explains the URL rule',
+      /https/.test(imageReason?.reason || ''), JSON.stringify(imageReason));
+    const tidyRead = await request('GET', `/api/settings/site-editor?route=${encodeURIComponent(TIDY_ROUTE)}`);
+    check('The accepted entry from a mixed batch really is stored',
+      tidyRead.json?.text?.[GOOD_KEY]?.value === GOOD_VALUE && Object.keys(tidyRead.json?.images || {}).length === 0,
+      JSON.stringify(tidyRead.json?.text));
+    check('The legacy rejected list is still returned for older clients',
+      Array.isArray(mixed.json?.rejected) && mixed.json.rejected.length === 2,
+      JSON.stringify(mixed.json?.rejected));
+
+    await request('DELETE', `/api/settings/site-editor?route=${encodeURIComponent(TIDY_ROUTE)}`, { token });
+
     // Auth
     const unauthed = await request('PUT', '/api/settings/site-editor', {
       body: { route: ROUTE, text: { 'a#t0': { original: '', value: 'hacked' } } },

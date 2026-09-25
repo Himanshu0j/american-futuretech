@@ -14,6 +14,7 @@
     "verify:cms": "node scripts/verify-cms-settings.js",
     "verify:auth": "node scripts/verify-auth.js",
     "verify:editor": "node scripts/verify-site-editor.js",
+    "verify:editor:browser": "node scripts/verify-site-editor-browser.js",
     "verify:admin-fields": "node scripts/audit-admin-fields.js --strict",
     "verify:admin": "node scripts/verify-admin-crud.js",
     "rotate:admin": "node scripts/rotate-admin-credentials.js",

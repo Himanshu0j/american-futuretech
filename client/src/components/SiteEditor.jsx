@@ -11,17 +11,21 @@ import {
   clearStaged,
   collectImages,
   collectTextNodes,
+  EDITOR_LIMITS,
   getState,
   hasOverrides,
   isEditorUi,
   loadRoute,
   merged,
   pathKey,
+  pendingRoutes,
   stage as stageInStore,
   setSaved,
   stagedCount,
+  stagedRejections,
   subscribe,
   unstage,
+  unstageMany,
 } from '../lib/siteOverrides';
 
 /**
@@ -36,7 +40,55 @@ import {
  *   3. SiteOverridesApplier renders them for every visitor, not just for the editor
  *
  * Open it with ?edit=1 on any public page (the admin sidebar links here).
+ *
+ * Staged changes are drafts, not throwaway memory: they are kept per page in the
+ * browser so navigating away and back never loses them, and Publish always
+ * answers with what went live — or exactly which entry it refused and why.
  */
+
+/** Turn the server's `rejections` (or its older `rejected` strings) into reasons. */
+const normalizeRejections = (data) => {
+  if (Array.isArray(data?.rejections) && data.rejections.length) {
+    return data.rejections.map((r) => ({
+      kind: r.kind === 'image' ? 'image' : 'text',
+      key: String(r.key ?? ''),
+      reason: r.reason || 'the server rejected this entry',
+    }));
+  }
+  return (data?.rejected || []).map((label) => {
+    const [kind, ...rest] = String(label).split('.');
+    return {
+      kind: kind === 'image' ? 'image' : 'text',
+      key: rest.join('.'),
+      reason: 'the server rejected this entry',
+    };
+  });
+};
+
+const describeRejections = (rejections) => rejections
+  .map((r) => `${r.kind === 'image' ? 'Image' : 'Text'} “${r.key.slice(0, 46)}” — ${r.reason}`)
+  .join(' • ');
+
+/** Build the Publish result message; never returns an empty outcome. */
+const buildPublishStatus = (data, rejections, route) => {
+  const saved = Number(data?.saved) || 0;
+  if (rejections.length === 0) {
+    return {
+      type: 'success',
+      message: `${saved} change(s) published live on ${route} — every visitor sees them now.`,
+    };
+  }
+  if (saved === 0) {
+    return {
+      type: 'error',
+      message: `Nothing was published — all ${rejections.length} staged change(s) were rejected: ${describeRejections(rejections)}`,
+    };
+  }
+  return {
+    type: 'warn',
+    message: `${saved} change(s) published live on ${route}. ${rejections.length} stayed as a draft because the server refused them: ${describeRejections(rejections)}`,
+  };
+};
 
 export default function SiteEditor() {
   const [active, setActive] = useState(false);
@@ -85,11 +137,17 @@ export default function SiteEditor() {
       const key = pathKey(node);
       if (!key) return;
       const entry = current.text[key];
-      let original = originalsRef.current.get(`t:${key}`);
-      if (!original) {
-        original = entry?.original || value;
-        originalsRef.current.set(`t:${key}`, original);
-      }
+      /*
+       * The "original" must be the wording on screen RIGHT NOW.
+       *
+       * Caching the very first snapshot forever poisoned this: the page paints
+       * its coded default, /api/settings then swaps in the CMS headline, and the
+       * editor kept insisting the coded default was the original — so a
+       * published edit was compared against text that no longer existed on the
+       * page and never appeared for a visitor.
+       */
+      const original = entry?.original || value;
+      originalsRef.current.set(`t:${key}`, original);
       texts.push({
         key,
         original,
@@ -106,11 +164,9 @@ export default function SiteEditor() {
       if (!key) return;
       const entry = current.images[key];
       const src = img.getAttribute('src') || '';
-      let original = originalsRef.current.get(`i:${key}`);
-      if (!original) {
-        original = entry?.original || src;
-        originalsRef.current.set(`i:${key}`, original);
-      }
+      // Same rule as text: never let a stale first snapshot win over the DOM.
+      const original = entry?.original || src;
+      originalsRef.current.set(`i:${key}`, original);
       images.push({
         key,
         original,
@@ -179,6 +235,24 @@ export default function SiteEditor() {
     return () => clearTimeout(id);
   }, [active, tick, snapshot]);
 
+  // Arriving on a page that still holds a draft says so, instead of silently
+  // showing the staged text with no explanation of where it came from.
+  const arrivalRef = useRef({ path: null, announced: false });
+  useEffect(() => {
+    if (!active) return;
+    const count = stagedCount();
+    if (count === 0) {
+      arrivalRef.current = { path: route, announced: false };
+      return;
+    }
+    if (arrivalRef.current.path === route && arrivalRef.current.announced) return;
+    arrivalRef.current = { path: route, announced: true };
+    setStatus({
+      type: 'info',
+      message: `Restored ${count} unsaved draft change(s) on ${route}. They are staged only — press Publish to make them live.`,
+    });
+  }, [active, route, tick]);
+
   // Click-to-edit on any highlighted text / image.
   useEffect(() => {
     if (!active) return;
@@ -193,7 +267,8 @@ export default function SiteEditor() {
         setOpenEditor({
           kind: 'image',
           key,
-          original: originalsRef.current.get(`i:${key}`) || target.dataset.siteEditorOriginalSrc || target.getAttribute('src'),
+          original: entry?.original || target.dataset.siteEditorOriginalSrc
+            || originalsRef.current.get(`i:${key}`) || target.getAttribute('src') || '',
           value: entry?.value || target.getAttribute('src') || '',
         });
         return;
@@ -206,7 +281,9 @@ export default function SiteEditor() {
       setOpenEditor({
         kind: 'text',
         key,
-        original: originalsRef.current.get(`t:${key}`) || entry?.original || (textNode ? textNode.nodeValue.trim() : ''),
+        // What the admin is looking at is the truth, not a cached first snapshot.
+        original: entry?.original || (textNode ? textNode.nodeValue.trim() : '')
+          || originalsRef.current.get(`t:${key}`) || '',
         value: entry?.value || (textNode ? textNode.nodeValue.trim() : ''),
       });
     };
@@ -221,52 +298,85 @@ export default function SiteEditor() {
   };
 
   const publish = async () => {
-    if (pendingCount === 0) return;
+    if (saving) return;
+    const state = getState();
+    const stagedText = { ...state.staged.text };
+    const stagedImages = { ...state.staged.images };
+    const stagedKeys = [
+      ...Object.keys(stagedText).map((key) => ({ kind: 'text', key })),
+      ...Object.keys(stagedImages).map((key) => ({ kind: 'image', key })),
+    ];
+
+    // Publish must always answer. A disabled button used to hide a lost draft
+    // behind a dead click, so it now reports the (empty) outcome instead.
+    if (stagedKeys.length === 0) {
+      setStatus({
+        type: 'info',
+        message: `Nothing is staged on ${route} yet — click a text or an image on the page, change it, then press Publish.`,
+      });
+      return;
+    }
+
     setSaving(true);
     setStatus(null);
     try {
-      const state = getState();
       const res = await api.put('/settings/site-editor', {
         route: state.route,
-        text: state.staged.text,
-        images: state.staged.images,
+        text: stagedText,
+        images: stagedImages,
       });
-      if (res.data?.success) {
-        // Replace the store with the server's answer: this is what every visitor sees.
-        setSaved(state.route, res.data.text || {}, res.data.images || {});
-        applyCurrent();
-        snapshot();
+
+      if (!res.data?.success) {
         setStatus({
-          type: res.data.rejected?.length ? 'warn' : 'success',
-          message: res.data.rejected?.length
-            ? `${res.data.saved} change(s) saved. ${res.data.rejected.length} were rejected.`
-            : `${res.data.saved} change(s) published live on ${state.route} — visible to every visitor.`,
+          type: 'error',
+          message: res.data?.message || 'The server did not save your changes — nothing was published.',
         });
+        return;
       }
+
+      const rejections = normalizeRejections(res.data);
+      const refused = new Set(rejections.map((r) => `${r.kind}:${r.key}`));
+
+      // This is what every visitor sees now.
+      setSaved(state.route, res.data.text || {}, res.data.images || {});
+      // Accepted drafts are live, so only the refused ones stay staged — the
+      // admin can see them, fix them, and publish again.
+      unstageMany(stagedKeys.filter((entry) => !refused.has(`${entry.kind}:${entry.key}`)));
+      applyCurrent();
+      snapshot();
+      setStatus(buildPublishStatus(res.data, rejections, state.route));
     } catch (err) {
-      setStatus({ type: 'error', message: err.response?.data?.message || 'Could not save your changes.' });
+      setStatus({
+        type: 'error',
+        message: `${err.response?.data?.message || 'Could not reach the server, so nothing was published.'} Your draft is still here — press Publish again.`,
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const discard = () => {
+    const count = stagedCount();
     clearStaged();
     applyCurrent();
     snapshot();
-    setStatus({ type: 'success', message: 'Draft changes discarded.' });
+    setStatus({
+      type: 'success',
+      message: `${count} draft change(s) discarded on ${route}. Nothing was published.`,
+    });
   };
 
   const resetPage = async () => {
-    if (!window.confirm(`Remove every text/image change on ${route} and restore the original content?`)) return;
+    if (!window.confirm(`Remove every published change AND any draft on ${route}, and restore the original content?`)) return;
     setSaving(true);
     try {
+      clearStaged();
       await api.delete(`/settings/site-editor?route=${encodeURIComponent(route)}`);
       await loadRoute(route);
       originalsRef.current = new Map();
       applyCurrent();
       snapshot();
-      setStatus({ type: 'success', message: `${route} restored to the original content.` });
+      setStatus({ type: 'success', message: `${route} restored to the original content — drafts cleared too.` });
     } catch (err) {
       setStatus({ type: 'error', message: err.response?.data?.message || 'Reset failed.' });
     } finally {
@@ -303,6 +413,11 @@ export default function SiteEditor() {
   };
 
   if (!active) return null;
+
+  // Entries the server would refuse, spotted before Publish rather than reported
+  // afterwards as an anonymous count.
+  const preflight = stagedRejections();
+  const otherDraftPages = pendingRoutes().filter((r) => r !== route);
 
   const filteredTexts = discovered.texts.filter((t) => {
     const q = search.trim().toLowerCase();
@@ -451,7 +566,11 @@ export default function SiteEditor() {
                     >
                       <Eye className="w-3 h-3" /> {item.key.slice(0, 34)}
                     </button>
-                    {(item.overridden || item.staged) && (
+                    {item.key.length > EDITOR_LIMITS.keyLength ? (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 shrink-0" title={`This element's key is ${item.key.length} characters; the editor can only store ${EDITOR_LIMITS.keyLength}, so this one cannot be saved.`}>
+                        TOO LONG TO SAVE
+                      </span>
+                    ) : (item.overridden || item.staged) && (
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${item.staged ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
                         {item.staged ? 'DRAFT' : 'LIVE'}
                       </span>
@@ -499,15 +618,26 @@ export default function SiteEditor() {
               )}
             </div>
 
+            {pendingCount > 0 && preflight.length > 0 && (
+              <div className="px-4 py-2.5 text-[11px] flex items-start gap-2 border-t border-white/10 bg-rose-500/10 text-rose-200">
+                <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                <span>
+                  {preflight.length} staged change(s) cannot be stored and will be refused on Publish:{' '}
+                  {describeRejections(preflight)}
+                </span>
+              </div>
+            )}
+
             {status && (
               <div
                 className={`px-4 py-2.5 text-[11px] flex items-start gap-2 border-t border-white/10 ${
                   status.type === 'error' ? 'bg-rose-500/10 text-rose-200'
                     : status.type === 'warn' ? 'bg-amber-500/10 text-amber-200'
-                      : 'bg-emerald-500/10 text-emerald-200'
+                      : status.type === 'info' ? 'bg-indigo-500/10 text-indigo-200'
+                        : 'bg-emerald-500/10 text-emerald-200'
                 }`}
               >
-                {status.type === 'error' ? <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" /> : <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" />}
+                {status.type === 'success' ? <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />}
                 <span>{status.message}</span>
               </div>
             )}
@@ -516,7 +646,8 @@ export default function SiteEditor() {
               <button
                 type="button"
                 onClick={publish}
-                disabled={saving || pendingCount === 0}
+                disabled={saving}
+                title="Publish every staged change on this page"
                 className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-1.5"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
@@ -541,7 +672,14 @@ export default function SiteEditor() {
             </div>
 
             <p className="px-4 pb-3 text-[10px] text-slate-500 leading-relaxed">
-              Click any outlined text or image on the page to edit it. Changes are staged first — press Publish and every visitor sees them.
+              Click any outlined text or image on the page to edit it. Changes are staged as a draft first and
+              kept per page — you can leave this page and come back without losing them. Press Publish and every
+              visitor sees them.
+              {otherDraftPages.length > 0 && (
+                <span className="block mt-1 text-amber-400/80">
+                  Unpublished drafts are also waiting on: {otherDraftPages.join(', ')}
+                </span>
+              )}
             </p>
           </div>
         )}

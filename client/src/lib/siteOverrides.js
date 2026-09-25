@@ -126,7 +126,9 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
   const touchedImgs = new Set(); // <img> elements this pass has already handled
   const resolvedImageKeys = new Set();
 
-  collectTextNodes().forEach((node) => {
+  const allTextNodes = collectTextNodes();
+
+  allTextNodes.forEach((node) => {
     const key = pathKey(node);
     const entry = key ? text[key] : null;
     if (!entry || typeof entry.value !== 'string') return;
@@ -144,9 +146,35 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
       }
       return;
     }
-    if (hasOriginal && trimmed !== entry.original) return;   // layout drifted — leave defaults
+
+    if (hasOriginal && trimmed !== entry.original) {
+      /*
+       * The wording at this position is not the wording this edit replaced.
+       *
+       * This used to be the end of the story: the coded default stayed on screen
+       * and a perfectly good published edit was skipped in silence — which the
+       * admin experiences as "my change never appears". The mismatch is usually
+       * not a layout change at all, but wording that arrives later from the CMS:
+       * a heading paints its coded default, then /api/settings swaps in the
+       * admin's saved headline, and the edit is compared against the wrong text.
+       *
+       * So the skip now only stands when the wording this edit replaced really is
+       * somewhere else on the page (the orphan rescue below relocates it there).
+       * Otherwise the edit is applied by position: the admin's intent for this
+       * element is explicit, and a page-level Reset undoes anything that lands
+       * wrong.
+       */
+      const rescuedElsewhere = allTextNodes.some((other) => (
+        other !== node && !touchedNodes.has(other) && other.nodeValue
+        && other.nodeValue.trim() === entry.original
+      ));
+      if (rescuedElsewhere) return;
+    }
+
     node.nodeValue = current.replace(trimmed, entry.value);
-    applied.set(key, { kind: 'text', node, original: hasOriginal ? entry.original : trimmed });
+    // `trimmed` (what was actually on screen) is the honest value to restore on
+    // a revert, whether or not it matched the stored original.
+    applied.set(key, { kind: 'text', node, original: trimmed });
   });
 
   /*
@@ -172,7 +200,7 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
   });
 
   if (orphans.length) {
-    const candidates = collectTextNodes().filter((node) => !touchedNodes.has(node));
+    const candidates = allTextNodes.filter((node) => !touchedNodes.has(node));
     orphans.forEach((key) => {
       const entry = text[key];
       const wanted = entry.original.trim();
@@ -187,7 +215,9 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
     });
   }
 
-  collectImages().forEach((img) => {
+  const allImages = collectImages();
+
+  allImages.forEach((img) => {
     const key = pathKey(img);
     const entry = key ? images[key] : null;
     if (!entry || typeof entry.value !== 'string') return;
@@ -206,7 +236,17 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
 
     const currentSrc = img.getAttribute('src') || '';
     const matchesOriginal = currentSrc === original || currentSrc.endsWith(original.replace(/^\.?\//, ''));
-    if ((!entry.original || matchesOriginal) && original) {
+    // Same reasoning as the text pass: only skip when the image this edit
+    // replaced genuinely lives somewhere else on the page.
+    if (entry.original && !matchesOriginal) {
+      const rescuedElsewhere = allImages.some((other) => {
+        if (other === img || touchedImgs.has(other)) return false;
+        const src = other.getAttribute('src') || '';
+        return src === entry.original || src.endsWith(entry.original.replace(/^\.?\//, ''));
+      });
+      if (rescuedElsewhere) return;
+    }
+    if (original) {
       img.setAttribute('src', entry.value);
       applied.set(key, { kind: 'image', node: img, original });
     }
@@ -227,7 +267,7 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
   });
 
   if (orphanImages.length) {
-    const candidates = collectImages().filter((img) => !touchedImgs.has(img));
+    const candidates = allImages.filter((img) => !touchedImgs.has(img));
     orphanImages.forEach((key) => {
       const entry = images[key];
       const wanted = entry.original;
@@ -258,6 +298,12 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
 /* ── Tiny store ─────────────────────────────────────────────────────────────
    `saved`  = what the server holds (live for every visitor)
    `staged` = unsaved draft changes made in the editor (preview only)
+
+   Drafts are held PER ROUTE and mirrored into sessionStorage. They used to live
+   only in memory, so the applier's background refetch (loadRoute → setSaved) or
+   a plain navigation wiped them: an admin staged a change, clicked another page,
+   came back and found "0 draft" with a dead Publish button. A draft now survives
+   navigation and refetches — until the admin Publishes or Discards it.
 ---------------------------------------------------------------------------*/
 const state = {
   route: null,
@@ -266,6 +312,97 @@ const state = {
   loading: false,
   loaded: false,
   error: null,
+};
+
+const DRAFT_KEY = 'aft_site_editor_drafts_v1';
+const MAX_DRAFT_ROUTES = 40;
+
+/** route -> { text, images, at } for every page holding an unpublished draft. */
+const stagedByRoute = new Map();
+let persistTimer = null;
+
+const readDraftStore = () => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.sessionStorage.getItem(DRAFT_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (err) {
+    return {};
+  }
+};
+
+const writeDraftStore = () => {
+  if (typeof window === 'undefined') return;
+  try {
+    const all = {};
+    stagedByRoute.forEach((bucket, route) => {
+      const text = bucket.text || {};
+      const images = bucket.images || {};
+      if (Object.keys(text).length === 0 && Object.keys(images).length === 0) return;
+      all[route] = { text, images, at: bucket.at || Date.now() };
+    });
+
+    const routes = Object.keys(all);
+    if (routes.length > MAX_DRAFT_ROUTES) {
+      routes
+        .sort((a, b) => (all[a].at || 0) - (all[b].at || 0))
+        .slice(0, routes.length - MAX_DRAFT_ROUTES)
+        .forEach((old) => { delete all[old]; stagedByRoute.delete(old); });
+    }
+
+    if (Object.keys(all).length === 0) window.sessionStorage.removeItem(DRAFT_KEY);
+    else window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(all));
+  } catch (err) {
+    /* private mode or quota — drafts still work in memory for this page view */
+  }
+};
+
+/* Staging on every keystroke would hit storage dozens of times a second; a draft
+   only has to be durable, not instant. */
+const schedulePersist = () => {
+  if (typeof window === 'undefined') return;
+  if (persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => { persistTimer = null; writeDraftStore(); }, 250);
+};
+
+/** The drafts this route already holds in memory (or in the browser session). */
+const heldDrafts = (route) => {
+  if (!route) return { text: {}, images: {} };
+  const held = stagedByRoute.get(route);
+  if (held) return { text: held.text || {}, images: held.images || {} };
+
+  const entry = readDraftStore()[route];
+  if (!entry) return { text: {}, images: {} };
+  const bucket = {
+    text: entry.text && typeof entry.text === 'object' ? entry.text : {},
+    images: entry.images && typeof entry.images === 'object' ? entry.images : {},
+    at: entry.at || Date.now(),
+  };
+  if (Object.keys(bucket.text).length === 0 && Object.keys(bucket.images).length === 0) {
+    return { text: {}, images: {} };
+  }
+  stagedByRoute.set(route, bucket);
+  return { text: bucket.text, images: bucket.images };
+};
+
+/** Mirror what is staged for the current route back into the map + storage. */
+const syncStaged = () => {
+  const route = state.route;
+  if (!route) return;
+  const isEmpty = Object.keys(state.staged.text).length === 0
+    && Object.keys(state.staged.images).length === 0;
+  if (isEmpty) {
+    stagedByRoute.delete(route);
+  } else {
+    const held = stagedByRoute.get(route);
+    stagedByRoute.set(route, {
+      text: state.staged.text,
+      images: state.staged.images,
+      at: held?.at || Date.now(),
+    });
+  }
+  schedulePersist();
 };
 
 /* ── Local warm start ───────────────────────────────────────────────────────
@@ -325,14 +462,20 @@ const readCachedRoute = (route) => {
 };
 
 /**
- * Load this route's last known overrides into the store WITHOUT the network, so
- * the caller can apply them before the browser paints. Returns true when there
- * was something cached.
+ * Warm start for one route WITHOUT the network, so the caller can apply the last
+ * known overrides before the browser paints. Returns true when there was
+ * something to put on the page: a cached live override, or a restored draft.
+ *
+ * A route's own unpublished draft is reloaded here as well — coming back to a
+ * page must never cost the admin work they have not published yet.
  */
 export const hydrateRoute = (route) => {
   const cached = route ? readCachedRoute(route) : null;
   state.route = route || null;
-  state.staged = { text: {}, images: {} };
+  state.staged = heldDrafts(state.route);
+
+  const draftCount = Object.keys(state.staged.text).length + Object.keys(state.staged.images).length;
+
   if (cached) {
     state.saved = { text: cached.text, images: cached.images };
     state.loaded = true;
@@ -340,7 +483,7 @@ export const hydrateRoute = (route) => {
     state.error = null;
     return true;
   }
-  return false;
+  return draftCount > 0;
 };
 
 const listeners = new Set();
@@ -372,17 +515,23 @@ export const applyCurrent = () => {
 };
 
 export const setRoute = (route) => {
-  if (state.route === route) return;
-  state.route = route;
-  state.staged = { text: {}, images: {} };
+  const next = route || null;
+  if (state.route === next) return;
+  state.route = next;
+  // Switching pages is not a discard: bring back whatever this page was holding.
+  state.staged = heldDrafts(next);
   state.loaded = false;
   emit();
 };
 
 export const setSaved = (route, text = {}, images = {}) => {
-  state.route = route;
+  if (!route) return;
+  /*
+   * Deliberately leaves state.staged alone. This runs after every background
+   * refetch, and resetting staged here was precisely why an unpublished edit
+   * vanished while the admin was still working on it.
+   */
   state.saved = { text: text || {}, images: images || {} };
-  state.staged = { text: {}, images: {} };
   state.loading = false;
   state.loaded = true;
   state.error = null;
@@ -394,16 +543,27 @@ export const loadRoute = async (route) => {
   setRoute(route);
   state.loading = true;
   state.error = null;
+  emit();
   try {
     const res = await api.get(`/settings/site-editor?route=${encodeURIComponent(route)}`);
     if (res.data?.success) {
-      setSaved(route, res.data.text, res.data.images);
-      return { text: res.data.text || {}, images: res.data.images || {} };
+      const text = res.data.text || {};
+      const images = res.data.images || {};
+      if (state.route === route) {
+        setSaved(route, text, images);
+      } else {
+        // A slow response for a page the admin has already left: refresh that
+        // page's warm start without dragging the editor back to it.
+        writeCache(route, text, images);
+      }
+      return { text, images };
     }
   } catch (err) {
-    state.loading = false;
-    state.error = err.response?.data?.message || err.message;
-    emit();
+    if (state.route === route) {
+      state.loading = false;
+      state.error = err.response?.data?.message || err.message;
+      emit();
+    }
   }
   return { text: {}, images: {} };
 };
@@ -412,6 +572,7 @@ export const stage = (kind, key, entry) => {
   if (!key) return;
   const bucket = kind === 'image' ? 'images' : 'text';
   state.staged = { ...state.staged, [bucket]: { ...state.staged[bucket], [key]: entry } };
+  syncStaged();
   emit();
 };
 
@@ -421,13 +582,97 @@ export const unstage = (kind, key) => {
   const next = { ...state.staged[bucket] };
   delete next[key];
   state.staged = { ...state.staged, [bucket]: next };
+  syncStaged();
+  emit();
+};
+
+/** Drop several staged entries at once — used to clear everything the server accepted. */
+export const unstageMany = (entries = []) => {
+  if (!entries.length) return;
+  const text = { ...state.staged.text };
+  const images = { ...state.staged.images };
+  entries.forEach(({ kind, key }) => {
+    if (kind === 'image') delete images[key];
+    else delete text[key];
+  });
+  state.staged = { text, images };
+  syncStaged();
   emit();
 };
 
 export const clearStaged = () => {
   state.staged = { text: {}, images: {} };
+  syncStaged();
   emit();
 };
 
 export const stagedCount = () =>
   Object.keys(state.staged.text).length + Object.keys(state.staged.images).length;
+
+/** Every page that still holds an unpublished draft (including other pages). */
+export const pendingRoutes = () => {
+  const stored = readDraftStore();
+  const routes = new Set([...Object.keys(stored), ...stagedByRoute.keys()]);
+  return Array.from(routes).filter((route) => {
+    const bucket = stagedByRoute.get(route) || stored[route];
+    if (!bucket) return false;
+    return Object.keys(bucket.text || {}).length > 0 || Object.keys(bucket.images || {}).length > 0;
+  });
+};
+
+/* ── Pre-flight validation ──────────────────────────────────────────────────
+   The server refuses an entry whose key is longer than 90 characters or whose
+   text passes 600, and used to report only "N were rejected". The same rules are
+   checked here so the editor can name the offending element and say why BEFORE
+   Publish — and so Publish can explain itself if one still slips through.
+---------------------------------------------------------------------------*/
+export const EDITOR_LIMITS = {
+  keyLength: 90,
+  textLength: 600,
+  imageUrlLength: 1000,
+};
+
+const KEY_PATTERN = /^[A-Za-z0-9_\-:#>.]+$/;
+
+const isStorableImageUrl = (value) => {
+  const url = String(value || '').trim();
+  if (!url || url.length > EDITOR_LIMITS.imageUrlLength) return false;
+  return /^(https?:\/\/|\/)[^\s"'<>]+$/i.test(url);
+};
+
+/** Why this entry cannot be stored — null when it is fine. */
+export const explainRejection = (kind, key, entry) => {
+  const keyStr = String(key ?? '');
+  if (!keyStr) return 'this element could not be given a stable key — reload the page and try again';
+  if (keyStr.length > EDITOR_LIMITS.keyLength) {
+    return `its key is ${keyStr.length} characters long and the editor can only store ${EDITOR_LIMITS.keyLength}`;
+  }
+  if (!KEY_PATTERN.test(keyStr)) return 'its key contains characters the editor cannot store';
+
+  const value = typeof entry === 'string' ? entry : entry?.value;
+  if (typeof value !== 'string') return 'no value was captured for it';
+
+  const trimmed = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+  if (kind === 'image') {
+    if (!isStorableImageUrl(trimmed)) {
+      return `the image URL must start with https:// (or /) and stay under ${EDITOR_LIMITS.imageUrlLength} characters`;
+    }
+  } else if (trimmed.length > EDITOR_LIMITS.textLength) {
+    return `the text is ${trimmed.length} characters long and the limit is ${EDITOR_LIMITS.textLength}`;
+  }
+  return null;
+};
+
+/** Every staged entry on this page the server would refuse, with the reason. */
+export const stagedRejections = () => {
+  const out = [];
+  const inspect = (kind, bucket) => {
+    Object.entries(bucket || {}).forEach(([key, entry]) => {
+      const reason = explainRejection(kind, key, entry);
+      if (reason) out.push({ kind, key, reason });
+    });
+  };
+  inspect('text', state.staged.text);
+  inspect('image', state.staged.images);
+  return out;
+};

@@ -1,6 +1,7 @@
 const Lead = require('../models/Lead');
 const Batch = require('../models/Batch');
 const Course = require('../models/Course');
+const { sendError } = require('../utils/apiError');
 
 /**
  * Midnight on the day `daysAgo` before today.
@@ -150,10 +151,7 @@ const getDashboardAnalytics = async (req, res) => {
       })),
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, error);
   }
 };
 

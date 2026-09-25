@@ -574,7 +574,7 @@ const updateProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 

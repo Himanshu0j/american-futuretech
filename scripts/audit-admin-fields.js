@@ -18,7 +18,15 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const MODEL = path.join(ROOT, 'server/models/SiteSettings.js');
+// Settings live in more than one model on purpose: marketing copy belongs to
+// SiteSettings, LMS behaviour to LmsSetting. A key declared in ANY of them is
+// persisted, so scan them all before calling a field dead.
+const MODELS = [
+  path.join(ROOT, 'server/models/SiteSettings.js'),
+  path.join(ROOT, 'server/models/LmsSetting.js'),
+];
+const MODEL = MODELS[0];
+const MODEL_LABELS = MODELS.map((p) => path.basename(p, '.js'));
 const ADMIN_DIR = path.join(ROOT, 'client/src/admin');
 const CLIENT_SRC = path.join(ROOT, 'client/src');
 
@@ -38,7 +46,6 @@ const walk = (dir, out = []) => {
 
 // ── 1. Every identifier declared anywhere in the settings schema ────────────
 const modelSrc = read(MODEL);
-const modelBody = modelSrc.slice(0, modelSrc.indexOf('module.exports'));
 // Anchor on the MAIN settings schema — `new mongoose.Schema(` alone also matches
 // the small sub-schemas declared above it.
 const schemaStart = modelSrc.indexOf('const SiteSettingsSchema = new mongoose.Schema(');
@@ -48,9 +55,18 @@ const schemaBlock = modelSrc.slice(
 );
 // Fields may live in the main schema or in one of the sub-schemas declared above
 // it (PedagogySchema, SisterCompanySchema, …), so scan the whole model file.
-const schemaKeys = new Set(
-  [...modelBody.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)].map((m) => m[1]),
-);
+// Each key is remembered with the model that declares it, so the report can
+// point at the right form when a key is genuinely absent everywhere.
+const schemaKeys = new Set();
+const schemaOwner = new Map();
+for (const modelPath of MODELS) {
+  if (!fs.existsSync(modelPath)) continue;
+  const body = read(modelPath).split('module.exports')[0];
+  for (const m of body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)) {
+    schemaKeys.add(m[1]);
+    if (!schemaOwner.has(m[1])) schemaOwner.set(m[1], path.basename(modelPath, '.js'));
+  }
+}
 
 // ── 2. Every field the admin reads/writes on `settings` ─────────────────────
 // Array/Object built-ins such as `settings.leadership.length` are not schema paths.
@@ -84,7 +100,7 @@ for (const entry of [...seen.values()].sort((a, b) => a.id.localeCompare(b.id)))
   findings.push({
     kind: 'missing-in-schema',
     field: entry.id,
-    detail: `“${entry.key}” is not declared in SiteSettings — Mongoose will drop it silently`,
+    detail: `“${entry.key}” is not declared in ${MODEL_LABELS.join(' or ')} — Mongoose will drop it silently`,
     files: [...entry.files].slice(0, 3),
   });
 }
@@ -193,8 +209,8 @@ console.log(
 );
 if (process.argv.includes('--debug')) console.log('top-level blocks:', topLevelKeys.join(', '), '\n');
 
-if (!findings.length) {
-  console.log('✅ Every admin field exists in the schema and every identity field is read by the site.');
+if (!findings.length) {      console.log('✅ Every admin field exists in the schema and every identity field is read by the site.');
+      console.log(`   settings models scanned: ${MODEL_LABELS.join(', ')}`);
 } else {
   if (byKind['missing-in-schema']) {
     console.log(`\n❌ ADMIN FIELDS THE DATABASE SILENTLY DROPS (${byKind['missing-in-schema'].length}):`);

@@ -8,6 +8,7 @@ const {
   completeLesson,
   submitQuiz,
   getMyCertificates,
+  getMyAnnouncements,
   verifyCertificate,
 } = require('../controllers/lmsController');
 const { protect } = require('../middleware/auth');
@@ -23,5 +24,6 @@ router.get('/lessons/:lessonId', protect, getLessonDetails);
 router.post('/lessons/:lessonId/complete', protect, completeLesson);
 router.post('/quizzes/:quizId/submit', protect, submitQuiz);
 router.get('/certificates', protect, getMyCertificates);
+router.get('/announcements', protect, getMyAnnouncements);
 
 module.exports = router;

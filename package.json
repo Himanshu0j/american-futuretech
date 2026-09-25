@@ -23,6 +23,7 @@
     "verify:students": "node scripts/verify-student-access.js",
     "verify:analytics": "node scripts/verify-analytics-honesty.js",
     "verify:credentials": "node scripts/verify-credential-guard.js",
+    "verify:lms": "node scripts/verify-lms-admin.js",
     "verify:security": "node scripts/verify-security-hardening.js",
     "verify:rbac": "node scripts/verify-rbac-matrix.js",
     "verify:db": "node scripts/verify-db.js",

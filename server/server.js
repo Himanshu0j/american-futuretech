@@ -120,6 +120,8 @@ app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/admin/lms', require('./routes/lmsAdminRoutes'));
+app.use('/api/admin/certificates', require('./routes/certificateAdminRoutes'));
 
 // Unknown API routes answer in the API's own shape.
 //

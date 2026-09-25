@@ -63,6 +63,16 @@ const ALL_PERMISSIONS = [
   'STUDENTS_EDIT',
   'STUDENTS_DELETE',
 
+  // LMS / Academy control centre
+  'LMS_VIEW',
+  'LMS_CONTENT_EDIT',
+  'LMS_QUIZ_EDIT',
+  'LMS_ENROLL_EDIT',
+  'LMS_PROGRESS_EDIT',
+  'LMS_CERTIFICATE_ISSUE',
+  'LMS_CERTIFICATE_REVOKE',
+  'LMS_COMMS_EDIT',
+
   // Admissions Leads CRM
   'LEADS_VIEW',
   'LEADS_EDIT',
@@ -195,6 +205,20 @@ const PERMISSION_MODULES = [
       { id: 'STUDENTS_VIEW', label: 'View Students' },
       { id: 'STUDENTS_EDIT', label: 'Edit Students' },
       { id: 'STUDENTS_DELETE', label: 'Remove Students' },
+    ],
+  },
+  {
+    id: 'lms',
+    label: 'LMS / Academy Control',
+    permissions: [
+      { id: 'LMS_VIEW', label: 'View the LMS control centre' },
+      { id: 'LMS_CONTENT_EDIT', label: 'Author lessons, videos & resources' },
+      { id: 'LMS_QUIZ_EDIT', label: 'Build quizzes & review attempts' },
+      { id: 'LMS_ENROLL_EDIT', label: 'Enroll / unenroll students & batches' },
+      { id: 'LMS_PROGRESS_EDIT', label: 'Reset or force lesson progress' },
+      { id: 'LMS_CERTIFICATE_ISSUE', label: 'Issue certificates manually' },
+      { id: 'LMS_CERTIFICATE_REVOKE', label: 'Revoke certificates' },
+      { id: 'LMS_COMMS_EDIT', label: 'Send announcements & reply to tickets' },
     ],
   },
   {

@@ -192,6 +192,14 @@ const buildRoutes = (fx) => {
     ['admin-website-editor', '/admin/website-editor'],
     ['admin-guide', '/admin/guide'],
     ['admin-users', '/admin/users'],
+    ['admin-lms', '/admin/lms'],
+    ['admin-lms-curriculum', '/admin/lms/curriculum'],
+    ['admin-lms-quizzes', '/admin/lms/quizzes'],
+    ['admin-lms-enrollments', '/admin/lms/enrollments'],
+    ['admin-lms-progress', '/admin/lms/progress'],
+    ['admin-lms-certificates', '/admin/lms/certificates'],
+    ['admin-lms-communications', '/admin/lms/communications'],
+    ['admin-lms-settings', '/admin/lms/settings'],
   ];
 
   const keep = (list) => list.filter(([, route]) => route);

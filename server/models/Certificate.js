@@ -57,6 +57,21 @@ const CertificateSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // Revocation is recorded on the document (not by deleting it) so the public
+  // registry can answer honestly: "issued, then withdrawn" instead of 404ing
+  // and leaving a printed certificate unexplainable.
+  revokedAt: {
+    type: Date,
+    default: null,
+  },
+  revokedBy: {
+    type: String,
+    default: '',
+  },
+  revokedReason: {
+    type: String,
+    default: '',
+  },
 }, {
   timestamps: true,
 });

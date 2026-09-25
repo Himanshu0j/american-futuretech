@@ -376,7 +376,7 @@ export default function LessonPlayer() {
                     : 'text-slate-400 hover:text-slate-700'
                 }`}
               >
-                Lab Resources ({activeLesson?.resources?.length || 2})
+                Lab Resources ({activeLesson?.resources?.length || 0})
               </button>
             </div>
 
@@ -396,33 +396,40 @@ export default function LessonPlayer() {
               </div>
             ) : (
               <div className="space-y-3">
-                {(activeLesson?.resources || [
-                  { title: 'Lecture Slides & Architecture Diagram (PDF)', fileType: 'PDF', fileSize: '2.1 MB', url: '/brochures/American_FutureTech_Sample_Lecture_Notes.pdf' },
-                  { title: 'Jupyter Lab Starter Notebook (.ipynb)', fileType: 'CODE', fileSize: '0.4 MB', url: 'https://github.com/american-futuretech' }
-                ]).map((res, i) => (
-                  <div
-                    key={i}
-                    className="p-5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-4 shadow-xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#4338CA] flex items-center justify-center shrink-0">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[#0B1220]">{res.title}</div>
-                        <div className="text-[10px] text-slate-500">{res.fileType} • {res.fileSize}</div>
-                      </div>
-                    </div>
-                    <a
-                      href={res.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="py-2 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Download
-                    </a>
+                {!activeLesson?.resources?.length ? (
+                  <div className="p-6 rounded-2xl bg-white border border-dashed border-slate-300 text-center">
+                    <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                    <p className="text-xs font-bold text-[#0B1220]">No resources attached to this lesson</p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Your instructor has not added slides or starter files for this lesson yet.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  activeLesson.resources.map((res, i) => (
+                    <div
+                      key={res._id || i}
+                      className="p-5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-4 shadow-xs"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#4338CA] flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-[#0B1220]">{res.title}</div>
+                          <div className="text-[10px] text-slate-500">{res.fileType} • {res.fileSize}</div>
+                        </div>
+                      </div>
+                      <a
+                        href={res.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Download
+                      </a>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>

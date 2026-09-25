@@ -78,6 +78,16 @@ const WebsiteEditor = lazy(() => import('./admin/WebsiteEditor'));
 const StaffRBAC = lazy(() => import('./admin/StaffRBAC'));
 const AdminGuide = lazy(() => import('./admin/AdminGuide'));
 
+// Academy / LMS control centre
+const LmsDashboard = lazy(() => import('./admin/lms/LmsDashboard'));
+const CurriculumBuilder = lazy(() => import('./admin/lms/CurriculumBuilder'));
+const AssessmentsManager = lazy(() => import('./admin/lms/AssessmentsManager'));
+const EnrollmentsManager = lazy(() => import('./admin/lms/EnrollmentsManager'));
+const ProgressTracker = lazy(() => import('./admin/lms/ProgressTracker'));
+const CertificatesManager = lazy(() => import('./admin/lms/CertificatesManager'));
+const LmsCommunications = lazy(() => import('./admin/lms/LmsCommunications'));
+const LmsSettings = lazy(() => import('./admin/lms/LmsSettings'));
+
 /**
  * Real maintenance gate for the admin's "Maintenance mode" switch.
  * Visitors see this screen; /admin and /student keep working so staff can turn it back off.
@@ -371,6 +381,16 @@ export default function App() {
                 <Route path="website-editor" element={<WebsiteEditor />} />
                 <Route path="guide" element={<AdminGuide />} />
                 <Route path="users" element={<StaffRBAC />} />
+
+                {/* Academy / LMS control centre */}
+                <Route path="lms" element={<LmsDashboard />} />
+                <Route path="lms/curriculum" element={<CurriculumBuilder />} />
+                <Route path="lms/quizzes" element={<AssessmentsManager />} />
+                <Route path="lms/enrollments" element={<EnrollmentsManager />} />
+                <Route path="lms/progress" element={<ProgressTracker />} />
+                <Route path="lms/certificates" element={<CertificatesManager />} />
+                <Route path="lms/communications" element={<LmsCommunications />} />
+                <Route path="lms/settings" element={<LmsSettings />} />
               </Route>
 
               {/* Universal Fallback */}

@@ -23,6 +23,12 @@ import {
   PencilLine,
   TicketPercent,
   PanelBottom,
+  ListChecks,
+  UserPlus,
+  TrendingUp,
+  Award,
+  Megaphone,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import useAutoFieldLabels from '../hooks/useAutoFieldLabels';
@@ -47,6 +53,20 @@ export default function AdminLayout() {
     { name: 'Curriculum & Courses CMS', path: '/admin/courses', icon: BookOpen, permission: 'COURSES_VIEW' },
     { name: 'Batches & Urgency', path: '/admin/batches', icon: Calendar, permission: 'PROGRAMS_VIEW' },
     { name: 'Enrolled Students', path: '/admin/students', icon: GraduationCap, permission: 'STUDENTS_VIEW' },
+
+    // ── Academy / LMS control centre ────────────────────────────────────────
+    // Everything that runs the student portal lives behind this group. Each
+    // entry accepts any of its listed permissions (LMS_* first, with the legacy
+    // STUDENTS_* / COURSES_* / SETTINGS_* ids as a fallback), so a staff account
+    // granted before the LMS permissions existed keeps its menu.
+    { name: 'LMS Overview', path: '/admin/lms', icon: LayoutDashboard, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS', exact: true },
+    { name: 'Curriculum Builder', path: '/admin/lms/curriculum', icon: BookOpen, permission: ['LMS_VIEW', 'COURSES_VIEW'], section: 'Academy / LMS' },
+    { name: 'Assessments & Quizzes', path: '/admin/lms/quizzes', icon: ListChecks, permission: ['LMS_VIEW', 'COURSES_VIEW'], section: 'Academy / LMS' },
+    { name: 'Enrollments & Access', path: '/admin/lms/enrollments', icon: UserPlus, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS' },
+    { name: 'Progress & Completion', path: '/admin/lms/progress', icon: TrendingUp, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS' },
+    { name: 'Certificates', path: '/admin/lms/certificates', icon: Award, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS' },
+    { name: 'Communications', path: '/admin/lms/communications', icon: Megaphone, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS' },
+    { name: 'LMS Settings', path: '/admin/lms/settings', icon: SlidersHorizontal, permission: ['LMS_VIEW', 'SETTINGS_VIEW'], section: 'Academy / LMS' },
     { name: 'Tuition & Billing Ledger', path: '/admin/payments', icon: CreditCard, permission: 'SETTINGS_VIEW' },
     { name: 'Coupons & Promotions', path: '/admin/coupons', icon: TicketPercent, permission: 'COUPONS_VIEW' },
     { name: 'Partner Job Board', path: '/admin/jobs', icon: Briefcase, permission: 'JOBS_VIEW' },
@@ -70,9 +90,15 @@ export default function AdminLayout() {
     if (isSuperAdmin) return true;
     if (item.superAdminOnly) return false;
     if (!item.permission) return true;
-    if (userPermissions.includes(item.permission)) return true;
-    return (PERMISSION_FALLBACKS[item.permission] || []).some((perm) => userPermissions.includes(perm));
+
+    const required = Array.isArray(item.permission) ? item.permission : [item.permission];
+    if (required.some((perm) => userPermissions.includes(perm))) return true;
+    return required.some((perm) =>
+      (PERMISSION_FALLBACKS[perm] || []).some((fallback) => userPermissions.includes(fallback))
+    );
   };
+
+  const visibleNav = navItems.filter(hasItemAccess);
 
   const handleLogout = () => {
     logout();
@@ -166,27 +192,36 @@ export default function AdminLayout() {
 
         {/* Nav Links */}
         <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            if (!hasItemAccess(item)) return null;
-
+          {visibleNav.map((item, index) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.path);
+            // `/admin/lms` is a prefix of every LMS sub-page, so the overview
+            // entry matches exactly while the rest match by prefix.
+            const isActive = item.exact
+              ? location.pathname === item.path
+              : location.pathname.startsWith(item.path);
+            const showSection = Boolean(item.section) && item.section !== visibleNav[index - 1]?.section;
 
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group ${
-                  isActive
-                    ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-indigo-400 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
-                } ${collapsed ? 'justify-center' : ''}`}
-                title={collapsed ? item.name : undefined}
-              >
-                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
+              <React.Fragment key={item.path}>
+                {showSection && !collapsed && (
+                  <div className="px-3.5 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-200">
+                    {item.section}
+                  </div>
+                )}
+                <Link
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group ${
+                    isActive
+                      ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-indigo-400 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
+                  } ${collapsed ? 'justify-center' : ''}`}
+                  title={collapsed ? item.name : undefined}
+                >
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                  {!collapsed && <span>{item.name}</span>}
+                </Link>
+              </React.Fragment>
             );
           })}
         </nav>

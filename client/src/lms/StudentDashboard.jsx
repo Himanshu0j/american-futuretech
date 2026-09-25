@@ -5,11 +5,24 @@ import axios from 'axios';
 
 export default function StudentDashboard() {
   const [data, setData] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboard();
+    fetchAnnouncements();
   }, []);
+
+  // Notices the admin published from Admin → Academy / LMS → Communications.
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await axios.get('/api/lms/announcements');
+      setAnnouncements(res.data?.announcements || []);
+    } catch (err) {
+      // A missing notice board must never block the dashboard.
+      setAnnouncements([]);
+    }
+  };
 
   const fetchDashboard = async () => {
     try {
@@ -68,7 +81,9 @@ export default function StudentDashboard() {
             Welcome to your <span className="highlight">Learning Space</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-200 mt-2 max-w-xl leading-relaxed">
-            Pick up where you left off, review recorded masterclasses, or prepare for your upcoming module assessment.
+            {/* Editable in Admin → LMS Settings → Welcome message. */}
+            {data?.lms?.welcomeMessage ||
+              'Pick up where you left off, review recorded masterclasses, or prepare for your upcoming module assessment.'}
           </p>
         </div>
 
@@ -210,6 +225,34 @@ export default function StudentDashboard() {
                 >
                   Verify
                 </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notice Board — announcements published by the admin */}
+      {announcements.length > 0 && (
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <h3 className="text-base font-heading font-bold text-[#0B1220] mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#4338CA]" />
+            Notice Board
+          </h3>
+          <div className="space-y-3">
+            {announcements.map((item) => (
+              <div key={item._id} className="p-4 rounded-xl bg-[#F7F7F5] border border-slate-200">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-bold text-[#0B1220]">{item.title}</span>
+                  {item.pinned && (
+                    <span className="px-2 py-0.5 rounded-full bg-[#E5C275]/30 text-[#0B1220] text-[10px] font-bold">
+                      Pinned
+                    </span>
+                  )}
+                  <span className="text-[10px] text-slate-500">
+                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}
+                  </span>
+                </div>
+                {item.body && <p className="text-[11px] text-slate-600 mt-1 whitespace-pre-wrap">{item.body}</p>}
               </div>
             ))}
           </div>

@@ -7,6 +7,8 @@ const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const QuizAttempt = require('../models/QuizAttempt');
 const Certificate = require('../models/Certificate');
+const Announcement = require('../models/Announcement');
+const LmsSetting = require('../models/LmsSetting');
 
 // @desc    Get student dashboard summary
 // @route   GET /api/lms/dashboard
@@ -26,6 +28,9 @@ const getStudentDashboard = async (req, res) => {
 
     const certificates = await Certificate.find({ student: studentId });
     const attempts = await QuizAttempt.find({ student: studentId }).sort({ createdAt: -1 }).limit(5);
+
+    // Admin → LMS Settings wording, so the dashboard greeting is editable without code.
+    const settings = await LmsSetting.findOne();
 
     // Calculate overall statistics
     const totalEnrolled = enrollments.length;
@@ -55,6 +60,9 @@ const getStudentDashboard = async (req, res) => {
       }),
       recentCertificates: certificates,
       recentQuizAttempts: attempts,
+      lms: {
+        welcomeMessage: settings?.welcomeMessage || '',
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -353,14 +361,51 @@ const getMyCertificates = async (req, res) => {
   }
 };
 
+// @desc    Announcements the signed-in student should see
+// @route   GET /api/lms/announcements
+// @access  Private (Student)
+const getMyAnnouncements = async (req, res) => {
+  try {
+    const setting = await LmsSetting.findOne();
+    if (setting && setting.showAnnouncementsInLms === false) {
+      return res.status(200).json({ success: true, count: 0, announcements: [] });
+    }
+
+    // Targeted notices only reach the students they were meant for.
+    const enrollments = await Enrollment.find({ student: req.user._id }).select('course batch').lean();
+    const courseIds = enrollments.map((row) => row.course).filter(Boolean);
+    const batchIds = enrollments.map((row) => row.batch).filter(Boolean);
+
+    const announcements = await Announcement.find({
+      isPublished: true,
+      $or: [
+        { audience: 'All Students' },
+        { audience: 'Course', course: { $in: courseIds } },
+        { audience: 'Batch', batch: { $in: batchIds } },
+      ],
+    })
+      .sort({ pinned: -1, createdAt: -1 })
+      .limit(20)
+      .lean();
+
+    return res.status(200).json({ success: true, count: announcements.length, announcements });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Verify certificate publicly
 // @route   GET /api/lms/certificate/:certificateId
 // @access  Public
 const verifyCertificate = async (req, res) => {
   try {
     const { certificateId } = req.params;
+    // The holder's email is deliberately NOT selected: this endpoint is public,
+    // and a certificate is proof of a course, never a reason to publish a
+    // student's contact details. `studentName` on the certificate already
+    // carries the name this registry needs to display.
     const cert = await Certificate.findOne({ certificateId: certificateId.toUpperCase() })
-      .populate('student', 'name email avatar')
+      .populate('student', 'name avatar')
       .populate('course', 'title duration category');
 
     if (!cert) {
@@ -374,13 +419,17 @@ const verifyCertificate = async (req, res) => {
     // render it as a conferred credential. The flag lives on the document (see
     // models/Certificate.js), so it survives any future redesign of this page.
     const isSample = cert.isSample === true;
+    const isRevoked = Boolean(cert.revokedAt);
 
     return res.status(200).json({
       success: true,
       sample: isSample,
+      revoked: isRevoked,
       notice: isSample
         ? 'Sample credential record kept for demonstration. It is not evidence of a conferred qualification.'
-        : null,
+        : isRevoked
+          ? 'This credential has been withdrawn by American FutureTech and is no longer valid.'
+          : null,
       certificate: cert,
     });
   } catch (error) {
@@ -396,5 +445,6 @@ module.exports = {
   completeLesson,
   submitQuiz,
   getMyCertificates,
+  getMyAnnouncements,
   verifyCertificate,
 };

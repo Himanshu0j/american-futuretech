@@ -156,6 +156,50 @@ const clickFirstEditableText = async (page) => {
   );
 };
 
+/**
+ * Open the editor for the page headline.
+ *
+ * The homepage headline is CMS-backed: the page paints its coded default first
+ * and /api/settings then swaps the CMS wording in, which React renders as a NEW
+ * h1 node. A single click dispatched inside that window can land on the node
+ * that is about to be replaced, so the panel never opens — the local stack is
+ * fast enough to hide that, production (with a real network hop) is not. So
+ * re-query the headline on every attempt and retry the click.
+ */
+const openHeadlineEditor = async (page) => {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const handle = await page.evaluateHandle(() => document.querySelector('h1'));
+    const target = handle.asElement();
+    if (target) {
+      try { await target.scrollIntoView(); } catch (e) { /* detached */ }
+      try { await target.click(); } catch (e) { /* overlay or detached node */ }
+      await sleep(400);
+      const opened = await page
+        .$eval(EDIT_ROOT, (root) => /Stage change/.test(root.innerText))
+        .catch(() => false);
+      if (opened) return true;
+      // The overlay swallowed the real click — a dispatched event still reaches
+      // the editor's document-level capture listener.
+      await page.evaluate(
+        (el) => el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })),
+        target,
+      );
+    }
+    try {
+      await page.waitForFunction(
+        (rootSel) => {
+          const root = document.querySelector(rootSel);
+          return Boolean(root) && /Stage change/.test(root.innerText);
+        },
+        { timeout: 8000 },
+        EDIT_ROOT,
+      );
+      return true;
+    } catch (e) { /* headline may have been re-rendered — try again */ }
+  }
+  throw new Error('could not open the editor for the CMS-driven headline');
+};
+
 /** Type a value into the editor's open textarea through React's own onChange. */
 const setEditorText = async (page, value) => page.evaluate((rootSel, text) => {
   const root = document.querySelector(rootSel);
@@ -299,7 +343,7 @@ const run = async () => {
         const root = document.querySelector(rootSel);
         return Boolean(root) && /published live/.test(root.innerText);
       },
-      { timeout: 20000 },
+      { timeout: 30000 },
       EDIT_ROOT,
     );
     const published = await readEditor(page);
@@ -312,7 +356,7 @@ const run = async () => {
     await visitor.reload({ waitUntil: 'domcontentloaded' });
     await visitor.waitForFunction(
       (m) => document.body.innerText.includes(m),
-      { timeout: 20000 },
+      { timeout: 30000 },
       MARKER,
     );
     check('A visitor now sees the published text', true);
@@ -333,7 +377,7 @@ const run = async () => {
         const root = document.querySelector(rootSel);
         return Boolean(root) && /Nothing was published/.test(root.innerText);
       },
-      { timeout: 20000 },
+      { timeout: 30000 },
       EDIT_ROOT,
     );
     const refused = await readEditor(page);
@@ -356,7 +400,7 @@ const run = async () => {
     await visitor.goto(`${BASE}${EDIT_PAGE}`, { waitUntil: 'domcontentloaded' });
     await visitor.waitForFunction(
       (m) => !document.body.innerText.includes(m),
-      { timeout: 20000 },
+      { timeout: 30000 },
       MARKER,
     );
     check('The page is back to its original content for visitors', true);
@@ -394,14 +438,7 @@ const run = async () => {
     const liveHeadline = await racePage.evaluate(() => document.querySelector('h1').textContent.trim());
     console.log(`  \u2139\uFE0F  headline: first paint "${earlyHeadline.slice(0, 30)}…" → cms "${liveHeadline.slice(0, 30)}…"`);
 
-    await racePage.evaluate(() => {
-      document.querySelector('h1').dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-    });
-    await racePage.waitForFunction(
-      (rootSel) => /Stage change/.test(document.querySelector(rootSel).innerText),
-      { timeout: 10000 },
-      EDIT_ROOT,
-    );
+    await openHeadlineEditor(racePage);
     const raceCard = await racePage.evaluate((rootSel) => document.querySelector(rootSel).innerText, EDIT_ROOT);
     const capturedOriginal = ((raceCard.match(/Original: (.*)/) || [])[1] || '').trim();
     check('The editor captures the wording on screen, not a stale first render',
@@ -420,7 +457,7 @@ const run = async () => {
     await clickEditorButton(racePage, '^Publish');
     await racePage.waitForFunction(
       (rootSel) => /published live/.test(document.querySelector(rootSel).innerText),
-      { timeout: 20000 },
+      { timeout: 30000 },
       EDIT_ROOT,
     );
 
@@ -428,7 +465,7 @@ const run = async () => {
     await raceVisitor.goto(`${BASE}${EDIT_PAGE}`, { waitUntil: 'domcontentloaded' });
     await raceVisitor.waitForFunction(
       (expected) => (document.querySelector('h1')?.textContent || '').trim().startsWith(expected),
-      { timeout: 20000 },
+      { timeout: 30000 },
       'Masters',
     );
     const visitorHeadline = await raceVisitor.evaluate(() => document.querySelector('h1').textContent.trim());
@@ -458,7 +495,7 @@ const run = async () => {
     await poisonedVisitor.goto(`${BASE}${EDIT_PAGE}`, { waitUntil: 'domcontentloaded' });
     await poisonedVisitor.waitForFunction(
       (expected) => (document.querySelector('h1')?.textContent || '').trim().startsWith(expected),
-      { timeout: 20000 },
+      { timeout: 30000 },
       'Masters',
     );
     const poisonedHeadline = await poisonedVisitor.evaluate(() => document.querySelector('h1').textContent.trim());

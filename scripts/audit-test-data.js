@@ -14,10 +14,20 @@
  * documents that matched one of the narrow markers above.
  *
  * Usage:
- *   npm run audit:testdata                       # uses MONGODB_URI from the env
- *   MONGODB_URI="mongodb+srv://..." npm run audit:testdata
- *   npm run audit:testdata -- --clean            # remove the listed leftovers
- *   npm run audit:testdata -- --clean-orphans     # remove unreachable child rows
+ *   npm run audit:testdata                          # audit whatever MONGODB_URI resolves to
+ *   MONGODB_URI="mongodb+srv://..." npm run audit:testdata -- --production
+ *   MONGODB_URI="mongodb+srv://..." npm run audit:testdata -- --clean
+ *   MONGODB_URI="mongodb+srv://..." npm run audit:testdata -- --clean-orphans
+ *
+ * A local run once quietly defaulted to a loopback database and printed a clean
+ * result that read like production was clean. Two things prevent that now:
+ *
+ *   1. Every run prints the exact host, database and where the URI came from,
+ *      and says out loud that a loopback result proves nothing about production.
+ *   2. `--production` refuses to run at all unless MONGODB_URI is set and points
+ *      somewhere other than loopback, so a production audit cannot silently
+ *      become an empty local-database audit. It also refuses --clean, because
+ *      removing rows is a decision for a human, never for a production sweep.
  *
  * Credentials and free-text notes are the one thing this script will not print,
  * so it stays safe to run against production. The connection string is masked.
@@ -30,9 +40,44 @@ const path = require('path');
 const serverModules = path.join(__dirname, '..', 'server', 'node_modules');
 const mongoose = require(path.join(serverModules, 'mongoose'));
 
+// Capture the real environment BEFORE dotenv: after the config call the two are
+// indistinguishable, and "came from the shell" is the difference between an
+// intentional production audit and a developer's local .env file.
+const ENV_URI = process.env.MONGODB_URI || process.env.MONGO_URI || '';
 require(path.join(serverModules, 'dotenv')).config({ path: path.join(__dirname, '..', 'server', '.env') });
+const DOTENV_URI = ENV_URI ? '' : process.env.MONGODB_URI || process.env.MONGO_URI || '';
 
-const URI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27018/american_futuretech';
+const LOCAL_FALLBACK = 'mongodb://127.0.0.1:27018/american_futuretech';
+const URI = ENV_URI || DOTENV_URI || LOCAL_FALLBACK;
+const URI_SOURCE = ENV_URI
+  ? 'MONGODB_URI in the environment'
+  : DOTENV_URI
+    ? 'server/.env (a local file — NOT proof of a production target)'
+    : 'built-in local default (no URI was configured anywhere)';
+
+/** Loopback targets cannot tell us anything about production. */
+const isLocalUri = (uri) =>
+  /(^|\/\/)(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|host\.docker\.internal)(:\d+)?(\/|$)/i.test(uri);
+
+const dbNameFrom = (uri) => {
+  try {
+    return decodeURIComponent(new URL(uri).pathname.replace(/^\//, '')) || '(driver default)';
+  } catch (error) {
+    return '(unparseable URI)';
+  }
+};
+
+const hostFrom = (uri) => {
+  try {
+    const parsed = new URL(uri);
+    return parsed.host || parsed.hostname || '(unknown host)';
+  } catch (error) {
+    return '(unparseable URI)';
+  }
+};
+
+const TARGET_IS_LOCAL = isLocalUri(URI);
+const PRODUCTION = process.argv.includes('--production') || process.argv.includes('--prod');
 
 const CLEAN_HEADING = '\x1b[1m\x1b[33m';
 const CLEAN_RESET = '\x1b[0m';
@@ -66,6 +111,41 @@ const SINGLETON_COLLECTIONS = new Set(['sitesettings', 'systemconfigs', 'systems
 
 const CLEAN = process.argv.includes('--clean');
 const CLEAN_ORPHANS = process.argv.includes('--clean-orphans');
+
+/**
+ * A production audit must be aimed at production on purpose. Refusing here —
+ * before connecting — is the whole point: a clean report from a loopback
+ * database is the kind of result that gets quoted as "production is clean".
+ */
+const assertProductionTarget = () => {
+  if (!PRODUCTION) return;
+
+  if (!ENV_URI) {
+    console.log('\n❌ PRODUCTION AUDIT REFUSED — MONGODB_URI is not set in the environment.\n');
+    console.log(`   Resolved target was: ${dbNameFrom(URI)} on ${hostFrom(URI)}`);
+    console.log(`   Which came from:     ${URI_SOURCE}`);
+    console.log('\n   Run it explicitly against the production cluster:\n');
+    console.log('     MONGODB_URI="mongodb+srv://..." npm run audit:testdata -- --production\n');
+    console.log('   A loopback database cannot be reported as a production audit.');
+    process.exit(1);
+  }
+
+  if (TARGET_IS_LOCAL) {
+    console.log('\n❌ PRODUCTION AUDIT REFUSED — MONGODB_URI points at a local database.\n');
+    console.log(`   Target: ${dbNameFrom(URI)} on ${hostFrom(URI)}`);
+    console.log('\n   Point MONGODB_URI at the production cluster, or drop --production');
+    console.log('   to audit this local database knowingly.\n');
+    process.exit(1);
+  }
+
+  if (CLEAN || CLEAN_ORPHANS) {
+    console.log('\n❌ PRODUCTION AUDIT IS READ-ONLY — refusing --clean/--clean-orphans.\n');
+    console.log('   Deleting production records is a human decision, not an audit side effect.');
+    console.log('   Review the report, then remove the rows you recognise as test data');
+    console.log('   through the admin panel.\n');
+    process.exit(1);
+  }
+};
 
 /**
  * Child collections and the parent they must point at. A row here whose parent
@@ -123,7 +203,23 @@ const label = (doc) =>
   doc.email || doc.title || doc.code || doc.batchCode || doc.name || doc.question || '';
 
 const run = async () => {
-  console.log(`\nTest-data audit against ${URI.replace(/:\/\/[^@]*@/, '://***@')}\n`);
+  assertProductionTarget();
+
+  const rule = '─'.repeat(72);
+  console.log(`\n${rule}\nAUDIT TARGET\n${rule}`);
+  console.log(`  kind       ${PRODUCTION ? 'PRODUCTION (--production)' : 'not asserted as production'}`);
+  console.log(`  reachable  ${TARGET_IS_LOCAL ? 'LOCAL machine (loopback)' : 'REMOTE host'}`);
+  console.log(`  host       ${hostFrom(URI)}`);
+  console.log(`  database   ${dbNameFrom(URI)}`);
+  console.log(`  uri source ${URI_SOURCE}`);
+  console.log(`  connection ${URI.replace(/:\/\/[^@]*@/, '://***@')}`);
+  console.log(rule);
+  if (TARGET_IS_LOCAL) {
+    console.log('⚠  This is a LOCAL database. A clean result below says NOTHING about');
+    console.log('   production — pass --production with a production MONGODB_URI for that.');
+  }
+  console.log('');
+
   await mongoose.connect(URI, { serverSelectionTimeoutMS: 20000 });
   const db = mongoose.connection.db;
 
@@ -131,8 +227,10 @@ const run = async () => {
   let totalFlagged = 0;
   const flagged = [];
 
+  const collectionCounts = new Map();
   for (const name of collections) {
     const docs = await db.collection(name).find({}).limit(1000).toArray();
+    collectionCounts.set(name, docs.length);
     const hits = docs.filter(looksLikeTestData);
     const mark = hits.length ? `⚠  ${hits.length} flagged` : 'ok';
     console.log(`  ${name.padEnd(22)} ${String(docs.length).padStart(4)} docs   ${mark}`);
@@ -143,7 +241,20 @@ const run = async () => {
     totalFlagged += hits.length;
   }
 
-  console.log(`\n${totalFlagged === 0 ? '✅ No test data found.' : `⚠  ${totalFlagged} record(s) flagged for review.`}`);
+  const scanned = collections.reduce((sum, name) => sum + (collectionCounts.get(name) || 0), 0);
+  const scope = PRODUCTION
+    ? `PRODUCTION database "${dbNameFrom(URI)}" on ${hostFrom(URI)}`
+    : TARGET_IS_LOCAL
+      ? `LOCAL database "${dbNameFrom(URI)}" — NOT a production audit`
+      : `database "${dbNameFrom(URI)}" on ${hostFrom(URI)} (not asserted as production)`;
+  console.log(
+    `\n${totalFlagged === 0 ? '✅ No test data found in' : `⚠  ${totalFlagged} record(s) flagged in`} ${scope}.`
+  );
+  if (scanned === 0 && !PRODUCTION) {
+    console.log('   Note: this database holds no documents at all. An empty local database is');
+    console.log('   never evidence that production is clean.');
+  }
+  console.log(`   (scanned ${scanned} document(s) across ${collections.length} collection(s))`);
 
   // ── Referential integrity ────────────────────────────────────────────────
   const orphans = await findOrphans(db);

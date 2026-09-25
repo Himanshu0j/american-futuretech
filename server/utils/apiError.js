@@ -44,8 +44,31 @@ const sendError = (res, error, fallback = 'Request could not be processed.') => 
     console.error(`[API Error] ${status}:`, error?.stack || error?.message || error);
     return res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
+
+  // A CastError's own message names the mongoose model and the schema path
+  // (`Cast to ObjectId failed for value "x" (type string) at path "targetCourse"
+  // for model "Lead"`), which tells a stranger what our collections look like.
+  // The path is the caller's own field name, so that much is safe to echo.
+  if (error?.name === 'CastError') {
+    return res.status(400).json({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: `Invalid ${error.path || 'value'}.`,
+    });
+  }
+
+  // A duplicate-key error carries the collection and index names the same way.
+  if (error?.code === 11000) {
+    return res.status(409).json({
+      success: false,
+      code: 'DUPLICATE',
+      message: 'That value is already in use.',
+    });
+  }
+
   const body = { success: false, message: error?.message || fallback };
   if (error?.name === 'ValidationError' && error.errors) {
+    body.code = 'VALIDATION_ERROR';
     body.errors = Object.values(error.errors).map((e) => e.message);
   }
   return res.status(status).json(body);

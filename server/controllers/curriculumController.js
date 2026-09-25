@@ -45,6 +45,9 @@ const sanitizeLessonPayload = (body = {}) => {
   if (Array.isArray(payload.resources)) {
     payload.resources = payload.resources
       .filter((res) => res && String(res.title || '').trim() && String(res.url || '').trim())
+      // The student player renders each resource as a clickable link, so a
+      // `javascript:` or `data:` URL here is stored XSS rather than a dead link.
+      .filter((res) => /^https?:\/\//i.test(String(res.url).trim()))
       .map((res) => ({
         title: String(res.title).trim(),
         url: String(res.url).trim(),

@@ -9,6 +9,7 @@ const QuizAttempt = require('../models/QuizAttempt');
 const Certificate = require('../models/Certificate');
 const Announcement = require('../models/Announcement');
 const LmsSetting = require('../models/LmsSetting');
+const { sendError } = require('../utils/apiError');
 
 // @desc    Get student dashboard summary
 // @route   GET /api/lms/dashboard
@@ -65,7 +66,7 @@ const getStudentDashboard = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -103,7 +104,7 @@ const getMyCourses = async (req, res) => {
       courses: coursesWithProgress,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -169,7 +170,7 @@ const getCourseLearnData = async (req, res) => {
       totalLessons: lessons.length,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -200,7 +201,7 @@ const getLessonDetails = async (req, res) => {
       lesson,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -274,7 +275,7 @@ const completeLesson = async (req, res) => {
       certificate: certificateCreated,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -296,13 +297,13 @@ const submitQuiz = async (req, res) => {
 
     let correctCount = 0;
     const evaluatedAnswers = quiz.questions.map((q, idx) => {
-      const studentAnswer = answers?.find(a => a.questionId === q._id.toString()) || { selectedOptionIndex: -1 };
-      const isCorrect = studentAnswer.selectedOptionIndex === q.correctOptionIndex;
+      const studentAnswer = answers?.find(a => String(a?.questionId) === q._id.toString()) || {};
+      const isCorrect = optionIndexOf(studentAnswer.selectedOptionIndex) === q.correctOptionIndex;
       if (isCorrect) correctCount++;
       return {
         questionId: q._id,
         questionText: q.questionText,
-        selectedOptionIndex: studentAnswer.selectedOptionIndex,
+        selectedOptionIndex: optionIndexOf(studentAnswer.selectedOptionIndex),
         correctOptionIndex: q.correctOptionIndex,
         isCorrect,
         explanation: q.explanation,
@@ -339,16 +340,34 @@ const submitQuiz = async (req, res) => {
       attemptId: attempt._id,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
 // @desc    Get student's issued certificates
 // @route   GET /api/lms/certificates
 // @access  Private (Student)
+/**
+ * The option a student picked, as an integer — or -1 for "no answer".
+ *
+ * Grading used to compare `studentAnswer.selectedOptionIndex` with `===`, so a
+ * form that serialised its radio value as the string "1" scored every question
+ * wrong and the student was told they failed a quiz they answered correctly.
+ * Only a real integer or a plain digit string is accepted; anything else ("",
+ * null, "2x", an object) is a non-answer rather than option zero.
+ */
+const optionIndexOf = (value) => {
+  if (typeof value === 'number' && Number.isInteger(value)) return value;
+  if (typeof value === 'string' && /^\d+$/.test(value.trim())) return Number(value.trim());
+  return -1;
+};
+
 const getMyCertificates = async (req, res) => {
   try {
+    // The holder sees their own credential, not the staff member who signed it
+    // off or the internal reason note that goes with a withdrawal.
     const certificates = await Certificate.find({ student: req.user._id })
+      .select('-revokedBy -revokedReason')
       .populate('course', 'title slug cardTheme thumbnail')
       .sort({ issueDate: -1 });
 
@@ -357,7 +376,7 @@ const getMyCertificates = async (req, res) => {
       certificates,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -390,7 +409,7 @@ const getMyAnnouncements = async (req, res) => {
 
     return res.status(200).json({ success: true, count: announcements.length, announcements });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    return sendError(res, error);
   }
 };
 
@@ -421,19 +440,40 @@ const verifyCertificate = async (req, res) => {
     const isSample = cert.isSample === true;
     const isRevoked = Boolean(cert.revokedAt);
 
+    // An explicit whitelist, never the whole document. The schema also carries
+    // the staff name/email that revoked the credential and an internal reason
+    // note; echoing the document would publish those the day anyone adds a new
+    // field. This endpoint answers one question: is this credential real?
+    const course = cert.course || null;
+
     return res.status(200).json({
       success: true,
       sample: isSample,
       revoked: isRevoked,
+      status: isSample ? 'sample' : isRevoked ? 'revoked' : 'valid',
       notice: isSample
         ? 'Sample credential record kept for demonstration. It is not evidence of a conferred qualification.'
         : isRevoked
           ? 'This credential has been withdrawn by American FutureTech and is no longer valid.'
           : null,
-      certificate: cert,
+      certificate: {
+        certificateId: cert.certificateId,
+        studentName: cert.studentName,
+        student: cert.student ? { name: cert.student.name, avatar: cert.student.avatar } : null,
+        courseTitle: cert.courseTitle,
+        course: course ? { title: course.title, duration: course.duration, category: course.category } : null,
+        grade: cert.grade,
+        accreditationBody: cert.accreditationBody,
+        issueDate: cert.issueDate,
+        verificationUrl: cert.verificationUrl,
+        revokedAt: cert.revokedAt || null,
+        isSample,
+        status: isSample ? 'sample' : isRevoked ? 'revoked' : 'valid',
+      },
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.error('[Certificate verify]', error.message);
+    return res.status(500).json({ success: false, message: 'Could not verify this certificate right now.' });
   }
 };
 

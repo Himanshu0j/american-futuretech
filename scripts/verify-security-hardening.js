@@ -597,6 +597,124 @@ const run = async () => {
     }
 
     // ══════════════════════════════════════════════════════════════════════
+    section('8. A malformed id is a caller mistake, never a schema leak');
+
+    // Section 5 rotated the admin password, which deliberately invalidates every
+    // token issued before it — including the one the earlier sections used.
+    const freshLogin = newPassword
+      ? await request('POST', '/api/auth/login', { body: { email: ADMIN_EMAIL, password: newPassword } })
+      : { status: 0 };
+    const freshToken = freshLogin.json?.token || '';
+    check('An admin session can be re-established after the rotation', Boolean(freshToken), `HTTP ${freshLogin.status}`);
+
+    // The public apply form used to hand targetCourse straight to
+    // Course.findById, so `targetCourse: "nonsense"` came back as a mongoose
+    // CastError naming the model and the schema path.
+    const castProbe = await request('POST', '/api/leads/apply', {
+      body: {
+        fullName: 'Cast Probe',
+        email: `cast-probe-${Date.now()}@example.com`,
+        phone: '+1 555 0142',
+        targetCourse: 'not-an-object-id',
+      },
+    });
+    const castText = JSON.stringify(castProbe.json || {});
+    check('A malformed targetCourse is a 400', castProbe.status === 400, `HTTP ${castProbe.status}`);
+    check(
+      'A malformed targetCourse returns VALIDATION_ERROR',
+      castProbe.json?.code === 'VALIDATION_ERROR' && castProbe.json?.success === false,
+      castText.slice(0, 90),
+    );
+    check(
+      'A malformed targetCourse names no model, path or driver text',
+      !/cast|objectid|mongoose|"model"|at path|node_modules|\.[.\\/]server/i.test(castText),
+      castText.slice(0, 110),
+    );
+
+    // Well-formed but nonexistent: a dangling reference must not be stored.
+    const ghostCourse = await request('POST', '/api/leads/apply', {
+      body: {
+        fullName: 'Ghost Course Probe',
+        email: `ghost-course-${Date.now()}@example.com`,
+        phone: '+1 555 0143',
+        targetCourse: '000000000000000000000000',
+      },
+    });
+    check(
+      'A course id that does not exist is refused cleanly',
+      ghostCourse.status === 400 && ghostCourse.json?.code === 'VALIDATION_ERROR'
+        && !/cast|mongoose|objectid/i.test(JSON.stringify(ghostCourse.json || {})),
+      `HTTP ${ghostCourse.status}`,
+    );
+
+    // The happy paths must keep working: no course at all, and a real course.
+    const courseCreate = await request('POST', '/api/courses', {
+      token: freshToken,
+      body: {
+        title: `Security Contract Course ${Date.now()}`,
+        category: 'Data Science',
+        duration: '4 Weeks',
+        pricing: { originalPrice: 1200, discountedPrice: 999 },
+      },
+    });
+    const contractCourseId = courseCreate.json?.course?._id;
+    // Without a real id the "real course" check below would pass on the
+    // no-course path, which is exactly the kind of vacuous green this suite
+    // exists to prevent.
+    check('A fixture course exists to apply against', Boolean(contractCourseId), `HTTP ${courseCreate.status}`);
+
+    const noCourse = await request('POST', '/api/leads/apply', {
+      body: {
+        fullName: 'No Course Probe',
+        email: `no-course-${Date.now()}@example.com`,
+        phone: '+1 555 0144',
+      },
+    });
+    check('Applying without a target course still succeeds', noCourse.status === 201, `HTTP ${noCourse.status}`);
+
+    const realCourse = await request('POST', '/api/leads/apply', {
+      body: {
+        fullName: 'Real Course Probe',
+        email: `real-course-${Date.now()}@example.com`,
+        phone: '+1 555 0145',
+        targetCourse: contractCourseId,
+      },
+    });
+    check('Applying against a real course still succeeds', realCourse.status === 201, `HTTP ${realCourse.status}`);
+    if (realCourse.json?.leadId && freshToken) {
+      const stored = await request('GET', `/api/leads/${realCourse.json.leadId}`, { token: freshToken });
+      check(
+        'The stored lead keeps the course the applicant picked',
+        String(stored.json?.lead?.targetCourse?._id || stored.json?.lead?.targetCourse) === String(contractCourseId),
+        `HTTP ${stored.status}`,
+      );
+    }
+
+    // Every admin route that takes an :id gets the same treatment, because the
+    // mapping lives in the shared error helpers rather than in one controller.
+    const badLeadId = await request('GET', '/api/leads/not-an-id', { token: freshToken });
+    const badLeadText = JSON.stringify(badLeadId.json || {});
+    check(
+      'A malformed lead id is a 400 with no mongoose text',
+      badLeadId.status === 400 && badLeadId.json?.code === 'VALIDATION_ERROR'
+        && !/cast|mongoose|objectid|"model"|node_modules/i.test(badLeadText),
+      `HTTP ${badLeadId.status} ${badLeadText.slice(0, 80)}`,
+    );
+
+    const notFoundLead = await request('GET', '/api/leads/000000000000000000000000', { token: freshToken });
+    check(
+      'A well-formed id that matches no row is still a plain 404',
+      notFoundLead.status === 404 && !/cast|mongoose/i.test(JSON.stringify(notFoundLead.json || {})),
+      `HTTP ${notFoundLead.status}`,
+    );
+
+    // Clean up the fixture course so the throwaway database can be dropped clean.
+    if (contractCourseId) {
+      const removedCourse = await request('DELETE', `/api/courses/${contractCourseId}`, { token: freshToken });
+      check('The fixture course is removed again', removedCourse.status === 200, `HTTP ${removedCourse.status}`);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
     check('The server never logged a Stripe secret', !serverLog.includes(SECRET_KEY));
   } finally {
     await shutdown();

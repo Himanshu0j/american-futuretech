@@ -10,7 +10,8 @@
  *   • does every route render (not silently bounce to the homepage)?
  *   • did any API request fail on a page a visitor can see?
  *   • are there console errors, broken images, or dead weight?
- *   • does anything overflow horizontally at 320 / 390 / 768 / 1280?
+ *   • does anything overflow horizontally across the phone, tablet and desk
+ *     widths the client's visitors actually use?
  *   • can an admin actually create and delete a record through the UI?
  *
  * Evidence (screenshots + a JSON report) is written to %TEMP%/aft-lb-*.
@@ -30,7 +31,9 @@ const CHROME =
   ['C:/Program Files/Google/Chrome/Application/chrome.exe',
    'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find((p) => fs.existsSync(p));
 
-const WIDTHS = [320, 390, 768, 1280];
+// Every width the handover promises to have checked: small phones, large
+// phones, both tablet orientations, small laptops and full desktop monitors.
+const WIDTHS = [320, 375, 390, 414, 768, 1024, 1280, 1440, 1920];
 // Roles to sweep. Production cannot be swept with a session (the rotated admin
 // credential is deliberately not in this workspace), so `LB_ROLES=public` runs
 // the visitor-facing surface instead of reporting 30 fake "wrong route" errors.

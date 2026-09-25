@@ -35,10 +35,16 @@ export default function BlogDetailPage() {
     );
   }
 
+  // The heading needs its own light colour: a global base-layer rule pins every
+  // h1–h6 to the dark ink, so an inherited `text-white` never reached it and the
+  // "Article Not Found" message measured 1.04 contrast (dark on dark).
   if (!blog) {
     return (
-      <div className="min-h-screen bg-[#070C17] text-white flex flex-col items-center justify-center p-4">
-        <h2 className="text-xl font-bold mb-4">Article Not Found</h2>
+      <div className="min-h-screen bg-[#070C17] flex flex-col items-center justify-center p-4">
+        <h2 className="text-xl font-bold mb-4 text-white">Article Not Found</h2>
+        <p className="text-slate-300 text-sm mb-6 text-center max-w-sm">
+          This article may have been moved or unpublished. The journal index below is the fastest way back.
+        </p>
         <Link to="/blog" className="px-5 py-2.5 bg-indigo-500 text-slate-950 rounded-xl font-semibold text-sm">
           Return to Tech Journal
         </Link>

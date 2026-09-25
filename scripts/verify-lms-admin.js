@@ -379,6 +379,45 @@ const run = async () => {
       'email absent from the public payload'
     );
 
+    // A leak does not have to be the exact address: any email-shaped key would
+    // publish it the moment the schema grows a field.
+    const publicText = JSON.stringify(verifyPublic.json || {});
+    check(
+      'The public registry payload carries no email field and no address',
+      !/"email"/i.test(publicText) && !/@/.test(publicText),
+      publicText.slice(0, 110)
+    );
+
+    // Proof the response is an allow-list, not the database document: the schema
+    // also holds the revoking staff member and an internal reason note.
+    const PUBLIC_COURSE_KEYS = ['title', 'duration', 'category'];
+    const PUBLIC_STUDENT_KEYS = ['name', 'avatar'];
+    const PUBLIC_CERT_KEYS = [
+      'certificateId', 'studentName', 'student', 'courseTitle', 'course', 'grade',
+      'accreditationBody', 'issueDate', 'verificationUrl', 'revokedAt', 'isSample', 'status',
+    ];
+    const certKeys = Object.keys(verifyPublic.json?.certificate || {});
+    check(
+      'The public certificate is an allow-list of verification fields only',
+      certKeys.length > 0 && certKeys.every((key) => PUBLIC_CERT_KEYS.includes(key))
+        && Object.keys(verifyPublic.json?.certificate?.student || {}).every((key) => PUBLIC_STUDENT_KEYS.includes(key))
+        && Object.keys(verifyPublic.json?.certificate?.course || {}).every((key) => PUBLIC_COURSE_KEYS.includes(key)),
+      certKeys.join(', ')
+    );
+    check(
+      'The public registry reports a machine-readable status',
+      verifyPublic.json?.status === 'valid' && verifyPublic.json?.certificate?.status === 'valid',
+      String(verifyPublic.json?.status)
+    );
+
+    const adminRegister = await request('GET', '/api/admin/certificates', asAdmin);
+    const adminRow = (adminRegister.json?.certificates || []).find((row) => row.certificateId === certificateId) || {};
+    check(
+      'The admin register still shows the holder email administrators work with',
+      adminRow.studentEmail === studentEmail,
+      adminRow.studentEmail || 'missing'
+    );
+
     const revoke = await request('POST', `/api/admin/certificates/${issue.json?.certificate?._id}/revoke`, {
       ...asAdmin,
       body: { reason: 'Issued in error during QA' },
@@ -390,6 +429,21 @@ const run = async () => {
       'A revoked certificate is publicly marked withdrawn',
       verifyRevoked.json?.revoked === true && /withdrawn/i.test(verifyRevoked.json?.notice || ''),
       verifyRevoked.json?.notice
+    );
+
+    // Revocation writes a staff identity and a reason onto the document. The
+    // public page must say the credential was withdrawn, never who withdrew it
+    // or the internal note explaining why.
+    const revokedText = JSON.stringify(verifyRevoked.json || {});
+    check(
+      'A withdrawal publishes neither the staff member nor the internal reason',
+      !/revokedBy|revokedReason/i.test(revokedText) && !revokedText.includes('Issued in error during QA'),
+      'staff identity and reason note withheld'
+    );
+    check(
+      'A still-valid certificate keeps the same allow-list after revocation',
+      Object.keys(verifyRevoked.json?.certificate || {}).every((key) => PUBLIC_CERT_KEYS.includes(key)),
+      Object.keys(verifyRevoked.json?.certificate || {}).join(', ')
     );
 
     const reinstate = await request('POST', `/api/admin/certificates/${issue.json?.certificate?._id}/reinstate`, asAdmin);
@@ -511,6 +565,319 @@ const run = async () => {
       overview.status === 200 && overview.json?.stats?.students >= 1 && overview.json?.stats?.lessons >= 1,
       JSON.stringify(overview.json?.stats || {})
     );
+
+    // ══════════════════════════════════════════════════════════════════════
+    section('CONTENT & MEDIA DISCIPLINE');
+
+    // What an admin actually pastes, and what it must become. A raw watch URL
+    // renders as a broken iframe, so the server normalises it on the way in.
+    const mediaCases = [
+      ['https://www.youtube.com/watch?v=ZwAd3sJc0m0', 'https://www.youtube.com/embed/ZwAd3sJc0m0', 'A YouTube watch URL'],
+      ['https://youtu.be/ZwAd3sJc0m0?t=30s', 'https://www.youtube.com/embed/ZwAd3sJc0m0', 'A YouTube short URL'],
+      ['https://vimeo.com/76979871', 'https://player.vimeo.com/video/76979871', 'A Vimeo URL'],
+    ];
+    const mediaLessonIds = [];
+    for (const [pasted, expected, label] of mediaCases) {
+      const created = await request('POST', '/api/curriculum/lessons', {
+        ...asAdmin,
+        body: { course: courseId, module: moduleAId, title: `${label} lesson`, videoUrl: pasted },
+      });
+      const stored = created.json?.lesson?.videoUrl;
+      check(
+        `${label} is stored as a playable embed`,
+        [200, 201].includes(created.status) && stored === expected,
+        stored ? `${pasted} → ${stored}` : `HTTP ${created.status}`
+      );
+      if (created.json?.lesson?._id) mediaLessonIds.push(created.json.lesson._id);
+    }
+
+    const insecureVideo = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: { course: courseId, module: moduleAId, title: 'Insecure video lesson', videoUrl: 'http://www.youtube.com/watch?v=ZwAd3sJc0m0' },
+    });
+    check('An insecure http video link is refused', insecureVideo.status === 400, `HTTP ${insecureVideo.status}`);
+
+    const junkVideo = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: { course: courseId, module: moduleAId, title: 'Junk video lesson', videoUrl: 'not a url at all' },
+    });
+    check('A video link that is not a URL is refused', junkVideo.status === 400, `HTTP ${junkVideo.status}`);
+
+    // Dummy "Lab Resources" used to appear on every lesson that had none.
+    const bareLesson = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: { course: courseId, module: moduleAId, title: 'Lesson with no material' },
+    });
+    check(
+      'A lesson with no material stores an empty list, not placeholders',
+      Array.isArray(bareLesson.json?.lesson?.resources) && bareLesson.json.lesson.resources.length === 0,
+      JSON.stringify(bareLesson.json?.lesson?.resources || null)
+    );
+    const bareLessonId = bareLesson.json?.lesson?._id;
+
+    const withMaterial = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: {
+        course: courseId,
+        module: moduleAId,
+        title: 'Lesson with real material',
+        resources: [{ title: 'Lab worksheet', url: 'https://example.com/lab-worksheet.pdf' }],
+      },
+    });
+    check(
+      'A real resource link is preserved',
+      (withMaterial.json?.lesson?.resources || [])[0]?.url === 'https://example.com/lab-worksheet.pdf',
+      JSON.stringify(withMaterial.json?.lesson?.resources || [])
+    );
+
+    const junkResources = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: {
+        course: courseId,
+        module: moduleAId,
+        title: 'Lesson with junk material',
+        resources: [
+          { title: 'Script link', url: 'javascript:alert(1)' },
+          { title: 'Empty link', url: '' },
+          { title: 'Also empty', url: '   ' },
+        ],
+      },
+    });
+    check(
+      'Unsafe and half-filled resources are dropped, never stored',
+      (junkResources.json?.lesson?.resources || []).length === 0,
+      JSON.stringify(junkResources.json?.lesson?.resources || [])
+    );
+
+    // ══════════════════════════════════════════════════════════════════════
+    section('STUDENT JOURNEY');
+
+    // The enrolment section deliberately suspended this student, which is the
+    // staff off-switch. Flipping it back must restore access — otherwise a
+    // suspension would be a one-way door.
+    const reactivate = await request('PUT', `/api/admin/lms/enrollments/${enroll.json?.enrollment?._id}`, {
+      ...asAdmin,
+      body: { status: 'Active' },
+    });
+    check(
+      'Re-activating an enrolment restores the student\'s access',
+      reactivate.status === 200 && reactivate.json?.enrollment?.status === 'Active',
+      `HTTP ${reactivate.status}`
+    );
+
+    const learn = await request('GET', `/api/lms/courses/${courseId}/learn`, { token: studentLogin.token });
+    const learnModules = learn.json?.curriculum || [];
+    check(
+      'The enrolled student can open the course an admin gave them',
+      learn.status === 200 && learnModules.length > 0,
+      `HTTP ${learn.status}, ${learnModules.length} module(s)`
+    );
+    const firstLesson = learnModules.flatMap((m) => m.lessons || [])[0];
+    const totalPublished = learn.json?.totalLessons || 0;
+    check('The player is told how many lessons the course has', totalPublished > 0, `${totalPublished} lessons`);
+    check(
+      'A media lesson reaches the student with its embed intact',
+      learnModules.flatMap((m) => m.lessons || []).some((l) => l.videoUrl === 'https://www.youtube.com/embed/ZwAd3sJc0m0'),
+      'embed present in the student payload'
+    );
+
+    const lessonDetails = await request('GET', `/api/lms/lessons/${firstLesson?._id}`, { token: studentLogin.token });
+    check(
+      'Opening a lesson returns that lesson, not a catalogue',
+      lessonDetails.status === 200 && lessonDetails.json?.lesson?._id === firstLesson?._id,
+      `HTTP ${lessonDetails.status}`
+    );
+
+    const lessonComplete = await request('POST', `/api/lms/lessons/${firstLesson?._id}/complete`, { token: studentLogin.token });
+    check('The student can mark a lesson complete', lessonComplete.status === 200, `HTTP ${lessonComplete.status}`);
+    const expectedPercent = Math.round((1 / Math.max(totalPublished, 1)) * 100);
+    check(
+      'The completion percentage is calculated, not guessed',
+      lessonComplete.json?.progressPercent === expectedPercent,
+      `${lessonComplete.json?.progressPercent}% (expected ${expectedPercent}%)`
+    );
+
+    const reLearn = await request('GET', `/api/lms/courses/${courseId}/learn`, { token: studentLogin.token });
+    check(
+      'The completed lesson is still complete after a refresh',
+      (reLearn.json?.progress?.completedLessons || []).includes(String(firstLesson?._id))
+        && reLearn.json?.progress?.progressPercent === expectedPercent,
+      `${reLearn.json?.progress?.progressPercent}%`
+    );
+    check(
+      'The lesson is flagged complete in the curriculum the player renders',
+      (reLearn.json?.curriculum || []).flatMap((m) => m.lessons || []).some((l) => l._id === firstLesson?._id && l.isCompleted === true),
+      'isCompleted flag set'
+    );
+
+    const studentCourses = await request('GET', '/api/lms/my-courses', { token: studentLogin.token });
+    check(
+      'The assigned course appears in the student list with its progress',
+      (studentCourses.json?.courses || []).some(
+        (row) => String(row.course?._id) === String(courseId) && row.progressPercent === expectedPercent
+      ),
+      `${studentCourses.json?.courses?.length ?? 0} course(s)`
+    );
+
+    // ── Quiz grading, both outcomes ────────────────────────────────────────
+    const studentQuiz = await request('POST', '/api/curriculum/quizzes', {
+      ...asAdmin,
+      body: {
+        course: courseId,
+        module: moduleAId,
+        title: `Journey quiz ${stamp}`,
+        timeLimitMinutes: 10,
+        passingScorePercent: 60,
+        questions: [
+          { questionText: 'What is 5 + 5?', options: ['8', '10', '11'], correctOptionIndex: 1 },
+          { questionText: 'What is 3 × 3?', options: ['9', '6', '12'], correctOptionIndex: 0 },
+        ],
+      },
+    });
+    const journeyQuiz = studentQuiz.json?.quiz;
+    check('A graded quiz is published for the journey', Boolean(journeyQuiz?._id), `HTTP ${studentQuiz.status}`);
+
+    const wrong = await request('POST', `/api/lms/quizzes/${journeyQuiz?._id}/submit`, {
+      token: studentLogin.token,
+      body: {
+        answers: journeyQuiz?.questions?.map((q) => ({ questionId: q._id, selectedOptionIndex: 2 })) || [],
+        timeSpentSeconds: 42,
+      },
+    });
+    check(
+      'Every wrong answer scores zero and does not pass',
+      wrong.status === 200 && wrong.json?.scorePercent === 0 && wrong.json?.passed === false,
+      `HTTP ${wrong.status} score=${wrong.json?.scorePercent} passed=${wrong.json?.passed}`
+    );
+
+    const right = await request('POST', `/api/lms/quizzes/${journeyQuiz?._id}/submit`, {
+      token: studentLogin.token,
+      body: {
+        answers: (journeyQuiz?.questions || []).map((q) => ({ questionId: q._id, selectedOptionIndex: q.correctOptionIndex })),
+        timeSpentSeconds: 55,
+      },
+    });
+    check(
+      'Every correct answer scores full marks and passes',
+      right.status === 200 && right.json?.scorePercent === 100 && right.json?.passed === true,
+      `score=${right.json?.scorePercent} passed=${right.json?.passed}`
+    );
+    // A quiz UI that submits "1" instead of 1 used to silently score zero.
+    const stringAnswers = await request('POST', `/api/lms/quizzes/${journeyQuiz?._id}/submit`, {
+      token: studentLogin.token,
+      body: {
+        answers: (journeyQuiz?.questions || []).map((q) => ({ questionId: q._id, selectedOptionIndex: String(q.correctOptionIndex) })),
+        timeSpentSeconds: 30,
+      },
+    });
+    check(
+      'A numeric answer sent as a string is still graded, not silently failed',
+      stringAnswers.json?.passed === true,
+      `score=${stringAnswers.json?.scorePercent}`
+    );
+
+    const emptyAnswers = await request('POST', `/api/lms/quizzes/${journeyQuiz?._id}/submit`, {
+      token: studentLogin.token,
+      body: { answers: [], timeSpentSeconds: 5 },
+    });
+    check(
+      'Submitting nothing scores zero instead of throwing',
+      emptyAnswers.status === 200 && emptyAnswers.json?.passed === false && emptyAnswers.json?.scorePercent === 0,
+      `HTTP ${emptyAnswers.status} score=${emptyAnswers.json?.scorePercent}`
+    );
+
+    // Every submission must be on the record — an admin reviewing pass rates
+    // needs all four attempts, not just the latest per student.
+    const attemptReview = await request('GET', `/api/admin/lms/quiz-attempts?courseId=${courseId}`, asAdmin);
+    const gradedRows = (attemptReview.json?.attempts || []).filter(
+      (row) => String(row.quizId) === String(journeyQuiz?._id)
+    );
+    check(
+      'Every graded attempt is stored for the admin to review',
+      gradedRows.length === 4 && gradedRows.filter((row) => row.passed).length === 2,
+      `${gradedRows.length} attempt(s) stored, `
+        + `${gradedRows.filter((row) => row.passed).length} passed, `
+        + `pass rate ${attemptReview.json?.passRatePercent}%`
+    );
+    check(
+      'The review list names the quiz the student sat and who sat it',
+      gradedRows.every((row) => row.quizTitle === `Journey quiz ${stamp}` && row.studentEmail === studentEmail),
+      gradedRows[0]?.quizTitle || 'no rows'
+    );
+    check(
+      'The attempts carry the marks the student actually scored',
+      gradedRows.map((row) => row.scorePercent).sort((a, b) => a - b).join(',') === '0,0,100,100',
+      gradedRows.map((row) => row.scorePercent).join(',')
+    );
+
+    // ══════════════════════════════════════════════════════════════════════
+    section('STUDENT ISOLATION');
+
+    const outsiderEmail = `lms.outsider.${stamp}@example.com`;
+    const outsiderPassword = 'Bramble-Harbor-58!';
+    const outsider = await request('POST', '/api/students/admin', {
+      ...asAdmin,
+      body: { name: `LMS Outsider ${stamp}`, email: outsiderEmail, password: outsiderPassword, phone: '+1 555 0201' },
+    });
+    check('A second student account exists for the isolation checks', outsider.status === 201, `HTTP ${outsider.status}`);
+    const outsiderLogin = await login(outsiderEmail, outsiderPassword);
+    check('The unenrolled student can sign in', Boolean(outsiderLogin.token), `HTTP ${outsiderLogin.status}`);
+    const asOutsider = { token: outsiderLogin.token };
+
+    const outsiderLearn = await request('GET', `/api/lms/courses/${courseId}/learn`, asOutsider);
+    check(
+      'A student who was never enrolled cannot open the course',
+      outsiderLearn.status === 403 && outsiderLearn.json?.code === 'NOT_ENROLLED',
+      `HTTP ${outsiderLearn.status} ${outsiderLearn.json?.code || ''}`
+    );
+
+    const outsiderLesson = await request('GET', `/api/lms/lessons/${firstLesson?._id}`, asOutsider);
+    check(
+      'A student cannot read another cohort\'s lesson by guessing its id',
+      outsiderLesson.status === 403,
+      `HTTP ${outsiderLesson.status}`
+    );
+
+    const outsiderComplete = await request('POST', `/api/lms/lessons/${firstLesson?._id}/complete`, asOutsider);
+    check('A student cannot write progress into a course they were not given', outsiderComplete.status === 403, `HTTP ${outsiderComplete.status}`);
+
+    const outsiderQuizSubmit = await request('POST', `/api/lms/quizzes/${journeyQuiz?._id}/submit`, {
+      ...asOutsider,
+      body: { answers: [], timeSpentSeconds: 1 },
+    });
+    check('A student cannot attempt a quiz from an unassigned course', outsiderQuizSubmit.status === 403, `HTTP ${outsiderQuizSubmit.status}`);
+
+    const outsiderList = await request('GET', '/api/lms/my-courses', asOutsider);
+    check(
+      'The course never appears in another student\'s list',
+      !(outsiderList.json?.courses || []).some((row) => String(row.course?._id) === String(courseId)),
+      `${outsiderList.json?.courses?.length ?? 0} course(s) visible`
+    );
+
+    const outsiderAuthoring = await request('POST', '/api/curriculum/lessons', {
+      ...asOutsider,
+      body: { course: courseId, module: moduleAId, title: 'Student-authored lesson' },
+    });
+    check('A student cannot author LMS content', [401, 403].includes(outsiderAuthoring.status), `HTTP ${outsiderAuthoring.status}`);
+
+    const outsiderIssue = await request('POST', '/api/admin/certificates/issue', {
+      ...asOutsider,
+      body: { studentId, courseId },
+    });
+    check('A student cannot issue themselves a certificate', [401, 403].includes(outsiderIssue.status), `HTTP ${outsiderIssue.status}`);
+
+    const outsiderAdminPage = await request('GET', '/api/admin/lms/enrollments', asOutsider);
+    check('A student cannot list every enrolment', [401, 403].includes(outsiderAdminPage.status), `HTTP ${outsiderAdminPage.status}`);
+
+    // The bare lesson must stay honest for the student too.
+    if (bareLessonId) {
+      const bareForStudent = await request('GET', `/api/lms/lessons/${bareLessonId}`, { token: studentLogin.token });
+      check(
+        'A lesson with no material reports an empty list to the player',
+        bareForStudent.status === 200 && (bareForStudent.json?.lesson?.resources || []).length === 0,
+        JSON.stringify(bareForStudent.json?.lesson?.resources || null)
+      );
+    }
 
     // ── Refusals ───────────────────────────────────────────────────────────
     section('AUTHORIZATION REFUSALS');

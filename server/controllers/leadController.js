@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Lead = require('../models/Lead');
 const Course = require('../models/Course');
 const Batch = require('../models/Batch');
@@ -8,6 +9,17 @@ const {
 } = require('../utils/emailService');
 const { generateSecurePassword } = require('../utils/passwords');
 const { sendError } = require('../utils/apiError');
+
+/**
+ * A malformed course id from the public apply form used to reach
+ * Course.findById and surface the raw mongoose CastError text — which names the
+ * model and the schema path to whoever posted it. Validate it ourselves so the
+ * applicant gets a plain, actionable 400 instead.
+ */
+const isObjectId = (value) => mongoose.Types.ObjectId.isValid(String(value == null ? '' : value));
+
+const invalidTargetCourse = (res, message = 'Invalid targetCourse.') =>
+  res.status(400).json({ success: false, code: 'VALIDATION_ERROR', message });
 
 // @desc    Submit new lead / application
 // @route   POST /api/leads/apply
@@ -25,14 +37,18 @@ const createLead = async (req, res) => {
 
     let courseObj = null;
     if (targetCourse) {
+      if (!isObjectId(targetCourse)) return invalidTargetCourse(res);
       courseObj = await Course.findById(targetCourse);
+      // A well-formed id for a course that no longer exists would otherwise be
+      // stored as a dangling reference and break every later populate().
+      if (!courseObj) return invalidTargetCourse(res, 'Selected course could not be found.');
     }
 
     const newLead = await Lead.create({
       fullName,
       email: email.toLowerCase().trim(),
       phone: phone.trim(),
-      targetCourse: targetCourse || undefined,
+      targetCourse: courseObj ? courseObj._id : undefined,
       preferredBatch: preferredBatch || 'Weekend Live (2 Hours)',
       marketingSource: marketingSource || 'Landing Page Direct Apply',
       notes: notes || '',

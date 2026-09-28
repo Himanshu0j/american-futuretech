@@ -115,6 +115,13 @@ export default function CourseDetailPage() {
     { name: 'Docker', icon: '/images/tools/docker.svg' },
   ]);
 
+  // The fallback heading appends " Program", which doubled the word for course
+  // titles that already end with it ("... with AI Program Program Tools
+  // Covered"). Only add it when the title does not already carry it.
+  const courseTitleText = String(course?.title || '').trim();
+  const toolsHeading = course?.toolsTitle
+    || (/program\s*$/i.test(courseTitleText) ? courseTitleText : `${courseTitleText} Program`);
+
   const whyChooseList = detailedData.whyChoose || [];
   const whoCanApplyList = detailedData.whoCanApply || [];
   const audiencePills = detailedData.audiencePills || [];
@@ -519,7 +526,7 @@ export default function CourseDetailPage() {
               Hands-On Industry Toolkit
             </div>
             <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
-              {course.toolsTitle || `${course.title} Program`} Tools Covered
+              {toolsHeading} Tools Covered
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
               {course.toolsSubtitle || 'Master enterprise-grade frameworks, libraries, and cloud platforms trusted by top technology teams globally.'}

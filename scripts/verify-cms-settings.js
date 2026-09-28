@@ -489,6 +489,42 @@ const run = async () => {
     await mongoose.disconnect();
     check('Deleting a course deletes its modules and lessons too',
       orphanModules === 0 && orphanLessons === 0, `modules ${orphanModules} / lessons ${orphanLessons}`);
+
+    // 16. Legacy corrupt tool rows must heal on read. An older release cast a
+    //     tool name string into a sub-document, so every existing course stores
+    //     `{ 0: 'V', 1: 'a', ... }` instead of `{ name: 'Vanta' }`. That made
+    //     every course fall back to the shared Data Science grid. The model now
+    //     rebuilds the name when it serialises, on both the public and CMS paths.
+    const legacyCreate = await request('POST', '/api/courses', {
+      token,
+      body: { title: `Legacy Corrupt Tools ${Date.now()}`, category: 'Legacy' },
+    });
+    const legacyDoc = legacyCreate.json?.course;
+    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 8000 });
+    await mongoose.connection.db.collection('courses').updateOne(
+      { _id: new mongoose.Types.ObjectId(String(legacyDoc?._id)) },
+      {
+        $set: {
+          tools: [
+            { 0: 'V', 1: 'a', 2: 'n', 3: 't', 4: 'a', icon: '' },
+            { 0: 'D', 1: 'o', 2: 'c', 3: 'k', 4: 'e', 5: 'r', icon: '' },
+          ],
+        },
+      }
+    );
+    await mongoose.disconnect();
+
+    const healedPublic = await request('GET', `/api/courses/${legacyDoc?.slug}`);
+    const healedTools = healedPublic.json?.course?.tools || [];
+    check('Legacy corrupt tool rows are healed on the public course endpoint',
+      healedTools.length === 2 && healedTools[0]?.name === 'Vanta' && healedTools[1]?.name === 'Docker',
+      JSON.stringify(healedTools));
+
+    const healedAdmin = await request('GET', '/api/courses/admin/all', { token });
+    const healedAdminDoc = (healedAdmin.json?.courses || []).find((c) => String(c._id) === String(legacyDoc?._id));
+    check('Legacy corrupt tool rows are healed in the CMS course list too',
+      healedAdminDoc?.tools?.[0]?.name === 'Vanta',
+      JSON.stringify(healedAdminDoc?.tools));
   } finally {
     await stopServer();
   }

@@ -24,13 +24,31 @@ const CourseToolSchema = new mongoose.Schema({
 const normalizeCourseTool = (tool) => {
   if (typeof tool === 'string') return { name: tool.trim(), icon: '' };
   if (tool && typeof tool === 'object') {
+    let name = tool.name;
+    // Older releases cast a name string into a sub-document by spreading it,
+    // producing rows like `{ 0: 'V', 1: 'a', ..., icon: '' }`. Those rows are
+    // already in the database, so rebuild the name from the numeric keys
+    // instead of showing every course a blank tool. Saving the course then
+    // rewrites it as a normal `{ name, icon }` row.
+    if (!name) {
+      const rebuilt = Object.keys(tool)
+        .filter((key) => /^\d+$/.test(key))
+        .sort((a, b) => Number(a) - Number(b))
+        .map((key) => tool[key])
+        .join('');
+      if (rebuilt) name = rebuilt;
+    }
     return {
-      name: String(tool.name || '').trim(),
+      name: String(name || '').trim(),
       icon: String(tool.icon || '').trim(),
     };
   }
   return tool;
 };
+
+/** Apply the tool normaliser to a whole list (writes, and reads below). */
+const normalizeCourseTools = (list) =>
+  Array.isArray(list) ? list.map(normalizeCourseTool) : list;
 
 // ── Per-course capstone showcase cards ──
 // The site-wide capstone list made every course show identical projects; this
@@ -173,7 +191,7 @@ const CourseSchema = new mongoose.Schema({
   tools: {
     type: [CourseToolSchema],
     default: [],
-    set: (value) => (Array.isArray(value) ? value.map(normalizeCourseTool) : value),
+    set: normalizeCourseTools,
   },
 
   // ── Per-course Capstone Projects ──
@@ -206,6 +224,23 @@ const CourseSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
+  // Mongoose does not run field setters when it hydrates documents from the
+  // database, so the legacy corrupt rows above would otherwise reach the site
+  // and the CMS untouched. Normalising on serialisation fixes both read paths
+  // at once and heals the row for good as soon as the course is saved.
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.tools = normalizeCourseTools(ret.tools);
+      return ret;
+    },
+  },
+  toObject: {
+    transform: (doc, ret) => {
+      ret.tools = normalizeCourseTools(ret.tools);
+      return ret;
+    },
+  },
 });
 
 module.exports = mongoose.model('Course', CourseSchema);
+module.exports.normalizeCourseTool = normalizeCourseTool;

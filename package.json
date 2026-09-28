@@ -29,6 +29,7 @@
     "verify:rbac": "node scripts/verify-rbac-matrix.js",
     "verify:db": "node scripts/verify-db.js",
     "verify:live": "node scripts/verify-live-qa.js",
+    "verify:deploy": "node scripts/verify-deploy.js",
     "audit:a11y": "node scripts/audit-accessibility.js",
     "audit:browser": "node scripts/audit-live-browser.js",
     "audit:testdata": "node scripts/audit-test-data.js"

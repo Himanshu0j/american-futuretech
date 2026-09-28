@@ -19,6 +19,29 @@ const errorHandler = require('./middleware/errorHandler');
 // through /api/health. The leaked value published in this repo is never used.
 const authStatus = assertAuthConfig();
 
+// Deployment provenance. Render exports RENDER_GIT_COMMIT (and the branch) to
+// the running service, so /api/health can say which commit this process was
+// actually built from. `npm run verify:deploy` compares it against the pushed
+// HEAD — the only way to distinguish "the deploy shipped" from "the push
+// reached GitHub and the box kept running the previous build".
+// `null` means the host did not expose a revision, not that it is current.
+const buildInfo = {
+  commit:
+    (
+      process.env.RENDER_GIT_COMMIT ||
+      process.env.GIT_COMMIT ||
+      process.env.COMMIT_SHA ||
+      process.env.SOURCE_VERSION ||
+      ''
+    ).trim() || null,
+  branch:
+    (
+      process.env.RENDER_GIT_BRANCH ||
+      process.env.GIT_BRANCH ||
+      ''
+    ).trim() || null,
+};
+
 // Initialize database and auto-seed if empty
 connectDB().then(async () => {
   // Bring any admin-saved gateway secrets into memory before serving traffic,
@@ -95,6 +118,7 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'American FutureTech Enterprise Core API',
     uptimeSeconds: Math.round(process.uptime()),
+    build: buildInfo,
     database: db,
     payments,
     auth: authStatus,

@@ -13,7 +13,7 @@ import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
 import CertificateModal from '../components/CertificateModal';
 import { getAlignedMicrosoftCert } from '../data/microsoftCertificates';
-import { getDetailedCourseData, getToolLogo } from '../data/courseContentData';
+import { getDetailedCourseData, findToolLogo } from '../data/courseContentData';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function CourseDetailPage() {
@@ -23,7 +23,9 @@ export default function CourseDetailPage() {
   const [course, setCourse] = useState(null);
   const [curriculum, setCurriculum] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openModuleIndex, setOpenModuleIndex] = useState(0);
+  // Every accordion starts CLOSED — the first module used to spring open on
+  // load, which buried the rest of the syllabus behind it.
+  const [openModuleIndex, setOpenModuleIndex] = useState(-1);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
 
@@ -93,7 +95,12 @@ export default function CourseDetailPage() {
   const detailedData = getDetailedCourseData(course);
   const alignedMsCert = getAlignedMicrosoftCert(course.slug || course.category || course.title);
 
-  const toolsList = detailedData.tools || [
+  // Tools are per course: whatever the admin saved on this course wins, and the
+  // shared static grid is only a fallback for a course nobody has edited yet.
+  const courseTools = (course?.tools || [])
+    .map((tool) => (typeof tool === 'string' ? { name: tool, icon: '' } : tool))
+    .filter((tool) => tool && tool.name);
+  const toolsList = courseTools.length > 0 ? courseTools : (detailedData.tools || [
     { name: 'Python', icon: '/images/tools/python.svg' },
     { name: 'TensorFlow', icon: '/images/tools/tensorflow.svg' },
     { name: 'PyTorch', icon: '/images/tools/pytorch.svg' },
@@ -106,16 +113,21 @@ export default function CourseDetailPage() {
     { name: 'OpenAI / LLMs', icon: '/images/tools/openai.svg' },
     { name: 'LangChain', icon: '/images/tools/langchain.svg' },
     { name: 'Docker', icon: '/images/tools/docker.svg' },
-  ];
+  ]);
 
   const whyChooseList = detailedData.whyChoose || [];
   const whoCanApplyList = detailedData.whoCanApply || [];
   const audiencePills = detailedData.audiencePills || [];
-  // Admin-defined capstone projects take priority; fallback to static course data
+  // Capstone cards are per course, so two programs no longer show the same
+  // projects. Order: this course's own cards → the site-wide showcase from
+  // Settings → Capstone → the static defaults.
   const adminCapstones = settings?.capstone?.projects;
-  const capstones = (adminCapstones && adminCapstones.length > 0)
-    ? adminCapstones
-    : (detailedData.capstoneProjects || []);
+  const courseCapstones = (course?.capstoneProjects || []).filter((p) => p && p.active !== false);
+  const capstones = courseCapstones.length > 0
+    ? courseCapstones
+    : ((adminCapstones && adminCapstones.length > 0)
+        ? adminCapstones
+        : (detailedData.capstoneProjects || []));
   const careerRoles = detailedData.careerRoles || [];
   const certImages = detailedData.certificates || {};
 
@@ -354,50 +366,6 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {/* 2. Data Science & AI Program Tools Covered */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkle className="w-3.5 h-3.5 text-[#4338CA]" />
-              Hands-On Industry Toolkit
-            </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
-              {detailedData.heroTitle || `${course.title} Program`} Tools Covered
-            </h2>
-            <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Master enterprise-grade frameworks, libraries, and cloud platforms trusted by top technology teams globally.
-            </p>
-          </div>
-
-          {/* Compact tool grid: 6 columns on desktop, small square boxes */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
-            {toolsList.map((tool, idx) => {
-              const iconPath = tool.icon || getToolLogo(tool.name || tool);
-              const toolName = tool.name || tool;
-
-              return (
-                <div
-                  key={idx}
-                  className="group rounded-xl bg-white border border-slate-200/80 p-2.5 text-center shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center justify-center cursor-default"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
-                    <img
-                      src={iconPath}
-                      alt={toolName}
-                      className="w-6 h-6 object-contain"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 tracking-tight leading-tight truncate w-full group-hover:text-[#0B1220] transition-colors">
-                    {toolName}
-                  </h3>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
         {/* 3. Why Get Certification From American FutureTech (6 Feature Cards) */}
         <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -540,6 +508,66 @@ export default function CourseDetailPage() {
             </div>
           </section>
         )}
+
+        {/* 3c. Tools Covered — per-course heading, subtitle and icon grid.
+            This sits directly under the hero (above the rest of the page) so the
+            pricing options and the stack being taught come first. */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
+              <Sparkle className="w-3.5 h-3.5 text-[#4338CA]" />
+              Hands-On Industry Toolkit
+            </div>
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
+              {course.toolsTitle || `${course.title} Program`} Tools Covered
+            </h2>
+            <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              {course.toolsSubtitle || 'Master enterprise-grade frameworks, libraries, and cloud platforms trusted by top technology teams globally.'}
+            </p>
+          </div>
+
+          {/* Compact tool grid: 6 columns on desktop, small square boxes */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
+            {toolsList.map((tool, idx) => {
+              const toolName = tool.name || tool;
+              // A tool the admin added may have no logo anywhere — fall back to
+              // its initials rather than to an unrelated vendor's logo.
+              const iconPath = tool.icon || findToolLogo(toolName);
+              const initials = String(toolName)
+                .split(/[\s/&]+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((word) => word[0].toUpperCase())
+                .join('');
+
+              return (
+                <div
+                  key={idx}
+                  className="group rounded-xl bg-white border border-slate-200/80 p-2.5 text-center shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center justify-center cursor-default"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
+                    {iconPath ? (
+                      <img
+                        src={iconPath}
+                        alt={toolName}
+                        className="w-6 h-6 object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-[11px] font-black text-[#0B1220] font-display tracking-tight">
+                        {initials}
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 tracking-tight leading-tight truncate w-full group-hover:text-[#0B1220] transition-colors">
+                    {toolName}
+                  </h3>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
         {/* 4. Who Can Apply for this Course */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">

@@ -482,7 +482,10 @@ export default function AboutPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   <div className="lg:col-span-5">
-                    <h2 className="text-xl sm:text-2xl font-black font-heading tracking-tight mb-3">
+                    {/* Explicit light colour: the base stylesheet paints every
+                        heading #0B1220, which is the same navy as this card —
+                        without it the headline rendered invisible. */}
+                    <h2 className="text-xl sm:text-2xl font-black font-heading tracking-tight mb-3 text-white">
                       {sisterCompany.headline}
                     </h2>
 
@@ -556,7 +559,7 @@ export default function AboutPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#E5C275] text-xs font-mono font-bold uppercase">
                 Worldwide Impact
               </div>
-              <h3 className="text-2xl sm:text-4xl font-black font-heading tracking-tight">
+              <h3 className="text-2xl sm:text-4xl font-black font-heading tracking-tight text-white">
                 Empowering Engineers Across 34+ Countries
               </h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">

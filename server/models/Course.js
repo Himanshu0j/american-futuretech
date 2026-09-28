@@ -7,6 +7,44 @@ const CurriculumModuleSchema = new mongoose.Schema({
   hours: { type: Number, default: 20 }
 }, { _id: false });
 
+// ── Per-course "Tools Covered" block ──
+// Every course used to render the same hard-coded tool grid (the Data Science
+// one, for any course the static data did not recognise) with no way to change
+// it. Tools now live on the course, so each program shows its own stack.
+const CourseToolSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  icon: { type: String, default: '' },
+}, { _id: false });
+
+/**
+ * Legacy rows (and the seeder) store the stack as plain names —
+ * `tools: ['Python', 'Docker']`. Accept both shapes so an old course keeps
+ * loading and the seed can still write its string list.
+ */
+const normalizeCourseTool = (tool) => {
+  if (typeof tool === 'string') return { name: tool.trim(), icon: '' };
+  if (tool && typeof tool === 'object') {
+    return {
+      name: String(tool.name || '').trim(),
+      icon: String(tool.icon || '').trim(),
+    };
+  }
+  return tool;
+};
+
+// ── Per-course capstone showcase cards ──
+// The site-wide capstone list made every course show identical projects; this
+// lets a course carry its own, with the global list kept as a fallback.
+const CourseCapstoneSchema = new mongoose.Schema({
+  tag: { type: String, default: 'Capstone' },
+  title: { type: String, required: true },
+  desc: { type: String, default: '' },
+  stack: [{ type: String }],
+  color: { type: String, default: 'from-indigo-500 to-blue-500' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: false });
+
 const CourseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -119,6 +157,29 @@ const CourseSchema = new mongoose.Schema({
   viewOptions: {
     groupBatch: { type: Boolean, default: true },
     personalizedMentor: { type: Boolean, default: true },
+  },
+
+  // ── "Tools Covered" block (heading + grid) ──
+  // Empty title falls back to "<Course title> Program Tools Covered"; an empty
+  // tools array keeps the static/legacy icon grid so no course renders blank.
+  toolsTitle: {
+    type: String,
+    default: '',
+  },
+  toolsSubtitle: {
+    type: String,
+    default: '',
+  },
+  tools: {
+    type: [CourseToolSchema],
+    default: [],
+    set: (value) => (Array.isArray(value) ? value.map(normalizeCourseTool) : value),
+  },
+
+  // ── Per-course Capstone Projects ──
+  capstoneProjects: {
+    type: [CourseCapstoneSchema],
+    default: [],
   },
 
   // ── "Who Can Apply for this Course?" block ──

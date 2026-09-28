@@ -232,6 +232,13 @@ const SiteSettingsSchema = new mongoose.Schema({
     active: { type: Boolean },
     link: { type: String },
   },
+  // Admissions notice edited on the Site CMS → Team & Alliances tab. It had no
+  // schema path, so every save reported it (along with real nested fields) as
+  // "not saved".
+  admissionNotice: {
+    type: String,
+    default: 'Next Cohort Starts March 2026. Limited to 25 seats per track.',
+  },
   socialLinks: {
     linkedin: { type: String, default: 'https://linkedin.com/company/american-futuretech' },
     youtube: { type: String, default: 'https://youtube.com/@American_FutureTech' },
@@ -357,6 +364,16 @@ const SiteSettingsSchema = new mongoose.Schema({
 
   // 🌟 PERSONALIZED LEARNING CMS (Separate Fee & Features)
   personalizedLearning: {
+    // The "Personalized ($5,499)" admin tab edits these three names, and the
+    // public PersonalizedLearningSection renders `headline` / `subheadline`.
+    // They were missing from the schema, so those edits were silently dropped
+    // and the admin got the red "NOT saved" banner instead.
+    enabled: { type: Boolean, default: true },
+    headline: { type: String, default: 'Personalized Learning Accelerator' },
+    subheadline: {
+      type: String,
+      default: 'A standalone premium offering designed for professionals requiring a custom syllabus, flexible schedule, and direct 1-on-1 guidance from top Silicon Valley mentors.',
+    },
     title: { type: String, default: 'Personalized 1-on-1 Applied Mentorship Track' },
     subtitle: { type: String, default: 'Customized Curriculum Tailored to Your Prior Background & Target Tech Role' },
     duration: { type: String, default: 'Custom / 3 to 6 Months' },

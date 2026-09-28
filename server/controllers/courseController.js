@@ -1,6 +1,9 @@
 const Course = require('../models/Course');
 const AuditLog = require('../models/AuditLog');
 const Module = require('../models/Module');
+const Lesson = require('../models/Lesson');
+const Quiz = require('../models/Quiz');
+const Enrollment = require('../models/Enrollment');
 const { syncCourseCurriculum, normalizeCurriculumForEmbed } = require('../utils/curriculumSync');
 const { sendError } = require('../utils/apiError');
 
@@ -74,7 +77,7 @@ const getCourseBySlug = async (req, res) => {
 // @access  Private (SuperAdmin, Counselor)
 const createCourse = async (req, res) => {
   try {
-    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility } = req.body;
+    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail } = req.body;
 
     // Without a title this used to throw on `title.toLowerCase()` and answer
     // 500; an incomplete form is the caller's mistake and must be a 400.
@@ -110,6 +113,12 @@ const createCourse = async (req, res) => {
       // ticks appeared to "save" but never reached the course page.
       viewOptions,
       eligibility,
+      // Per-course card image + "Tools Covered" block + capstone cards.
+      thumbnail,
+      toolsTitle,
+      toolsSubtitle,
+      tools,
+      capstoneProjects,
     });
 
     // Mirror the composer's modules into the real curriculum the site renders.
@@ -231,6 +240,25 @@ const deleteCourse = async (req, res) => {
       });
     }
 
+    // A course with real students must never vanish underneath them. Hiding it
+    // (isPublished = false) takes it off the public site and keeps every
+    // enrollment, certificate and log intact — so that is what we suggest.
+    const enrolled = await Enrollment.countDocuments({ course: course._id });
+    if (enrolled > 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          `This course has ${enrolled} enrolled student(s) and cannot be deleted. ` +
+          'Switch it to "Hidden from Site" instead — that takes it off the public website and keeps the enrollments.',
+        enrolledStudents: enrolled,
+      });
+    }
+
+    // Delete the curriculum too: modules, lessons and quizzes only exist for
+    // this course and would otherwise be orphaned in the LMS.
+    await Lesson.deleteMany({ course: course._id });
+    await Quiz.deleteMany({ course: course._id });
+    await Module.deleteMany({ course: course._id });
     await course.deleteOne();
 
     await AuditLog.create({
@@ -240,7 +268,7 @@ const deleteCourse = async (req, res) => {
       action: 'COURSE_DELETED',
       entity: 'Course',
       entityId: req.params.id,
-      details: `Deleted course: ${course.title} (${course.slug})`,
+      details: `Deleted course: ${course.title} (${course.slug}) with its curriculum`,
     });
 
     return res.status(200).json({

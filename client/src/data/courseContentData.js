@@ -57,6 +57,16 @@ export function getToolLogo(toolName = "") {
   return TOOL_LOGOS[normalized] || "/images/tools/python.svg";
 }
 
+/**
+ * Same lookup as getToolLogo, but returns '' when we genuinely have no logo for
+ * the name. Courses can now list their own tools (Vanta, Splunk, Snowflake…),
+ * and showing the Python logo beside "Snowflake" would be worse than showing a
+ * neutral initials badge.
+ */
+export function findToolLogo(toolName = "") {
+  return TOOL_LOGOS[String(toolName).toLowerCase().trim()] || "";
+}
+
 export const COURSE_DETAILED_DATA = {
   // -------------------------------------------------------------
   // Data Science & Artificial Intelligence

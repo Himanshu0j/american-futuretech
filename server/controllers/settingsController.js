@@ -81,40 +81,105 @@ const sanitizeSettingsPayload = (body) => {
  * save" capstone projects that never appeared on the site. We now report these
  * paths back to the caller instead of pretending the save worked.
  */
+/**
+ * Flatten every storable path of the settings schema, including paths that live
+ * inside embedded sub-documents and arrays of sub-documents.
+ *
+ * Why: mongoose registers a sub-document (`sisterCompany`, `pedagogy`, `footer`,
+ * `careerSupport`) as ONE path — `schema.paths['footer.columns']` does not exist
+ * even though the value saves perfectly — and an array of sub-documents only
+ * exposes its fields under `path.caster.schema`. Reading `schema.paths` alone
+ * therefore reported the whole Team & Alliances tab as "NOT saved" and painted
+ * a red banner over data that had in fact been written. Walking the tree is what
+ * separates a nested branch from a genuinely unknown field.
+ *
+ * @returns {Map<string,'Mixed'|'Map'|string>} dotted path → mongoose instance
+ */
+const buildStorablePathIndex = (sch, prefix = '', out = new Map()) => {
+  for (const key of Object.keys(sch.paths)) {
+    const node = sch.paths[key];
+    const full = prefix ? `${prefix}.${key}` : key;
+    const instance = node?.instance || node?.caster?.instance || '';
+    out.set(full, instance);
+
+    // Embedded sub-document (single or array) → its fields are storable too.
+    const childSchema = node?.schema || node?.caster?.schema;
+    if (childSchema && childSchema.paths) {
+      buildStorablePathIndex(childSchema, full, out);
+    }
+  }
+  return out;
+};
+
+const STORABLE_PATHS = buildStorablePathIndex(SiteSettings.schema);
+
+/** Is this path — or a branch below it — declared by the schema? */
+const isStorablePath = (path) => {
+  if (STORABLE_PATHS.has(path)) return true;
+  const prefix = `${path}.`;
+  for (const known of STORABLE_PATHS.keys()) {
+    if (known.startsWith(prefix)) return true;
+  }
+  return false;
+};
+
+/** Free-form Mixed/Map sections (the site editor overrides) accept any key. */
+const isFreeFormPath = (path) => {
+  const instance = STORABLE_PATHS.get(path);
+  return instance === 'Mixed' || instance === 'Map';
+};
+
 const findUnstorablePaths = (body) => {
-  const { schema } = SiteSettings;
   const unknown = [];
   if (!body || typeof body !== 'object') return unknown;
 
-  const isKnownPath = (path) => Boolean(schema.paths[path]);
-  const isKnownBranch = (key) => Object.keys(schema.paths).some((p) => p.startsWith(`${key}.`));
+  /** Deepest declared path for a payload key, so arrays of sub-docs can be checked. */
+  const leafPrefix = (path) => {
+    let best = '';
+    const prefix = `${path}.`;
+    for (const known of STORABLE_PATHS.keys()) {
+      if (known.startsWith(prefix) && known.length > best.length) best = known;
+    }
+    return best;
+  };
 
   for (const [key, value] of Object.entries(body)) {
     if (SYSTEM_PATHS.includes(key)) continue;
-    if (!isKnownPath(key) && !isKnownBranch(key)) {
+    if (!isStorablePath(key)) {
       unknown.push(key);
       continue;
     }
     if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    // /api/settings is where the inline site editor stores `textOverrides` and
+    // `imageOverrides`, whose route names (`/about`, `/privacy`) are data, not
+    // schema keys. Skip those maps entirely.
+    if (isFreeFormPath(key)) continue;
 
     for (const [subKey, subValue] of Object.entries(value)) {
       if (SYSTEM_PATHS.includes(subKey)) continue;
-      const subPath = schema.paths[`${key}.${subKey}`];
-      if (!subPath) {
-        unknown.push(`${key}.${subKey}`);
+      const subPathName = `${key}.${subKey}`;
+      if (!isStorablePath(subPathName)) {
+        unknown.push(subPathName);
         continue;
       }
-      // Free-form Mixed/Map sections (the site editor overrides) accept any key.
-      const instance = subPath.instance || (subPath.caster && subPath.caster.instance);
-      if (instance === 'Mixed' || instance === 'Map') continue;
+      if (isFreeFormPath(subPathName)) continue;
+
       // Arrays of sub-documents: verify the keys inside each entry too.
-      if (Array.isArray(subValue) && subPath.schema) {
-        for (const item of subValue.slice(0, 25)) {
-          if (!item || typeof item !== 'object') continue;
-          for (const innerKey of Object.keys(item)) {
-            if (SYSTEM_PATHS.includes(innerKey)) continue;
-            if (!subPath.schema.paths[innerKey]) unknown.push(`${key}.${subKey}[].${innerKey}`);
-          }
+      if (!Array.isArray(subValue)) continue;
+      const declared = STORABLE_PATHS.get(subPathName);
+      const childPrefix = leafPrefix(subPathName);
+      const declaredFields = declared === 'Array' && childPrefix
+        ? [...STORABLE_PATHS.keys()]
+            .filter((p) => p.startsWith(`${subPathName}.`))
+            .map((p) => p.slice(subPathName.length + 1).split('.')[0])
+        : [];
+      if (!declaredFields.length) continue;
+
+      for (const item of subValue.slice(0, 25)) {
+        if (!item || typeof item !== 'object') continue;
+        for (const innerKey of Object.keys(item)) {
+          if (SYSTEM_PATHS.includes(innerKey)) continue;
+          if (!declaredFields.includes(innerKey)) unknown.push(`${subPathName}[].${innerKey}`);
         }
       }
     }

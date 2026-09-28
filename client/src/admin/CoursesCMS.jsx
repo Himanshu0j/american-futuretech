@@ -18,12 +18,42 @@ import {
 } from 'lucide-react';
 import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
+import ImageUploadInput from './components/ImageUploadInput';
+
+/**
+ * Split the composer's bulk "topics" text into lesson titles.
+ *
+ * The separator is a FULL STOP (a comma appears inside far too many real
+ * lesson titles — "Data Warehouse; Data Lake & Lakehouse, Conceptual; Logical" —
+ * and comma-splitting was silently inventing extra lessons). A full stop only
+ * splits when it ends a topic, so "NIST Cybersecurity Framework 2.0" survives.
+ */
+const splitTopics = (text) =>
+  String(text || '')
+    .split(/(?:\.\s+|\r?\n+|\.\s*$)/)
+    .map((topic) => topic.trim())
+    .filter(Boolean);
+
+/** Keep the lesson list and its Free Preview ticks in step with edited text. */
+const mergeLessons = (titles, previous = []) =>
+  titles.map((title, index) => {
+    const sameTitle = previous.find((lesson) => lesson.title === title);
+    const fallback = previous[index];
+    return {
+      _id: sameTitle?._id || fallback?._id || '',
+      title,
+      isPreview: Boolean(sameTitle ? sameTitle.isPreview : fallback?.isPreview),
+    };
+  });
 
 export default function CoursesCMS() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  // Two-step delete: the trash icon arms the row, the second click deletes.
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -49,11 +79,19 @@ export default function CoursesCMS() {
     audiences: [],
   });
   const [modules, setModules] = useState([
-    { moduleNumber: 1, moduleTitle: 'Module 1: Foundations', topics: 'Topic 1, Topic 2, Topic 3', hours: 30 },
+    { moduleNumber: 1, moduleTitle: 'Module 1: Foundations', topics: 'Topic 1. Topic 2. Topic 3', lessons: [], hours: 30 },
   ]);
 
-  // Capstone showcase cards — editable from the same course modal, saved via /api/settings
+  // Capstone showcase cards — edited per course from this same modal and saved
+  // on the course document (they used to be written to the site-wide settings,
+  // which is why every course showed identical projects).
   const [capstoneProjects, setCapstoneProjects] = useState([]);
+  // Per-course "Tools Covered" heading + icon grid.
+  const [toolsTitle, setToolsTitle] = useState('');
+  const [toolsSubtitle, setToolsSubtitle] = useState('');
+  const [tools, setTools] = useState([]);
+  // Optional image shown at the top of this course's card on /courses.
+  const [cardImage, setCardImage] = useState('');
   const [saveFeedback, setSaveFeedback] = useState(null);
 
   const fetchCourses = async () => {
@@ -70,20 +108,8 @@ export default function CoursesCMS() {
     }
   };
 
-  const fetchCapstones = async () => {
-    try {
-      const res = await api.get('/settings');
-      if (res.data.success) {
-        setCapstoneProjects(res.data.settings?.capstone?.projects || []);
-      }
-    } catch (err) {
-      console.error('Failed to load capstone projects:', err);
-    }
-  };
-
   useEffect(() => {
     fetchCourses();
-    fetchCapstones();
   }, []);
 
   const openCreateModal = () => {
@@ -97,6 +123,11 @@ export default function CoursesCMS() {
     setBasePrice(2499);
     setDiscountedPrice(1899);
     setHighlights(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
+    setCardImage('');
+    setToolsTitle('');
+    setToolsSubtitle('');
+    setTools([]);
+    setCapstoneProjects([]);
     setViewOptions({ groupBatch: true, personalizedMentor: true });
     setEligibility({
       eyebrow: 'Eligibility & Candidate Profile',
@@ -109,7 +140,7 @@ export default function CoursesCMS() {
       audiences: [],
     });
     setModules([
-      { moduleNumber: 1, moduleTitle: 'Module 1: Foundations & Architecture', topics: 'Topic 1, Topic 2, Topic 3', hours: 32 },
+      { moduleNumber: 1, moduleTitle: 'Module 1: Foundations & Architecture', topics: 'Topic 1. Topic 2. Topic 3', lessons: [], hours: 32 },
     ]);
     setModalOpen(true);
   };
@@ -125,6 +156,16 @@ export default function CoursesCMS() {
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
+    setCardImage(course.cardImage || course.thumbnail || '');
+    setToolsTitle(course.toolsTitle || '');
+    setToolsSubtitle(course.toolsSubtitle || '');
+    setTools(Array.isArray(course.tools) ? course.tools : []);
+    setCapstoneProjects(
+      (Array.isArray(course.capstoneProjects) ? course.capstoneProjects : []).map((proj) => ({
+        ...proj,
+        stack: Array.isArray(proj.stack) ? proj.stack : [],
+      })),
+    );
     setViewOptions({
       groupBatch: course.viewOptions?.groupBatch !== false,
       personalizedMentor: course.viewOptions?.personalizedMentor !== false,
@@ -145,7 +186,8 @@ export default function CoursesCMS() {
       course.curriculum?.map((m) => ({
         moduleNumber: m.moduleNumber,
         moduleTitle: m.moduleTitle,
-        topics: m.topics?.join(', ') || '',
+        topics: (m.topics || []).join('. '),
+        lessons: (m.topics || []).map((title) => ({ _id: '', title, isPreview: false })),
         hours: m.hours || 30,
       })) || []
     );
@@ -159,18 +201,23 @@ export default function CoursesCMS() {
       const live = res.data?.modules;
       if (Array.isArray(live)) {
         setModules(
-          live.map((m, idx) => ({
-            _id: m._id,
-            moduleNumber: m.moduleNumber || idx + 1,
-            moduleTitle: m.title || `Module ${idx + 1}`,
-            topics: (m.lessons || []).map((l) => l.title).filter(Boolean).join(', '),
-            // Kept so an untouched save round-trips the lessons exactly. Joining
-            // them with commas and splitting again would break any lesson whose
-            // own title contains a comma.
-            lessonTitles: (m.lessons || []).map((l) => l.title).filter(Boolean),
-            topicsDirty: false,
-            hours: m.durationHours || 30,
-          }))
+          live.map((m, idx) => {
+            const lessons = (m.lessons || [])
+              .filter((l) => l.title)
+              .map((l) => ({ _id: l._id, title: l.title, isPreview: Boolean(l.isPreview) }));
+            return {
+              _id: m._id,
+              moduleNumber: m.moduleNumber || idx + 1,
+              moduleTitle: m.title || `Module ${idx + 1}`,
+              topics: lessons.map((l) => l.title).join('. '),
+              // The lesson rows below the text field are what is actually saved
+              // (id + title + Free Preview), so an untouched save round-trips
+              // every lesson exactly — including the preview badge.
+              lessons,
+              topicsDirty: false,
+              hours: m.durationHours || 30,
+            };
+          })
         );
       }
     } catch (err) {
@@ -190,6 +237,31 @@ export default function CoursesCMS() {
       }
     } catch (err) {
       console.error('Failed to toggle publish:', err);
+    }
+  };
+
+  /**
+   * Delete a course for good (curriculum included). The server refuses when
+   * students are enrolled, and that refusal is shown verbatim so the admin
+   * knows to hide the course instead.
+   */
+  const handleDeleteCourse = async (course) => {
+    try {
+      setDeleting(true);
+      const res = await api.delete(`/courses/${course._id}`);
+      setCourses((prev) => prev.filter((c) => c._id !== course._id));
+      setSaveFeedback({
+        type: 'success',
+        message: res.data?.message || `Deleted "${course.title}" and its curriculum.`,
+      });
+    } catch (err) {
+      setSaveFeedback({
+        type: 'error',
+        message: err.response?.data?.message || `Could not delete "${course.title}": ${err.message}`,
+      });
+    } finally {
+      setDeleting(false);
+      setPendingDelete(null);
     }
   };
 
@@ -235,21 +307,28 @@ export default function CoursesCMS() {
   const handleSaveCourse = async (e) => {
     e.preventDefault();
 
-    const formattedModules = modules.map((m, idx) => ({
-      // The id lets the server update the existing module/lessons in place
-      // instead of recreating them (which would drop lesson videos).
-      _id: m._id,
-      moduleNumber: idx + 1,
-      moduleTitle: m.moduleTitle,
-      // Untouched rows send the lesson titles verbatim; edited rows are split on
-      // commas, which is the contract the composer's placeholder documents.
-      topics: !m.topicsDirty && Array.isArray(m.lessonTitles)
-        ? m.lessonTitles
-        : (Array.isArray(m.topics) ? m.topics : String(m.topics || '').split(','))
-            .map((t) => String(t).trim())
-            .filter(Boolean),
-      hours: Number(m.hours) || 30,
-    }));
+    const formattedModules = modules.map((m, idx) => {
+      // Lessons are the source of truth: each one carries its id (so the server
+      // updates it in place instead of recreating it and dropping the video) and
+      // its Free Preview tick.
+      const lessons = (Array.isArray(m.lessons) ? m.lessons : [])
+        .map((lesson) => ({
+          _id: lesson._id || '',
+          title: String(lesson.title || '').trim(),
+          isPreview: Boolean(lesson.isPreview),
+        }))
+        .filter((lesson) => lesson.title);
+
+      return {
+        _id: m._id,
+        moduleNumber: idx + 1,
+        moduleTitle: m.moduleTitle,
+        lessons,
+        // The embedded mirror on the course document still reads `topics`.
+        topics: lessons.map((lesson) => lesson.title),
+        hours: Number(m.hours) || 30,
+      };
+    });
 
     const formattedHighlights = Array.isArray(highlights)
       ? highlights.filter(Boolean)
@@ -271,6 +350,24 @@ export default function CoursesCMS() {
       highlights: formattedHighlights,
       curriculum: formattedModules,
       viewOptions,
+      // Card image + per-course "Tools Covered" block + capstone cards.
+      thumbnail: cardImage,
+      toolsTitle,
+      toolsSubtitle,
+      tools: tools
+        .map((tool) => ({ name: String(tool.name || '').trim(), icon: String(tool.icon || '').trim() }))
+        .filter((tool) => tool.name),
+      capstoneProjects: capstoneProjects
+        .map((proj, idx) => ({
+          tag: proj.tag || 'Capstone',
+          title: String(proj.title || '').trim(),
+          desc: proj.desc || '',
+          stack: Array.isArray(proj.stack) ? proj.stack : [],
+          color: proj.color || 'from-indigo-500 to-blue-500',
+          order: idx + 1,
+          active: proj.active !== false,
+        }))
+        .filter((proj) => proj.title),
       eligibility: {
         ...eligibility,
         points: eligibility.points.filter((p) => p && String(p).trim()),
@@ -280,52 +377,24 @@ export default function CoursesCMS() {
     };
 
     try {
+      let summary = null;
       if (editingCourse) {
-        await api.put(`/courses/${editingCourse._id}`, payload);
+        const res = await api.put(`/courses/${editingCourse._id}`, payload);
+        summary = res.data?.curriculumSummary;
       } else {
-        await api.post('/courses', payload);
+        const res = await api.post('/courses', payload);
+        summary = res.data?.curriculumSummary;
       }
 
-      // Persist the capstone showcase cards from the same modal. Only the
-      // capstone branch is sent (the endpoint merges), so a concurrent save from
-      // SettingsCMS cannot be clobbered. The course is already saved at this
-      // point, so any failure here must be surfaced instead of swallowed.
-      let feedback = null;
-      try {
-        const settingsRes = await api.get('/settings');
-        const currentCapstone = settingsRes.data?.settings?.capstone || {};
-        const putRes = await api.put('/settings', {
-          capstone: {
-            ...currentCapstone,
-            projects: capstoneProjects.map((proj, idx) => ({ ...proj, order: idx + 1, active: proj.active !== false })),
-          },
-        });
-        if (putRes.data?.ignoredPaths?.length) {
-          feedback = {
-            type: 'error',
-            message: `Capstone cards saved, but the server ignored these fields: ${putRes.data.ignoredPaths.join(', ')}`,
-          };
-        }
-      } catch (capErr) {
-        console.error('Capstone save failed:', capErr);
-        feedback = {
-          type: 'error',
-          message: `The course was saved, but the capstone cards could NOT be saved: ${
-            capErr.response?.data?.message || capErr.message
-          }`,
-        };
-      }
-
-      setSaveFeedback(
-        feedback || {
-          type: 'success',
-          message: `Course saved. ${capstoneProjects.length} capstone card(s) published to the course pages.`,
-        },
-      );
+      setSaveFeedback({
+        type: 'success',
+        message: `Course saved. ${payload.tools.length} tool(s), ${payload.capstoneProjects.length} capstone card(s) and ${
+          summary ? summary.lessons.created + summary.lessons.updated : formattedModules.length
+        } lesson(s) are live on the course page.`,
+      });
 
       setModalOpen(false);
       fetchCourses();
-      fetchCapstones();
     } catch (err) {
       console.error('Save course failed:', err);
       setSaveFeedback({
@@ -341,7 +410,12 @@ export default function CoursesCMS() {
       {
         moduleNumber: prev.length + 1,
         moduleTitle: `Module ${prev.length + 1}: Advanced Topics`,
-        topics: 'Topic A, Topic B, Topic C',
+        topics: 'Topic A. Topic B. Topic C',
+        lessons: [
+          { _id: '', title: 'Topic A', isPreview: false },
+          { _id: '', title: 'Topic B', isPreview: false },
+          { _id: '', title: 'Topic C', isPreview: false },
+        ],
         hours: 40,
       },
     ]);
@@ -349,6 +423,72 @@ export default function CoursesCMS() {
 
   const removeModuleField = (index) => {
     setModules((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Lesson rows inside a module (title + Free Preview tick) ──
+  const updateModuleRow = (index, updater) => {
+    setModules((prev) => {
+      const updated = [...prev];
+      updated[index] = updater(updated[index]);
+      return updated;
+    });
+  };
+
+  /** Bulk-paste box: text → lessons (Free Preview ticks are carried over). */
+  const setModuleTopics = (index, text) => {
+    updateModuleRow(index, (mod) => ({
+      ...mod,
+      topics: text,
+      lessons: mergeLessons(splitTopics(text), mod.lessons || []),
+      topicsDirty: true,
+    }));
+  };
+
+  const setLessonTitle = (index, lessonIndex, value) => {
+    updateModuleRow(index, (mod) => {
+      const lessons = [...(mod.lessons || [])];
+      lessons[lessonIndex] = { ...lessons[lessonIndex], title: value };
+      return { ...mod, lessons, topics: lessons.map((l) => l.title).join('. '), topicsDirty: true };
+    });
+  };
+
+  const toggleLessonPreview = (index, lessonIndex, checked) => {
+    updateModuleRow(index, (mod) => {
+      const lessons = [...(mod.lessons || [])];
+      lessons[lessonIndex] = { ...lessons[lessonIndex], isPreview: checked };
+      return { ...mod, lessons };
+    });
+  };
+
+  const addLessonRow = (index) => {
+    updateModuleRow(index, (mod) => ({
+      ...mod,
+      lessons: [...(mod.lessons || []), { _id: '', title: '', isPreview: false }],
+    }));
+  };
+
+  const removeLessonRow = (index, lessonIndex) => {
+    updateModuleRow(index, (mod) => {
+      const lessons = (mod.lessons || []).filter((_, i) => i !== lessonIndex);
+      return { ...mod, lessons, topics: lessons.map((l) => l.title).join('. '), topicsDirty: true };
+    });
+  };
+
+  // ── Per-course "Tools Covered" grid ──
+  const addTool = () => {
+    setTools((prev) => [...prev, { name: 'New Tool', icon: '' }]);
+  };
+
+  const updateTool = (index, field, value) => {
+    setTools((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const removeTool = (index) => {
+    setTools((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -461,30 +601,65 @@ export default function CoursesCMS() {
                   </span>
                 </td>
 
-                {/* Publish Toggle */}
+                {/* Publish / Hide Toggle — an inactive course disappears from the
+                    public site but keeps every enrollment and its curriculum. */}
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleTogglePublish(course)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                       course.isPublished
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-slate-800 text-slate-400 border border-slate-700'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                        : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
                     }`}
+                    title={
+                      course.isPublished
+                        ? 'Live on the public website — click to hide it (mark inactive)'
+                        : 'Hidden from the public website — click to publish it again'
+                    }
                   >
                     {course.isPublished ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                    <span>{course.isPublished ? 'Live on Site' : 'Draft'}</span>
+                    <span>{course.isPublished ? 'Live on Site' : 'Hidden (Inactive)'}</span>
                   </button>
                 </td>
 
-                {/* Edit Button */}
+                {/* Actions: edit + delete */}
                 <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={() => openEditModal(course)}
-                    className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
-                    title="Edit Course & Curriculum"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => openEditModal(course)}
+                      className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
+                      title="Edit Course & Curriculum"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+
+                    {pendingDelete === course._id ? (
+                      <span className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleDeleteCourse(course)}
+                          disabled={deleting}
+                          className="px-2.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold hover:bg-rose-500/30 disabled:opacity-60 cursor-pointer"
+                          title="Delete this course and its curriculum permanently"
+                        >
+                          {deleting ? 'Deleting…' : 'Confirm delete'}
+                        </button>
+                        <button
+                          onClick={() => setPendingDelete(null)}
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-[11px] font-semibold hover:bg-slate-700 cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setPendingDelete(course._id)}
+                        className="p-2 rounded-lg bg-slate-800 text-rose-400 hover:text-rose-300 hover:bg-slate-700 transition-colors cursor-pointer"
+                        title="Delete course — or use the status button to hide it instead"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -604,6 +779,98 @@ export default function CoursesCMS() {
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
                   />
                 </div>
+              </div>
+
+              {/* Card image + per-course "Tools Covered" grid */}
+              <div className="space-y-4 pt-4 border-t border-white/[0.08]">
+                <ImageUploadInput
+                  label="Career Program Card Image (top of this course's card on /courses)"
+                  value={cardImage}
+                  onChange={setCardImage}
+                  placeholder="https://… or upload a JPG / PNG / WebP from your computer"
+                  previewSize="w-24 h-16"
+                />
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-emerald-400" />
+                      <span>Tools Covered (this course only)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Har course ka apna tool stack — pehle sab courses me ek hi Data Science tool grid dikh rahi thi.
+                      List khaali chhodne par default stack dikhta rahega.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addTool}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-emerald-500/30 shrink-0 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Tool</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Tools Section Title</label>
+                    <input
+                      type="text"
+                      value={toolsTitle}
+                      onChange={(e) => setToolsTitle(e.target.value)}
+                      placeholder={`${title || 'Course'} Program`}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Tools Section Subtitle</label>
+                    <input
+                      type="text"
+                      value={toolsSubtitle}
+                      onChange={(e) => setToolsSubtitle(e.target.value)}
+                      placeholder="Master enterprise-grade frameworks…"
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                    />
+                  </div>
+                </div>
+
+                {tools.length === 0 ? (
+                  <div className="text-xs text-slate-400 text-center py-3 border border-dashed border-slate-700 rounded-xl">
+                    No tools listed yet — the course keeps showing the default tool grid.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {tools.map((tool, idx) => (
+                      <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                        <input
+                          type="text"
+                          placeholder="Tool name (e.g. PyTorch)"
+                          value={tool.name || ''}
+                          onChange={(e) => updateTool(idx, 'name', e.target.value)}
+                          className="sm:col-span-5 w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs"
+                        />
+                        <div className="sm:col-span-6">
+                          <ImageUploadInput
+                            label=""
+                            value={tool.icon || ''}
+                            onChange={(value) => updateTool(idx, 'icon', value)}
+                            placeholder="Icon URL (/images/tools/pytorch.svg) or upload"
+                            previewSize="w-9 h-9"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeTool(idx)}
+                          className="sm:col-span-1 justify-self-end text-rose-400 hover:text-rose-300 p-2 cursor-pointer"
+                          title="Remove this tool"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Highlights */}
@@ -743,7 +1010,8 @@ export default function CoursesCMS() {
                       <span>Capstone Projects (Showcase Cards)</span>
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
-                      These cards render in the Capstone Projects section on all course pages.
+                      Yeh cards sirf IS course ke Capstone Projects section me dikhte hain. Khaali chhodne par
+                      site-wide list (Settings → Capstone) dikhti hai.
                     </p>
                   </div>
                   <button
@@ -884,22 +1152,61 @@ export default function CoursesCMS() {
                         </div>
                       </div>
 
-                      <div>
+                      <div className="space-y-2">
                         <input
                           type="text"
-                          placeholder="Topics (separated by commas)"
+                          placeholder="Topics — separate each lesson with a FULL STOP (e.g. Python Basics. Data Cleaning. Feature Engineering)"
                           value={mod.topics}
-                          onChange={(e) => {
-                            const updated = [...modules];
-                            updated[index] = {
-                              ...updated[index],
-                              topics: e.target.value,
-                              topicsDirty: true,
-                            };
-                            setModules(updated);
-                          }}
+                          onChange={(e) => setModuleTopics(index, e.target.value)}
                           className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-300 text-xs"
                         />
+                        <p className="text-[10px] text-slate-500">
+                          Full stop (.) = naya lesson. Comma ki zarurat nahi — pehle comma se lesson ban raha tha.
+                        </p>
+
+                        <div className="flex items-center justify-between gap-3 pt-1">
+                          <span className="text-[10px] font-mono uppercase text-slate-500">
+                            Lessons ({(mod.lessons || []).length}) — tick “Free Preview” for the lesson students may watch before enrolling
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => addLessonRow(index)}
+                            className="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold hover:bg-indigo-500/30 cursor-pointer shrink-0"
+                          >
+                            + Add lesson
+                          </button>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          {(mod.lessons || []).map((lesson, lessonIndex) => (
+                            <div key={lessonIndex} className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={lesson.title || ''}
+                                onChange={(e) => setLessonTitle(index, lessonIndex, e.target.value)}
+                                placeholder={`Lesson ${lessonIndex + 1}`}
+                                className="flex-1 p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-200 text-xs"
+                              />
+                              <label className="flex items-center gap-1.5 text-[10px] font-mono text-amber-300 whitespace-nowrap cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(lesson.isPreview)}
+                                  onChange={(e) => toggleLessonPreview(index, lessonIndex, e.target.checked)}
+                                  className="w-3.5 h-3.5 rounded bg-slate-950 border-slate-700 text-amber-400 focus:ring-0"
+                                />
+                                Free Preview
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => removeLessonRow(index, lessonIndex)}
+                                className="text-rose-400 hover:text-rose-300 p-1.5 cursor-pointer"
+                                title="Remove this lesson"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ))}

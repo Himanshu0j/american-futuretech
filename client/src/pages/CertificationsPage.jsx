@@ -191,7 +191,9 @@ export default function CertificationsPage() {
         {/* CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-6 sm:p-7 text-center shadow-2xl border border-[#4338CA]">
-            <h3 className="text-xl sm:text-2xl font-black font-heading mb-3">
+            {/* text-white is required: the global heading colour (#0B1220) is
+                identical to this dark card's background. */}
+            <h3 className="text-xl sm:text-2xl font-black font-heading mb-3 text-white">
               Advance Your Career with American FutureTech
             </h3>
             <p className="text-sm text-emerald-100/90 max-w-xl mx-auto mb-6">

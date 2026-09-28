@@ -47,11 +47,14 @@ const normalizeCurriculumForEmbed = (curriculum) =>
 /**
  * The lessons the composer wants in a module.
  *
- * Preferred shape is `lessons: [{ _id, title }]` — the id keeps a renamed lesson
- * attached to its video. Legacy shapes (`lessonTitles: []`, `topics: 'A, B'`)
- * still work; without an id those lessons fall back to title matching.
+ * Preferred shape is `lessons: [{ _id, title, isPreview }]` — the id keeps a
+ * renamed lesson attached to its video, and `isPreview` is what decides the
+ * "Free Preview" badge (undefined → leave the stored flag untouched). Legacy
+ * shapes (`lessonTitles: []`, `topics: 'A. B'`) still work; without an id those
+ * lessons fall back to title matching.
  *
- * @returns {Array<{id: string, title: string}>|null} null → leave the lessons alone
+ * @returns {Array<{id: string, title: string, isPreview?: boolean}>|null}
+ *          null → leave the lessons alone
  */
 const toLessonList = (row) => {
   const clean = (list) =>
@@ -61,6 +64,9 @@ const toLessonList = (row) => {
         return {
           id: String(entry?._id || entry?.id || '').trim(),
           title: String(entry?.title || '').trim(),
+          // Only carry the flag when the caller actually expressed one.
+          isPreview:
+            entry?.isPreview === undefined ? undefined : Boolean(entry.isPreview),
         };
       })
       .filter((lesson) => lesson.title || lesson.id);
@@ -69,13 +75,27 @@ const toLessonList = (row) => {
   if (Array.isArray(row?.lessonTitles)) return clean(row.lessonTitles);
   if (Array.isArray(row?.topics)) return clean(row.topics);
   if (typeof row?.topics === 'string') {
-    return row.topics
-      .split(',')
-      .map((title) => ({ id: '', title: title.trim() }))
-      .filter((lesson) => lesson.title);
+    return splitTopicString(row.topics).map((title) => ({ id: '', title }));
   }
   return null; // undefined → "leave the lessons alone"
 };
+
+/**
+ * Split the composer's bulk "topics" text into lesson titles.
+ *
+ * The composer documents a FULL STOP as the separator (a comma is far too
+ * common inside a real lesson title — "Data Warehouse; Data Lake & Lakehouse,
+ * Conceptual; Logical" — so comma-splitting silently shredded topics into
+ * extra lessons). A full stop only splits when it ends a topic: followed by
+ * whitespace, a newline, or the end of the text. That leaves decimal version
+ * numbers such as "NIST Cybersecurity Framework 2.0" intact.
+ */
+const TOPIC_SEPARATOR = /\.\s+|\r?\n+|\.\s*$/;
+const splitTopicString = (text) =>
+  String(text || '')
+    .split(TOPIC_SEPARATOR)
+    .map((title) => title.trim())
+    .filter(Boolean);
 
 /** Does this lesson hold anything an admin actually authored? */
 const hasAuthoredContent = (lesson) =>
@@ -146,7 +166,7 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
     const moduleLessons = existingLessons.filter((l) => String(l.module) === String(mod._id));
 
     for (let t = 0; t < lessonList.length; t += 1) {
-      const { id, title: lessonTitle } = lessonList[t];
+      const { id, title: lessonTitle, isPreview } = lessonList[t];
 
       // Id first (survives renames), then title as a fallback for legacy rows.
       let existing = id
@@ -162,6 +182,9 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
         existing.lessonNumber = t + 1;
         existing.order = t + 1;
         if (lessonTitle && norm(existing.title) !== norm(lessonTitle)) existing.title = lessonTitle;
+        // The admin's Free Preview tick is authoritative — this is the only way
+        // to remove the badge the seeder once added automatically.
+        if (isPreview !== undefined) existing.isPreview = isPreview;
         await existing.save();
         usedLessonIds.add(String(existing._id));
         summary.lessons.updated += 1;
@@ -172,6 +195,7 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
           title: lessonTitle || `Lesson ${t + 1}`,
           lessonNumber: t + 1,
           order: t + 1,
+          isPreview: isPreview === undefined ? false : isPreview,
         });
         usedLessonIds.add(String(created._id));
         summary.lessons.created += 1;
@@ -218,4 +242,10 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
   return summary;
 };
 
-module.exports = { syncCourseCurriculum, normalizeCurriculumForEmbed, toLessonList, hasAuthoredContent };
+module.exports = {
+  syncCourseCurriculum,
+  normalizeCurriculumForEmbed,
+  toLessonList,
+  hasAuthoredContent,
+  splitTopicString,
+};

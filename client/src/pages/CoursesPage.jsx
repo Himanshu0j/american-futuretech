@@ -212,11 +212,32 @@ export default function CoursesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
-              {filteredCourses.map((course) => (
+              {filteredCourses.map((course) => {
+                // Optional per-course card image (uploaded or linked in the CMS).
+                const cardImage = course.cardImage || course.thumbnail || '';
+
+                return (
                 <div
                   key={course._id}
-                  className="elms-card p-6 flex flex-col justify-between text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-indigo-500/40 hover:shadow-xl transition-all duration-300"
+                  className="elms-card flex flex-col justify-between text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-indigo-500/40 hover:shadow-xl transition-all duration-300 overflow-hidden"
                 >
+                  {cardImage && (
+                    <div className="relative w-full h-40 sm:h-44 overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      <img
+                        src={cardImage}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      {course.badge && (
+                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0B1220]/85 text-[#E5C275] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                          {course.badge}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-6 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-[11px] font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full font-bold truncate max-w-[70%] border border-indigo-200/50 dark:border-indigo-800/50">
@@ -288,8 +309,10 @@ export default function CoursesPage() {
                       </Link>
                     </div>
                   </div>
+                  </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>

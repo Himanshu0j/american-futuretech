@@ -301,6 +301,194 @@ const run = async () => {
     const cleared = await request('GET', `/api/curriculum/courses/${courseId}`);
     check('Clearing the composer clears the curriculum',
       (cleared.json?.modules || []).length === 0, `modules ${(cleared.json?.modules || []).length}`);
+
+    // 11. Team & Alliances tab. A nested sub-document (`sisterCompany`,
+    //     `pedagogy`, `careerSupport`, `footer`) saves perfectly, but the old
+    //     schema check read only `schema.paths` — which never holds nested keys —
+    //     and reported "These fields were NOT saved" over the whole tab. The
+    //     admin believed the save was broken while the roster, sister-company
+    //     copy and footer had all been written.
+    const teamPayload = {
+      admissionNotice: 'Spring 2026 Admissions Open',
+      leadership: [{
+        name: 'Contract Test Leader', role: 'Faculty Lead', badge: 'Leadership',
+        experience: '5 Years', bio: 'Contract test bio', skills: ['Python'], order: 1, active: true,
+      }],
+      sisterCompany: {
+        enabled: true, eyebrow: 'Sister Staffing Company', name: 'Contract Staffing Inc.',
+        badge: 'Sister Company', tagline: 'Tagline', location: 'Branchburg, NJ',
+        headline: 'Sister headline', description: 'Sister description', website: 'https://example.com',
+        stats: { shortlistHours: '24h', shortlistLabel: 'Shortlists', vetted: '99%', vettedLabel: 'Vetted', placement: 'Direct', placementLabel: 'Placement' },
+        services: [{ title: 'IT Staffing', desc: 'Recruitment' }],
+      },
+      pedagogy: {
+        enabled: true, eyebrow: 'Pedagogy', title: 'Build-First', description: 'Hands-on',
+        handsOnPercent: 70, theoryPercent: 30,
+        pillars: [{ title: 'Capstones', desc: 'Real projects', icon: 'Terminal' }],
+        stats: [{ value: '2,000+', label: 'Students' }],
+      },
+      careerSupport: {
+        title: 'Six Pillars', subtitle: 'Career support',
+        transparency: { title: 'What it means', description: 'Honest scope', whatWeProvide: ['Resumes'], studentAccountability: ['Practice'] },
+        stages: [{ stage: 'STAGE 01', title: 'Resume', tagline: 'Optimisation', points: ['ATS'], icon: 'FileText' }],
+      },
+      footer: {
+        enabled: true, logo: '/images/logo-horizontal-white.webp', logoWidth: 160,
+        description: 'Footer description', badgeText: 'Charter', copyrightText: '© 2026 AFT',
+        hiringStrip: { enabled: true, text: 'Alumni at leading companies' },
+        cta: { enabled: true, label: 'Contact Admissions', url: '/contact' },
+        columns: [{ title: 'Company', order: 1, active: true, links: [{ label: 'About Us', url: '/about', order: 1 }] }],
+        legalLinks: [{ label: 'Privacy Policy', url: '/privacy', order: 1 }],
+      },
+      textOverrides: { '/privacy': { 'main>h1#0': { original: 'Privacy', value: 'Privacy Policy', updatedAt: new Date().toISOString() } } },
+      imageOverrides: { '/about': { 'main>img#0': { original: '/a.png', value: '/b.png', updatedAt: new Date().toISOString() } } },
+    };
+    const teamSave = await request('PUT', '/api/settings', { token, body: teamPayload });
+    const teamIgnored = teamSave.json?.ignoredPaths || [];
+    check('Team & Alliances tab reports NO ignored fields (the red banner is gone)',
+      teamSave.status === 200 && teamIgnored.length === 0,
+      `ignoredPaths: ${JSON.stringify(teamIgnored)}`);
+
+    const teamAfter = await request('GET', '/api/settings');
+    const savedSettings = teamAfter.json?.settings || {};
+    check('Leadership roster persists and is served to the About page',
+      savedSettings.leadership?.[0]?.name === 'Contract Test Leader',
+      `name ${savedSettings.leadership?.[0]?.name}`);
+    check('Sister company block persists',
+      savedSettings.sisterCompany?.name === 'Contract Staffing Inc.' && savedSettings.sisterCompany?.stats?.shortlistHours === '24h');
+    check('Pedagogy block persists',
+      savedSettings.pedagogy?.title === 'Build-First' && savedSettings.pedagogy?.pillars?.length === 1);
+    check('Career support block persists',
+      savedSettings.careerSupport?.transparency?.description === 'Honest scope' && savedSettings.careerSupport?.stages?.length === 1);
+    check('Footer columns and legal links persist',
+      savedSettings.footer?.columns?.[0]?.links?.[0]?.label === 'About Us' && savedSettings.footer?.legalLinks?.length === 1);
+    check('Admission notice persists',
+      savedSettings.admissionNotice === 'Spring 2026 Admissions Open',
+      `got "${savedSettings.admissionNotice}"`);
+    check('Site-editor override maps are still accepted without warnings',
+      Boolean(savedSettings.textOverrides?.['/privacy']) && Boolean(savedSettings.imageOverrides?.['/about']));
+
+    // 12. Per-course page blocks: card image, "Tools Covered" grid and the
+    //     course's own capstone cards. Every course used to render the same
+    //     hard-coded Data Science tool grid and the same capstone projects.
+    const perCourse = await request('POST', '/api/courses', {
+      token,
+      body: {
+        title: `Contract Per-Course Blocks ${Date.now()}`,
+        category: 'Cyber Governance & Legal Tech',
+        duration: '4 Months',
+        pricing: { basePrice: 4999, discountedPrice: 4499 },
+        thumbnail: '/uploads/contract-card.png',
+        toolsTitle: 'Governance, Risk and Compliance (GRC) with AI Program',
+        toolsSubtitle: 'Governance, audit and AI-risk tooling',
+        tools: [
+          { name: 'NIST CSF', icon: '/images/tools/nist.svg' },
+          { name: 'ISO 27001', icon: '' },
+        ],
+        capstoneProjects: [
+          { tag: 'GRC', title: 'Audit an enterprise AI stack', desc: 'Map controls to NIST CSF', stack: ['NIST', 'ISO'], color: 'from-indigo-500 to-blue-500' },
+        ],
+      },
+    });
+    const perCourseDoc = perCourse.json?.course;
+    check('Course create keeps the card image',
+      perCourseDoc?.thumbnail === '/uploads/contract-card.png',
+      `thumbnail ${perCourseDoc?.thumbnail}`);
+    check('Course create keeps the per-course tools grid',
+      perCourseDoc?.tools?.length === 2 && perCourseDoc?.tools?.[0]?.name === 'NIST CSF',
+      `tools ${perCourseDoc?.tools?.length}`);
+    check('Course create keeps the per-course tools heading',
+      perCourseDoc?.toolsTitle === 'Governance, Risk and Compliance (GRC) with AI Program' &&
+      perCourseDoc?.toolsSubtitle === 'Governance, audit and AI-risk tooling');
+    check('Course create keeps the per-course capstone cards',
+      perCourseDoc?.capstoneProjects?.length === 1 && perCourseDoc?.capstoneProjects?.[0]?.stack?.length === 2,
+      `capstones ${perCourseDoc?.capstoneProjects?.length}`);
+
+    const perCoursePublic = await request('GET', `/api/courses/${perCourseDoc?.slug}`);
+    const publicDoc = perCoursePublic.json?.course || perCoursePublic.json?.data;
+    check('The public course endpoint serves the course-specific blocks',
+      publicDoc?.tools?.length === 2 && publicDoc?.capstoneProjects?.[0]?.title === 'Audit an enterprise AI stack' &&
+      publicDoc?.thumbnail === '/uploads/contract-card.png');
+
+    // 13. Free Preview must be the admin's tick, not an automatic badge. The
+    //     seeder stamps "preview" on the first lesson of module 1 and nothing in
+    //     the composer could ever take it off again.
+    const previewModule = await request('PUT', `/api/courses/${perCourseDoc?._id}`, {
+      token,
+      body: {
+        curriculum: [{
+          moduleTitle: 'Module with a comma, inside its title',
+          hours: 30,
+          lessons: [
+            { title: 'First lesson with a preview', isPreview: true },
+            { title: 'Second lesson without one', isPreview: false },
+          ],
+        }],
+      },
+    });
+    const previewCurriculum = await request('GET', `/api/curriculum/courses/${perCourseDoc?._id}`);
+    const previewLessons = previewCurriculum.json?.modules?.[0]?.lessons || [];
+    check('Lessons are created from the composer lesson rows',
+      previewModule.status === 200 && previewLessons.length === 2,
+      `lessons ${previewLessons.length}`);
+    check('A comma inside a module title no longer invents extra lessons',
+      previewCurriculum.json?.modules?.[0]?.title === 'Module with a comma, inside its title',
+      `title "${previewCurriculum.json?.modules?.[0]?.title}"`);
+    check('Free Preview is only on the ticked lesson',
+      previewLessons[0]?.isPreview === true && previewLessons[1]?.isPreview === false,
+      JSON.stringify(previewLessons.map((l) => l.isPreview)));
+
+    const firstLessonId = previewLessons[0]?._id;
+    await request('PUT', `/api/courses/${perCourseDoc?._id}`, {
+      token,
+      body: {
+        curriculum: [{
+          moduleTitle: 'Module with a comma, inside its title',
+          hours: 30,
+          lessons: [
+            { _id: firstLessonId, title: 'First lesson with a preview', isPreview: false },
+            { title: 'Second lesson without one', isPreview: true },
+          ],
+        }],
+      },
+    });
+    const afterPreviewToggle = await request('GET', `/api/curriculum/courses/${perCourseDoc?._id}`);
+    const toggledLessons = afterPreviewToggle.json?.modules?.[0]?.lessons || [];
+    check('The Free Preview tick can be removed and moved to another lesson',
+      toggledLessons[0]?.isPreview === false && toggledLessons[1]?.isPreview === true,
+      JSON.stringify(toggledLessons.map((l) => l.isPreview)));
+
+    // 14. The bulk topics box now separates on a full stop, so commas inside a
+    //     lesson title survive the round-trip.
+    await request('PUT', `/api/courses/${perCourseDoc?._id}`, {
+      token,
+      body: { curriculum: [{ moduleTitle: 'Dot separated module', topics: 'First lesson. Second lesson with 2.0 in it' }] },
+    });
+    const dotCurriculum = await request('GET', `/api/curriculum/courses/${perCourseDoc?._id}`);
+    const dotLessons = dotCurriculum.json?.modules?.[0]?.lessons || [];
+    check('A full stop separates topics into lessons',
+      dotLessons.length === 2, `lessons ${dotLessons.length}`);
+    check('A decimal version number is not split in half',
+      dotLessons[1]?.title === 'Second lesson with 2.0 in it',
+      `title "${dotLessons[1]?.title}"`);
+
+    // 15. Deleting a course takes its curriculum with it (no orphan modules).
+    const deletedCourseId = perCourseDoc?._id;
+    const deleteRes = await request('DELETE', `/api/courses/${deletedCourseId}`, { token });
+    const afterDelete = await request('GET', '/api/courses/admin/all', { token });
+    check('Delete course removes it from the CMS list',
+      deleteRes.status === 200 && !(afterDelete.json?.courses || []).some((c) => String(c._id) === String(deletedCourseId)));
+
+    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 8000 });
+    const orphanModules = await mongoose.connection.db
+      .collection('modules')
+      .countDocuments({ course: new mongoose.Types.ObjectId(String(deletedCourseId)) });
+    const orphanLessons = await mongoose.connection.db
+      .collection('lessons')
+      .countDocuments({ course: new mongoose.Types.ObjectId(String(deletedCourseId)) });
+    await mongoose.disconnect();
+    check('Deleting a course deletes its modules and lessons too',
+      orphanModules === 0 && orphanLessons === 0, `modules ${orphanModules} / lessons ${orphanLessons}`);
   } finally {
     await stopServer();
   }

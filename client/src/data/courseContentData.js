@@ -378,13 +378,303 @@ export const COURSE_DETAILED_DATA = {
 };
 
 /**
- * Resolve detailed content object based on course title or slug
+ * Every other program, built on one of the two full content sets above.
+ *
+ * These existed only as a fallback to Data Science before, so DevOps, AI Product
+ * Management and GRC all rendered the SAME capstone cards (and the client spotted
+ * it immediately: "Capstone project saare courses me same dikh rha hai"). Each
+ * program now carries its own projects; assignment happens after the literal so
+ * the entries can spread a finished base object.
+ */
+COURSE_DETAILED_DATA.CYBER_AI_HYBRID = {
+  ...COURSE_DETAILED_DATA.CYBER_ETHICAL_HACKING,
+  heroTitle: "Cyber Security & Artificial Intelligence Hybrid Program",
+  capstoneProjects: [
+    {
+      tag: "Applied AI & Defense",
+      title: "AI-Powered Threat Detection Platform",
+      desc: "Train unsupervised anomaly models on Zeek and firewall telemetry to surface intrusions that static signatures miss, with an analyst review queue.",
+      stack: ["Python", "Zeek", "Scikit-Learn", "Splunk"],
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      tag: "Applied AI & Defense",
+      title: "Phishing & Deepfake Detection Engine",
+      desc: "Classify malicious email, cloned login pages and synthetic voice samples using transformer models, then auto-quarantine confirmed attacks.",
+      stack: ["Hugging Face", "PyTorch", "YARA", "FastAPI"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+    {
+      tag: "Applied AI & Defense",
+      title: "Adversarial ML & Model Defense Lab",
+      desc: "Attack a production fraud model with evasion and poisoning techniques, then harden it with adversarial training and input validation.",
+      stack: ["TensorFlow", "ART", "NumPy", "Jupyter"],
+      color: "from-rose-500 to-pink-500",
+    },
+    {
+      tag: "Applied AI & Defense",
+      title: "Autonomous Incident Response Workflows",
+      desc: "Wire an LLM triage assistant into SOAR playbooks so alerts are enriched, summarised and escalated with a full audit trail.",
+      stack: ["LangChain", "SOAR", "Cortex XSOAR", "REST APIs"],
+      color: "from-emerald-500 to-teal-500",
+    },
+  ],
+  careerRoles: [
+    { name: "AI Security Engineer", color: "from-blue-500 to-indigo-500" },
+    { name: "Threat Detection Engineer", color: "from-violet-500 to-purple-500" },
+    { name: "Security Data Scientist", color: "from-emerald-500 to-green-500" },
+    { name: "SOC Tier 2 / Tier 3 Analyst", color: "from-amber-500 to-yellow-500" },
+    { name: "Detection & Response Automation Engineer", color: "from-rose-500 to-pink-500" },
+  ],
+  certificates: {
+    ...COURSE_DETAILED_DATA.CYBER_ETHICAL_HACKING.certificates,
+    completionImage: "/static/images/csai.jpeg",
+  },
+};
+
+COURSE_DETAILED_DATA.ADVANCED_GENERATIVE_AI = {
+  ...COURSE_DETAILED_DATA.DATA_SCIENCE_AI,
+  heroTitle: "Advanced Generative & Agentic AI Master Program",
+  capstoneProjects: [
+    {
+      tag: "Agentic Systems",
+      title: "Multi-Agent Research Copilot",
+      desc: "Build a planner-plus-workers agent team that researches a market question, cites its sources and produces a reviewed executive brief.",
+      stack: ["LangGraph", "CrewAI", "GPT-4 class LLM", "Pinecone"],
+      color: "from-indigo-500 to-blue-500",
+    },
+    {
+      tag: "Retrieval & RAG",
+      title: "Enterprise RAG Knowledge Assistant",
+      desc: "Ship a hybrid search (vector + keyword) assistant over internal documents with citation grounding and an automated answer-quality evaluation harness.",
+      stack: ["LlamaIndex", "pgvector", "RAGAS", "FastAPI"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+    {
+      tag: "Model Fine-Tuning",
+      title: "Fine-Tuned Domain LLM with Guardrails",
+      desc: "Fine-tune an open-weight model with LoRA/QLoRA on a domain corpus, then add safety filters, PII redaction and an eval scorecard before release.",
+      stack: ["PyTorch", "LoRA / QLoRA", "Llama 3.1", "vLLM"],
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      tag: "Agentic Systems",
+      title: "Autonomous Workflow Agent with Tool Use",
+      desc: "Give an agent safe tools (SQL, email, ticketing) with policy checks, retries and human approval gates so it can complete a real back-office workflow end to end.",
+      stack: ["OpenAI Tools API", "Temporal", "PostgreSQL", "Docker"],
+      color: "from-amber-500 to-orange-500",
+    },
+  ],
+  careerRoles: [
+    { name: "Generative AI Engineer", color: "from-blue-500 to-indigo-500" },
+    { name: "AI Agent Architect", color: "from-violet-500 to-purple-500" },
+    { name: "LLM Platform Engineer", color: "from-emerald-500 to-green-500" },
+    { name: "Prompt & Evaluation Engineer", color: "from-amber-500 to-yellow-500" },
+    { name: "Applied AI Solutions Lead", color: "from-rose-500 to-pink-500" },
+  ],
+};
+
+COURSE_DETAILED_DATA.DEVOPS_CLOUD = {
+  ...COURSE_DETAILED_DATA.DATA_SCIENCE_AI,
+  heroTitle: "DevOps, Kubernetes & Cloud with AI Program",
+  capstoneProjects: [
+    {
+      tag: "Platform Engineering",
+      title: "Production Kubernetes Platform on EKS",
+      desc: "Stand up a multi-tenant cluster with namespaces, RBAC, ingress, autoscaling and cost guardrails, then prove it survives a node failure drill.",
+      stack: ["Kubernetes", "EKS", "Helm", "Istio"],
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      tag: "Infrastructure as Code",
+      title: "Terraform Cloud Blueprint",
+      desc: "Codify a repeatable VPC, database and compute environment with remote state, modules and policy checks so a new region deploys in one command.",
+      stack: ["Terraform", "AWS", "Terragrunt", "OPA"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+    {
+      tag: "CI / CD",
+      title: "GitOps Delivery Pipeline with ArgoCD",
+      desc: "Wire commit-to-production delivery with GitHub Actions, container scanning, progressive rollouts and automatic rollback on failed health checks.",
+      stack: ["GitHub Actions", "ArgoCD", "Docker", "Trivy"],
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      tag: "AIOps",
+      title: "AIOps Observability & Auto-Scaling Lab",
+      desc: "Stream metrics and logs into an anomaly detector that predicts saturation and scales workloads before customers ever see latency.",
+      stack: ["Prometheus", "Grafana", "Loki", "Scikit-Learn"],
+      color: "from-amber-500 to-orange-500",
+    },
+  ],
+  careerRoles: [
+    { name: "DevOps Engineer", color: "from-blue-500 to-indigo-500" },
+    { name: "Site Reliability Engineer", color: "from-violet-500 to-purple-500" },
+    { name: "Cloud Platform Engineer", color: "from-emerald-500 to-green-500" },
+    { name: "Infrastructure Automation Engineer", color: "from-amber-500 to-yellow-500" },
+    { name: "AIOps Engineer", color: "from-rose-500 to-pink-500" },
+  ],
+};
+
+COURSE_DETAILED_DATA.AI_PRODUCT_MANAGER = {
+  ...COURSE_DETAILED_DATA.DATA_SCIENCE_AI,
+  heroTitle: "AI Product Manager Program",
+  capstoneProjects: [
+    {
+      tag: "Discovery",
+      title: "AI Product Discovery & Roadmap Case Study",
+      desc: "Run user interviews, define the problem statement and ship a prioritised AI roadmap with success metrics a hiring panel can challenge.",
+      stack: ["Jira", "Figma", "Amplitude", "User Interviews"],
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      tag: "Unit Economics",
+      title: "LLM Cost & Unit-Economics Model",
+      desc: "Model token cost, latency and margin per active user, then design caching, routing and tier limits that keep the AI feature profitable.",
+      stack: ["Excel", "Python", "OpenAI API", "Looker"],
+      color: "from-amber-500 to-orange-500",
+    },
+    {
+      tag: "Responsible AI",
+      title: "AI Feature Evaluation & Guardrail Scorecard",
+      desc: "Define acceptance thresholds for accuracy, hallucination rate, bias and safety, then instrument them into a release gate used by engineering.",
+      stack: ["Eval Harness", "Notion", "SQL", "RAGAS"],
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      tag: "Experience Design",
+      title: "Human-in-the-Loop UX Prototype",
+      desc: "Prototype an AI assistant that explains its reasoning, accepts corrections and hands control back to the user at the right moment.",
+      stack: ["Figma", "React", "LLM API", "Usability Testing"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+  ],
+  careerRoles: [
+    { name: "AI Product Manager", color: "from-blue-500 to-indigo-500" },
+    { name: "Technical Product Owner", color: "from-violet-500 to-purple-500" },
+    { name: "AI Program Manager", color: "from-emerald-500 to-green-500" },
+    { name: "Product Analytics Lead", color: "from-amber-500 to-yellow-500" },
+    { name: "Responsible AI Lead", color: "from-rose-500 to-pink-500" },
+  ],
+};
+
+/**
+ * GRC projects come straight from the governance brief the client supplied with
+ * the course format document, so the cards read the way their material does.
+ */
+COURSE_DETAILED_DATA.GRC_AI = {
+  ...COURSE_DETAILED_DATA.DATA_SCIENCE_AI,
+  heroTitle: "Governance, Risk and Compliance (GRC) with AI Program",
+  capstoneProjects: [
+    {
+      tag: "Entry-Level",
+      title: "AI-Powered Risk Register & Risk Scoring System",
+      desc: "Build an AI-assisted register that ingests organisational risks, scores likelihood and impact, and produces a ranked treatment plan for the risk committee.",
+      stack: ["Python", "NLP", "Excel", "Power BI"],
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      tag: "Entry-Level",
+      title: "AI Compliance Gap Assessment",
+      desc: "Compare internal policies against ISO 27001, SOC 2 and GDPR control sets, then output an evidence-backed gap report with owners and due dates.",
+      stack: ["LLM Assist", "SQL", "OneTrust", "ServiceNow"],
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      tag: "Mid-Level",
+      title: "AI-Powered Regulatory Change Management",
+      desc: "Monitor regulatory feeds, classify what changed, route impact to the right control owners and track remediation to closure.",
+      stack: ["Python", "NLP", "Jira", "Archer"],
+      color: "from-amber-500 to-orange-500",
+    },
+    {
+      tag: "Advanced-Level",
+      title: "Enterprise AI GRC Platform",
+      desc: "Design an AI-system inventory with ownership, model risk tiering and continuous evidence collection that satisfies internal audit and external regulators.",
+      stack: ["OneTrust", "Vanta", "Drata", "Snowflake"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+  ],
+  careerRoles: [
+    { name: "GRC Analyst", color: "from-blue-500 to-indigo-500" },
+    { name: "AI Governance Specialist", color: "from-violet-500 to-purple-500" },
+    { name: "Risk & Compliance Manager", color: "from-emerald-500 to-green-500" },
+    { name: "Internal Audit Analyst", color: "from-amber-500 to-yellow-500" },
+    { name: "IT Control Assurance Lead", color: "from-rose-500 to-pink-500" },
+  ],
+};
+
+COURSE_DETAILED_DATA.PLACEMENT_SUPPORT = {
+  ...COURSE_DETAILED_DATA.DATA_SCIENCE_AI,
+  heroTitle: "Placement Support Program",
+  capstoneProjects: [
+    {
+      tag: "Personal Branding",
+      title: "ATS-Ready Technical Resume Rebuild",
+      desc: "Rewrite your resume around measurable outcomes, pass the automated screening filters and land a recruiter call-back rate you can track.",
+      stack: ["ATS Optimisation", "STAR Method", "LinkedIn"],
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      tag: "Portfolio",
+      title: "Portfolio & GitHub Code Review Sprint",
+      desc: "Turn coursework into three interview-ready repositories with clean READMEs, tests and deployed demos a hiring manager can click through.",
+      stack: ["GitHub", "Docker", "Vercel", "CI"],
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      tag: "Interview Prep",
+      title: "Mock Interview & Technical Grilling Series",
+      desc: "Face structured behavioural and live technical interviews with industry mentors, then work the written feedback loop before the next attempt.",
+      stack: ["System Design", "DSA", "Behavioural"],
+      color: "from-violet-500 to-fuchsia-500",
+    },
+    {
+      tag: "Negotiation",
+      title: "Offer & Salary Negotiation Simulation",
+      desc: "Practise the counter-offer conversation with real market benchmarks so you accept the right number instead of the first one.",
+      stack: ["Market Benchmarks", "Role Play", "Comp Data"],
+      color: "from-amber-500 to-orange-500",
+    },
+  ],
+};
+
+/**
+ * Resolve detailed content object based on course title or slug.
+ *
+ * Order matters: the more specific program has to be matched before the generic
+ * "cyber" fallback, and every program must resolve to its OWN set so two course
+ * pages never render the same capstone cards.
  */
 export function getDetailedCourseData(course) {
   if (!course) return COURSE_DETAILED_DATA.DATA_SCIENCE_AI;
 
   const t = (course.title || "").toLowerCase();
   const s = (course.slug || "").toLowerCase();
+
+  if (s.includes("placement") || t.includes("placement support")) {
+    return COURSE_DETAILED_DATA.PLACEMENT_SUPPORT;
+  }
+
+  if (s.includes("grc") || t.includes("governance")) {
+    return COURSE_DETAILED_DATA.GRC_AI;
+  }
+
+  if (s.includes("devops") || t.includes("devops")) {
+    return COURSE_DETAILED_DATA.DEVOPS_CLOUD;
+  }
+
+  if (s.includes("product-manager") || t.includes("product manager")) {
+    return COURSE_DETAILED_DATA.AI_PRODUCT_MANAGER;
+  }
+
+  if (t.includes("generative") || s.includes("generative") || s.includes("agentic")) {
+    return COURSE_DETAILED_DATA.ADVANCED_GENERATIVE_AI;
+  }
+
+  if (t.includes("cyber") && (s.includes("hybrid") || s.includes("artificial-intelligence") || t.includes("artificial intelligence"))) {
+    return COURSE_DETAILED_DATA.CYBER_AI_HYBRID;
+  }
 
   if (t.includes("data science") || s.includes("data-science") || s === "8") {
     return COURSE_DETAILED_DATA.DATA_SCIENCE_AI;
@@ -395,13 +685,7 @@ export function getDetailedCourseData(course) {
   }
 
   if (t.includes("cyber")) {
-    return {
-      ...COURSE_DETAILED_DATA.CYBER_ETHICAL_HACKING,
-      certificates: {
-        ...COURSE_DETAILED_DATA.CYBER_ETHICAL_HACKING.certificates,
-        completionImage: "/static/images/csai.jpeg",
-      },
-    };
+    return COURSE_DETAILED_DATA.CYBER_ETHICAL_HACKING;
   }
 
   // Fallback defaults with Data Science & AI high quality content

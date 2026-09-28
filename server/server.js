@@ -119,7 +119,8 @@ app.use('/api/content', require('./routes/contentRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
-app.use('/api/upload', require('./routes/uploadRoutes'));
+const uploadRoutes = require('./routes/uploadRoutes');
+app.use('/api/upload', uploadRoutes);
 app.use('/api/admin/lms', require('./routes/lmsAdminRoutes'));
 app.use('/api/admin/certificates', require('./routes/certificateAdminRoutes'));
 
@@ -138,8 +139,11 @@ app.use('/api', (req, res) => {
   });
 });
 
-// Serve uploaded static assets
+// Serve uploaded static assets. The database copy is the fallback: a redeploy
+// wipes the container disk, and without it every previously uploaded logo and
+// card image started 404-ing days after the admin uploaded it.
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.get('/uploads/:filename', uploadRoutes.serveStored);
 
 // Serve static assets in production if client build exists
 if (process.env.NODE_ENV === 'production') {

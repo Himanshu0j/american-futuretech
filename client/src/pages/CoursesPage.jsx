@@ -28,6 +28,20 @@ const toolMonogram = (name) =>
     .join('')
     .toUpperCase();
 
+/**
+ * Artwork fallbacks for cards whose course has no uploaded image yet. A course
+ * without a picture used to render no image slot at all, which read as "this
+ * card has no image" rather than "nobody has added one".
+ */
+const CARD_ART_GRADIENTS = [
+  'from-[#0B1220] via-[#1E2A4A] to-[#4338CA]',
+  'from-[#0B1220] via-[#123B3A] to-[#047857]',
+  'from-[#1B0B2A] via-[#3B1063] to-[#7C3AED]',
+  'from-[#2A0B1B] via-[#7F1D3A] to-[#BE123C]',
+  'from-[#0B1220] via-[#1F2A44] to-[#0891B2]',
+  'from-[#2A200B] via-[#78350F] to-[#D97706]',
+];
+
 function ToolLogo({ name, logo }) {
   const [broken, setBroken] = useState(false);
   return (
@@ -211,36 +225,67 @@ export default function CoursesPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
+            /* Two roomy columns: the card is a split layout (image beside the
+               details), which needs the width three columns cannot give. */
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-6">
               {filteredCourses.map((course) => {
                 // Optional per-course card image (uploaded or linked in the CMS).
                 const cardImage = course.cardImage || course.thumbnail || '';
+                // A course with no artwork still gets a designed image panel —
+                // before this the picture simply vanished and the card looked
+                // like it had no image slot at all.
+                const artGradient = CARD_ART_GRADIENTS[
+                  Math.abs(String(course.slug || course.title || '').length) % CARD_ART_GRADIENTS.length
+                ];
+                const artInitials = String(course.title || '')
+                  .split(/[\s&/]+/)
+                  .filter(Boolean)
+                  .slice(0, 3)
+                  .map((w) => w[0])
+                  .join('')
+                  .toUpperCase();
 
                 return (
                 <div
                   key={course._id}
-                  className="elms-card flex flex-col justify-between text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-indigo-500/40 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-indigo-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
-                  {cardImage && (
-                    <div className="relative w-full h-40 sm:h-44 overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  {/* Course image panel — left half on desktop, wide banner on mobile */}
+                  <div className="relative w-full lg:w-[38%] shrink-0 h-44 lg:h-auto lg:min-h-[300px] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    {cardImage ? (
                       <img
                         src={cardImage}
                         alt={course.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         loading="lazy"
                       />
-                      {course.badge && (
-                        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0B1220]/85 text-[#E5C275] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
-                          {course.badge}
+                    ) : (
+                      <div className={`absolute inset-0 bg-gradient-to-br ${artGradient} flex items-center justify-center`}>
+                        <span className="text-4xl font-black font-display tracking-tight text-white/85">
+                          {artInitials}
                         </span>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    )}
 
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
+                    {/* Readability veil so a badge or track label never sits on a busy photo */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/80 via-[#0B1220]/10 to-transparent" />
+
+                    {course.badge && (
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0B1220]/85 text-[#E5C275] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                        {course.badge}
+                      </span>
+                    )}
+
+                    <span className="absolute bottom-3 left-3 text-white text-[11px] font-bold flex items-center gap-1.5 drop-shadow">
+                      <Clock className="w-3.5 h-3.5 text-[#E5C275]" />
+                      {course.duration || '6 Months'} · Mentor-led
+                    </span>
+                  </div>
+
+                  <div className="p-5 sm:p-6 flex-1 min-w-0 flex flex-col justify-between">
+                  <div className="min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="text-[11px] font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full font-bold truncate max-w-[70%] border border-indigo-200/50 dark:border-indigo-800/50">
+                      <span className="text-[11px] font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full font-bold truncate min-w-0 max-w-[70%] border border-indigo-200/50 dark:border-indigo-800/50">
                         {course.category}
                       </span>
                       <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full whitespace-nowrap border border-emerald-200 dark:border-emerald-800">
@@ -259,7 +304,7 @@ export default function CoursesPage() {
                     </p>
 
                     {/* Meta details */}
-                    <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400 my-4 py-2 border-y border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400 mt-4 mb-3 py-2 border-y border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                         <span>{course.duration || '6 Months (24 Wks)'}</span>
@@ -272,7 +317,7 @@ export default function CoursesPage() {
                     </div>
 
                     {/* Highlights */}
-                    <div className="space-y-1.5 mb-4">
+                    <div className="space-y-1.5 mb-5">
                       {(course.highlights || ['Live Weekend Interactive Labs', '1-on-1 Faculty Mentorship', 'Accredited US Digital Credential']).slice(0, 3).map((h, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
@@ -284,7 +329,7 @@ export default function CoursesPage() {
 
                   {/* Pricing and Action CTAs */}
                   <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex items-baseline justify-between mb-3">
+                    <div className="flex items-baseline justify-between gap-2 flex-wrap mb-3">
                       <div className="flex items-baseline gap-1.5">
                         <span className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">${course.pricing?.discountedPrice || 499}</span>
                         <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>

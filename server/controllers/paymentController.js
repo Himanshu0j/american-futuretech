@@ -42,7 +42,7 @@ const generateReference = (prefix) =>
 const generateInvoiceNumber = () =>
   `INV-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
 
-const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}) => {
+const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}, depositAmount) => {
   if (!courseId) return { error: { status: 400, message: 'Please select a program to enroll in.' } };
 
   const course = await Course.findById(courseId);
@@ -54,7 +54,7 @@ const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}) => {
   // resolved first so minimum-order rules are checked against the real price.
   let resolvedCoupon = null;
   if (couponCode) {
-    const base = resolveOrderAmount({ course, tier, settings });
+    const base = resolveOrderAmount({ course, tier, settings, depositAmount });
     resolvedCoupon = await resolveCoupon(couponCode, {
       amount: base.amount,
       tier: base.tier,
@@ -64,7 +64,7 @@ const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}) => {
     });
   }
 
-  const quote = buildQuote({ course, tier, couponCode, settings, resolvedCoupon });
+  const quote = buildQuote({ course, tier, couponCode, settings, resolvedCoupon, depositAmount });
 
   return { course, settings, quote };
 };
@@ -74,11 +74,11 @@ const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}) => {
 // @access  Public
 const quoteOrder = async (req, res) => {
   try {
-    const { courseId, tier, couponCode, email } = req.body || {};
+    const { courseId, tier, couponCode, email, depositAmount } = req.body || {};
     const context = await loadCheckoutContext(courseId, tier, couponCode, {
       email,
       studentId: req.user?._id,
-    });
+    }, depositAmount);
     if (context.error) {
       return res.status(context.error.status).json({ success: false, message: context.error.message });
     }
@@ -112,7 +112,7 @@ const quoteOrder = async (req, res) => {
 // @access  Public
 const createCheckoutSession = async (req, res) => {
   try {
-    const { courseId, tier, fullName, email, phone, couponCode } = req.body || {};
+    const { courseId, tier, fullName, email, phone, couponCode, depositAmount } = req.body || {};
 
     if (!courseId || !fullName || !email) {
       return res.status(400).json({
@@ -124,7 +124,7 @@ const createCheckoutSession = async (req, res) => {
     const context = await loadCheckoutContext(courseId, tier, couponCode, {
       email,
       studentId: req.user?._id,
-    });
+    }, depositAmount);
     if (context.error) {
       return res.status(context.error.status).json({ success: false, message: context.error.message });
     }

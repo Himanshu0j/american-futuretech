@@ -125,16 +125,22 @@ export default function CourseDetailPage() {
   const whyChooseList = detailedData.whyChoose || [];
   const whoCanApplyList = detailedData.whoCanApply || [];
   const audiencePills = detailedData.audiencePills || [];
-  // Capstone cards are per course, so two programs no longer show the same
-  // projects. Order: this course's own cards → the site-wide showcase from
-  // Settings → Capstone → the static defaults.
+  // Capstone cards are per course, so two programs never show the same projects.
+  // Order: this course's own cards (CMS) → this program's own set in code → the
+  // site-wide showcase from Settings. The showcase used to win over the
+  // per-program sets, which is why every course page listed the same projects.
   const adminCapstones = settings?.capstone?.projects;
   const courseCapstones = (course?.capstoneProjects || []).filter((p) => p && p.active !== false);
+  const programCapstones = detailedData.capstoneProjects || [];
   const capstones = courseCapstones.length > 0
     ? courseCapstones
-    : ((adminCapstones && adminCapstones.length > 0)
-        ? adminCapstones
-        : (detailedData.capstoneProjects || []));
+    : (programCapstones.length > 0
+        ? programCapstones
+        : (adminCapstones || []));
+
+  // Optional per-card artwork for the "Why Get … Certification" advantage cards,
+  // edited per course in the CMS (Doubt Clearing, Industry Relevant Projects…).
+  const advantageImages = Array.isArray(course?.advantageImages) ? course.advantageImages : [];
   const careerRoles = detailedData.careerRoles || [];
   const certImages = detailedData.certificates || {};
 
@@ -227,6 +233,18 @@ export default function CourseDetailPage() {
                     Live Mentor-Led Cohort
                   </span>
                 </div>
+
+                {/* Course image — a rectangle above the title, admin editable per course */}
+                {course.heroImage && (
+                  <div className="mb-5 overflow-hidden rounded-2xl border border-[#4338CA]/70 shadow-lg bg-[#0B1220]">
+                    <img
+                      src={course.heroImage}
+                      alt={`${courseTitleText} course`}
+                      className="w-full h-40 sm:h-56 lg:h-64 object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
 
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold text-white tracking-tight leading-tight mb-5">
                   {course.title}
@@ -327,15 +345,25 @@ export default function CourseDetailPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 mb-3.5 leading-relaxed">
-                      Reserve your seat in the upcoming cohort today with just <strong>$99 down</strong>. Remainder payable prior to start.
+                      Reserve your seat in the upcoming cohort today with <strong>$99</strong> or <strong>$499</strong>. Remainder payable prior to start.
                     </p>
-                    <Link
-                      to={`/checkout?courseId=${course._id}&tier=deposit`}
-                      className="w-full py-3 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                      Reserve Seat for $99
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {/* Exactly two reservation amounts — nothing else */}
+                    <div className="space-y-2.5">
+                      <Link
+                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
+                        className="w-full py-3 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                      >
+                        Reserve Seat for $99
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
+                        className="w-full py-2.5 px-4 rounded-full border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
+                      >
+                        Reserve Seat for $499
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
                   </div>
 
                   <Link
@@ -387,17 +415,27 @@ export default function CourseDetailPage() {
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
                 We combine rigorous Ivy-League caliber syllabus with practical, production-ready engineering drills and direct career placement pipelines.
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
+            </div>                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
               {whyChooseList.map((item, idx) => {
                 const IconComponent = whyIcons[item.icon] || CheckCircle2;
+                const cardImage = advantageImages[idx];
                 return (
                   <div
                     key={idx}
-                    className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                    className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
                   >
                     <div>
+                      {/* Optional artwork for this advantage (CMS → Advantage card images) */}
+                      {cardImage && (
+                        <div className="-mx-5 -mt-5 mb-5 h-32 overflow-hidden bg-slate-100">
+                          <img
+                            src={cardImage}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
                       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mb-5 shadow-md`}>
                         <IconComponent className="w-7 h-7" />
                       </div>
@@ -567,7 +605,7 @@ export default function CourseDetailPage() {
                     )}
                   </div>
 
-                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-bold text-slate-700 tracking-tight leading-tight truncate w-full group-hover:text-[#0B1220] transition-colors">
+                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#0B1220] tracking-tight leading-tight truncate w-full group-hover:text-[#4338CA] transition-colors">
                     {toolName}
                   </h3>
                 </div>
@@ -658,19 +696,18 @@ export default function CourseDetailPage() {
         {/* Detailed Curriculum Section (Preserved & Enhanced) */}
         <section className="bg-[#f7f9f6] border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-200">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  Structured Syllabus
-                </div>
-                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220]">
-                  {course.title} Course Curriculum
-                </h2>
-                <p className="text-slate-600 text-sm mt-1">
-                  {curriculum.length} enterprise modules aligned with real production workflows.
-                </p>
+            {/* Centered like every other section heading on this page */}
+            <div className="flex flex-col items-center text-center gap-1 mb-10 pb-6 border-b border-slate-200">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
+                <BookOpen className="w-3.5 h-3.5" />
+                Structured Syllabus
               </div>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220]">
+                {course.title} Course Curriculum
+              </h2>
+              <p className="text-slate-600 text-sm mt-1">
+                {curriculum.length} enterprise modules aligned with real production workflows.
+              </p>
             </div>
 
             {/* Accordion List */}
@@ -1035,17 +1072,25 @@ export default function CourseDetailPage() {
                       <span className="text-sm font-bold text-slate-500"> / person</span>
                     </div>
                     <span className="text-xs text-slate-500">
-                      Group batch · or start with a $99 seat deposit · personalized 1-on-1 from ${personalizedPrice.toLocaleString()}
+                      Group batch · reserve with $99 or $499 · personalized 1-on-1 from ${personalizedPrice.toLocaleString()}
                     </span>
                   </div>
 
                   <div className="space-y-3.5">
                     <Link
-                      to={`/checkout?courseId=${course._id}&tier=deposit`}
+                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
                       className="w-full py-4 px-6 rounded-2xl bg-[#4338CA] hover:bg-[#3730A3] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     >
-                      Register Now — $99 Deposit
+                      Reserve Seat — $99
                       <ArrowRight className="w-5 h-5" />
+                    </Link>
+
+                    <Link
+                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                    >
+                      Reserve Seat — $499
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
 
                     <Link

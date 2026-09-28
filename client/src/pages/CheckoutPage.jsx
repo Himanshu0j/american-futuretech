@@ -29,10 +29,18 @@ export default function CheckoutPage() {
   const personalizedOriginal = settings?.personalizedLearning?.originalPrice || 6999;
   const personalizedDuration = settings?.personalizedLearning?.duration || 'Custom / 3 to 6 Months';
   const depositPrice = settings?.depositPriceUSD || 99;
+  // Seat reservation offers exactly two amounts. Settings picks which one is
+  // selected by default; a link may ask for the other with ?deposit=99|499.
+  const RESERVE_OPTIONS = [99, 499];
+  const requestedDeposit = Number(searchParams.get('deposit'));
+  const initialDeposit = RESERVE_OPTIONS.includes(requestedDeposit)
+    ? requestedDeposit
+    : (RESERVE_OPTIONS.includes(Number(depositPrice)) ? Number(depositPrice) : 99);
 
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(initialCourseId || '');
   const [tier, setTier] = useState(initialTier);
+  const [depositAmount, setDepositAmount] = useState(initialDeposit);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -86,13 +94,16 @@ export default function CheckoutPage() {
    * The server owns the price. The browser only renders what POST
    * /api/payments/quote returns, so a voucher can never change the real charge.
    */
-  const fetchQuote = useCallback(async ({ courseId, nextTier, coupon, buyerEmail }) => {
+  const fetchQuote = useCallback(async ({ courseId, nextTier, coupon, buyerEmail, reserve }) => {
     if (!courseId) return null;
     setQuoteLoading(true);
     try {
       const res = await axios.post('/api/payments/quote', {
         courseId,
         tier: nextTier,
+        // Only meaningful for tier=deposit; the server validates it against its
+        // own allowlist, so this is a request and never a price.
+        depositAmount: nextTier === 'deposit' ? (reserve ?? depositAmount) : undefined,
         couponCode: coupon || undefined,
         // The server counts per-student redemptions by email, so a coupon can
         // never be reused by the same buyer across sessions.
@@ -107,11 +118,11 @@ export default function CheckoutPage() {
     } finally {
       setQuoteLoading(false);
     }
-  }, []);
+  }, [depositAmount]);
 
   useEffect(() => {
     if (selectedCourseId) fetchQuote({ courseId: selectedCourseId, nextTier: tier, coupon: '' });
-  }, [selectedCourseId, tier, fetchQuote]);
+  }, [selectedCourseId, tier, depositAmount, fetchQuote]);
 
   const handleApplyCoupon = async () => {
     setCouponError('');
@@ -219,6 +230,7 @@ export default function CheckoutPage() {
       const res = await axios.post('/api/payments/checkout', {
         courseId: selectedCourse?._id || selectedCourseId,
         tier,
+        depositAmount: tier === 'deposit' ? depositAmount : undefined,
         fullName,
         email,
         phone,
@@ -235,7 +247,7 @@ export default function CheckoutPage() {
       const data = err.response?.data;
       if (data?.code === 'PAYMENTS_NOT_CONFIGURED') {
         try {
-          await requestManualPaymentLink(amount || depositPrice);
+          await requestManualPaymentLink(amount || (tier === 'deposit' ? depositAmount : depositPrice));
         } catch (leadError) {
           alert('We could not submit your request. Please contact admissions directly.');
         }
@@ -249,7 +261,7 @@ export default function CheckoutPage() {
 
   // ── Amounts for display ───────────────────────────────────────────────────
   const baseAmount = quote?.originalPrice ?? (
-    tier === 'deposit' ? depositPrice : tier === 'personalized' ? personalizedPrice : (selectedCourse?.pricing?.discountedPrice || 1899)
+    tier === 'deposit' ? depositAmount : tier === 'personalized' ? personalizedPrice : (selectedCourse?.pricing?.discountedPrice || 1899)
   );
   const discountAmount = quote?.discountAmount ?? 0;
   const finalAmount = quote?.amount ?? baseAmount;
@@ -484,11 +496,34 @@ export default function CheckoutPage() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-xs font-bold text-[#0B1220] uppercase tracking-wider">Seat Reservation</span>
-                      <span className="text-2xl font-display font-black text-[#0B1220]">${depositPrice}</span>
+                      <span className="text-2xl font-display font-black text-[#0B1220]">${depositAmount}</span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 leading-relaxed mb-3">
                       Lock your seat in the next live cohort now. Remainder is settled before live sessions commence.
                     </p>
+                    {/* The two reservation amounts — tap to switch */}
+                    <div className="flex items-center gap-2">
+                      {RESERVE_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTier('deposit');
+                            setDepositAmount(option);
+                            resetCoupon();
+                          }}
+                          aria-pressed={tier === 'deposit' && depositAmount === option}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+                            tier === 'deposit' && depositAmount === option
+                              ? 'bg-[#0B1220] text-white border-[#0B1220]'
+                              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          Reserve ${option}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Career Program (register now) Option */}

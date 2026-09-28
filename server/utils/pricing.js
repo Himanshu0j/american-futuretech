@@ -9,6 +9,13 @@ const { computeDiscount } = require('./couponEngine');
  */
 
 const DEPOSIT_FALLBACK_USD = 99;
+/**
+ * Seat reservation has exactly two amounts — the client asked for $99 and $499
+ * and nothing else, so a reservation request may only name one of them. Settings
+ * → depositPriceUSD decides which one is preselected; anything else the browser
+ * sends is ignored, so a tampered request can never invent a price.
+ */
+const RESERVE_OPTIONS_USD = [99, 499];
 // Career Program (group batch) list price. Admins override it per course in
 // Curriculum & Courses; this is only the last-resort fallback.
 const FULL_FALLBACK_USD = 499;
@@ -20,11 +27,19 @@ const toMoney = (value) => Math.round(Number(value) * 100) / 100;
 
 /**
  * Resolve what this order actually costs.
- * deposit      → seat reservation fee (admin editable in Settings)
+ * deposit      → seat reservation fee, $99 or $499 (admin picks the default in Settings)
  * full         → the course's discounted tuition
  * personalized → the separate Personalized 1-on-1 track fee (independent price)
  */
-const resolveOrderAmount = ({ course, tier, settings }) => {
+const resolveReserveAmount = (settings, requested) => {
+  const asked = Number(requested);
+  if (RESERVE_OPTIONS_USD.includes(asked)) return asked;
+  const configured = Number(settings?.depositPriceUSD);
+  if (RESERVE_OPTIONS_USD.includes(configured)) return configured;
+  return DEPOSIT_FALLBACK_USD;
+};
+
+const resolveOrderAmount = ({ course, tier, settings, depositAmount }) => {
   const requestedTier = ALLOWED_TIERS.includes(tier) ? tier : 'deposit';
   const personalized = settings?.personalizedLearning || {};
 
@@ -33,9 +48,9 @@ const resolveOrderAmount = ({ course, tier, settings }) => {
   let label;
 
   if (requestedTier === 'deposit') {
-    amount = Number(settings?.depositPriceUSD) || DEPOSIT_FALLBACK_USD;
+    amount = resolveReserveAmount(settings, depositAmount);
     originalPrice = amount;
-    label = 'Cohort Seat Reservation Deposit';
+    label = `Cohort Seat Reservation Deposit ($${amount})`;
   } else if (requestedTier === 'personalized') {
     amount = Number(personalized.price) || Number(personalized.fee) || PERSONALIZED_FALLBACK_USD;
     originalPrice =
@@ -137,8 +152,8 @@ const applyCoupon = (amount, code) => {
  * Full quote used by both the UI and the Stripe session, guaranteeing the price
  * the customer sees is exactly the price that is charged.
  */
-const buildQuote = ({ course, tier, couponCode, settings, resolvedCoupon }) => {
-  const base = resolveOrderAmount({ course, tier, settings });
+const buildQuote = ({ course, tier, couponCode, settings, resolvedCoupon, depositAmount }) => {
+  const base = resolveOrderAmount({ course, tier, settings, depositAmount });
   const discounted = resolvedCoupon
     ? applyResolvedCoupon(base.amount, resolvedCoupon)
     : applyCoupon(base.amount, couponCode);
@@ -164,9 +179,11 @@ const generateTempPassword = generateSecurePassword;
 module.exports = {
   ALLOWED_TIERS,
   DEPOSIT_FALLBACK_USD,
+  RESERVE_OPTIONS_USD,
   FULL_FALLBACK_USD,
   PERSONALIZED_FALLBACK_USD,
   resolveOrderAmount,
+  resolveReserveAmount,
   applyCoupon,
   applyResolvedCoupon,
   buildQuote,

@@ -12,15 +12,17 @@ import {
   Sparkles
 } from 'lucide-react';
 import SafeImage from './common/SafeImage';
-import { formatPostedLabel } from '../lib/relativeTime';
+import { formatRelativeTime } from '../lib/relativeTime';
 
 export default function JobCard({
   job,
   onOpenDetails,
   onOpenApply
 }) {
-  // Real posting timestamp from the database (never a hardcoded label).
-  const postedLabel = formatPostedLabel(job.postedAt || job.createdAt);
+  // Real posting timestamp from the database (never a hardcoded label). The card
+  // shows only the age — "3 days ago" — the word "Posted" was dropped on the
+  // client's request, and the clock icon already says what it is.
+  const postedLabel = formatRelativeTime(job.postedAt || job.createdAt);
 
   // Normalize any stored salary string so there is never a doubled "$" (e.g. "$ $100K")
   const normalizeSalary = (raw) => {
@@ -83,17 +85,17 @@ export default function JobCard({
   return (
     <div className="p-6 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
       
-      {/* 1. TOP ROW: Prominent Company Logo (w-12 h-12 / w-12 h-12) + Title & Key Metadata Tags */}
+      {/* 1. TOP ROW: Prominent Company Logo + Title & Key Metadata Tags */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div className="flex items-start gap-4 flex-1">
-          {/* Company Logo Avatar: Size w-12 h-12 sm:w-14 sm:h-14 with SafeImage fallback */}
+          {/* Company Logo Avatar: enlarged so a partner brand is readable at a glance */}
           <SafeImage
             src={job.companyLogo}
             alt={job.company}
             fallbackText={job.company || 'FT'}
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2.5 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
             imageClassName="w-full h-full object-contain rounded-xl"
-            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-[#E5C275] font-black text-sm flex items-center justify-center"
+            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-[#E5C275] font-black text-lg flex items-center justify-center"
           />
 
           {/* Job Title & Structured Tags Row */}
@@ -167,10 +169,11 @@ export default function JobCard({
         </div>
       )}
 
-      {/* 3. Filtered Skills (Strictly 5 tools) + Posted Time & Action Buttons Row */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
-        {/* Skills/tools first, then the posting time sits right after them */}
-        <div className="flex flex-wrap items-center gap-1.5 flex-1">
+      {/* 3. Skill and tool chips — moved up so they sit directly under the
+          "Recommended Track" line, with the posting age right below them. The
+          bottom row is now only the action buttons. */}
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {visibleSkills.map((skill, i) => (
             <span
               key={i}
@@ -184,19 +187,21 @@ export default function JobCard({
               +{remainingSkillsCount} more
             </span>
           )}
-
-          {postedLabel && (
-            <span
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
-              title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
-            >
-              <Clock className="w-3 h-3 text-slate-400" />
-              {postedLabel}
-            </span>
-          )}
         </div>
 
-        {/* Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}
+        {postedLabel && (
+          <span
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
+            title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
+          >
+            <Clock className="w-3 h-3 text-slate-400" />
+            {postedLabel}
+          </span>
+        )}
+      </div>
+
+      {/* 4. Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}
+      <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
           <Link
             to={`/jobs/${jobId}`}

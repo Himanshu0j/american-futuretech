@@ -77,7 +77,7 @@ const getCourseBySlug = async (req, res) => {
 // @access  Private (SuperAdmin, Counselor)
 const createCourse = async (req, res) => {
   try {
-    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail } = req.body;
+    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail, heroImage, advantageImages } = req.body;
 
     // Without a title this used to throw on `title.toLowerCase()` and answer
     // 500; an incomplete form is the caller's mistake and must be a 400.
@@ -113,8 +113,11 @@ const createCourse = async (req, res) => {
       // ticks appeared to "save" but never reached the course page.
       viewOptions,
       eligibility,
-      // Per-course card image + "Tools Covered" block + capstone cards.
+      // Per-course card image, hero image, advantage-card artwork + "Tools
+      // Covered" block + capstone cards.
       thumbnail,
+      heroImage,
+      advantageImages,
       toolsTitle,
       toolsSubtitle,
       tools,

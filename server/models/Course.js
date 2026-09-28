@@ -96,6 +96,18 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  // Rectangle course image shown above the title in the course hero (requested
+  // in the client's course-format document: "course image add kariye").
+  heroImage: {
+    type: String,
+    default: '',
+  },
+  // Optional artwork for the six "Why Get … Certification" advantage cards,
+  // aligned by index (card 1 Doubt Clearing, card 2 Industry Relevant Projects…).
+  advantageImages: {
+    type: [String],
+    default: [],
+  },
   badge: {
     type: String,
     default: '',

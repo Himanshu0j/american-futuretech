@@ -447,7 +447,7 @@ export default function JobsManager() {
                               src={job.companyLogo}
                               alt={job.company}
                               fallbackText={job.company || 'CP'}
-                              className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 p-1 shrink-0 overflow-hidden"
+                              className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 p-1 shrink-0 overflow-hidden"
                               imageClassName="w-full h-full object-contain rounded-lg"
                               fallbackClassName="w-full h-full rounded-lg bg-slate-900 text-slate-400 text-xs font-bold flex items-center justify-center"
                             />
@@ -668,15 +668,27 @@ export default function JobsManager() {
                   </div>
                 </div>
 
-                {/* Company Logo Section */}
-                <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-2">
-                {/* Company Logo with Live Upload & Preview */}
-                <ImageUploadInput
-                  label="Company Logo / Brand Asset"
-                  value={jobForm.companyLogo}
-                  onChange={(url) => setJobForm({ ...jobForm, companyLogo: url })}
-                  placeholder="Upload PNG/SVG or choose preset..."
-                />
+                {/* Company Logo Section — the image/brand asset for this listing
+                    (it is what the public job card shows next to the title). */}
+                <div className="bg-slate-950/70 p-3.5 rounded-xl border border-indigo-500/30 space-y-2">
+                  <div>
+                    <h4 className="font-bold text-white text-[12px] flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
+                      Company Logo (Image)
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Upload karein ya URL daalein — yehi image job card par company ke naam ke saath dikhti hai.
+                      PNG / SVG / JPG, square logo best rehta hai.
+                    </p>
+                  </div>
+                  {/* Company Logo with Live Upload & Preview */}
+                  <ImageUploadInput
+                    label=""
+                    value={jobForm.companyLogo}
+                    onChange={(url) => setJobForm({ ...jobForm, companyLogo: url })}
+                    placeholder="Upload PNG/SVG or choose preset..."
+                    previewSize="w-24 h-24"
+                  />
                 </div>
 
                 {/* Recommended Course Selector */}

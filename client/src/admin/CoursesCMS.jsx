@@ -15,10 +15,12 @@ import {
   X,
   Save,
   Briefcase,
+  Image as ImageIcon,
 } from 'lucide-react';
 import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
+import { getDetailedCourseData } from '../data/courseContentData';
 
 /**
  * Split the composer's bulk "topics" text into lesson titles.
@@ -92,6 +94,12 @@ export default function CoursesCMS() {
   const [tools, setTools] = useState([]);
   // Optional image shown at the top of this course's card on /courses.
   const [cardImage, setCardImage] = useState('');
+  // Rectangle image shown above the course title in the course hero.
+  const [heroImage, setHeroImage] = useState('');
+  // Artwork for the six "Why Get … Certification" advantage cards, index-aligned
+  // with that list (card 1 = Doubt Clearing Sessions, card 2 = Industry Relevant
+  // Projects, …). An empty slot keeps the coloured icon tile.
+  const [advantageImages, setAdvantageImages] = useState([]);
   const [saveFeedback, setSaveFeedback] = useState(null);
 
   const fetchCourses = async () => {
@@ -124,6 +132,8 @@ export default function CoursesCMS() {
     setDiscountedPrice(1899);
     setHighlights(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
     setCardImage('');
+    setHeroImage('');
+    setAdvantageImages([]);
     setToolsTitle('');
     setToolsSubtitle('');
     setTools([]);
@@ -157,6 +167,8 @@ export default function CoursesCMS() {
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
     setCardImage(course.cardImage || course.thumbnail || '');
+    setHeroImage(course.heroImage || '');
+    setAdvantageImages(Array.isArray(course.advantageImages) ? course.advantageImages : []);
     setToolsTitle(course.toolsTitle || '');
     setToolsSubtitle(course.toolsSubtitle || '');
     setTools(Array.isArray(course.tools) ? course.tools : []);
@@ -350,8 +362,11 @@ export default function CoursesCMS() {
       highlights: formattedHighlights,
       curriculum: formattedModules,
       viewOptions,
-      // Card image + per-course "Tools Covered" block + capstone cards.
+      // Card image + hero image + advantage-card artwork + per-course "Tools
+      // Covered" block + capstone cards.
       thumbnail: cardImage,
+      heroImage: String(heroImage || '').trim(),
+      advantageImages: advantageImages.map((url) => String(url || '').trim()),
       toolsTitle,
       toolsSubtitle,
       tools: tools
@@ -489,6 +504,23 @@ export default function CoursesCMS() {
 
   const removeTool = (index) => {
     setTools((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Advantage card artwork ("Why Get …" cards) ──
+  // Titles come from the same data the public page renders, so the labels here
+  // always match the card they belong to.
+  const advantageCardTitles = (getDetailedCourseData({ title, slug })?.whyChoose || [])
+    .map((card) => card.title);
+
+  const setAdvantageImage = (index, url) => {
+    setAdvantageImages((prev) => {
+      // Slots are positional, so keep the array dense up to the edited index.
+      const next = [];
+      const length = Math.max(prev.length, index + 1);
+      for (let i = 0; i < length; i += 1) next[i] = prev[i] || '';
+      next[index] = url;
+      return next;
+    });
   };
 
   return (
@@ -790,6 +822,47 @@ export default function CoursesCMS() {
                   placeholder="https://… or upload a JPG / PNG / WebP from your computer"
                   previewSize="w-24 h-16"
                 />
+
+                <ImageUploadInput
+                  label="Course Image — hero, shown above the course title"
+                  value={heroImage}
+                  onChange={setHeroImage}
+                  placeholder="Rectangle image (about 1600×600) — URL or upload"
+                  previewSize="w-32 h-14"
+                />
+
+                {/* Advantage card images — one slot per "Why Get …" card */}
+                <div className="pt-2 border-t border-white/[0.08] space-y-3">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-emerald-400" />
+                      <span>Advantage Card Images</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      "Why Get this certification" cards ka artwork — jaise Doubt Clearing Sessions aur Industry Relevant Projects.
+                      Slot khaali chhodne par wahi card apna coloured icon dikhata rahega.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {advantageCardTitles.map((cardTitle, idx) => (
+                      <div key={idx} className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                        <span className="sm:col-span-4 text-[11px] text-slate-300 font-semibold truncate">
+                          {idx + 1}. {cardTitle}
+                        </span>
+                        <div className="sm:col-span-8">
+                          <ImageUploadInput
+                            label=""
+                            value={advantageImages[idx] || ''}
+                            onChange={(url) => setAdvantageImage(idx, url)}
+                            placeholder="Image URL or upload"
+                            previewSize="w-16 h-11"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 <div className="flex items-center justify-between gap-3 pt-2">
                   <div>

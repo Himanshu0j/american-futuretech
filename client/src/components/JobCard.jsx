@@ -107,8 +107,10 @@ export default function JobCard({
               {job.title}
             </Link>
 
-            {/* Structure Tags: Company Name • Full-time • Remote • Entry Level to Mid Level */}
-            <div className="flex flex-wrap items-center gap-2 text-xs">
+            {/* Structure Tags: Company Name • Full-time • Remote • Level • Posted.
+                gap-1.5 (not 2) is what lets the posting age sit on this same line
+                on a narrow card instead of dropping to the line below. */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
               <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-slate-500" />
                 {job.company}
@@ -138,7 +140,6 @@ export default function JobCard({
                   location, level) instead of on its own line at the bottom. */}
               {postedLabel && (
                 <>
-                  <span className="text-slate-300 dark:text-slate-600">•</span>
                   <span
                     className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
                     title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}

@@ -16,6 +16,7 @@ import {
   Save,
   Briefcase,
   Image as ImageIcon,
+  Award,
 } from 'lucide-react';
 import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
@@ -100,6 +101,13 @@ export default function CoursesCMS() {
   // with that list (card 1 = Doubt Clearing Sessions, card 2 = Industry Relevant
   // Projects, …). An empty slot keeps the coloured icon tile.
   const [advantageImages, setAdvantageImages] = useState([]);
+  // Hero credential block: the partner mark shown in the course hero (Microsoft
+  // logo, or the AI GRC certificate mark) with its wording, plus the certificate
+  // artwork rendered beside it. Everything here is per course.
+  const [credentialLogo, setCredentialLogo] = useState('');
+  const [credentialTitle, setCredentialTitle] = useState('');
+  const [credentialSubtitle, setCredentialSubtitle] = useState('');
+  const [certificateImage, setCertificateImage] = useState('');
   const [saveFeedback, setSaveFeedback] = useState(null);
 
   const fetchCourses = async () => {
@@ -134,6 +142,10 @@ export default function CoursesCMS() {
     setCardImage('');
     setHeroImage('');
     setAdvantageImages([]);
+    setCredentialLogo('');
+    setCredentialTitle('');
+    setCredentialSubtitle('');
+    setCertificateImage('');
     setToolsTitle('');
     setToolsSubtitle('');
     setTools([]);
@@ -169,6 +181,10 @@ export default function CoursesCMS() {
     setCardImage(course.cardImage || course.thumbnail || '');
     setHeroImage(course.heroImage || '');
     setAdvantageImages(Array.isArray(course.advantageImages) ? course.advantageImages : []);
+    setCredentialLogo(course.credentialLogo || '');
+    setCredentialTitle(course.credentialTitle || '');
+    setCredentialSubtitle(course.credentialSubtitle || '');
+    setCertificateImage(course.certificateImage || '');
     setToolsTitle(course.toolsTitle || '');
     setToolsSubtitle(course.toolsSubtitle || '');
     setTools(Array.isArray(course.tools) ? course.tools : []);
@@ -367,6 +383,10 @@ export default function CoursesCMS() {
       thumbnail: cardImage,
       heroImage: String(heroImage || '').trim(),
       advantageImages: advantageImages.map((url) => String(url || '').trim()),
+      credentialLogo: String(credentialLogo || '').trim(),
+      credentialTitle: String(credentialTitle || '').trim(),
+      credentialSubtitle: String(credentialSubtitle || '').trim(),
+      certificateImage: String(certificateImage || '').trim(),
       toolsTitle,
       toolsSubtitle,
       tools: tools
@@ -816,7 +836,7 @@ export default function CoursesCMS() {
               {/* Card image + per-course "Tools Covered" grid */}
               <div className="space-y-4 pt-4 border-t border-white/[0.08]">
                 <ImageUploadInput
-                  label="Career Program Card Image (top of this course's card on /courses)"
+                  label="Course Card Image (course cards: home page + /courses)"
                   value={cardImage}
                   onChange={setCardImage}
                   placeholder="https://… or upload a JPG / PNG / WebP from your computer"
@@ -862,6 +882,60 @@ export default function CoursesCMS() {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Hero credential block — the partner mark + certificate shown
+                    in the band under the hero's skill pills. */}
+                <div className="pt-3 border-t border-white/[0.08] space-y-3">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Award className="w-4 h-4 text-emerald-400" />
+                      <span>Hero Credential Block</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Course hero me skills ke niche dikhne wala partner mark + certificate. Microsoft logo ya AI GRC
+                      certificate mark yahan se set karo. Khaali chhodne par is course ka apna default credential dikhta rahega.
+                    </p>
+                  </div>
+
+                  <ImageUploadInput
+                    label="Credential Logo / Partner Mark"
+                    value={credentialLogo}
+                    onChange={setCredentialLogo}
+                    placeholder="/images/microsoft-logo.svg — ya upload karo"
+                    previewSize="w-24 h-12"
+                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">Credential Title</label>
+                      <input
+                        type="text"
+                        value={credentialTitle}
+                        onChange={(e) => setCredentialTitle(e.target.value)}
+                        placeholder="Microsoft Certificate / AI GRC Certificate"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">Credential Subtitle</label>
+                      <input
+                        type="text"
+                        value={credentialSubtitle}
+                        onChange={(e) => setCredentialSubtitle(e.target.value)}
+                        placeholder="DP-750 · Microsoft Certified: Azure Databricks Data Engineer Associate"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <ImageUploadInput
+                    label="Certificate Artwork (shown beside the credential mark)"
+                    value={certificateImage}
+                    onChange={setCertificateImage}
+                    placeholder="GRC / Microsoft certificate image — URL ya upload"
+                    previewSize="w-28 h-16"
+                  />
                 </div>
 
                 <div className="flex items-center justify-between gap-3 pt-2">

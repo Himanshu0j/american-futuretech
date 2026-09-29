@@ -14,6 +14,7 @@ import LeadModal from '../components/LeadModal';
 import CertificateModal from '../components/CertificateModal';
 import { getAlignedMicrosoftCert } from '../data/microsoftCertificates';
 import { getDetailedCourseData, findToolLogo } from '../data/courseContentData';
+import { getHeroCredential, MICROSOFT_LOGO } from '../data/heroCredentials';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function CourseDetailPage() {
@@ -115,6 +116,14 @@ export default function CourseDetailPage() {
     { name: 'Docker', icon: '/images/tools/docker.svg' },
   ]);
 
+  // This course's tools run left → right like the catalogue on /courses. The
+  // list is repeated until one pass is wider than any screen, then the pass is
+  // duplicated — the animation travels from -50% back to 0, so the loop closes
+  // without a gap. (Hovering pauses it; reduced-motion users get it standing.)
+  const toolPassLength = Math.max(16, toolsList.length * 4);
+  const toolPass = Array.from({ length: toolPassLength }, (_, i) => toolsList[i % toolsList.length]);
+  const toolTrack = [...toolPass, ...toolPass];
+
   // The fallback heading appends " Program", which doubled the word for course
   // titles that already end with it ("... with AI Program Program Tools
   // Covered"). Only add it when the title does not already carry it.
@@ -143,6 +152,12 @@ export default function CourseDetailPage() {
   const advantageImages = Array.isArray(course?.advantageImages) ? course.advantageImages : [];
   const careerRoles = detailedData.careerRoles || [];
   const certImages = detailedData.certificates || {};
+
+  // Partner mark + certificate artwork shown in the hero (Microsoft logo /
+  // "Microsoft Certificate" on the Microsoft-aligned tracks, the AI GRC
+  // certificate on the GRC track). Both are editable per course in the CMS.
+  const heroCredential = getHeroCredential(course, certImages);
+  const isMicrosoftCredential = heroCredential.logo === MICROSOFT_LOGO;
 
   // ── Admin-controlled blocks (edited on this course in Curriculum & Courses CMS) ──
   const eligibility = course?.eligibility || {};
@@ -297,6 +312,63 @@ export default function CourseDetailPage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Credential shown with this program: partner mark + title on the
+                    left, the certificate artwork on the right. Both come from the
+                    course in the CMS (Hero Credential Block) and fall back to the
+                    program's own credential, so this band is never empty. */}
+                {(heroCredential.logo || heroCredential.title || heroCredential.certificateImage) && (
+                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-5 gap-4">
+                    <div className="sm:col-span-2 rounded-2xl border border-[#4338CA]/60 bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col justify-between gap-5">
+                      <div className="h-11 flex items-center">
+                        {heroCredential.logo ? (
+                          <img
+                            src={heroCredential.logo}
+                            alt={heroCredential.title}
+                            className="max-h-11 w-auto max-w-[170px] object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <Award className="w-9 h-9 text-[#E5C275]" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90">
+                          Credential you earn
+                        </div>
+                        <h3 className="text-lg font-display font-bold text-white leading-snug mt-1">
+                          {heroCredential.title}
+                        </h3>
+                        {heroCredential.subtitle && (
+                          <p className="text-[11px] text-emerald-100/80 leading-relaxed mt-1.5">
+                            {heroCredential.subtitle}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-3 rounded-2xl border border-[#4338CA]/60 bg-[#0B1220]/70 overflow-hidden min-h-[170px] flex items-center justify-center">
+                      {heroCredential.certificateImage ? (
+                        <img
+                          src={heroCredential.certificateImage}
+                          alt={`${course.title} certificate`}
+                          className="w-full h-44 sm:h-52 object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="text-center px-6 py-8">
+                          <Award className="w-10 h-10 text-[#E5C275] mx-auto mb-3" />
+                          <div className="text-sm font-bold text-white">
+                            {isMicrosoftCredential ? 'Microsoft Certificate' : heroCredential.title}
+                          </div>
+                          <p className="text-[11px] text-emerald-100/70 mt-1 max-w-xs mx-auto leading-relaxed">
+                            Issued on completion and verifiable on the American FutureTech public credential registry.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Right Column: Sticky Enrollment Card */}
@@ -370,7 +442,7 @@ export default function CourseDetailPage() {
                     to={`/checkout?courseId=${course._id}&tier=full`}
                     className="w-full py-2.5 px-4 rounded-full border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                   >
-                    Register Now — ${course.pricing?.discountedPrice || 499} / Career Program
+                    Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                   </Link>
 
                   {showPersonalizedMentor && (
@@ -378,7 +450,7 @@ export default function CourseDetailPage() {
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
                       className="w-full py-2.5 px-4 rounded-full border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                     >
-                      Register Now — ${personalizedPrice.toLocaleString()} / Personalized
+                      Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
                   )}
 
@@ -397,63 +469,6 @@ export default function CourseDetailPage() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. Why Get Certification From American FutureTech (6 Feature Cards) */}
-        <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-3">
-                <Award className="w-3.5 h-3.5 text-[#4338CA]" />
-                The American FutureTech Advantage
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight max-w-3xl mx-auto">
-                Why Get {course.title} Certification From American FutureTech
-              </h2>
-              <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                We combine rigorous Ivy-League caliber syllabus with practical, production-ready engineering drills and direct career placement pipelines.
-              </p>
-            </div>                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
-              {whyChooseList.map((item, idx) => {
-                const IconComponent = whyIcons[item.icon] || CheckCircle2;
-                const cardImage = advantageImages[idx];
-                return (
-                  <div
-                    key={idx}
-                    className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-                  >
-                    <div>
-                      {/* Optional artwork for this advantage (CMS → Advantage card images) */}
-                      {cardImage && (
-                        <div className="-mx-5 -mt-5 mb-5 h-32 overflow-hidden bg-slate-100">
-                          <img
-                            src={cardImage}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        </div>
-                      )}
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mb-5 shadow-md`}>
-                        <IconComponent className="w-7 h-7" />
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-2.5 font-display">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-slate-600 leading-relaxed">
-                        {item.desc}
-                      </p>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#4338CA]">
-                      <CheckCircle2 className="w-4 h-4 text-[#047857]" />
-                      <span>Guaranteed Standard</span>
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </section>
@@ -554,9 +569,10 @@ export default function CourseDetailPage() {
           </section>
         )}
 
-        {/* 3c. Tools Covered — per-course heading, subtitle and icon grid.
-            This sits directly under the hero (above the rest of the page) so the
-            pricing options and the stack being taught come first. */}
+        {/* 3c. Tools Covered — per-course heading, subtitle and looping tool
+            strip. Sits under the Group vs Personalized choice and above the
+            "Why Get" advantage cards, so the stack being taught is answered
+            before the support features. */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
@@ -571,46 +587,125 @@ export default function CourseDetailPage() {
             </p>
           </div>
 
-          {/* Compact tool grid: 6 columns on desktop, small square boxes */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-3">
-            {toolsList.map((tool, idx) => {
-              const toolName = tool.name || tool;
-              // A tool the admin added may have no logo anywhere — fall back to
-              // its initials rather than to an unrelated vendor's logo.
-              const iconPath = tool.icon || findToolLogo(toolName);
-              const initials = String(toolName)
-                .split(/[\s/&]+/)
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((word) => word[0].toUpperCase())
-                .join('');
+          {/* Tools run left → right as a looping strip, matching the grouped
+              catalogue on /courses. Only the first pass is announced to screen
+              readers; the repeats exist purely to make the loop seamless. */}
+          <div className="relative overflow-hidden marquee-mask">
+            <div className="animate-infinite-marquee-ltr items-stretch gap-2.5 sm:gap-3 py-1">
+              {toolTrack.map((tool, idx) => {
+                const toolName = tool.name || tool;
+                // A tool the admin added may have no logo anywhere — fall back to
+                // its initials rather than to an unrelated vendor's logo.
+                const iconPath = tool.icon || findToolLogo(toolName);
+                const initials = String(toolName)
+                  .split(/[\s/&]+/)
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((word) => word[0].toUpperCase())
+                  .join('');
 
-              return (
-                <div
-                  key={idx}
-                  className="group rounded-xl bg-white border border-slate-200/80 p-2.5 text-center shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col items-center justify-center cursor-default"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
-                    {iconPath ? (
-                      <img
-                        src={iconPath}
-                        alt={toolName}
-                        className="w-6 h-6 object-contain"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="text-[11px] font-black text-[#0B1220] font-display tracking-tight">
-                        {initials}
-                      </span>
-                    )}
+                return (
+                  <div
+                    key={idx}
+                    aria-hidden={idx >= toolsList.length ? 'true' : undefined}
+                    className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-white border border-slate-200/80 p-2.5 text-center shadow-xs hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
+                      {iconPath ? (
+                        <img
+                          src={iconPath}
+                          alt={toolName}
+                          className="w-6 h-6 object-contain"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-[11px] font-black text-[#0B1220] font-display tracking-tight">
+                          {initials}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#0B1220] tracking-tight leading-tight truncate w-full group-hover:text-[#4338CA] transition-colors">
+                      {toolName}
+                    </h3>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-                  <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#0B1220] tracking-tight leading-tight truncate w-full group-hover:text-[#4338CA] transition-colors">
-                    {toolName}
-                  </h3>
-                </div>
-              );
-            })}
+        {/* 3. Why Get Certification From American FutureTech (6 Feature Cards).
+            Moved below the pricing options, the tools grid and the Group vs
+            Personalized choice so the learning path is answered before the
+            support features. */}
+        <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-3">
+                <Award className="w-3.5 h-3.5 text-[#4338CA]" />
+                The American FutureTech Advantage
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight max-w-3xl mx-auto">
+                Why Get {course.title} Certification From American FutureTech
+              </h2>
+              <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                We combine rigorous Ivy-League caliber syllabus with practical, production-ready engineering drills and direct career placement pipelines.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6">
+              {whyChooseList.map((item, idx) => {
+                const IconComponent = whyIcons[item.icon] || CheckCircle2;
+                const cardImage = advantageImages[idx];
+                return (
+                  <div
+                    key={idx}
+                    className="rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
+                  >
+                    {/* Artwork for this advantage card — uploaded or linked on the
+                        course in the CMS. With a picture the card gets a real
+                        image header (icon rides on the corner of it); without one
+                        the coloured icon tile is shown instead. */}
+                    {cardImage && (
+                      <div className="relative h-44 shrink-0 overflow-hidden bg-slate-100">
+                        <img
+                          src={cardImage}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/5 to-transparent" />
+                        <div className={`absolute bottom-3 left-3 w-10 h-10 rounded-xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center shadow-md ring-2 ring-white/70`}>
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-5 flex flex-col flex-1">
+                      {!cardImage && (
+                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mb-5 shadow-md`}>
+                          <IconComponent className="w-7 h-7" />
+                        </div>
+                      )}
+                      <h3 className="text-xl font-bold text-slate-900 mb-2.5 font-display">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {item.desc}
+                      </p>
+
+                      <div className="mt-auto pt-5">
+                        <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#4338CA]">
+                          <CheckCircle2 className="w-4 h-4 text-[#047857]" />
+                          <span>Guaranteed Standard</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -1097,14 +1192,14 @@ export default function CourseDetailPage() {
                       to={`/checkout?courseId=${course._id}&tier=full`}
                       className="w-full py-3 px-6 rounded-2xl border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
-                      Register Now — ${course.pricing?.discountedPrice || 499} / Career Program
+                      Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                     </Link>
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
                       className="w-full py-3 px-6 rounded-2xl border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
-                      Register Now — ${personalizedPrice.toLocaleString()} / Personalized
+                      Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
 
                     <button

@@ -581,6 +581,35 @@
   animation-play-state: paused;
 }
 
+/* The same loop running left → right (the tools catalogue). The duplicated
+   track travels from -50% back to 0, so there is never a visible jump. */
+@keyframes infiniteMarqueeLeftToRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-infinite-marquee-ltr {
+  display: flex;
+  width: max-content;
+  animation: infiniteMarqueeLeftToRight 40s linear infinite;
+}
+
+.animate-infinite-marquee-ltr:hover {
+  animation-play-state: paused;
+}
+
+/* Visitors who ask for reduced motion get the row standing still: the first
+   tiles stay visible inside the clipped track, nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-infinite-marquee-ltr {
+    animation: none;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    PREMIUM EXPERIENCE LAYER
    Editorial accents, textures and depth used across the site.

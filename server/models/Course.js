@@ -108,6 +108,29 @@ const CourseSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+
+  // ── Hero credential block ──
+  // The hero used to leave an empty band under the skill pills. This is the
+  // partner mark shown there (Microsoft logo, or the AI GRC certificate mark)
+  // plus the credential wording under it, and the certificate artwork rendered
+  // beside it. Everything is per course and beats the built-in default, so a
+  // new program never needs a code change to advertise its own credential.
+  credentialLogo: {
+    type: String,
+    default: '',
+  },
+  credentialTitle: {
+    type: String,
+    default: '',
+  },
+  credentialSubtitle: {
+    type: String,
+    default: '',
+  },
+  certificateImage: {
+    type: String,
+    default: '',
+  },
   badge: {
     type: String,
     default: '',

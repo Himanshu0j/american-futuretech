@@ -133,6 +133,21 @@ export default function JobCard({
                 <Clock className="w-3 h-3 text-amber-500" />
                 {experience}
               </span>
+
+              {/* Posting age sits with the other details (company, type,
+                  location, level) instead of on its own line at the bottom. */}
+              {postedLabel && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
+                    title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
+                  >
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    {postedLabel}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -169,9 +184,8 @@ export default function JobCard({
         </div>
       )}
 
-      {/* 3. Skill and tool chips — moved up so they sit directly under the
-          "Recommended Track" line, with the posting age right below them. The
-          bottom row is now only the action buttons. */}
+      {/* 3. Skill and tool chips — sit directly under the "Recommended Track"
+          line. The posting age moved up beside the listing details. */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1.5">
           {visibleSkills.map((skill, i) => (
@@ -189,15 +203,6 @@ export default function JobCard({
           )}
         </div>
 
-        {postedLabel && (
-          <span
-            className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
-            title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
-          >
-            <Clock className="w-3 h-3 text-slate-400" />
-            {postedLabel}
-          </span>
-        )}
       </div>
 
       {/* 4. Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}

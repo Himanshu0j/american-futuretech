@@ -229,8 +229,10 @@ export default function CoursesPage() {
                details), which needs the width three columns cannot give. */
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-6">
               {filteredCourses.map((course) => {
-                // Optional per-course card image (uploaded or linked in the CMS).
-                const cardImage = course.cardImage || course.thumbnail || '';
+                // Per-course image, uploaded or linked in the CMS. Any of the
+                // three image slots the course already has will do, so a course
+                // that only got a hero image still shows a picture here.
+                const cardImage = course.cardImage || course.thumbnail || course.heroImage || '';
                 // A course with no artwork still gets a designed image panel —
                 // before this the picture simply vanished and the card looked
                 // like it had no image slot at all.
@@ -250,14 +252,17 @@ export default function CoursesPage() {
                   key={course._id}
                   className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-indigo-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
-                  {/* Course image panel — left half on desktop, wide banner on mobile */}
-                  <div className="relative w-full lg:w-[38%] shrink-0 h-44 lg:h-auto lg:min-h-[300px] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  {/* Course image panel — beside the details on desktop, a wide
+                      banner on phones. The picture is cropped to fill the panel
+                      (never stretched), so it stays sharp at every width. */}
+                  <div className="relative w-full lg:w-[42%] shrink-0 h-52 sm:h-60 lg:h-auto lg:min-h-[300px] overflow-hidden bg-slate-100 dark:bg-slate-800">
                     {cardImage ? (
                       <img
                         src={cardImage}
                         alt={course.title}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                         loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div className={`absolute inset-0 bg-gradient-to-br ${artGradient} flex items-center justify-center`}>
@@ -268,7 +273,7 @@ export default function CoursesPage() {
                     )}
 
                     {/* Readability veil so a badge or track label never sits on a busy photo */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/80 via-[#0B1220]/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/75 via-transparent to-transparent" />
 
                     {course.badge && (
                       <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0B1220]/85 text-[#E5C275] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
@@ -379,30 +384,45 @@ export default function CoursesPage() {
             </div>
 
             <div className="space-y-8">
-              {DEFAULT_TOOL_CATEGORIES.map((cat) => (
-                <div key={cat.id}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 font-heading">
-                      {cat.label}
-                    </span>
-                    <span className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-                  </div>
+              {DEFAULT_TOOL_CATEGORIES.map((cat) => {
+                // Every discipline runs left → right as a looping strip. The six
+                // tools are repeated four times so one pass is always wider than
+                // the widest screen, then that strip is duplicated: the animation
+                // travels from -50% back to 0, so the loop never shows a gap.
+                const strip = [];
+                for (let i = 0; i < 4; i += 1) strip.push(...cat.tools);
+                const track = [...strip, ...strip];
 
-                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
-                    {cat.tools.map((tool) => (
-                      <div
-                        key={tool.name}
-                        className="group rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-indigo-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
-                      >
-                        <ToolLogo name={tool.name} logo={tool.logo} />
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">
-                          {tool.name}
-                        </span>
+                return (
+                  <div key={cat.id}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 font-heading">
+                        {cat.label}
+                      </span>
+                      <span className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                    </div>
+
+                    <div className="relative overflow-hidden marquee-mask">
+                      <div className="animate-infinite-marquee-ltr items-stretch gap-2.5 py-1">
+                        {track.map((tool, idx) => (
+                          <div
+                            key={`${tool.name}-${idx}`}
+                            // Only the first pass is announced to screen readers;
+                            // the repeats exist purely to make the loop seamless.
+                            aria-hidden={idx >= cat.tools.length ? 'true' : undefined}
+                            className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-indigo-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
+                          >
+                            <ToolLogo name={tool.name} logo={tool.logo} />
+                            <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">
+                              {tool.name}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>

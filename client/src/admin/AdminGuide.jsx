@@ -27,7 +27,7 @@ const SECTIONS = [
     title: '3. Curriculum & Courses CMS',
     path: '/admin/courses',
     what: 'Saare career programs — title, price, duration, badge, curriculum modules, capstone projects.',
-    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai — module add/rename/delete karo, course page turant badal jata hai (lessons bhi wahin se bante hain). Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain. Course list mein ab sahi module count dikhta hai.',
+    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai — module add/rename/delete karo, course page turant badal jata hai (lessons bhi wahin se bante hain). Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain. Course list mein ab sahi module count dikhta hai. Isi modal me: Course Card Image (home page + /courses cards), Course Hero Image, Advantage Card Images (\"Why Get\" ke 6 cards ke artwork), aur Hero Credential Block (Microsoft logo / AI GRC certificate mark + certificate image) — sab URL ya upload se set hote hain.',
   },
   {
     icon: Calendar,

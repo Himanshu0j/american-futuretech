@@ -47,7 +47,10 @@ export default function CertificateVerificationPage() {
   const [cert, setCert] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('us-diploma'); // 'us-diploma' | 'microsoft' | 'both'
+  // "Dual Verification View" is the default: a visitor landing on a verified
+  // credential should see both the US Fellowship Diploma and the Microsoft
+  // credential together, then narrow down if they want a single document.
+  const [activeTab, setActiveTab] = useState('both'); // 'us-diploma' | 'microsoft' | 'both'
   const [selectedMicrosoftCert, setSelectedMicrosoftCert] = useState(MICROSOFT_CERTIFICATES[1]);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
 
@@ -191,6 +194,20 @@ export default function CertificateVerificationPage() {
             {/* Credential Presentation Selector */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm print:hidden">
               <div className="flex flex-wrap items-center gap-2">
+                {/* Listed first because it is the default view: both credentials
+                    together, side by side. */}
+                <button
+                  onClick={() => setActiveTab('both')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                    activeTab === 'both'
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Dual Verification View</span>
+                </button>
+
                 <button
                   onClick={() => setActiveTab('us-diploma')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
@@ -215,17 +232,6 @@ export default function CertificateVerificationPage() {
                   <span>Microsoft Certified Credential</span>
                 </button>
 
-                <button
-                  onClick={() => setActiveTab('both')}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                    activeTab === 'both'
-                      ? 'bg-slate-900 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  <Layers className="w-4 h-4" />
-                  <span>Dual Verification View</span>
-                </button>
               </div>
 
               <div className="text-[11px] font-mono text-slate-500 px-2 hidden sm:flex items-center gap-1.5">

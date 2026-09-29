@@ -3,8 +3,11 @@ import axios from 'axios';
 import { Upload, Image as ImageIcon, CheckCircle2, AlertCircle, RefreshCw, X, Link as LinkIcon, Sparkles } from 'lucide-react';
 
 const COMMON_PRESETS = [
+  // Wordmark version, used on the course hero credential block (the plain
+  // square-only mark below is for tight spaces like the company marquee).
+  { name: 'Microsoft Logo', url: '/images/microsoft-logo.svg' },
+  { name: 'Microsoft Squares', url: '/images/companies/microsoft.svg' },
   { name: 'Google Logo', url: '/images/companies/google.svg' },
-  { name: 'Microsoft Logo', url: '/images/companies/microsoft.svg' },
   { name: 'AWS Logo', url: '/images/companies/aws.svg' },
   { name: 'IBM Logo', url: '/images/companies/ibm.svg' },
   { name: 'Intel Logo', url: '/images/companies/intel.svg' },

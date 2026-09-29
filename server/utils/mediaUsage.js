@@ -31,8 +31,8 @@ const FIELD_SOURCES = [
   {
     model: Course,
     label: (doc) => `Course: ${doc.title || 'untitled'}`,
-    select: 'title thumbnail banner heroImage advantageImages',
-    fields: ['thumbnail', 'banner', 'heroImage', 'advantageImages'],
+    select: 'title thumbnail banner heroImage advantageImages credentialLogo certificateImage',
+    fields: ['thumbnail', 'banner', 'heroImage', 'advantageImages', 'credentialLogo', 'certificateImage'],
   },
   {
     model: Job,

@@ -115,6 +115,18 @@ function getCourseImage(course) {
   return '/images/classroom-lab.jpg';
 }
 
+/**
+ * The picture a course card shows.
+ *
+ * The image the team uploaded in the CMS always wins (the same one the
+ * /courses page uses), so the home page grid and the catalogue never disagree.
+ * Only a course nobody has given a picture to falls back to the branded artwork
+ * picked by keyword above.
+ */
+function getCourseCardImage(course) {
+  return course?.thumbnail || course?.cardImage || course?.heroImage || getCourseImage(course);
+}
+
 export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -224,11 +236,16 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           <div className="mb-12 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
-              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[190px] lg:min-h-[290px] overflow-hidden bg-slate-950">
+              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[220px] sm:min-h-[260px] lg:min-h-[330px] overflow-hidden bg-slate-950">
+                {/* The flagship artwork is usually a wide graphic: cropping it to
+                    this tall panel cut its headline text off. Fitting the whole
+                    picture in and letting the dark panel take the letterbox keeps
+                    any upload intact, whatever its shape. */}
                 <img
-                  src={getCourseImage(flagship)}
+                  src={getCourseCardImage(flagship)}
                   alt={flagship.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                  className="w-full h-full object-contain object-center group-hover:scale-[1.02] transition-transform duration-700 opacity-95 group-hover:opacity-100"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-slate-950/40 lg:to-slate-950" />
 
@@ -373,14 +390,17 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       course list stops eating several screens. sm+: original stacked card. */}
                   <div className="flex sm:block">
                     {/* Visual Thumbnail Header */}
-                    <div className="relative w-24 shrink-0 self-stretch sm:w-full sm:h-36 sm:self-auto min-h-[104px] overflow-hidden bg-slate-950">
+                    <div className="relative w-28 shrink-0 self-stretch sm:w-full sm:h-48 sm:self-auto min-h-[132px] overflow-hidden bg-slate-950">
                       <img
-                        src={getCourseImage(course)}
+                        src={getCourseCardImage(course)}
                         alt={course.title}
                         loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-black/30" />
+                      {/* Just enough veil for the badges to stay readable — a
+                          heavier one greyed the artwork out. */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
 
                       {/* These overlays need a full-width image, so they are desktop-only.
                           The same info is repeated in the mobile meta row below. */}

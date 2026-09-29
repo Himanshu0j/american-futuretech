@@ -72,11 +72,14 @@ export const getAlignedMicrosoftCert = (courseSlugOrCategory) => {
   if (slug.includes('cyber') || slug.includes('security')) {
     return MICROSOFT_CERTIFICATES[0]; // SC-100
   }
-  if (slug.includes('data') || slug.includes('ai') || slug.includes('machine')) {
-    return MICROSOFT_CERTIFICATES[1]; // DP-750
-  }
+  // Cloud/DevOps must be tested before the Data/AI branch: the DevOps slug ends
+  // in "…-cloud-with-ai", so the bare 'ai' token used to match first and the
+  // DevOps course advertised the Data Engineering (DP-750) credential.
   if (slug.includes('cloud') || slug.includes('devops')) {
     return MICROSOFT_CERTIFICATES[3]; // AZ-900
+  }
+  if (slug.includes('data') || slug.includes('ai') || slug.includes('machine')) {
+    return MICROSOFT_CERTIFICATES[1]; // DP-750
   }
   return MICROSOFT_CERTIFICATES[0];
 };

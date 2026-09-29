@@ -17,9 +17,19 @@
  * reservation allowlist), so a deploy that reports the right SHA while still
  * running a stale process is caught too.
  *
+ * A push is not a deploy. Both providers rebuild after it, and Render's free
+ * tier regularly takes minutes, so "just pushed" and "deployed" look identical
+ * from the outside. This script therefore waits: it polls until each live
+ * revision reports HEAD, and if the budget runs out it prints an alert naming
+ * what is behind, which files in that half of the repo have not shipped, and how
+ * to redeploy it.
+ *
  * Usage:
  *   npm run verify:deploy
- *   EXPECTED_COMMIT=<sha> npm run verify:deploy          # audit a rollback
+ *   npm run verify:deploy -- --no-wait                    # single pass, no polling
+ *   DEPLOY_WAIT_SECONDS=900 npm run verify:deploy         # longer wait budget
+ *   DEPLOY_POLL_SECONDS=30 npm run verify:deploy          # poll less often
+ *   EXPECTED_COMMIT=<sha> npm run verify:deploy           # audit a rollback
  *   EXPECT_DEPOSIT_OPTIONS=99,499 npm run verify:deploy   # if the menu changes
  *   SITE_URL=http://localhost:5273 API_URL=http://localhost:5050 npm run verify:deploy
  *
@@ -55,6 +65,29 @@ const git = (args) => {
 
 const EXPECTED = (process.env.EXPECTED_COMMIT || git('rev-parse HEAD')).trim();
 const EXPECTED_BRANCH = git('rev-parse --abbrev-ref HEAD');
+
+const isLoopback = (url) => /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::|\/|$)/i.test(url);
+
+/**
+ * How long to keep polling for a deploy that has not landed yet.
+ *
+ * Default is to wait, because the common case for running this is "I just
+ * pushed". Waiting is skipped when EXPECTED_COMMIT names a revision to audit —
+ * checking a rollback is not a "wait for my push" situation — and shortened
+ * against a local stack, where a preview rebuilds in seconds rather than the
+ * minutes a production build takes.
+ */
+const readWaitSeconds = () => {
+  if (process.argv.includes('--no-wait')) return 0;
+  const flag = process.argv.find((arg) => arg.startsWith('--wait='));
+  const explicit = Number(flag ? flag.split('=')[1] : process.env.DEPLOY_WAIT_SECONDS);
+  if (Number.isFinite(explicit) && explicit >= 0) return explicit;
+  if (process.env.EXPECTED_COMMIT) return 0;
+  return isLoopback(SITE) || isLoopback(API) ? 60 : 600;
+};
+
+const WAIT_SECONDS = readWaitSeconds();
+const POLL_SECONDS = Math.max(5, Number(process.env.DEPLOY_POLL_SECONDS) || 15);
 
 const C = {
   reset: '\x1b[0m',
@@ -94,6 +127,74 @@ const shaMatch = (a, b) => {
   if (!x || !y) return false;
   const len = Math.min(x.length, y.length);
   return len >= 7 && x.slice(0, len) === y.slice(0, len);
+};
+
+/** Like git(), but lets an empty answer be told apart from a failed command. */
+const gitRaw = (cmdArgs) => {
+  try {
+    return execSync(`git ${cmdArgs}`, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
+  } catch (error) {
+    return null;
+  }
+};
+
+/**
+ * How far behind HEAD a live revision is, and which commits it never received.
+ * Best-effort: a revision this clone has never seen (another branch, a
+ * force-push) simply reports nothing rather than guessing.
+ */
+const describeLag = (sha) => {
+  const behind = Number(gitRaw(`rev-list --count ${sha}..${EXPECTED}`));
+  if (!Number.isFinite(behind) || behind <= 0) return null;
+  const missing = (gitRaw(`log --oneline --no-decorate -n 3 ${sha}..${EXPECTED}`) || '')
+    .split('\n')
+    .filter(Boolean);
+  return { behind, missing };
+};
+
+/**
+ * Which files in a live deployment's half of the repo changed after it was
+ * built. This is what separates "the deploy did not ship" from "only its
+ * revision label is stale": with nothing changed in that scope, the running
+ * code is identical and the label is all that is behind.
+ */
+const driftIn = (sha, scope) => gitRaw(`diff --name-only ${sha}..${EXPECTED} -- ${scope}`);
+
+/**
+ * The failure this script exists to make loud: a live deployment that has not
+ * moved to the pushed commit. Says what is behind, whether its half of the repo
+ * actually changed, and how to push it forward.
+ */
+const alertBehind = (label, liveSha, scope) => {
+  console.log(`\n  ${C.red}${C.bold}⚠ ALERT — ${label} is behind main${C.reset}`);
+  console.log(
+    `    live ${C.bold}${short(liveSha)}${C.reset}  ${C.dim}expected${C.reset} ${short(EXPECTED)}`,
+  );
+
+  const lag = describeLag(liveSha);
+  if (lag) {
+    console.log(
+      `    ${C.dim}${lag.behind} commit${lag.behind === 1 ? '' : 's'} not shipped: ${lag.missing.join(' | ')}${C.reset}`,
+    );
+  }
+
+  const drift = driftIn(liveSha, scope);
+  const files = drift === null ? null : drift.split('\n').filter(Boolean);
+  if (files === null) {
+    console.log(`    ${C.dim}could not compare the two revisions in this checkout${C.reset}`);
+  } else if (files.length === 0) {
+    console.log(
+      `    ${C.green}No ${scope} file changed between them — the running code is current, only its revision label lags.${C.reset}`,
+    );
+  } else {
+    console.log(`    ${C.red}${files.length} ${scope} file(s) have not shipped:${C.reset}`);
+    for (const file of files.slice(0, 8)) console.log(`      ${file}`);
+    if (files.length > 8) console.log(`      ${C.dim}…and ${files.length - 8} more${C.reset}`);
+  }
+
+  console.log(`    ${C.dim}Fix: open that service's dashboard → Manual Deploy, then re-run this check.${C.reset}`);
 };
 
 /**
@@ -149,6 +250,103 @@ const readMeta = (html, name) => {
   return '';
 };
 
+/** Vercel's revision: the stamp vite.config.js injects into the served index.html. */
+const readSiteStamp = async () => {
+  const res = await request(`${SITE}/`);
+  return {
+    html: res.text,
+    status: res.status,
+    commit: readMeta(res.text, 'x-aft-commit'),
+    branch: readMeta(res.text, 'x-aft-branch'),
+    builtAt: readMeta(res.text, 'x-aft-built-at'),
+  };
+};
+
+/** Render's revision: build.commit in /api/health, retrying a free-tier cold start. */
+const fetchApiHealth = async () => {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      const res = await request(`${API}/api/health`);
+      if (res.status === 200 && res.json) return res.json;
+    } catch (error) {
+      /* cold start */
+    }
+    await sleep(4000);
+  }
+  return null;
+};
+
+/** One cheap health read for the polling loop — no cold-start retry budget. */
+const probeApiCommit = async () => {
+  try {
+    const res = await request(`${API}/api/health`);
+    return res.status === 200 && res.json ? res.json.build?.commit || '' : '';
+  } catch (error) {
+    return '';
+  }
+};
+
+/**
+ * Polls both deployments until each reports the pushed commit, or the wait
+ * budget runs out — printing progress either way, so a long wait is never a
+ * silent hang. Returns the last revision each side reported.
+ */
+const settleDeployments = async (siteCommit, apiCommit) => {
+  let site = siteCommit || '';
+  let api = apiCommit || '';
+  const wanted = short(EXPECTED);
+
+  if (shaMatch(site, EXPECTED) && shaMatch(api, EXPECTED)) {
+    note('nothing to wait for — both already report the pushed commit');
+    return { site, api };
+  }
+  if (WAIT_SECONDS <= 0) {
+    warn('not waiting for the deploys (wait budget 0s) — single pass only');
+    return { site, api };
+  }
+
+  const started = Date.now();
+  const deadline = started + WAIT_SECONDS * 1000;
+  console.log(
+    `  ${C.dim}waiting up to ${WAIT_SECONDS}s (polling every ${POLL_SECONDS}s) for both to rebuild ${wanted}${C.reset}`,
+  );
+
+  while (Date.now() < deadline) {
+    await sleep(Math.min(POLL_SECONDS * 1000, Math.max(0, deadline - Date.now())));
+
+    const beforeSite = site;
+    const beforeApi = api;
+    if (!shaMatch(site, EXPECTED)) {
+      try {
+        site = (await readSiteStamp()).commit || site;
+      } catch (error) {
+        /* keep the last revision we saw and try again next tick */
+      }
+    }
+    if (!shaMatch(api, EXPECTED)) {
+      const probed = await probeApiCommit();
+      if (probed) api = probed;
+    }
+
+    if (!shaMatch(beforeSite, EXPECTED) && shaMatch(site, EXPECTED)) {
+      note(`Vercel just caught up — now serving ${short(site)}`);
+    }
+    if (!shaMatch(beforeApi, EXPECTED) && shaMatch(api, EXPECTED)) {
+      note(`Render just caught up — now serving ${short(api)}`);
+    }
+
+    const elapsed = Math.round((Date.now() - started) / 1000);
+    note(
+      `[${elapsed}s / ${WAIT_SECONDS}s] vercel ${short(site)} ${shaMatch(site, EXPECTED) ? 'ok' : 'stale'}` +
+        ` · render ${short(api)} ${shaMatch(api, EXPECTED) ? 'ok' : 'stale'}`,
+    );
+
+    if (shaMatch(site, EXPECTED) && shaMatch(api, EXPECTED)) break;
+  }
+
+  return { site, api };
+};
+
 const run = async () => {
   console.log(`\n${C.bold}American FutureTech — deploy provenance check${C.reset}`);
   console.log(`${C.dim}site : ${SITE}`);
@@ -165,19 +363,19 @@ const run = async () => {
 
   // ── 1. Vercel ─────────────────────────────────────────────────────────────
   section('1. Vercel — front-end build');
-  let html = '';
+  let stamp = { html: '', status: 0, commit: '', branch: '', builtAt: '' };
   try {
-    const res = await request(`${SITE}/`);
-    html = res.text;
-    check('Site root answers', res.status === 200, `status=${res.status}`);
+    stamp = await readSiteStamp();
+    check('Site root answers', stamp.status === 200, `status=${stamp.status}`);
   } catch (error) {
     check('Site root answers', false, error.message);
   }
+  const html = stamp.html;
   check('Served page is the app shell', /id="root"/.test(html));
 
-  const stampCommit = readMeta(html, 'x-aft-commit');
-  const stampBranch = readMeta(html, 'x-aft-branch');
-  const stampAt = readMeta(html, 'x-aft-built-at');
+  const stampCommit = stamp.commit;
+  const stampBranch = stamp.branch;
+  const stampAt = stamp.builtAt;
 
   check(
     'Build reports a commit stamp',
@@ -186,9 +384,8 @@ const run = async () => {
       ? short(stampCommit)
       : 'no x-aft-commit meta — this build predates the stamp; redeploy to enable verification',
   );
-  if (stampCommit && stampCommit !== 'unknown') {
-    check('Vercel serves the expected commit', shaMatch(stampCommit, EXPECTED), `${short(stampCommit)} vs ${short(EXPECTED)}`);
-  }
+  // Whether it matches HEAD is asserted after the wait phase, so a deploy that
+  // is still building is not reported as a deployment that failed to ship.
   if (stampBranch && stampBranch !== 'unknown') note(`built from branch ${stampBranch}`);
   if (stampAt) {
     const builtAt = new Date(stampAt);
@@ -208,40 +405,57 @@ const run = async () => {
 
   // ── 2. Render ─────────────────────────────────────────────────────────────
   section('2. Render — API');
-  let health = null;
-  for (let attempt = 0; attempt < 12 && !health; attempt += 1) {
-    try {
-      const res = await request(`${API}/api/health`);
-      if (res.status === 200 && res.json) health = res.json;
-    } catch (error) {
-      /* cold start */
-    }
-    if (!health) await sleep(4000);
-  }
+  const health = await fetchApiHealth();
   check('Live API answers /api/health', Boolean(health), health ? '' : 'no response after ~48s — free-tier cold start, or the service is down');
 
+  let apiCommit = '';
   if (health) {
     check('API status is online', health.status === 'online', `status=${health.status}`);
     const db = health.database || health.db || {};
     check('Database is connected', db.connected === true, `connected=${db.connected} mode=${db.mode}`);
 
-    const apiCommit = health.build && health.build.commit;
+    apiCommit = (health.build && health.build.commit) || '';
     check(
       'API reports a commit',
       Boolean(apiCommit),
       apiCommit ? short(apiCommit) : 'no build.commit in /api/health — this deploy predates the report; redeploy to enable verification',
     );
-    if (apiCommit) {
-      check('Render serves the expected commit', shaMatch(apiCommit, EXPECTED), `${short(apiCommit)} vs ${short(EXPECTED)}`);
-    }
     note(`uptime ${health.uptimeSeconds}s · payments ${health.payments?.mode || 'unknown'}`);
     if (typeof health.uptimeSeconds === 'number' && health.uptimeSeconds < 60) {
       note('uptime is under a minute — this looks like a very recent restart');
     }
   }
 
-  // ── 3. Behaviour — the running code, not just a matching label ────────────
-  section('3. Live behaviour (proves the current code is what is running)');
+  // ── 3. Wait for both deployments to report the pushed commit ──────────────
+  section('3. Waiting for the deploys to catch up');
+  const settled = await settleDeployments(stampCommit, apiCommit);
+
+  if (stampCommit && stampCommit !== 'unknown') {
+    check(
+      'Vercel serves the expected commit',
+      shaMatch(settled.site, EXPECTED),
+      `${short(settled.site)} vs ${short(EXPECTED)}`,
+    );
+  }
+  if (apiCommit) {
+    check(
+      'Render serves the expected commit',
+      shaMatch(settled.api, EXPECTED),
+      `${short(settled.api)} vs ${short(EXPECTED)}`,
+    );
+  }
+
+  // The API is the half that quietly keeps serving old logic, so when it lags,
+  // say what is behind — and whether its half of the repo actually changed.
+  if (apiCommit && !shaMatch(settled.api, EXPECTED)) {
+    alertBehind('the Render API', settled.api, 'server');
+  }
+  if (stampCommit && stampCommit !== 'unknown' && !shaMatch(settled.site, EXPECTED)) {
+    alertBehind('the Vercel site', settled.site, 'client');
+  }
+
+  // ── 4. Behaviour — the running code, not just a matching label ────────────
+  section('4. Live behaviour (proves the current code is what is running)');
   try {
     const res = await request(`${SITE}/api/health`);
     check('Vercel proxies /api to the API', res.status === 200 && res.json?.status === 'online', `status=${res.status}`);
@@ -319,7 +533,11 @@ const report = () => {
       console.log(`  ${C.red}✗${C.reset} ${f.name}${f.detail ? `  ${C.dim}${f.detail}${C.reset}` : ''}`);
     }
     console.log(
-      `\n${C.dim}A revision mismatch means the deploy did not ship: check the Vercel deployment\nlog and the Render event log for the pushed commit, then redeploy.${C.reset}`,
+      `\n${C.dim}${
+        WAIT_SECONDS > 0
+          ? `A revision mismatch means the deploy did not ship within the ${WAIT_SECONDS}s wait.`
+          : 'A revision mismatch means the deploy has not shipped (this run did not wait).'
+      }\nRedeploy the service named in the alert above (its dashboard → Manual Deploy), then\nre-run this check. DEPLOY_WAIT_SECONDS raises the wait for a slower build.${C.reset}`,
     );
   } else {
     console.log(`\n${C.green}Both deployments are serving ${C.bold}${short(EXPECTED)}${C.reset}${C.green}.${C.reset}`);

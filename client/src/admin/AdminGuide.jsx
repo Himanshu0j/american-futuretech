@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
   ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2,
-  MessageSquareWarning
+  MessageSquareWarning, Images
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -125,6 +125,13 @@ const SECTIONS = [
     path: '/admin/issues',
     what: 'Website par jo bhi problem dikhe — galat text, toota layout, missing image, price — wo screenshot ke saath yahan likh do. Ek jagah sab issues, aur wahi se poora brief copy karke developer ko bhej do.',
     how: 'Upar ke box mein: pehle screenshot paste karo (Win + Shift + S se cut karo, phir Ctrl + V — ya image drag karo / "Choose file" se upload), phir neeche apne shabdon mein likh do ki kya galat hai aur kya hona chahiye. Title aur Page (jaise /courses) bhar do → "Save issue report". Neeche list mein us issue par "Copy brief" dabao — poora note + screenshots ke link copy ho jate hain; saath hi "Copy screenshot" se asli image bhi clipboard par aa jati hai, dono ek saath paste kar do. (Chrome mein paste karna sabse best chalta hai.) Status ko Open → Fixed → Verified kar ke apna record bhi rakh sakte ho, aur "What was done about it" mein fix ki details likh sakte ho. "Show exactly what gets copied" se copy hone wala text pehle dekh lo, aur "Download brief (.txt)" se file save kar lo.',
+  },
+  {
+    icon: Images,
+    title: '16. Media Library (Upload Ki Gayi Saari Images)',
+    path: '/admin/media',
+    what: 'Admin panel se jo bhi image upload hui hai — company logos, course images, job logos, issue screenshots — sab ek jagah. Yahan se dekho ki kaunsi image website par kahan use ho rahi hai, aur jo purani/extra hai use delete kar do.',
+    how: 'Har card par badges dekho: "durable" = safely stored (redeploy ke baad bhi rahegi), "disk only" = sirf server disk par hai to next deploy par gayab ho jayegi, "in use ×N" = website par N jagah use ho rahi hai (neeche list bhi dikhti hai). "Copy URL" se poori image link copy ho jati hai — use kisi bhi image field mein paste kar sakte ho. Delete karte waqt: agar image kahin use ho rahi hai to panel pehle batayega ki kahan-kahan, aur tab tak delete nahi karega jab tak aap "Delete anyway" na dabao (warna us jagah image toot jayegi). Jo image kisi kaam ki nahi ("unused") use bina tension delete kar sakte ho — disk aur durable, dono copies mit jati hain.',
   },
 ];
 

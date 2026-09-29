@@ -103,6 +103,7 @@ const ADMIN_ROUTES = [
   ['admin-settings', '/admin/settings'],
   ['admin-website-editor', '/admin/website-editor'],
   ['admin-issues', '/admin/issues'],
+  ['admin-media', '/admin/media'],
   ['admin-guide', '/admin/guide'],
   ['admin-users', '/admin/users'],
   ['admin-lms', '/admin/lms'],

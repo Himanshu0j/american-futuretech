@@ -30,6 +30,7 @@ import {
   Megaphone,
   SlidersHorizontal,
   MessageSquareWarning,
+  Images,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import useAutoFieldLabels from '../hooks/useAutoFieldLabels';
@@ -78,6 +79,9 @@ export default function AdminLayout() {
     // No permission id on purpose: this board exists so the client can write
     // down what is wrong and copy it out, and a missing grant would hide it.
     { name: 'Client Issue Reports', path: '/admin/issues', icon: MessageSquareWarning, permission: null },
+    // Gated by the media permissions the RBAC matrix already defines, so an
+    // account without MEDIA_VIEW is not offered a screen that answers 403.
+    { name: 'Media Library', path: '/admin/media', icon: Images, permission: 'MEDIA_VIEW' },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
     { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },

@@ -29,6 +29,7 @@ import {
   Award,
   Megaphone,
   SlidersHorizontal,
+  MessageSquareWarning,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import useAutoFieldLabels from '../hooks/useAutoFieldLabels';
@@ -74,6 +75,9 @@ export default function AdminLayout() {
     { name: 'Footer CMS', path: '/admin/footer', icon: PanelBottom, permission: 'HOMEPAGE_VIEW' },
     { name: 'Student Support Desk', path: '/admin/support', icon: LifeBuoy, permission: 'STUDENTS_VIEW' },
     { name: 'Website Editor (Text & Images)', path: '/admin/website-editor', icon: PencilLine, permission: null },
+    // No permission id on purpose: this board exists so the client can write
+    // down what is wrong and copy it out, and a missing grant would hide it.
+    { name: 'Client Issue Reports', path: '/admin/issues', icon: MessageSquareWarning, permission: null },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
     { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },

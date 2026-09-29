@@ -77,6 +77,7 @@ const SettingsCMS = lazy(() => import('./admin/SettingsCMS'));
 const WebsiteEditor = lazy(() => import('./admin/WebsiteEditor'));
 const StaffRBAC = lazy(() => import('./admin/StaffRBAC'));
 const AdminGuide = lazy(() => import('./admin/AdminGuide'));
+const IssueReports = lazy(() => import('./admin/IssueReports'));
 
 // Academy / LMS control centre
 const LmsDashboard = lazy(() => import('./admin/lms/LmsDashboard'));
@@ -379,6 +380,7 @@ export default function App() {
                 <Route path="support" element={<SupportManager />} />
                 <Route path="settings" element={<SettingsCMS />} />
                 <Route path="website-editor" element={<WebsiteEditor />} />
+                <Route path="issues" element={<IssueReports />} />
                 <Route path="guide" element={<AdminGuide />} />
                 <Route path="users" element={<StaffRBAC />} />
 

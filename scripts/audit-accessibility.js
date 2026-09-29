@@ -102,6 +102,7 @@ const ADMIN_ROUTES = [
   ['admin-support', '/admin/support'],
   ['admin-settings', '/admin/settings'],
   ['admin-website-editor', '/admin/website-editor'],
+  ['admin-issues', '/admin/issues'],
   ['admin-guide', '/admin/guide'],
   ['admin-users', '/admin/users'],
   ['admin-lms', '/admin/lms'],

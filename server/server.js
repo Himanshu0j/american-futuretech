@@ -141,6 +141,9 @@ app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
 app.use('/api/content', require('./routes/contentRoutes'));
 app.use('/api/support', require('./routes/supportRoutes'));
+// Client issue reports: an admin board where a screenshot + a note is recorded
+// and copied back out verbatim.
+app.use('/api/issues', require('./routes/issueRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 const uploadRoutes = require('./routes/uploadRoutes');

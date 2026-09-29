@@ -20,6 +20,7 @@
     "rotate:admin": "node scripts/rotate-admin-credentials.js",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "verify:jobs": "node scripts/verify-jobs-board.js",
+    "verify:issues": "node scripts/verify-issue-reports.js",
     "verify:coupons": "node scripts/verify-coupons.js",
     "verify:students": "node scripts/verify-student-access.js",
     "verify:analytics": "node scripts/verify-analytics-honesty.js",

@@ -2,7 +2,8 @@ import React from 'react';
 import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
-  ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2
+  ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2,
+  MessageSquareWarning
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -117,6 +118,13 @@ const SECTIONS = [
     path: '/admin/users',
     what: 'Team members ke accounts, roles aur granular permissions.',
     how: 'New staff add karo → role chuno (SuperAdmin / Admin / Counselor / Instructor) aur checkboxes se specific permissions do (e.g. sirf JOBS_EDIT). Deactivated user login nahi kar sakta. Audit Trail tab (Settings mein) har admin action ka record rakhta hai.',
+  },
+  {
+    icon: MessageSquareWarning,
+    title: '15. Client Issue Reports (Screenshot + Note)',
+    path: '/admin/issues',
+    what: 'Website par jo bhi problem dikhe — galat text, toota layout, missing image, price — wo screenshot ke saath yahan likh do. Ek jagah sab issues, aur wahi se poora brief copy karke developer ko bhej do.',
+    how: 'Upar ke box mein: pehle screenshot paste karo (Win + Shift + S se cut karo, phir Ctrl + V — ya image drag karo / "Choose file" se upload), phir neeche apne shabdon mein likh do ki kya galat hai aur kya hona chahiye. Title aur Page (jaise /courses) bhar do → "Save issue report". Neeche list mein us issue par "Copy brief" dabao — poora note + screenshots ke link copy ho jate hain; saath hi "Copy screenshot" se asli image bhi clipboard par aa jati hai, dono ek saath paste kar do. (Chrome mein paste karna sabse best chalta hai.) Status ko Open → Fixed → Verified kar ke apna record bhi rakh sakte ho, aur "What was done about it" mein fix ki details likh sakte ho. "Show exactly what gets copied" se copy hone wala text pehle dekh lo, aur "Download brief (.txt)" se file save kar lo.',
   },
 ];
 

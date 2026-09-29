@@ -1,0 +1,86 @@
+# Deploy provenance — did the commit we pushed actually reach both deployments?
+#
+# A push is not a deploy. Vercel and Render rebuild in their own time, and either
+# one silently keeping the previous revision is invisible from a browser: the
+# site loads and the API answers exactly the same way. This runs the same check
+# as `npm run verify:deploy` after every push to main.
+#
+# That script does the waiting itself — it polls until each provider reports the
+# pushed commit and only then decides — so a red run here means a provider really
+# has not shipped, not that the runner asked too early.
+#
+# Only `main` is watched: a pull request produces a Vercel *preview* deployment,
+# not the production one this check is about.
+name: Deploy provenance
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: 'Revision to audit instead of the pushed one (e.g. after a rollback)'
+        required: false
+      wait_seconds:
+        description: 'How long to wait for both deployments to rebuild (0 = single pass)'
+        required: false
+        default: '900'
+
+# One check per branch is enough: a newer push supersedes the one still waiting.
+concurrency:
+  group: deploy-provenance-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Both deployments serve the pushed commit
+    runs-on: ubuntu-latest
+    # The wait budget below is the slow part, plus a free-tier Render cold start.
+    timeout-minutes: 25
+    env:
+      # Always set explicitly, so the script's "auditing a named revision" mode
+      # does not silently turn the wait off on a normal push.
+      DEPLOY_WAIT_SECONDS: ${{ inputs.wait_seconds || '900' }}
+      # Empty on a push, which makes the check target the pushed commit itself.
+      EXPECTED_COMMIT: "${{ inputs.expected_commit }}"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: the script reports how many commits a lagging
+          # deployment has missed, and prints their subjects.
+          fetch-depth: 0
+
+      # Nothing to install — scripts/verify-deploy.js uses only Node built-ins
+      # (fetch, child_process), so the check starts immediately.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run the deploy provenance check
+        run: |
+          set -o pipefail
+          npm run verify:deploy 2>&1 | tee "$RUNNER_TEMP/verify-deploy.log"
+
+      - name: Put the alert on the run page
+        if: failure()
+        run: |
+          # Strip the ANSI colours: they are for a terminal, not the run page.
+          PLAIN="$(sed -e 's/\x1b\[[0-9;]*m//g' "$RUNNER_TEMP/verify-deploy.log")"
+          # The alert is the actionable part. If the check died before printing
+          # one (a transport error, say), the tail of the log is the next best
+          # thing. The failures list says which assertion actually broke.
+          ALERT="$(printf '%s\n' "$PLAIN" | awk '/ALERT/{seen=1} seen && NF==0{exit} seen' | head -20)"
+          [ -n "$ALERT" ] || ALERT="$(printf '%s\n' "$PLAIN" | tail -20)"
+          FAILURES="$(printf '%s\n' "$PLAIN" | sed -n '/^FAILURES/,$p' | head -10)"
+          {
+            echo "## ⚠️ A deployment is not serving \`${GITHUB_SHA:0:8}\`"
+            echo
+            echo '```'
+            printf '%s\n' "$ALERT"
+            printf '%s\n' "$FAILURES"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Vercel or Render has not shipped ${GITHUB_SHA:0:8} — see the run summary for which one, what it missed, and how to redeploy it."

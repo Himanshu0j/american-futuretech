@@ -4,7 +4,7 @@ import {
   PhoneCall, Check, FileText, Info, Quote, Linkedin, MessagesSquare, Code2, Zap, Compass
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
 import { Link } from 'react-router-dom';
@@ -52,7 +52,7 @@ export default function CareerSupportPage() {
 
       <main className="pt-28 pb-10">
 
-        <CompanyMarquee />
+        <TrustMarquee />
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">

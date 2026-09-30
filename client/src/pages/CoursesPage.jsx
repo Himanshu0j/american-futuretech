@@ -8,7 +8,7 @@ import CyberParticles from '../components/CyberParticles';
 import LeadModal from '../components/LeadModal';
 import SyllabusModal from '../components/SyllabusModal';
 import PersonalizedLearningSection from '../components/PersonalizedLearningSection';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
@@ -134,7 +134,7 @@ export default function CoursesPage() {
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-10 relative z-10">
-        <CompanyMarquee />
+        <TrustMarquee />
 
         {/* Header Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 text-center max-w-5xl">

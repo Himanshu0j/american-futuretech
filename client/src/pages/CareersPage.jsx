@@ -39,7 +39,7 @@ import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.sv
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import BulletContent from '../components/common/BulletContent';
 import FaqAccordion from '../components/common/FaqAccordion';
 import JobPagination from '../components/common/JobPagination';
@@ -295,7 +295,7 @@ export default function CareersPage() {
       <Navbar />
 
       <main className="pt-24 sm:pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
-        <CompanyMarquee />
+        <TrustMarquee />
 
         {/* ========================================================================= */}
         {/* 🌟 HERO SHOWCASE: HIGH-IMPACT 2-COLUMN PARTNER CAREER NETWORK BANNER      */}

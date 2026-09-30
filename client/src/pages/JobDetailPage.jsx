@@ -20,7 +20,7 @@ import {
   Share2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import BulletContent from '../components/common/BulletContent';
 import SafeImage from '../components/common/SafeImage';
@@ -157,7 +157,7 @@ export default function JobDetailPage() {
 
       <main className="pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
 
-        <CompanyMarquee />        
+        <TrustMarquee />        
         {/* Back Link Breadcrumb */}
         {/* Wraps on narrow screens: a nowrap breadcrumb + "All Openings" link
             pushed the row 64px past a 320px viewport. */}

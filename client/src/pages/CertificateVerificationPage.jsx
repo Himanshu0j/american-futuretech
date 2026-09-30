@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { MICROSOFT_CERTIFICATES, getAlignedMicrosoftCert } from '../data/microsoftCertificates';
 import CertificateModal from '../components/CertificateModal';
@@ -129,7 +129,7 @@ export default function CertificateVerificationPage() {
             heading is exposed to assistive tech only. */}
         <h1 className="sr-only">Certificate verification — American FutureTech public credential registry</h1>
 
-        <CompanyMarquee />        {/* Navigation & Action Bar */}
+        <TrustMarquee />        {/* Navigation & Action Bar */}
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
           <Link
             to="/"

@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
@@ -336,7 +336,7 @@ export default function CheckoutPage() {
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        <CompanyMarquee />
+        <TrustMarquee />
 
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center mb-8">

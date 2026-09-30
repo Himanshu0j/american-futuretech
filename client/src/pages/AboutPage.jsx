@@ -31,7 +31,7 @@ import {
   DEFAULT_PEDAGOGY
 } from '../data/siteContent';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import engineeringTeamSvg from '../assets/illustrations/about/engineering-team.svg';
@@ -110,7 +110,7 @@ export default function AboutPage() {
 
       <main className="pt-28 pb-10">
 
-        <CompanyMarquee />
+        <TrustMarquee />
 
         {/* Editorial Magazine Hero Header */}
         {show('hero') && (

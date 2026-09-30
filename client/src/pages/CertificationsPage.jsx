@@ -5,7 +5,7 @@ import {
   Target, CreditCard, Sparkles, Download, PhoneCall, Briefcase, Cpu
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
 
@@ -75,7 +75,7 @@ export default function CertificationsPage() {
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-10">
-        <CompanyMarquee />
+        <TrustMarquee />
 
         {/* Hero */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl pt-8 pb-10 text-left">

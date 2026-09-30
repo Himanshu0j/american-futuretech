@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2, Shield, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import CompanyMarquee from '../components/CompanyMarquee';
+import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import CyberParticles from '../components/CyberParticles';
 import useCompanyInfo from '../hooks/useCompanyInfo';
@@ -43,7 +43,7 @@ export default function ContactPage() {
 
       <main className="pt-28 pb-10">
 
-        <CompanyMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-14">
+        <TrustMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">
             <Mail className="w-3.5 h-3.5 text-[#4338CA]" />
             <span>ACADEMIC & ADMISSIONS ADVISORY</span>

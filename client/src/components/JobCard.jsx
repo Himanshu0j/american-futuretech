@@ -107,10 +107,10 @@ export default function JobCard({
               {job.title}
             </Link>
 
-            {/* Structure Tags: Company Name • Full-time • Remote • Level • Posted.
-                gap-1.5 (not 2) is what lets the posting age sit on this same line
-                on a narrow card instead of dropping to the line below. */}
-            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            {/* Structure Tags: Company Name • Full-time • Remote • Level.
+                The posting age is deliberately NOT here — the client wants it in
+                the card's bottom-left corner, next to the action buttons. */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-slate-500" />
                 {job.company}
@@ -136,19 +136,6 @@ export default function JobCard({
                 {experience}
               </span>
 
-              {/* Posting age sits with the other details (company, type,
-                  location, level) instead of on its own line at the bottom. */}
-              {postedLabel && (
-                <>
-                  <span
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400"
-                    title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
-                  >
-                    <Clock className="w-3 h-3 text-slate-400" />
-                    {postedLabel}
-                  </span>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -186,7 +173,7 @@ export default function JobCard({
       )}
 
       {/* 3. Skill and tool chips — sit directly under the "Recommended Track"
-          line. The posting age moved up beside the listing details. */}
+          line. */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1.5">
           {visibleSkills.map((skill, i) => (
@@ -206,8 +193,22 @@ export default function JobCard({
 
       </div>
 
-      {/* 4. Action Buttons: Distinct VIEW DETAILS and APPLY NOW */}
-      <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+      {/* 4. Action Bar: posting age on the LEFT, the distinct VIEW DETAILS and
+          APPLY NOW buttons on the right. The age used to sit in the details row
+          under the job title; the client moved it to this lower-left corner. */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800">
+        {postedLabel ? (
+          <span
+            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 w-full sm:w-auto"
+            title={new Date(job.postedAt || job.createdAt).toLocaleString('en-US')}
+          >
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
+            {postedLabel}
+          </span>
+        ) : (
+          <span aria-hidden="true" className="hidden sm:block" />
+        )}
+
         <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
           <Link
             to={`/jobs/${jobId}`}

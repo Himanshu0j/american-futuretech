@@ -10,12 +10,14 @@ const { computeDiscount } = require('./couponEngine');
 
 const DEPOSIT_FALLBACK_USD = 99;
 /**
- * Seat reservation has exactly two amounts — the client asked for $99 and $499
- * and nothing else, so a reservation request may only name one of them. Settings
- * → depositPriceUSD decides which one is preselected; anything else the browser
- * sends is ignored, so a tampered request can never invent a price.
+ * The four amounts the checkout page offers, in the client's order: the two seat
+ * deposits ($99, $499) followed by paying it all up front — Career Program
+ * tuition ($2,499) and the Personalized 1-on-1 track ($4,499). A reservation
+ * request may only name one of these. Settings → depositPriceUSD decides which
+ * one is preselected; anything else the browser sends is ignored, so a tampered
+ * request can never invent a price.
  */
-const RESERVE_OPTIONS_USD = [99, 499];
+const RESERVE_OPTIONS_USD = [99, 499, 2499, 4499];
 // Career Program (group batch) list price. Admins override it per course in
 // Curriculum & Courses; this is only the last-resort fallback.
 const FULL_FALLBACK_USD = 499;
@@ -50,7 +52,7 @@ const resolveOrderAmount = ({ course, tier, settings, depositAmount }) => {
   if (requestedTier === 'deposit') {
     amount = resolveReserveAmount(settings, depositAmount);
     originalPrice = amount;
-    label = `Cohort Seat Reservation Deposit ($${amount})`;
+    label = `Cohort Seat Reservation Deposit ($${amount.toLocaleString('en-US')})`;
   } else if (requestedTier === 'personalized') {
     amount = Number(personalized.price) || Number(personalized.fee) || PERSONALIZED_FALLBACK_USD;
     originalPrice =

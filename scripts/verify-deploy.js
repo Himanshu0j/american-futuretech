@@ -30,7 +30,7 @@
  *   DEPLOY_WAIT_SECONDS=900 npm run verify:deploy         # longer wait budget
  *   DEPLOY_POLL_SECONDS=30 npm run verify:deploy          # poll less often
  *   EXPECTED_COMMIT=<sha> npm run verify:deploy           # audit a rollback
- *   EXPECT_DEPOSIT_OPTIONS=99,499 npm run verify:deploy   # if the menu changes
+ *   EXPECT_DEPOSIT_OPTIONS=99,499,2499,4499 npm run verify:deploy   # if the menu changes
  *   SITE_URL=http://localhost:5273 API_URL=http://localhost:5050 npm run verify:deploy
  *
  * Exit code is 0 only when both deployments are serving the expected commit.
@@ -44,11 +44,11 @@ const API = (process.env.API_URL || 'https://american-futuretech-api.onrender.co
 const ROOT = path.join(__dirname, '..');
 
 /** The reservation amounts server/utils/pricing.js is allowed to honour. */
-const DEPOSIT_OPTIONS = (process.env.EXPECT_DEPOSIT_OPTIONS || '99,499')
+const DEPOSIT_OPTIONS = (process.env.EXPECT_DEPOSIT_OPTIONS || '99,499,2499,4499')
   .split(',')
   .map((value) => Number(String(value).trim()))
   .filter((value) => Number.isFinite(value) && value > 0);
-const HONOURED_DEPOSIT = DEPOSIT_OPTIONS.length ? Math.max(...DEPOSIT_OPTIONS) : 499;
+const HONOURED_DEPOSIT = DEPOSIT_OPTIONS.length ? Math.max(...DEPOSIT_OPTIONS) : 4499;
 // One more than the largest allowed amount can never itself be on the menu, so
 // it is a safe "off-menu" probe without hardcoding a rejection value.
 const OFF_MENU_DEPOSIT = HONOURED_DEPOSIT + 1;

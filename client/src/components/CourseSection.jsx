@@ -4,16 +4,9 @@ import {
   Check,
   Calendar,
   ArrowRight,
-  Clock,
   Award,
-  BookOpen,
-  Sparkles,
-  ChevronRight,
   ShieldCheck,
-  Zap,
   Users,
-  Terminal,
-  FileText,
   ZoomIn,
   Eye
 } from 'lucide-react';
@@ -127,6 +120,48 @@ function getCourseCardImage(course) {
   return course?.thumbnail || course?.cardImage || course?.heroImage || getCourseImage(course);
 }
 
+/**
+ * The three bullets a program card shows.
+ *
+ * Almost no course carries curated `curriculumHighlights`, and the old single
+ * hardcoded set told a cybersecurity card to "master PyTorch". So: curated text
+ * wins, the client-approved data-science copy stays on the data tracks, and
+ * everything else is written from that course's own skills — never borrowed
+ * from a different program.
+ */
+function getHighlightBullets(course) {
+  const curated = (course?.curriculumHighlights || []).filter(Boolean);
+  if (curated.length) return curated.slice(0, 3);
+
+  const haystack = `${course?.slug || ''} ${course?.title || ''} ${course?.category || ''}`.toLowerCase();
+  if (haystack.includes('data') || haystack.includes('analytics') || haystack.includes('intelligence & analytics')) {
+    return [
+      'Master deep neural architectures, PyTorch, and tensor operations',
+      'Deploy production LangChain vector RAG pipelines on Kubernetes',
+      'Full enterprise capstone defense evaluated by external tech leaders',
+    ];
+  }
+
+  const skills = (course?.skills || []).filter(Boolean).map(String).slice(0, 4);
+  const bullets = [];
+  if (skills.length) {
+    const list =
+      skills.length > 1 ? `${skills.slice(0, -1).join(', ')} and ${skills[skills.length - 1]}` : skills[0];
+    bullets.push(`Hands-on, mentor-led labs across ${list}`);
+    bullets.push(`Ship a production capstone built with ${skills[0]}`);
+  }
+  if (course?.duration) {
+    bullets.push(`Live cohort training over ${String(course.duration).replace(/\s*·.*$/, '')} with weekly mentor reviews`);
+  }
+  return bullets.length
+    ? bullets.slice(0, 3)
+    : [
+        'Live mentor-led cohort sessions with recorded replays',
+        'Production capstone project reviewed by working practitioners',
+        'Placement support until you are hired',
+      ];
+}
+
 export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -186,9 +221,6 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
     return true;
   });
 
-  // Flagship program (first item or designated flagship)
-  const flagship = filteredCourses.length > 0 ? filteredCourses[0] : null;
-  const secondaryCourses = filteredCourses.length > 1 ? filteredCourses.slice(1) : [];
 
   return (
     <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
@@ -231,9 +263,16 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           </div>
         </div>
 
-        {/* FLAGSHIP HERO SHOWCASE CARD (Stanford/Wharton Executive Style) */}
-        {flagship && (
-          <div className="mb-12 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group">
+        {/* EVERY specialization uses the same full-width showcase layout the
+            client picked from the home page: programme artwork on the left, the
+            whole story (curriculum highlights, stack, tuition, CTAs) beside it.
+            The map parameter is deliberately named `flagship` so every course
+            renders through the card markup below unchanged. */}
+        {filteredCourses.map((flagship) => (
+          <div
+            key={flagship._id || flagship.slug}
+            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
               <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[220px] sm:min-h-[260px] lg:min-h-[330px] overflow-hidden bg-slate-950">
@@ -302,13 +341,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                     <div className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
                       Curriculum Highlights
                     </div>
-                    {(
-                      flagship.curriculumHighlights || [
-                        'Master deep neural architectures, PyTorch, and tensor operations',
-                        'Deploy production LangChain vector RAG pipelines on Kubernetes',
-                        'Full enterprise capstone defense evaluated by external tech leaders'
-                      ]
-                    ).map((highlight, hIdx) => (
+                    {getHighlightBullets(flagship).map((highlight, hIdx) => (
                       <div key={hIdx} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
                         <div className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
                           <Check className="w-3 h-3 stroke-[2.5]" />
@@ -372,140 +405,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </div>
             </div>
           </div>
-        )}
+        ))}
 
-        {/* SECONDARY TRACKS MODULAR GRID */}
-        {secondaryCourses.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-6 text-left">
-            {secondaryCourses.map((course) => {
-              const tuition = course.pricing?.discountedPrice || 499;
-              const originalTuition = course.pricing?.originalPrice || 1299;
-
-              return (
-                <div
-                  key={course._id || course.slug}
-                  className="elms-card flex flex-col justify-between group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-indigo-500/40 transition-all duration-300 shadow-md hover:shadow-xl overflow-hidden"
-                >
-                  {/* Phones: compact horizontal row (thumbnail beside the text) so the
-                      course list stops eating several screens. sm+: original stacked card. */}
-                  <div className="flex sm:block">
-                    {/* Visual Thumbnail Header */}
-                    <div className="relative w-28 shrink-0 self-stretch sm:w-full sm:h-48 sm:self-auto min-h-[132px] overflow-hidden bg-slate-950">
-                      <img
-                        src={getCourseCardImage(course)}
-                        alt={course.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-95 group-hover:opacity-100"
-                      />
-                      {/* Just enough veil for the badges to stay readable — a
-                          heavier one greyed the artwork out. */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/20" />
-
-                      {/* These overlays need a full-width image, so they are desktop-only.
-                          The same info is repeated in the mobile meta row below. */}
-                      <div className="absolute top-3 left-3 hidden sm:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-emerald-300 border border-emerald-500/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-mint-dot" />
-                        <span>Admissions Open</span>
-                      </div>
-
-                      <div className="absolute bottom-3 left-3 right-3 hidden sm:flex items-center justify-between text-xs">
-                        <span className="text-[10px] font-mono font-bold text-white bg-indigo-600/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full">
-                          {course.duration || '6-Month Career Training'}
-                        </span>
-
-                        <span className="text-[10px] font-bold text-white bg-indigo-900/80 px-2.5 py-0.5 rounded-full shadow-sm border border-indigo-500/30">
-                          {course.badge || '6-Month Track'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-4 sm:p-6 relative flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="min-w-0">
-                          <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                            {course.category || 'Specialization Track'}
-                          </div>
-                          {/* Mobile meta — on desktop this lives in the image badges */}
-                          <div className="flex sm:hidden flex-wrap items-center gap-1 mt-1">
-                            <span className="text-[9px] font-mono font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded-full">
-                              {(course.duration || '6 Months').split('·')[0].trim()}
-                            </span>
-                            {course.badge ? (
-                              <span className="text-[9px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 px-1.5 py-0.5 rounded-full">
-                                {course.badge}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                        <div className="w-9 h-9 p-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 shrink-0">
-                          <img src={getCourseIllustration(course)} alt="" className="w-full h-full object-contain" />
-                        </div>
-                      </div>
-
-                      <Link to={`/courses/${course.slug}`} className="block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                        <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-heading tracking-tight leading-snug">
-                          {course.title}
-                        </h4>
-                      </Link>
-
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-2.5 line-clamp-2 leading-relaxed font-normal">
-                        {course.shortDescription || course.description}
-                      </p>
-
-                      {/* Tech Stack Strip */}
-                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 hidden sm:flex flex-wrap gap-1.5">
-                        {(course.skills?.slice(0, 4) || ['Kali Linux', 'Metasploit', 'Burp Suite', 'Python']).map(
-                          (skill, sIdx) => (
-                            <span
-                              key={sIdx}
-                              className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-medium border border-slate-200/50 dark:border-slate-700/50"
-                            >
-                              {skill}
-                            </span>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Tuition & CTAs */}
-                  <div className="p-4 pt-0 sm:p-6 sm:pt-0">
-                    <div className="pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 flex-wrap">
-                      <div>
-                        <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
-                          Reserve with $99
-                        </div>
-                        <div className="flex items-baseline gap-1.5 mt-0.5">
-                          <span className="text-lg font-black text-slate-900 dark:text-white font-mono">${tuition}</span>
-                          <span className="text-xs text-slate-500 line-through font-mono">${originalTuition}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {/* No public syllabus download — View Details opens the course page */}
-                        <Link
-                          to={`/courses/${course.slug}`}
-                          className="text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 px-2 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors whitespace-nowrap"
-                        >
-                          View Details
-                        </Link>
-
-                        <Link
-                          to={`/checkout?tier=deposit&courseId=${course._id}`}
-                          className="elms-btn-primary !text-xs !py-1.5 !px-4 cursor-pointer flex items-center gap-1"
-                        >
-                          <span>Reserve $99</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
 
         {/* Official Microsoft Partner Credential Showcase */}
         <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">

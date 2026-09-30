@@ -14,6 +14,47 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 const POLL_INTERVAL_MS = 2500;
 const MAX_POLLS = 24; // ~60 seconds — long enough for a slow webhook or 3-D Secure step
 
+/**
+ * The reservation amounts the client wants on the checkout page: the two seat
+ * deposits ($99 / $499) plus the two "pay it all now" amounts — the Career
+ * Program tuition ($2,499) and the Personalized 1-on-1 track ($4,499).
+ * server/utils/pricing.js keeps the same allowlist, so an edited request can
+ * never invent a fifth amount.
+ */
+const RESERVE_OPTIONS = [99, 499, 2499, 4499];
+
+/** Billing fields start empty; the country defaults to the US as on the form. */
+const EMPTY_BILLING = {
+  firstName: '',
+  lastName: '',
+  company: '',
+  country: 'United States (US)',
+  street: '',
+  apartment: '',
+  city: '',
+  state: '',
+  zip: '',
+  phone: '',
+  email: '',
+};
+
+const BILLING_COUNTRIES = [
+  'United States (US)',
+  'Canada (CA)',
+  'United Kingdom (UK)',
+  'India (IN)',
+  'United Arab Emirates (AE)',
+  'Australia (AU)',
+  'Germany (DE)',
+  'Singapore (SG)',
+  'Other',
+];
+
+// Shared styling so every billing field matches the three contact fields above.
+const FIELD_CLASS =
+  'w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400';
+const LABEL_CLASS = 'block text-xs font-semibold text-slate-700 mb-1.5';
+
 export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const { settings } = useSiteSettings();
@@ -29,9 +70,9 @@ export default function CheckoutPage() {
   const personalizedOriginal = settings?.personalizedLearning?.originalPrice || 6999;
   const personalizedDuration = settings?.personalizedLearning?.duration || 'Custom / 3 to 6 Months';
   const depositPrice = settings?.depositPriceUSD || 99;
-  // Seat reservation offers exactly two amounts. Settings picks which one is
-  // selected by default; a link may ask for the other with ?deposit=99|499.
-  const RESERVE_OPTIONS = [99, 499];
+  // Seat reservation offers the four amounts in RESERVE_OPTIONS. Settings picks
+  // which deposit is selected by default; a link may ask for another with
+  // ?deposit=99|499|2499|4499.
   const requestedDeposit = Number(searchParams.get('deposit'));
   const initialDeposit = RESERVE_OPTIONS.includes(requestedDeposit)
     ? requestedDeposit
@@ -44,6 +85,9 @@ export default function CheckoutPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [billing, setBilling] = useState(EMPTY_BILLING);
+  const [orderNotes, setOrderNotes] = useState('');
+  const setBillingField = (field) => (e) => setBilling((prev) => ({ ...prev, [field]: e.target.value }));
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -74,6 +118,18 @@ export default function CheckoutPage() {
       setGatewayConfigured(settings.payments.configured);
     }
   }, [settings]);
+
+  // One-line address summary attached to the lead when a customer asks for a
+  // secure payment link, so admissions knows where the invoice should go.
+  const billingSummary = [
+    `${billing.firstName} ${billing.lastName}`.trim(),
+    billing.company,
+    [billing.street, billing.apartment].filter(Boolean).join(', '),
+    [billing.city, billing.state, billing.zip].filter(Boolean).join(' '),
+    billing.country,
+    billing.phone,
+    billing.email,
+  ].filter(Boolean).join(' | ');
 
   const fetchCourses = async () => {
     try {
@@ -202,7 +258,7 @@ export default function CheckoutPage() {
       targetCourse: selectedCourseId || undefined,
       preferredBatch: 'Checkout — secure payment link requested',
       marketingSource: 'Checkout (card gateway pending activation)',
-      notes: `Tier: ${tier}. Quoted amount: $${amount} USD. Student requested a secure payment link.`,
+      notes: `Tier: ${tier}. Quoted amount: $${amount} USD. Student requested a secure payment link. Billing: ${billingSummary}.${orderNotes ? ` Order notes: ${orderNotes}` : ''}`,
     });
     setManualInfo({
       name: fullName,
@@ -223,6 +279,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!billing.firstName || !billing.lastName || !billing.street || !billing.city || !billing.state || !billing.zip || !billing.phone || !billing.email) {
+      alert('Please complete the billing details (name, address, phone and email).');
+      return;
+    }
+
     const amount = quote?.amount ?? 0;
 
     try {
@@ -235,6 +296,10 @@ export default function CheckoutPage() {
         email,
         phone,
         couponCode: appliedCoupon || undefined,
+        // Sent for the record; the server prices the order on its own and
+        // Stripe collects the cardholder's own billing address at payment time.
+        billingDetails: billing,
+        orderNotes: orderNotes || undefined,
       });
 
       if (res.data?.sessionUrl) {
@@ -293,8 +358,10 @@ export default function CheckoutPage() {
             Secure Enrollment & <span className="highlight">Seat Reservation</span>
           </h1>
           <p className="text-sm text-slate-600 leading-relaxed">
-            Reserve your place in the upcoming engineering cohort. Choose between the flexible ${depositPrice} seat
-            deposit or complete tuition — your seat is confirmed the moment your payment reaches us.
+            Reserve your place in the upcoming engineering cohort with a ${RESERVE_OPTIONS[0]} or ${RESERVE_OPTIONS[1]} seat
+            deposit, or settle the Career Program (${RESERVE_OPTIONS[2].toLocaleString()}) or the Personalized 1-on-1
+            track (${RESERVE_OPTIONS[3].toLocaleString()}) in full — your seat is confirmed the moment your payment
+            reaches us.
           </p>
         </div>
 
@@ -499,10 +566,12 @@ export default function CheckoutPage() {
                       <span className="text-2xl font-display font-black text-[#0B1220]">${depositAmount}</span>
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                      Lock your seat in the next live cohort now. Remainder is settled before live sessions commence.
+                      Lock your seat in the next live cohort now, or settle the Career Program tuition
+                      (${RESERVE_OPTIONS[2]}) / Personalized 1-on-1 track (${RESERVE_OPTIONS[3]}) in full. Remainder is
+                      settled before live sessions commence.
                     </p>
-                    {/* The two reservation amounts — tap to switch */}
-                    <div className="flex items-center gap-2">
+                    {/* All four amounts — tap to switch */}
+                    <div className="flex flex-wrap items-center gap-2">
                       {RESERVE_OPTIONS.map((option) => (
                         <button
                           key={option}
@@ -520,7 +589,7 @@ export default function CheckoutPage() {
                               : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
                           }`}
                         >
-                          Reserve ${option}
+                          Reserve ${option.toLocaleString('en-US')}
                         </button>
                       ))}
                     </div>
@@ -621,6 +690,182 @@ export default function CheckoutPage() {
                     className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400"
                   />
                 </div>
+
+                {/* Billing details — the client asked for the full billing
+                    address form from their reference screenshot, in the same
+                    order: name → company → country → street → town → state/zip
+                    → phone/email → order notes. */}
+                <div className="pt-5 mt-2 border-t border-slate-200">
+                  <h4 className="text-sm font-display font-bold text-[#0B1220]">Billing details</h4>
+                  <p className="text-[11px] text-slate-500 mt-1 mb-4">Fields marked with * are required.</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label htmlFor="billing-first-name" className={LABEL_CLASS}>First name *</label>
+                      <input
+                        id="billing-first-name"
+                        type="text"
+                        required
+                        autoComplete="given-name"
+                        value={billing.firstName}
+                        onChange={setBillingField('firstName')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="billing-last-name" className={LABEL_CLASS}>Last name *</label>
+                      <input
+                        id="billing-last-name"
+                        type="text"
+                        required
+                        autoComplete="family-name"
+                        value={billing.lastName}
+                        onChange={setBillingField('lastName')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="billing-company" className={LABEL_CLASS}>Company name (optional)</label>
+                    <input
+                      id="billing-company"
+                      type="text"
+                      autoComplete="organization"
+                      value={billing.company}
+                      onChange={setBillingField('company')}
+                      className={FIELD_CLASS}
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="billing-country" className={LABEL_CLASS}>Country / Region *</label>
+                    <select
+                      id="billing-country"
+                      required
+                      autoComplete="country-name"
+                      value={billing.country}
+                      onChange={setBillingField('country')}
+                      className={`${FIELD_CLASS} cursor-pointer`}
+                    >
+                      {BILLING_COUNTRIES.map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mb-4 space-y-3">
+                    <div>
+                      <label htmlFor="billing-street" className={LABEL_CLASS}>Street address *</label>
+                      <input
+                        id="billing-street"
+                        type="text"
+                        required
+                        autoComplete="address-line1"
+                        placeholder="House number and street name"
+                        value={billing.street}
+                        onChange={setBillingField('street')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="billing-apartment" className="sr-only">
+                        Apartment, suite, unit, etc. (optional)
+                      </label>
+                      <input
+                        id="billing-apartment"
+                        type="text"
+                        autoComplete="address-line2"
+                        placeholder="Apartment, suite, unit, etc. (optional)"
+                        value={billing.apartment}
+                        onChange={setBillingField('apartment')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="billing-city" className={LABEL_CLASS}>Town / City *</label>
+                    <input
+                      id="billing-city"
+                      type="text"
+                      required
+                      autoComplete="address-level2"
+                      value={billing.city}
+                      onChange={setBillingField('city')}
+                      className={FIELD_CLASS}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label htmlFor="billing-state" className={LABEL_CLASS}>State *</label>
+                      <input
+                        id="billing-state"
+                        type="text"
+                        required
+                        autoComplete="address-level1"
+                        value={billing.state}
+                        onChange={setBillingField('state')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="billing-zip" className={LABEL_CLASS}>ZIP Code *</label>
+                      <input
+                        id="billing-zip"
+                        type="text"
+                        required
+                        autoComplete="postal-code"
+                        value={billing.zip}
+                        onChange={setBillingField('zip')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="billing-phone" className={LABEL_CLASS}>Phone *</label>
+                      <input
+                        id="billing-phone"
+                        type="tel"
+                        required
+                        autoComplete="tel"
+                        value={billing.phone}
+                        onChange={setBillingField('phone')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="billing-email" className={LABEL_CLASS}>Email address *</label>
+                      <input
+                        id="billing-email"
+                        type="email"
+                        required
+                        autoComplete="email"
+                        value={billing.email}
+                        onChange={setBillingField('email')}
+                        className={FIELD_CLASS}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-5 mt-5 border-t border-slate-200">
+                    <h4 className="text-sm font-display font-bold text-[#0B1220] mb-1">Additional information</h4>
+                    <label htmlFor="order-notes" className={LABEL_CLASS}>Order notes (optional)</label>
+                    <textarea
+                      id="order-notes"
+                      rows={3}
+                      placeholder="Notes about your order, e.g. special notes for delivery."
+                      value={orderNotes}
+                      onChange={(e) => setOrderNotes(e.target.value)}
+                      className={`${FIELD_CLASS} resize-y`}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* 4. Payment Method — hosted Stripe checkout */}
@@ -646,15 +891,18 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 </div>
-                {!gatewayConfigured && (
-                  <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-50 border border-amber-200">
-                    <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
-                    <p className="text-xs text-amber-900 leading-relaxed">
-                      Card payments are being activated right now. Submit this form and our admissions team will email
-                      you a secure payment link within 24 hours — you will not be charged anything here.
-                    </p>
-                  </div>
-                )}
+                {/* The amber "card payments are being activated" box was removed
+                    on the client's request (they crossed it out) and replaced
+                    with this confirmation note. */}
+                <div className="pt-3 border-t border-slate-200">
+                  <h4 className="text-sm font-display font-bold text-[#0B1220] mb-1.5">
+                    Secure Payment &amp; Confirmation
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Once your payment is successfully completed, the American FutureTech Team will send you a
+                    confirmation email with your payment receipt and the next steps to get started.
+                  </p>
+                </div>
               </div>
             </div>
 

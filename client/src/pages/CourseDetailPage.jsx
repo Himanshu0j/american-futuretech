@@ -29,6 +29,11 @@ export default function CourseDetailPage() {
   const [openModuleIndex, setOpenModuleIndex] = useState(-1);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
+  // A credential mark that 404s must not leave a broken-image icon in the hero.
+  // Declared with the other hooks: there is an early return for the loading
+  // state below, so a hook declared further down would change the hook count
+  // between renders (React error #310).
+  const [credentialLogoBroken, setCredentialLogoBroken] = useState(false);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -320,14 +325,30 @@ export default function CourseDetailPage() {
                 {(heroCredential.logo || heroCredential.title || heroCredential.certificateImage) && (
                   <div className="mt-8 grid grid-cols-1 sm:grid-cols-5 gap-4">
                     <div className="sm:col-span-2 rounded-2xl border border-[#4338CA]/60 bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col justify-between gap-5">
-                      <div className="h-11 flex items-center">
-                        {heroCredential.logo ? (
-                          <img
-                            src={heroCredential.logo}
-                            alt={heroCredential.title}
-                            className="max-h-11 w-auto max-w-[170px] object-contain"
-                            loading="lazy"
-                          />
+                      <div className="min-h-11 flex items-center">
+                        {heroCredential.logo && !credentialLogoBroken ? (
+                          heroCredential.logoOnLightTile ? (
+                            /* Badge artwork (the AIGP mark) carries its own light
+                               plate, so it sits on a white tile rather than
+                               showing as a pale square on the dark card. */
+                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-white p-1.5 ring-1 ring-white/25 shadow-sm">
+                              <img
+                                src={heroCredential.logo}
+                                alt={heroCredential.title}
+                                className="h-full w-full object-contain"
+                                loading="lazy"
+                                onError={() => setCredentialLogoBroken(true)}
+                              />
+                            </span>
+                          ) : (
+                            <img
+                              src={heroCredential.logo}
+                              alt={heroCredential.title}
+                              className="max-h-11 w-auto max-w-[170px] object-contain"
+                              loading="lazy"
+                              onError={() => setCredentialLogoBroken(true)}
+                            />
+                          )
                         ) : (
                           <Award className="w-9 h-9 text-[#E5C275]" />
                         )}

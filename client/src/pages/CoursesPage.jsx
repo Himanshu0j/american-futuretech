@@ -225,9 +225,10 @@ export default function CoursesPage() {
               </button>
             </div>
           ) : (
-            /* Two roomy columns: the card is a split layout (image beside the
-               details), which needs the width three columns cannot give. */
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-6">
+            /* One course per row — the client asked to stop showing two cards
+               side by side, so the next specialization always starts on the
+               line below the previous one. */
+            <div className="grid grid-cols-1 gap-6">
               {filteredCourses.map((course) => {
                 // Per-course image, uploaded or linked in the CMS. Any of the
                 // three image slots the course already has will do, so a course
@@ -299,7 +300,7 @@ export default function CoursesPage() {
                     </div>
 
                     <Link to={`/courses/${course.slug}`}>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
                         {course.title}
                       </h3>
                     </Link>
@@ -395,8 +396,11 @@ export default function CoursesPage() {
 
                 return (
                   <div key={cat.id}>
+                    {/* Track name: the client wanted it visibly bigger and bold
+                        so each discipline reads as a heading, not a caption. */}
                     <div className="flex items-center gap-3 mb-4">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 font-heading">
+                      <span aria-hidden="true" className="w-1.5 h-6 rounded-full bg-indigo-600 shrink-0" />
+                      <span className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white font-heading">
                         {cat.label}
                       </span>
                       <span className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />

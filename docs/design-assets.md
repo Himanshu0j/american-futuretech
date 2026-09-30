@@ -57,3 +57,28 @@ Every unDraw SVG is downloaded, optimized, and programmatically color-themed to 
   - Velvet Berry: `#9e4f8f` (technology pathways & specialty tracks)
   - Amber Gold: `#f59e0b` (accreditation badges & certifications)
 - Framer Motion animation loops adhere to gentle `4–8s` ease-in-out floating keyframes with reduced-motion support.
+
+---
+
+## 4. Brand Logo Variants (Derived Assets)
+
+The lockup ships as one master plus derived variants. Derived files are generated, never hand-edited, so the crest in the footer, admin console and student shell cannot drift away from the one in the header. The recipe — which pixels change and why — lives in `scripts/lib/logo-variants.js`.
+
+| Asset | Path | Derived from | Recipe |
+|---|---|---|---|
+| `logo-horizontal.png` | `client/public/images/` | — | Master lockup: navy ink on transparency, 1024×372. |
+| `logo-horizontal.webp` | `client/public/images/` | — | Master WebP, used by the header and the student login. |
+| `logo-horizontal-white.png` | `client/public/images/` | `logo-horizontal.png` | **Derived.** Crest carried over untouched; non-accent wordmark ink recoloured white. |
+| `logo-horizontal-white.webp` | `client/public/images/` | `logo-horizontal-white.png` | **Derived.** WebP encode of the file above — the copy the site actually loads. |
+
+The crest is deliberately *not* recoloured: it carries its own white fill, so it already reads on a dark background, and matching the header logo exactly is the point of the variant. An earlier hand-made copy bleached the crest along with the wordmark, which left the footer badge looking washed out next to the crisp header.
+
+The mark/wordmark split is measured from the artwork (first inked block, then the first transparent gap), and the brand accent is detected by colour rather than hardcoded, so a re-cut logo flows through the same recipe.
+
+| Command | What it does |
+|---|---|
+| `npm run logos` | Re-derives every variant from the master and verifies the result. Needs Chrome (`CHROME_PATH` overrides the lookup). |
+| `npm run verify:logos` | Dependency-free guard: re-derives in Node and compares pixel by pixel. No browser, no dependencies. |
+| `SKIP_LOGO_VARIANTS=1` | Bypasses the guard for a single build, if it ever has to be forced. |
+
+`client/package.json` runs the guard as `prebuild`, so a master logo edited without regenerating the variants fails the build instead of quietly shipping a stale footer logo. A mismatch inside the mark region is reported separately from one in the wordmark, because they mean different things — a washed-out crest versus a wordmark that was simply never regenerated.

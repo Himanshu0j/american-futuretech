@@ -373,7 +373,11 @@ export default function CourseDetailPage() {
                         <img
                           src={heroCredential.certificateImage}
                           alt={`${course.title} certificate`}
-                          className="w-full h-44 sm:h-52 object-cover"
+                          /* A certificate is a document, not a photo: cropping it to
+                             fill a fixed box sliced the IAPP seal and the top of
+                             the wording. `object-contain` keeps every line and
+                             the seal visible inside the same card height. */
+                          className="w-full h-44 sm:h-52 object-contain p-2"
                           loading="lazy"
                         />
                       ) : (
@@ -1029,7 +1033,7 @@ export default function CourseDetailPage() {
                 <img
                   src={certImages.completionImage || '/static/images/dsai.jpeg'}
                   alt="American FutureTech Certificate"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/zoom:scale-105"
+                  className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
                   <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
@@ -1093,7 +1097,7 @@ export default function CourseDetailPage() {
                 <img
                   src={certImages.microsoftImage || alignedMsCert.image}
                   alt="Microsoft Certificate"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover/zoom:scale-105"
+                  className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
                   <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">

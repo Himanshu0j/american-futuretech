@@ -151,26 +151,25 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 inside the column's stacking context.
                 ============================================================ */}
             <div
-              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[118vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[130vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
               aria-hidden="true"
             >
-              {/* The band is deliberately taller than it is wide, and taller than
-                  the copy's own block, so the photograph is still there under the
-                  badge and the first lines of the headline instead of ending in a
-                  white strip above them. Square crop + `bg-cover` means the extra
-                  height scales the frame up and clips a sliver off each side;
-                  ~9% a side at this ratio keeps every face intact.
+              {/* The band's own aspect (130vw) is what the phone crop is cut for
+                  (scratch/build-hero-banner.py): the graduates' faces fill its top
+                  half and the gowns the bottom half, so the badge and the whole
+                  headline read on the photograph rather than on a white strip
+                  under it. The crop matches this ratio, so `bg-cover` never has
+                  to crop it again — nothing is sliced off the sides. */}
+              {/* The veil is clear over the caps and faces, keeps the gowns
+                  visible behind the copy (a mid wash, so the photograph is never
+                  lost), and only dissolves to white across the band's last few
+                  percent, where the section's own wash takes over.
 
-                  The veil stays clear over the caps and faces, holds the middle
-                  of the frame visible (~46% white where the badge and the first
-                  headline lines sit) so the copy is read against the photograph,
-                  and only reaches full white at the band's very bottom, where the
-                  section's own wash takes over and the seam disappears. */}
-              {/* Written as one arbitrary gradient on purpose: the tuned curve
-                  needs five stops, and Tailwind's `from`/`via`/`to` utilities
+                  Written as one arbitrary gradient on purpose: the tuned curve
+                  needs six stops, and Tailwind's `from`/`via`/`to` utilities
                   carry only three. The named stop scale is also a trap here — it
                   ships multiples of 5 only, so `to-76%` compiles to nothing. */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.20)_45%,rgba(255,255,255,0.46)_62%,rgba(255,255,255,0.70)_84%,#ffffff_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.10)_40%,rgba(255,255,255,0.42)_54%,rgba(255,255,255,0.55)_75%,rgba(255,255,255,0.68)_94%,#ffffff_100%)]" />
             </div>
 
             {/* Staggered Eyebrow Badge */}
@@ -202,7 +201,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             </div>
 
             {/* Supporting Editorial Paragraph */}
-            <p className="anim-hero-body text-base sm:text-lg text-slate-700 dark:text-slate-200 max-w-xl font-normal leading-relaxed">
+            {/* One notch darker than the page's default body grey on phones: the
+                first lines land on the tail of the phone band's photograph, where
+                slate-700 measured 4.41:1 and slate-800 clears it comfortably. */}
+            <p className="anim-hero-body text-base sm:text-lg text-slate-800 sm:text-slate-700 dark:text-slate-200 max-w-xl font-normal leading-relaxed">
               {heroData.subheadline || 'Rigorous, mentor-guided 6-month career training and 1-on-1 personalized tracks engineered for real industry impact. Master production-grade AI, cybersecurity, and cloud systems with verifiable US credentials and direct placement support.'}
             </p>
 

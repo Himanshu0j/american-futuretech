@@ -480,6 +480,20 @@ const run = async () => {
     setupShape.modeLabel);
   check('The setup block never carries secret material',
     !JSON.stringify(setupShape).includes('v1:'), 'only booleans/labels are returned');
+
+  // Reporting regression: Stripe's Account object has no livemode field, so
+  // accounts.retrieve() on a real sk_live_ key left it undefined and the panel
+  // stamped "TEST" next to the live key's own hint. The key prefix must decide.
+  check('A live key with an account object that has no livemode still reports live',
+    settingsTest.keyEnvironment({ secretKey: 'sk_live_51Example', account: { id: 'acct_x', country: 'US', default_currency: 'usd' } }) === 'live');
+  check('A restricted live key (rk_live_) also reports live',
+    settingsTest.keyEnvironment({ secretKey: 'rk_live_51Example' }) === 'live');
+  check('A test key still reports test',
+    settingsTest.keyEnvironment({ secretKey: 'sk_test_51Example', account: { id: 'acct_x' } }) === 'test');
+  check('An unknown key with no account info fails safe to test',
+    settingsTest.keyEnvironment({ secretKey: 'weird_key' }) === 'test');
+  check('account.livemode:true is still honoured as a fallback',
+    settingsTest.keyEnvironment({ secretKey: 'weird_key', account: { livemode: true } }) === 'live');
   check('All five settlement events are required by the setup panel',
     REQUIRED_WEBHOOK_EVENTS.length === 5
       && REQUIRED_WEBHOOK_EVENTS.includes('checkout.session.completed')

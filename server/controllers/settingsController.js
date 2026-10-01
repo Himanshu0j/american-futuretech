@@ -555,6 +555,25 @@ const publicApiOrigin = (req) => {
 };
 
 /**
+ * Which environment is this secret key actually in?
+ *
+ * Stripe's Account object carries no `livemode` field of its own (the raw API
+ * response proves it), so `accounts.retrieve()` left `account.livemode`
+ * undefined and a genuine live key was reported as "test" right next to its own
+ * sk_live_… hint — the panel then stamped TEST on a live gateway. The key
+ * prefix is authoritative: sk_live_/rk_live_ can only ever be live and
+ * sk_test_/rk_test_ can only ever be test, and it is the same signal the
+ * gateway uses to pick its runtime mode, so the report can never disagree with
+ * what checkout will actually do. `account.livemode` is kept as a fallback for
+ * keys without a standard prefix.
+ */
+const keyEnvironment = ({ secretKey, account } = {}) => {
+  const key = String(secretKey || '').trim();
+  const live = /^(sk|rk)_live_/.test(key) || account?.livemode === true;
+  return live ? 'live' : 'test';
+};
+
+/**
  * The single source of truth for "can this gateway take money right now?" —
  * shared by the admin panel, so the steps it lists and the API's own status can
  * never disagree.
@@ -878,6 +897,9 @@ const testPaymentGatewayConnection = async (req, res) => {
 
     if (!account) {
       const reason = accountError?.message || 'Stripe rejected the request.';
+      // Reported even on rejection: the panel shows it next to the hint so the
+      // admin can see at a glance which environment the bad key belonged to.
+      const rejectedMode = keyEnvironment({ secretKey: keyToTest });
       return res.status(200).json({
         success: true,
         ok: false,
@@ -886,10 +908,8 @@ const testPaymentGatewayConnection = async (req, res) => {
         key: {
           source: pastedKey ? 'pasted' : (gateway.secretKeyEncrypted ? 'admin-panel' : 'environment'),
           hint: maskSecret(keyToTest),
-          live: keyToTest.startsWith('sk_live_'),
-          // Reported even on rejection: the panel shows it next to the hint so the
-          // admin can see at a glance which environment the bad key belonged to.
-          mode: keyToTest.startsWith('sk_live_') ? 'live' : 'test',
+          live: rejectedMode === 'live',
+          mode: rejectedMode,
         },
         webhook: { expectedUrl, requiredEvents: REQUIRED_WEBHOOK_EVENTS, configured: webhookSecretPresent },
       });
@@ -931,6 +951,7 @@ const testPaymentGatewayConnection = async (req, res) => {
       problems.push(`The webhook is missing ${missingEvents.length} event(s): ${missingEvents.join(', ')}.`);
     }
 
+    const keyMode = keyEnvironment({ secretKey: keyToTest, account });
     return res.status(200).json({
       success: true,
       ok: problems.length === 0,
@@ -940,14 +961,14 @@ const testPaymentGatewayConnection = async (req, res) => {
       key: {
         source: pastedKey ? 'pasted' : (gateway.secretKeyEncrypted ? 'admin-panel' : 'environment'),
         hint: maskSecret(keyToTest),
-        live: Boolean(account.livemode),
-        mode: account.livemode ? 'live' : 'test',
+        live: keyMode === 'live',
+        mode: keyMode,
       },
       account: {
         id: account.id || '',
         country: account.country || '',
         currency: (account.default_currency || '').toUpperCase(),
-        livemode: Boolean(account.livemode),
+        livemode: keyMode === 'live',
       },
       webhook: {
         expectedUrl,
@@ -1002,7 +1023,7 @@ module.exports = {
   saveSiteEditorOverrides,
   resetSiteEditorRoute,
   // Exposed for the CMS schema/field contract test.
-  __test__: { findUnstorablePaths, sanitizeSettingsPayload, publicApiOrigin, buildGatewaySetup },
+  __test__: { findUnstorablePaths, sanitizeSettingsPayload, publicApiOrigin, buildGatewaySetup, keyEnvironment },
   // The inline editor's ceilings are exported so the regression test asserts
   // against the SHIPPED numbers: it previously hard-coded the old 90-char key
   // limit, so raising the ceilings made a healthy server look broken.

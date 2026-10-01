@@ -145,6 +145,33 @@ const sendAdminPaymentAlert = async (payment) => {
   return await sendEmail({ to: adminEmail, subject, text });
 };
 
+/**
+ * Ops alert: a live smoke-test charge had to be recovered because the signed
+ * webhook never arrived.
+ *
+ * The money is safe (the watchdog settle-then-refunds on its own), so the email
+ * is not about the charge — it is about the endpoint. A webhook that silently
+ * stopped being delivered would otherwise stay invisible until a real student
+ * paid and got no access.
+ */
+const sendSmokeTestWatchdogAlert = async ({ payment, stripeStatus }) => {
+  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americanfuturetechllc.com';
+  const subject = `[PAYMENT ALERT] Stripe webhook did not arrive — ${money(payment.amount)} smoke test recovered and refunded`;
+  const text = [
+    `A live smoke test (invoice ${payment.invoiceNumber}) was charged on the Stripe account, but no signed webhook ever reached POST /api/payments/webhook.`,
+    '',
+    'The watchdog asked Stripe directly, settled the order from that answer, and refunded the charge immediately — no admin action was needed and no money is left on the card.',
+    '',
+    `Charge: ${money(payment.amount)} ${payment.currency}`,
+    `Stripe session: ${payment.checkoutSessionId || '(none)'}`,
+    `Payment intent: ${payment.stripePaymentIntentId || '(none)'}`,
+    `Stripe reports: ${stripeStatus || 'paid'}`,
+    '',
+    'ACTION: open Stripe → Developers → Webhooks and check that the endpoint is still enabled and its recent deliveries are succeeding. While it is down, real customers can pay without being enrolled automatically.',
+  ].join('\n');
+  return await sendEmail({ to: adminEmail, subject, text });
+};
+
 module.exports = {
   sendEmail,
   sendLeadConfirmationEmail,
@@ -152,4 +179,5 @@ module.exports = {
   sendPaymentReceiptEmail,
   sendEnrollmentCredentialsEmail,
   sendAdminPaymentAlert,
+  sendSmokeTestWatchdogAlert,
 };

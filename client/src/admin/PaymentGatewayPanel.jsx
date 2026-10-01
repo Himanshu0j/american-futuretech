@@ -262,7 +262,8 @@ function SmokeTestPanel({ ready, mode }) {
             page par typed hoti hain, is app mein kabhi nahi aati — aur charge confirm hote hi turant refund kar deta hai. Ek
             hi run mein 4 cheezein prove hoti hain: Checkout page, live key, signed webhook settlement, aur refund path.
             Refund par Stripe ki processing fee wapas nahi aati, isliye 10 minute ka gap aur din mein 3 se zyada run allowed
-            nahi hai.
+            nahi hai. Ek background watchdog (server par) har 5 minute mein khud check karta hai — ye page band ho to bhi koi
+            charge refund ke bina nahi rehta, aur webhook na aane par aapko email alert mil jata hai.
           </p>
         </div>
         <span

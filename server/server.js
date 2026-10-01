@@ -10,6 +10,7 @@ const { getDbInfo } = require('./config/db');
 const { getPaymentStatus } = require('./config/payments');
 const { assertAuthConfig } = require('./config/auth');
 const { autoSeedIfEmpty } = require('./utils/seeder');
+const { startSmokeTestWatchdog, getSmokeTestWatchdogStatus } = require('./jobs/smokeTestWatchdog');
 const { buildCorsOptions } = require('./config/cors');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -49,6 +50,12 @@ connectDB().then(async () => {
   const { loadPaymentGatewaySecrets } = require('./controllers/settingsController');
   const paymentStatus = await loadPaymentGatewaySecrets();
   console.log(`[Payments] provider=${paymentStatus.provider} mode=${paymentStatus.mode} source=${paymentStatus.source} ready=${paymentStatus.ready}`);
+
+  // Nobody has to open the admin panel for a smoke-test charge to be refunded:
+  // the watchdog recovers and refunds stranded charges on its own timer, and
+  // emails the owner when the signed webhook never arrived. Started here so its
+  // first pass can already talk to Stripe.
+  startSmokeTestWatchdog();
 
   // Set SEED_ON_BOOT=false once the database holds real content and you never
   // want the demo dataset re-created on a fresh/empty database.
@@ -122,6 +129,9 @@ app.get('/api/health', (req, res) => {
     database: db,
     payments,
     auth: authStatus,
+    // Background safety nets, so "is a stranded charge going to be refunded
+    // tonight?" is answerable without reading deploy logs.
+    jobs: { smokeTestWatchdog: getSmokeTestWatchdogStatus() },
     warnings,
     warning: warnings[0] || null,
   });

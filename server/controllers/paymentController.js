@@ -20,6 +20,9 @@ const {
   sendEnrollmentCredentialsEmail,
   sendAdminPaymentAlert,
 } = require('../utils/emailService');
+// Reached as a namespace on purpose: the verification suite swaps the watchdog
+// alert's transport, which only works if this is resolved at call time.
+const emailService = require('../utils/emailService');
 
 /**
  * Payment lifecycle
@@ -67,6 +70,13 @@ const SMOKE_TEST_CONFIRMATION = 'charge-and-refund-1';
 const SMOKE_TEST_COOLDOWN_MS = 10 * 60 * 1000;
 const SMOKE_TEST_DAILY_LIMIT = 3;
 const SMOKE_TEST_CHECKOUT_WINDOW_MS = 30 * 60 * 1000;
+
+// Watchdog rails: let the webhook go first, close out abandoned checkouts a
+// little after Stripe's own 30-minute session expiry, and work in small batches
+// so one pass can never become a stampede.
+const SMOKE_TEST_WATCHDOG_GRACE_MS = 90 * 1000;
+const SMOKE_TEST_WATCHDOG_EXPIRE_MS = 35 * 60 * 1000;
+const SMOKE_TEST_WATCHDOG_BATCH = 25;
 
 const generateSmokeInvoiceNumber = () =>
   `SMOKE-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -1313,6 +1323,159 @@ const refundSmokeTest = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Smoke-test watchdog
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Tell the owner, once, that a smoke-test charge had to be recovered because no
+ * signed webhook arrived.
+ *
+ * The money is already back on the card by the time this runs, so the alert is
+ * about the endpoint, not the charge: a webhook that quietly stopped being
+ * delivered would otherwise stay invisible until a real student paid and got no
+ * access. A repeating alert would only train everyone to ignore it.
+ */
+const notifyMissingWebhook = async (payment, { stripeStatus } = {}) => {
+  if (!payment || payment.watchdogNotifiedAt) return false;
+
+  await Payment.updateOne({ _id: payment._id }, { $set: { watchdogNotifiedAt: new Date() } });
+  payment.watchdogNotifiedAt = new Date();
+
+  await AuditLog.create({
+    actorName: 'Smoke test watchdog',
+    actorRole: 'ADMIN',
+    action: 'PAYMENT_SMOKE_TEST_WEBHOOK_MISSING',
+    entity: 'Payment',
+    entityId: payment._id.toString(),
+    details: `No signed webhook arrived for smoke test invoice #${payment.invoiceNumber}; the charge was recovered from Stripe (${stripeStatus || 'paid'}) and refunded. Check the webhook endpoint in Stripe.`,
+  }).catch(() => {});
+
+  // A missing delivery is exactly what the Webhook health panel must not hide,
+  // so it is recorded as a failure with the reason spelled out.
+  await recordWebhookEvent({
+    status: 'failed',
+    httpStatus: 200,
+    type: '(smoke-test watchdog)',
+    message: `No signed webhook arrived for smoke test invoice #${payment.invoiceNumber}. The charge was recovered from Stripe and refunded — check this endpoint's recent deliveries in Stripe.`,
+    payment,
+    sessionId: payment.checkoutSessionId,
+    amount: payment.amount,
+  }).catch(() => {});
+
+  // Fire-and-forget: the refund has already happened, so a mail failure must
+  // never make the watchdog look broken.
+  emailService
+    .sendSmokeTestWatchdogAlert({
+      payment: typeof payment.toObject === 'function' ? payment.toObject() : payment,
+      stripeStatus,
+    })
+    .catch((error) => console.error(`[Smoke Test Watchdog] alert email failed: ${error.message}`));
+
+  return true;
+};
+
+/**
+ * Did the money actually move — and if it did, was it put back?
+ *
+ * A smoke test is refunded the instant Stripe's webhook settles it, which needs
+ * two things to hold: the webhook must arrive, and the refund call must succeed.
+ * Both can fail transiently, and either failure leaves a real charge on the card
+ * with nobody watching, because the retry lived only in the admin panel.
+ *
+ * This pass closes both holes from the server, with no browser involved:
+ *
+ *   · Pending, but Stripe says paid  → the webhook never arrived: settle through
+ *     the same reconciliation the admin's Re-check uses (which refunds it in the
+ *     same breath) and alert the owner by email.
+ *   · Paid, refund outstanding       → retry the refund, idempotently.
+ *   · Pending long past its checkout window, Stripe says unpaid → close it out.
+ *
+ * Only rows flagged `smokeTest` are ever considered: a real order is never
+ * auto-enrolled here, because granting a student access stays a human decision.
+ */
+const recoverStrandedSmokeTests = async ({ now = Date.now() } = {}) => {
+  const summary = { checked: 0, recovered: 0, refunded: 0, expired: 0, alerts: 0, errors: 0 };
+
+  if (!isStripeConfigured()) return { ...summary, skipped: 'gateway-off' };
+
+  const rows = await Payment.find({
+    smokeTest: true,
+    $or: [
+      // Charged, but the money was never put back.
+      { status: 'Paid', refundId: '' },
+      // Waiting for a webhook that may never come.
+      {
+        status: 'Pending',
+        checkoutSessionId: { $ne: '' },
+        createdAt: { $lt: new Date(now - SMOKE_TEST_WATCHDOG_GRACE_MS) },
+      },
+    ],
+  })
+    .sort({ createdAt: 1 })
+    .limit(SMOKE_TEST_WATCHDOG_BATCH);
+
+  for (const payment of rows) {
+    summary.checked += 1;
+    try {
+      if (payment.status === 'Paid') {
+        // Only the refund is outstanding. `refundSmokeTestPayment` short-circuits
+        // on a stored refund id and carries an idempotency key, so racing the
+        // webhook's own attempt can never refund twice.
+        const outcome = await refundSmokeTestPayment(payment, {
+          actorName: 'Smoke test watchdog (automatic refund retry)',
+        });
+        if (outcome.refunded) {
+          summary.refunded += 1;
+          await recordWebhookEvent({
+            status: 'processed',
+            httpStatus: 200,
+            type: '(smoke-test watchdog)',
+            message: `Refund retried and issued for smoke test invoice #${payment.invoiceNumber}${payment.refundId ? ` (refund ${payment.refundId})` : ''}.`,
+            payment,
+            sessionId: payment.checkoutSessionId,
+            amount: payment.amount,
+          }).catch(() => {});
+        }
+        continue;
+      }
+
+      // Still Pending: ask Stripe what really happened, through the same guarded
+      // reconciliation the public success screen and the admin Re-check share.
+      const outcome = await reconcilePendingPayment(payment, { headers: {} });
+      if (outcome.settled) {
+        const fresh = await Payment.findById(payment._id);
+        summary.recovered += 1;
+        // Settling a smoke test refunds it in the same breath, so the money is
+        // already back unless that refund call itself failed (retried next pass).
+        if (fresh?.refundId) summary.refunded += 1;
+        if (await notifyMissingWebhook(fresh, { stripeStatus: outcome.stripeStatus })) summary.alerts += 1;
+        continue;
+      }
+
+      // Never paid and well past the checkout window: close it out, so it cannot
+      // sit on the admin's list forever.
+      if (now - new Date(payment.createdAt).getTime() > SMOKE_TEST_WATCHDOG_EXPIRE_MS) {
+        await Payment.updateOne(
+          { _id: payment._id, status: 'Pending' },
+          {
+            $set: {
+              status: 'Expired',
+              failureReason: 'Checkout page was never completed (closed out by the smoke-test watchdog).',
+            },
+          },
+        );
+        summary.expired += 1;
+      }
+    } catch (error) {
+      summary.errors += 1;
+      console.error(`[Smoke Test Watchdog] invoice ${payment.invoiceNumber}: ${error.message}`);
+    }
+  }
+
+  return summary;
+};
+
 // @desc    Get all payments (Admin)
 // @route   GET /api/payments
 // @access  Private (Admin)
@@ -1418,6 +1581,7 @@ module.exports = {
   startSmokeTest,
   getSmokeTestStatus,
   refundSmokeTest,
+  recoverStrandedSmokeTests,
   __test__: {
     recordWebhookEvent,
     reconcilePendingPayment,
@@ -1428,5 +1592,8 @@ module.exports = {
     SMOKE_TEST_COOLDOWN_MS,
     SMOKE_TEST_DAILY_LIMIT,
     SMOKE_TEST_CHECKOUT_WINDOW_MS,
+    SMOKE_TEST_WATCHDOG_GRACE_MS,
+    SMOKE_TEST_WATCHDOG_EXPIRE_MS,
+    SMOKE_TEST_WATCHDOG_BATCH,
   },
 };

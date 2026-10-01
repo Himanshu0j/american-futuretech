@@ -96,6 +96,44 @@ Audit trail: `PAYMENT_SMOKE_TEST_STARTED`, `PAYMENT_SMOKE_TEST_SETTLED`,
 `PAYMENT_SMOKE_TEST_REFUND_FAILED`, `PAYMENT_SMOKE_TEST_REFUNDED`, and the
 webhook delivery itself appears in Webhook health like any other event.
 
+## Watchdog (the charge is refunded even if nobody looks)
+
+`server/jobs/smokeTestWatchdog.js` starts with the API and runs
+`recoverStrandedSmokeTests()` every 5 minutes (first pass 45 s after boot). It
+exists because the two ways a smoke test could strand real money both needed
+the admin panel to be open:
+
+| state found | what the pass does |
+|---|---|
+| `Pending` (past a 90 s webhook grace), Stripe says **paid** | settles it through the same guarded reconciliation the Re-check button uses — which refunds it in the same breath — and **emails the owner** that no signed webhook arrived |
+| `Pending`, Stripe says **unpaid**, older than 35 min | closes it out as `Expired` (an abandoned checkout never charged anything) |
+| `Paid`, no refund id | retries the refund with the same idempotency key the webhook uses, so a race can never refund twice |
+
+Only rows flagged `smokeTest: true` are ever considered — a real order is never
+auto-enrolled by a timer, because granting a student access stays a human
+decision.
+
+The alert is sent once per stranded charge (`payment.watchdogNotifiedAt` keeps a
+broken endpoint from spamming the inbox) and is recorded where the admin will
+actually look it up: an audit entry (`PAYMENT_SMOKE_TEST_WEBHOOK_MISSING`) plus a
+`(smoke-test watchdog)` row in **Webhook health** with status `failed`, so a
+silently dead webhook shows up in the failures counter instead of staying
+invisible until a real student pays and gets no access.
+
+Controls (all optional):
+
+| env var | default | purpose |
+|---|---|---|
+| `SMOKE_TEST_WATCHDOG_ENABLED=false` | enabled | turn just this job off |
+| `DISABLE_BACKGROUND_JOBS=true` | unset | kill switch for every background timer (used by the suites that boot a real server) |
+| `SMOKE_TEST_WATCHDOG_INTERVAL_MS` | `300000` | how often it checks (never tighter than 60 s) |
+| `SMOKE_TEST_WATCHDOG_START_DELAY_MS` | `45000` | quiet period after boot |
+
+`GET /api/health` reports `jobs.smokeTestWatchdog` (`armed`, `intervalMinutes`,
+`disabledReason`), so "is a stranded charge going to be refunded tonight?" needs
+no log diving. Every timer is `unref`-ed: the job can never hold the process
+open, and with no secret key it is a no-op.
+
 ## Configuring the gateway (two supported paths)
 
 ### Path A — from the admin panel, no redeploy (recommended for the client)
@@ -166,7 +204,7 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 119 checks: pricing/voucher math, temp-password strength, webhook signature
+Runs 146 checks: pricing/voucher math, temp-password strength, webhook signature
 enforcement (missing, forged, tampered payloads), a full end-to-end settlement
 against a throwaway local MongoDB (settlement, receipt-to-account linking,
 idempotent replays, failed/expired handling, forged-webhook rejection), the
@@ -180,7 +218,14 @@ amount (a forged body is ignored), the typed-confirmation gate, the cost rails
 settlement branch (no student, no enrollment, audit entries), the idempotent
 refund (one Stripe call however many retries), a retried webhook that cannot
 un-refund a row, the ledger/revenue exclusion, and — via source assertions — the
-admin gating of all three routes. It forces dummy test
+admin gating of all three routes.
+
+The watchdog is driven with stubbed Stripe calls too: it recovers a charge whose
+webhook never arrived (and refunds it), retries a refund that never went out,
+closes out an abandoned checkout, leaves a charge inside its grace period alone,
+never touches an ordinary order, refunds exactly once, alerts exactly once, does
+nothing without a gateway key, and reports its armed state through
+`/api/health`. It forces dummy test
 keys, so it can never touch live money.
 
 The live suite (`npm run verify:live`) is safe to run with real keys saved: it

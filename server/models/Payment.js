@@ -132,6 +132,11 @@ const PaymentSchema = new mongoose.Schema({
     default: false,
     index: true,
   },
+  // Set when the watchdog had to tell the owner that no signed webhook arrived.
+  // Repeat emails would train everyone to ignore them, so it is sent once.
+  watchdogNotifiedAt: {
+    type: Date,
+  },
   // Stripe event ids already processed — guarantees a retried webhook can never
   // enroll the same student twice.
   webhookEventIds: {

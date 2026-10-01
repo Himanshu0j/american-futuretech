@@ -209,7 +209,7 @@ Client ko live class ka poora scheduler chahiye to ye next phase ka kaam hai —
 | Staff permissions (RBAC) | Kaun kaunsa module dekh sakta hai |
 | Audit log | Kis admin ne kya badla — Settings ke andar record |
 | Lead form validation | Galat/adhoora data server par reject hota hai aur clean error milta hai |
-| **Online card payment (Stripe)** | Live keys active hain — checkout real card leta hai aur enrollment sirf Stripe ke **signed webhook** se confirm hota hai. Settings → Payment Gateway → **Live smoke test** se ek asli $1 charge karke poora path (checkout → webhook → refund) khud verify kar sakte hain — refund automatic hai |
+| **Online card payment (Stripe)** | Live keys active hain — checkout real card leta hai aur enrollment sirf Stripe ke **signed webhook** se confirm hota hai. Settings → Payment Gateway → **Live smoke test** se ek asli $1 charge karke poora path (checkout → webhook → refund) khud verify kar sakte hain — refund automatic hai. Server par ek background watchdog har 5 minute khud check karta hai, isliye panel band ho to bhi koi charge refund ke bina nahi rehta; webhook na aaye to notification email par alert aa jata hai |
 
 ### ⛔ Abhi nahi hai (aur uska kaam ka tareeka)
 

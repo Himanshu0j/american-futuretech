@@ -65,6 +65,9 @@ const run = async () => {
       MONGODB_URI: MONGO_URI,
       NODE_ENV: 'production',
       SEED_ON_BOOT: 'true',
+      // This suite boots the real server against a throwaway database: no
+      // background timer may run here, whatever is in server/.env.
+      DISABLE_BACKGROUND_JOBS: 'true',
       SEED_ADMIN_PASSWORD: ADMIN_PASSWORD,
       JWT_SECRET: 'security_hardening_secret_long_enough_000001',
       STRIPE_SECRET_KEY: SECRET_KEY,

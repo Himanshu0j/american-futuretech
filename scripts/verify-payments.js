@@ -699,6 +699,160 @@ const run = async () => {
     released.statusCode === 200 && released.body?.smokeTest?.amount === 1,
     `${released.statusCode}`);
 
+  // ── Watchdog: a stranded charge is refunded with nobody at a keyboard ────
+  // The panel can only retry while a human has it open. This pass runs from the
+  // server, so a lost webhook or a failed refund can no longer leave real money
+  // on the card until someone notices.
+  const emailUtil = require(path.join(__dirname, '..', 'server', 'utils', 'emailService'));
+  const originalAlert = emailUtil.sendSmokeTestWatchdogAlert;
+  const watchdogAlerts = [];
+  emailUtil.sendSmokeTestWatchdogAlert = async (payload) => {
+    watchdogAlerts.push(payload);
+    return { success: true, mock: true };
+  };
+
+  const retrieveCalls = [];
+  const originalRetrieve = gatewayUtil.retrieveCheckoutSession;
+  const backdate = (id, minutes) =>
+    Payment.collection.updateOne(
+      { _id: id },
+      { $set: { createdAt: new Date(Date.now() - minutes * 60 * 1000) } },
+    );
+
+  const makeSmokeRow = (overrides = {}) =>
+    Payment.create({
+      studentName: 'Verify Admin (live smoke test)',
+      email: `smoke.watchdog.${Date.now()}.${Math.floor(Math.random() * 1e5)}@example.com`,
+      course: dbCourse._id,
+      courseTitle: 'Live smoke test — not a sale (USD 1.00)',
+      tier: 'full',
+      amount: 1,
+      currency: 'USD',
+      status: 'Pending',
+      transactionId: `SMOKE-WATCH-${Date.now()}-${Math.floor(Math.random() * 1e5)}`,
+      invoiceNumber: `SMOKE-WATCH-${Math.floor(Math.random() * 1e6)}`,
+      provider: 'stripe',
+      smokeTest: true,
+      checkoutSessionId: `cs_test_watch_${Math.floor(Math.random() * 1e6)}`,
+      ...overrides,
+    });
+
+  // a) charged on Stripe, webhook never arrived
+  const strandedPending = await makeSmokeRow();
+  await backdate(strandedPending._id, 5);
+  // b) still inside its grace period — the webhook may simply be a second late
+  const freshPendingSmoke = await makeSmokeRow();
+  // c) abandoned checkout, never paid
+  const abandonedSmoke = await makeSmokeRow();
+  await backdate(abandonedSmoke._id, 45);
+  // d) settled, but the refund never went through
+  const settledNoRefund = await makeSmokeRow({
+    status: 'Paid',
+    paidAt: new Date(),
+    stripePaymentIntentId: 'pi_watchdog_paid',
+  });
+  // e) control: an ordinary Pending order must never be touched by the watchdog
+  const controlOrder = await makePendingPayment();
+  await backdate(controlOrder._id, 45);
+
+  gatewayUtil.retrieveCheckoutSession = async (sessionId) => {
+    retrieveCalls.push(sessionId);
+    if (sessionId === abandonedSmoke.checkoutSessionId) {
+      return { id: sessionId, object: 'checkout.session', status: 'expired', payment_status: 'unpaid', metadata: {} };
+    }
+    if (sessionId === strandedPending.checkoutSessionId) {
+      return {
+        id: sessionId,
+        object: 'checkout.session',
+        status: 'complete',
+        payment_status: 'paid',
+        payment_intent: 'pi_watchdog_0001',
+        payment_method_types: ['card'],
+        amount_total: 100,
+        metadata: { paymentId: String(strandedPending._id), smokeTest: 'true' },
+      };
+    }
+    return null;
+  };
+
+  const refundCallsBefore = refundCalls.length;
+  const pass = await controller.recoverStrandedSmokeTests();
+
+  check('The watchdog recovers a charge whose webhook never arrived',
+    pass.recovered === 1 && pass.checked === 3, JSON.stringify(pass));
+  const strandedAfter = await Payment.findById(strandedPending._id);
+  check('...and that charge is refunded in the same pass',
+    strandedAfter.status === 'Refunded' && Boolean(strandedAfter.refundId)
+      && strandedAfter.stripePaymentIntentId === 'pi_watchdog_0001',
+    `${strandedAfter.status} / ${strandedAfter.refundId}`);
+  check('A settled charge with an outstanding refund is retried and refunded',
+    (await Payment.findById(settledNoRefund._id)).status === 'Refunded');
+  check('An abandoned checkout is closed out instead of refunding nothing',
+    (await Payment.findById(abandonedSmoke._id)).status === 'Expired');
+  check('A charge still inside its webhook grace period is left alone',
+    (await Payment.findById(freshPendingSmoke._id)).status === 'Pending'
+      && !retrieveCalls.includes(freshPendingSmoke.checkoutSessionId));
+  check('An ordinary order is never auto-settled by the watchdog',
+    (await Payment.findById(controlOrder._id)).status === 'Pending'
+      && !retrieveCalls.includes(controlOrder.checkoutSessionId));
+  check('The watchdog refunds exactly once per stranded charge',
+    refundCalls.length === refundCallsBefore + 2, `${refundCalls.length - refundCallsBefore} refund call(s)`);
+
+  const missingWebhookLog = await WebhookEvent.findOne({
+    type: '(smoke-test watchdog)',
+    status: 'failed',
+    payment: strandedPending._id,
+  }).lean();
+  check('A missing webhook is recorded as an ops failure, not hidden',
+    Boolean(missingWebhookLog) && /no signed webhook/i.test(missingWebhookLog.message || ''),
+    missingWebhookLog?.message?.slice(0, 70));
+  check('...with an audit entry naming the invoice',
+    Boolean(await AuditLog.findOne({
+      action: 'PAYMENT_SMOKE_TEST_WEBHOOK_MISSING',
+      entityId: String(strandedPending._id),
+    })));
+  check('The owner is emailed once that the webhook did not arrive',
+    watchdogAlerts.length === 1
+      && watchdogAlerts[0]?.payment?.invoiceNumber === strandedPending.invoiceNumber,
+    `${watchdogAlerts.length} alert(s)`);
+  check('...and a retried refund does not raise the same alarm',
+    watchdogAlerts.length === 1 && Boolean(await WebhookEvent.findOne({
+      type: '(smoke-test watchdog)',
+      status: 'processed',
+      payment: settledNoRefund._id,
+    }).lean()));
+  check('...and it is marked as alerted so it can never be sent twice',
+    Boolean((await Payment.findById(strandedPending._id)).watchdogNotifiedAt));
+
+  const watchdogStatus = await callController(controller.getSmokeTestStatus, {
+    params: { id: String(strandedPending._id) },
+  });
+  // The recovery is only visible if the panel keeps showing the webhook step as
+  // outstanding: charge + refund done, delivery still marked missing.
+  const stepMap = Object.fromEntries(
+    (watchdogStatus.body?.smokeTest?.steps || []).map((step) => [step.id, step.done]),
+  );
+  check('The smoke-test card reports it as webhook-missing and fully refunded',
+    watchdogStatus.body?.smokeTest?.settledByWebhook === false
+      && watchdogStatus.body?.smokeTest?.needsRefund === false
+      && stepMap.session === true && stepMap.charge === true && stepMap.refund === true
+      && stepMap.webhook === false,
+    JSON.stringify(stepMap));
+
+  const secondPass = await controller.recoverStrandedSmokeTests();
+  check('A second pass finds nothing left to do (no double refunds)',
+    secondPass.checked === 0 && refundCalls.length === refundCallsBefore + 2, JSON.stringify(secondPass));
+  check('...and never re-alerts', watchdogAlerts.length === 1);
+
+  const keyBefore = process.env.STRIPE_SECRET_KEY;
+  process.env.STRIPE_SECRET_KEY = '';
+  const noGateway = await controller.recoverStrandedSmokeTests();
+  process.env.STRIPE_SECRET_KEY = keyBefore;
+  check('Without a gateway key the watchdog is a no-op',
+    noGateway.skipped === 'gateway-off' && noGateway.checked === 0);
+
+  gatewayUtil.retrieveCheckoutSession = originalRetrieve;
+  emailUtil.sendSmokeTestWatchdogAlert = originalAlert;
   gatewayUtil.createSmokeTestSession = originalCreateSmokeSession;
   gatewayUtil.refundPaymentIntent = originalRefundIntent;
 
@@ -833,6 +987,55 @@ const run = async () => {
         (block) => block.includes('protect') && block.includes("'SETTINGS_EDIT'"),
       ),
     `${smokeRouteBlocks.length} route block(s)`);
+
+  // ── Watchdog: the safety net has to stay armed in the shipped code ───────
+  const watchdogScheduler = require(path.join(
+    __dirname,
+    '..',
+    'server',
+    'jobs',
+    'smokeTestWatchdog',
+  ));
+  check('The stranded-charge recovery is a first-class export (not test scaffolding)',
+    typeof require(path.join(__dirname, '..', 'server', 'controllers', 'paymentController'))
+      .recoverStrandedSmokeTests === 'function');
+  check('The watchdog runs on a sane timer',
+    watchdogScheduler.__test__.readIntervalMs() >= 60 * 1000
+      && watchdogScheduler.__test__.DEFAULT_START_DELAY_MS > 0,
+    `every ${watchdogScheduler.__test__.readIntervalMs() / 60000} min, first pass in ${watchdogScheduler.__test__.DEFAULT_START_DELAY_MS / 1000}s`);
+
+  const watchdogSource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'jobs', 'smokeTestWatchdog.js'),
+    'utf8',
+  );
+  check('Every watchdog timer is unref-ed so it cannot hold the process open',
+    (watchdogSource.match(/unref\(\)/g) || []).length >= 2);
+  check('The watchdog can be switched off in one place',
+    watchdogSource.includes("DISABLE_BACKGROUND_JOBS === 'true'")
+      && watchdogSource.includes("SMOKE_TEST_WATCHDOG_ENABLED === 'false'"));
+  const serverSource = fs.readFileSync(path.join(__dirname, '..', 'server', 'server.js'), 'utf8');
+  check('The API process arms it at boot', /startSmokeTestWatchdog\(\)/.test(serverSource));
+  check('/api/health reports whether it is armed',
+    serverSource.includes('smokeTestWatchdog: getSmokeTestWatchdogStatus()'));
+
+  const watchdogHandle = watchdogScheduler.startSmokeTestWatchdog();
+  check('Starting the watchdog reports itself as armed',
+    Boolean(watchdogHandle) && typeof watchdogHandle.stop === 'function'
+      && watchdogScheduler.getSmokeTestWatchdogStatus().armed === true
+      && watchdogScheduler.getSmokeTestWatchdogStatus().intervalMinutes === 5,
+    JSON.stringify(watchdogScheduler.getSmokeTestWatchdogStatus()));
+  watchdogHandle.stop();
+  check('...and stopping it clears the armed state',
+    watchdogScheduler.getSmokeTestWatchdogStatus().armed === false);
+  check('A pass only ever considers smoke-test rows',
+    /smokeTest: true,[\s\S]{0,120}status: 'Paid', refundId: ''/.test(paymentControllerSource),
+    'an ordinary order is never auto-settled');
+  check('The webhook-missing alert exists in the mail service',
+    typeof require(path.join(__dirname, '..', 'server', 'utils', 'emailService'))
+      .sendSmokeTestWatchdogAlert === 'function');
+  check('That alert is sent at most once per stranded charge',
+    paymentControllerSource.includes('payment.watchdogNotifiedAt')
+      && /watchdogNotifiedAt\) return false;/.test(paymentControllerSource));
 
   // ───────────────────────────────────────────────────────────────────────
   const failedChecks = results.filter((r) => !r.passed);

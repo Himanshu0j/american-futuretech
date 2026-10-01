@@ -151,15 +151,18 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 inside the column's stacking context.
                 ============================================================ */}
             <div
-              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[130vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[calc(58vw_+_272px)] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
               aria-hidden="true"
             >
-              {/* The band's own aspect (130vw) is what the phone crop is cut for
-                  (scratch/build-hero-banner.py): the graduates' faces fill its top
-                  half and the gowns the bottom half, so the badge and the whole
-                  headline read on the photograph rather than on a white strip
-                  under it. The crop matches this ratio, so `bg-cover` never has
-                  to crop it again — nothing is sliced off the sides. */}
+              {/* The band's height is tied to the copy rather than to a fixed
+                  vw figure: 58vw is the run the crop gives the faces (which is
+                  what the badge's own padding-top is), and 272px carries the
+                  badge, the four-line headline and a little air. A plain 130vw
+                  happened to fit at 390 but not on a 320px phone, where the
+                  copy is the same number of pixels and the band is a fifth
+                  shorter — the last line fell off the photograph. The crop is
+                  cut to this ratio (scratch/build-hero-banner.py), so
+                  `bg-cover` has almost nothing left to crop. */}
               {/* The veil is clear over the caps and faces, keeps the gowns
                   visible behind the copy (a mid wash, so the photograph is never
                   lost), and only dissolves to white across the band's last few

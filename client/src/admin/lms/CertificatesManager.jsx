@@ -150,7 +150,7 @@ export default function CertificatesManager() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}
@@ -162,7 +162,7 @@ export default function CertificatesManager() {
             type="button"
             onClick={() => setTab(option.id)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-colors ${
-              tab === option.id ? 'bg-[#4338CA] text-white' : 'bg-white/[0.06] text-slate-200 hover:bg-white/[0.12]'
+              tab === option.id ? 'bg-[#1D4ED8] text-white' : 'bg-white/[0.06] text-slate-200 hover:bg-white/[0.12]'
             }`}
           >
             {option.label}

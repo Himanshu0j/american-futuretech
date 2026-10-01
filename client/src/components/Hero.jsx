@@ -77,7 +77,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">
               <div className="section-eyebrow shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-mint-dot" />
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 pulse-mint-dot" />
                 <span>
                   {heroData.eyebrowBadgeText || heroData.eyebrow || 'AMERICAN FUTURETECH · 6-MONTH CAREER TRAINING & FELLOWSHIPS'}
                 </span>
@@ -92,7 +92,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 ) : (
                   <>
                     BUILD HIGH-VALUE SKILLS.<br />
-                    <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-violet-600 bg-clip-text text-transparent dark:from-brand-400 dark:to-violet-400">
+                    <span className="bg-gradient-to-r from-brand-700 via-brand-600 to-blue-600 bg-clip-text text-transparent dark:from-brand-400 dark:to-blue-400">
                       GET US CERTIFIED.
                     </span>
                     <br />
@@ -125,14 +125,14 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   src="/images/mentorship-session.jpg"
                   alt="Fellow Alum"
                 />
-                <div className="inline-flex h-9 w-9 rounded-full ring-2 ring-white dark:ring-slate-800 bg-indigo-900 text-indigo-200 font-bold text-[10px] items-center justify-center shadow-2xs font-mono">
+                <div className="inline-flex h-9 w-9 rounded-full ring-2 ring-white dark:ring-slate-800 bg-blue-900 text-blue-200 font-bold text-[10px] items-center justify-center shadow-2xs font-mono">
                   +1.2K
                 </div>
               </div>
               <div className="text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
                 <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
                   <span>{heroData.statsBadgeText || '1,200+ Fellows Placed'}</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
               </div>
@@ -150,9 +150,9 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
               <Link
                 to={heroData.secondaryCtaLink || '/jobs'}
-                className="elms-btn-secondary !py-3.5 !px-7 !text-sm cursor-pointer shadow-xs flex items-center justify-center gap-2 group hover:border-indigo-500/40"
+                className="elms-btn-secondary !py-3.5 !px-7 !text-sm cursor-pointer shadow-xs flex items-center justify-center gap-2 group hover:border-blue-500/40"
               >
-                <Briefcase className="w-4 h-4 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform" />
+                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
                 <span>{heroData.secondaryCtaText || 'Explore Live Jobs'}</span>
               </Link>
             </div>
@@ -179,8 +179,8 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               </div>
 
               {/* Cohort Intake Notice */}
-              <div className="mt-3.5 flex items-center gap-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="mt-3.5 flex items-center gap-2 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <span>6-Month Training & 1-on-1 Personalized Mentorship · Admissions Open</span>
               </div>
             </div>
@@ -195,17 +195,17 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             style={{ transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)` }}
           >
             {/* Ambient Radial Backlight Glow */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500/20 via-blue-500/10 to-transparent rounded-3xl blur-2xl -z-10 pointer-events-none" />
+            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 via-blue-500/10 to-transparent rounded-3xl blur-2xl -z-10 pointer-events-none" />
 
             {/* Top-Left Floating Mentor Status Badge */}
             <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-lg absolute -top-1 -left-3 z-20 animate-float-slow">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
                 <Users className="w-4 h-4" />
               </div>
               <div className="text-left">
                 <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                   <span>1-on-1 Faculty Mentorship</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                 </div>
                 <div className="text-[10px] text-slate-500 font-medium">Silicon Valley Faculty Active</div>
               </div>
@@ -213,7 +213,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
             {/* Top-Right Floating Velocity Metric Badge */}
             <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-lg absolute -top-1 -right-3 z-20 animate-float-drift">
-              <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-[11px]">
+              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-[11px]">
                 ⚡
               </div>
               <div className="text-left">
@@ -231,7 +231,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               />
               <div className="text-left">
                 <div className="text-xs font-bold text-slate-900 dark:text-white">Accredited US Diploma</div>
-                <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-bold">AFT-CERT-AI9821 Verified</div>
+                <div className="text-[10px] font-mono text-blue-600 dark:text-blue-400 font-bold">AFT-CERT-AI9821 Verified</div>
               </div>
             </div>
 
@@ -247,7 +247,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               <div className="text-left">
                 <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                   <span>Cloud GPU Lab</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
                 </div>
                 <div className="text-[10px] font-mono text-slate-500">PyTorch & Agentic RAG</div>
               </div>
@@ -261,7 +261,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               className="mt-6 mb-3 flex items-center justify-between p-3 rounded-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-md relative z-10"
             >
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 p-1 flex items-center justify-center shrink-0 border border-indigo-200 dark:border-indigo-800">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 p-1 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
                   <img
                     src={heroOnlineLearningSvg}
                     alt="Online Learning Fellowship"
@@ -273,7 +273,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <span className="text-xs font-black font-heading text-slate-900 dark:text-white">
                       Silicon Valley Technology Fellowships
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-mono font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-[10px] font-mono font-bold">
                       Cohort 2026
                     </span>
                   </div>
@@ -294,16 +294,16 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               <div className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 p-3 sm:p-4">
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-rose-400" />
-                    <div className="w-3 h-3 rounded-full bg-amber-400" />
-                    <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-blue-400" />
                     <span className="ml-2 font-mono text-[11px] text-slate-500 truncate hidden sm:inline">
                       lms.americanfuturetech.com/cockpit
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold border border-blue-200 dark:border-blue-800/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                     <span>Live Product Ecosystem</span>
                   </div>
                 </div>
@@ -325,8 +325,8 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           isActive
-                            ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-white/50'
+                            ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-white/50'
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -351,11 +351,11 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-4">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
+                          <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
                             Live Silicon Valley Ecosystem
                           </span>
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-semibold flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-mono font-semibold flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                             Active Cohort
                           </span>
                         </div>
@@ -371,7 +371,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Tuition Model</div>
-                        <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">$99 Reservation</div>
+                        <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">$99 Reservation</div>
                         <div className="text-[10px] text-slate-500">Refundable deposit</div>
                       </div>
                       <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
@@ -381,7 +381,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       </div>
                       <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Placement</div>
-                        <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">Live Job Board</div>
+                        <div className="text-xs font-bold text-blue-700 dark:text-blue-400 mt-0.5">Live Job Board</div>
                         <div className="text-[10px] text-slate-500">Direct hiring pipeline</div>
                       </div>
                     </div>
@@ -389,7 +389,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <div className="flex items-center gap-2 pt-1">
                       <Link
                         to="/checkout?tier=deposit"
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
                       >
                         <span>Reserve Seat for $99</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -417,18 +417,18 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-transparent flex items-center p-3.5">
                         <div className="text-left space-y-0.5">
-                          <span className="px-2 py-0.5 rounded-full bg-indigo-500 text-white text-[9px] font-mono font-bold uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-mono font-bold uppercase">
                             Active Academic Term
                           </span>
                           <div className="text-white font-bold text-sm font-heading">Applied AI & Cloud Systems Lab</div>
-                          <div className="text-indigo-200 text-[10px]">Cohort Track: 6-Month AI Systems & Cloud</div>
+                          <div className="text-blue-200 text-[10px]">Cohort Track: 6-Month AI Systems & Cloud</div>
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs font-mono">
+                        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs font-mono">
                           EH
                         </div>
                         <div>
@@ -436,7 +436,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                           <div className="text-[10px] text-slate-500 font-mono">Fellow ID: AFT-2026-8819</div>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                      <span className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 text-[10px] font-bold">
                         Enrolled
                       </span>
                     </div>
@@ -444,17 +444,17 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <div className="space-y-2 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-slate-500 font-medium">Primary Specialization:</span>
-                        <span className="font-bold text-indigo-600 dark:text-indigo-400 font-mono">68% Complete</span>
+                        <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">68% Complete</span>
                       </div>
                       <div className="text-sm font-bold text-slate-900 dark:text-white">
                         6-Month Career Track: Data Science with AI Integration
                       </div>
                       <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-indigo-600 to-blue-500 rounded-full w-[68%]" />
+                        <div className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full w-[68%]" />
                       </div>
                       <div className="flex justify-between items-center pt-1 text-[11px] text-slate-500">
                         <span>Current: Module 4 (Agentic RAG & LangGraph)</span>
-                        <Link to="/courses/data-science-with-ai-integration" className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5">
+                        <Link to="/courses/data-science-with-ai-integration" className="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
                           <span>Resume</span>
                           <ArrowRight className="w-3 h-3" />
                         </Link>
@@ -470,7 +470,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 font-mono">FACULTY OFFICE HOURS</div>
                         <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">1-on-1 Code Review</div>
-                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Booked for Thursday</div>
+                        <div className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">Booked for Thursday</div>
                       </div>
                     </div>
                   </div>
@@ -485,7 +485,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                         <span className="text-[10px]">34:12 / 48:00</span>
                       </div>
                       <div className="flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
                           <Play className="w-5 h-5 ml-0.5" />
                         </div>
                       </div>
@@ -498,20 +498,20 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <div className="p-3.5 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-1.5 text-left border border-slate-800">
                       <div className="text-[10px] text-slate-500 flex items-center justify-between border-b border-slate-800 pb-1">
                         <span>main.py — Live Cloud Container</span>
-                        <span className="text-emerald-400">Python 3.11</span>
+                        <span className="text-blue-400">Python 3.11</span>
                       </div>
-                      <div className="text-emerald-400">import torch, vllm</div>
+                      <div className="text-blue-400">import torch, vllm</div>
                       <div className="text-slate-300">from langchain.agents import initialize_agent</div>
                       <div className="text-slate-400"># Model initialized with FlashAttention-2</div>
-                      <div className="text-indigo-300">agent = initialize_agent(tools, llm, verbose=True)</div>
+                      <div className="text-blue-300">agent = initialize_agent(tools, llm, verbose=True)</div>
                     </div>
 
                     <button
                       onClick={() => setLessonCompleted(!lessonCompleted)}
                       className={`w-full py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
                         lessonCompleted
-                          ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200'
-                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                          ? 'bg-blue-100 text-blue-900 dark:bg-blue-900/60 dark:text-blue-200'
+                          : 'bg-blue-600 text-white hover:bg-blue-700'
                       }`}
                     >
                       {lessonCompleted ? (
@@ -540,7 +540,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                             : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                         }`}
                       >
-                        <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <Award className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         <span>US Institute Diploma</span>
                       </button>
                       <button
@@ -548,7 +548,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                         onClick={() => setHeroCredView('microsoft')}
                         className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
                           heroCredView === 'microsoft'
-                            ? 'bg-indigo-600 text-white shadow-xs'
+                            ? 'bg-blue-600 text-white shadow-xs'
                             : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
                         }`}
                       >
@@ -558,10 +558,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     </div>
 
                     {heroCredView === 'us' ? (
-                      <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-indigo-950/30 border-2 border-indigo-500/20 text-center relative overflow-hidden shadow-inner">
+                      <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-blue-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-blue-950/30 border-2 border-blue-500/20 text-center relative overflow-hidden shadow-inner">
                         <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700 pb-2.5 mb-3">
                           <div className="text-left">
-                            <div className="text-[10px] font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-widest font-heading">
+                            <div className="text-[10px] font-bold text-blue-900 dark:text-blue-300 uppercase tracking-widest font-heading">
                               AMERICAN FUTURETECH
                             </div>
                             <div className="text-[9px] text-slate-500 font-mono">Registry of Digital Credentials · Wyoming</div>
@@ -582,25 +582,25 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                         <div className="text-[10px] text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-0.5 leading-relaxed">
                           has successfully completed the 24-week (6-month) professional fellowship in
                         </div>
-                        <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 font-heading mt-0.5">
+                        <div className="text-xs font-bold text-blue-600 dark:text-blue-400 font-heading mt-0.5">
                           Applied Artificial Intelligence & Machine Learning Systems
                         </div>
 
                         <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-[9px] font-mono text-slate-500">
                           <span>ID: AFT-CERT-AI9821</span>
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">STATUS: ACCREDITED</span>
+                          <span className="text-blue-600 dark:text-blue-400 font-bold">STATUS: ACCREDITED</span>
                           <span>ISSUED: 2026</span>
                         </div>
                       </div>
                     ) : (
-                      <div className="p-3.5 rounded-2xl bg-slate-900 border-2 border-indigo-500/30 text-center relative overflow-hidden shadow-inner space-y-2.5">
-                        <div className="relative rounded-xl overflow-hidden border border-indigo-400/40 bg-white max-h-40 flex items-center justify-center">
+                      <div className="p-3.5 rounded-2xl bg-slate-900 border-2 border-blue-500/30 text-center relative overflow-hidden shadow-inner space-y-2.5">
+                        <div className="relative rounded-xl overflow-hidden border border-blue-400/40 bg-white max-h-40 flex items-center justify-center">
                           <img
                             src="/images/certificates/ms-cert-sc100.png"
                             alt="Microsoft Certified SC-100"
                             className="w-full h-auto max-h-36 object-contain"
                           />
-                          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-indigo-900/90 text-indigo-200 text-[9px] font-mono font-bold">
+                          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-blue-900/90 text-blue-200 text-[9px] font-mono font-bold">
                             SC-100 EXPERT
                           </div>
                         </div>
@@ -611,7 +611,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                           </div>
                           <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
                             <span>Conferred to: Ethan Hunt</span>
-                            <span className="text-emerald-400 font-bold">VERIFIED ACTIVE</span>
+                            <span className="text-blue-400 font-bold">VERIFIED ACTIVE</span>
                           </div>
                         </div>
                       </div>
@@ -635,7 +635,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                         <div className="text-[10px] text-slate-500 font-mono uppercase">Current Cohort Enrollment</div>
                         <div className="text-lg font-bold text-slate-900 dark:text-white">142 Fellows Active</div>
                       </div>
-                      <span className="px-2 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold font-mono">
+                      <span className="px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-[10px] font-bold font-mono">
                         98.7% Retention
                       </span>
                     </div>
@@ -643,12 +643,12 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     <div className="grid grid-cols-2 gap-2">
                       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 font-mono">AVERAGE COMPLETION</div>
-                        <div className="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">84.2%</div>
+                        <div className="text-base font-bold text-blue-600 dark:text-blue-400 font-mono mt-0.5">84.2%</div>
                         <div className="text-[10px] text-slate-500">Across 6 flagship labs</div>
                       </div>
                       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
                         <div className="text-[10px] text-slate-500 font-mono">PLACEMENT VELOCITY</div>
-                        <div className="text-base font-bold text-indigo-600 dark:text-indigo-400 font-mono mt-0.5">89%</div>
+                        <div className="text-base font-bold text-blue-600 dark:text-blue-400 font-mono mt-0.5">89%</div>
                         <div className="text-[10px] text-slate-500">Hired within 90 days</div>
                       </div>
                     </div>
@@ -662,7 +662,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
                     <Link
                       to="/admin/login"
-                      className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
+                      className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
                     >
                       <ShieldCheck className="w-3.5 h-3.5" />
                       <span>Launch Staff Admin Console</span>
@@ -672,8 +672,8 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
                 {/* Footer Software Assurance */}
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
-                  <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
                     Real Production Architecture
                   </span>
                   <span className="font-mono text-[10px]">v4.2 Enterprise</span>

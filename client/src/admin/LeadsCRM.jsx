@@ -170,7 +170,7 @@ export default function LeadsCRM() {
           {canExportLeads && (
             <button
               onClick={handleExportCSV}
-              className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-400/50 text-indigo-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
+              className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-blue-400/50 text-blue-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -180,7 +180,7 @@ export default function LeadsCRM() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -189,7 +189,7 @@ export default function LeadsCRM() {
             placeholder="Search leads by name, email, or phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-indigo-400"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-400"
           />
         </div>
 
@@ -201,7 +201,7 @@ export default function LeadsCRM() {
               onClick={() => setSelectedStatus(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 selectedStatus === st
-                  ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-[0_0_10px_rgba(14,165,233,0.2)]'
+                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-[0_0_10px_rgba(14,165,233,0.2)]'
                   : 'bg-slate-900/60 text-slate-400 border border-white/5 hover:text-white'
               }`}
             >
@@ -212,10 +212,10 @@ export default function LeadsCRM() {
       </div>
 
       {/* Leads Table */}
-      <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+            <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
               <tr>
                 <th className="px-5 py-3.5 font-bold">Applicant Details</th>
                 <th className="px-5 py-3.5 font-bold">Target Program</th>
@@ -260,13 +260,13 @@ export default function LeadsCRM() {
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${
                         lead.status === 'New'
-                          ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                           : lead.status === 'Contacted'
                           ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                           : lead.status === 'Counseling Scheduled'
-                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                           : lead.status === 'Enrolled'
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                           : 'bg-slate-800 text-slate-400 border border-slate-700'
                       }`}
                     >
@@ -280,7 +280,7 @@ export default function LeadsCRM() {
                       {lead.callLogs?.length || 0} calls
                     </span>
                     {lead.callLogs?.length > 0 && (
-                      <div className="text-[10px] text-indigo-400 truncate max-w-[150px]">
+                      <div className="text-[10px] text-blue-400 truncate max-w-[150px]">
                         Last: {lead.callLogs[0].callOutcome}
                       </div>
                     )}
@@ -329,12 +329,12 @@ export default function LeadsCRM() {
       {/* Slide-over Drawer for Detailed Applicant Profile & Call Recorder */}
       {drawerOpen && selectedLead && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-lg bg-[#0B1220] border-l border-white/[0.1] h-full shadow-2xl flex flex-col overflow-hidden animate-slideInRight">
+          <div className="w-full max-w-lg bg-[#002060] border-l border-white/[0.1] h-full shadow-2xl flex flex-col overflow-hidden animate-slideInRight">
             
             {/* Drawer Header */}
-            <div className="p-6 bg-[#070C17] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-6 bg-[#001845] border-b border-white/[0.08] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-400 to-blue-600 flex items-center justify-center font-bold text-white">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 to-blue-600 flex items-center justify-center font-bold text-white">
                   {selectedLead.fullName.charAt(0)}
                 </div>
                 <div>
@@ -363,9 +363,9 @@ export default function LeadsCRM() {
                   <span>Read-only access — LEADS_EDIT is required to record activity or convert this lead.</span>
                 </div>
               ) : selectedLead.status !== 'Enrolled' ? (
-                <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-500/30 flex items-center justify-between gap-3">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-blue-950/40 to-slate-900 border border-blue-500/30 flex items-center justify-between gap-3">
                   <div>
-                    <h4 className="font-bold text-emerald-400 text-sm">
+                    <h4 className="font-bold text-blue-400 text-sm">
                       Ready to Enroll?
                     </h4>
                     <p className="text-[11px] text-slate-300 mt-0.5">
@@ -375,21 +375,21 @@ export default function LeadsCRM() {
                   <button
                     onClick={handleConvertToStudent}
                     disabled={converting}
-                    className="px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-600 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50"
                   >
                     <GraduationCap className="w-4 h-4" />
                     <span>{converting ? 'Converting...' : 'Convert to Student'}</span>
                   </button>
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-blue-500/15 border border-blue-500/40 text-blue-300 font-bold flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Enrolled Student Confirmed</span>
                 </div>
               )}
 
               {convertSuccess && (
-                <div className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                <div className="p-3 rounded-xl bg-blue-500/20 text-blue-300 text-xs font-semibold">
                   {convertSuccess}
                 </div>
               )}
@@ -422,7 +422,7 @@ export default function LeadsCRM() {
               {/* Call Log Recorder */}
               {canEditLeads && (
               <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
-                <h4 className="font-bold uppercase tracking-wider text-[10px] text-indigo-400 flex items-center gap-1.5">
+                <h4 className="font-bold uppercase tracking-wider text-[10px] text-blue-400 flex items-center gap-1.5">
                   <PhoneCall className="w-3.5 h-3.5" />
                   <span>Record Admissions Call / Note</span>
                 </h4>
@@ -435,7 +435,7 @@ export default function LeadsCRM() {
                       placeholder="Enter counseling summary, questions asked, or objections..."
                       value={callNote}
                       onChange={(e) => setCallNote(e.target.value)}
-                      className="w-full p-2.5 rounded-lg bg-slate-950 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-indigo-400"
+                      className="w-full p-2.5 rounded-lg bg-slate-950 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-400"
                     />
                   </div>
 
@@ -470,7 +470,7 @@ export default function LeadsCRM() {
                   <button
                     type="submit"
                     disabled={loggingCall}
-                    className="w-full py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                    className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>{loggingCall ? 'Saving...' : 'Add Call Log Entry'}</span>
@@ -493,7 +493,7 @@ export default function LeadsCRM() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white text-[11px]">{log.caller || 'Counselor'}</span>
-                        <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-indigo-300 font-mono">
+                        <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-blue-300 font-mono">
                           {log.callOutcome}
                         </span>
                       </div>
@@ -501,7 +501,7 @@ export default function LeadsCRM() {
                       <div className="text-[10px] text-slate-400">
                         {new Date(log.timestamp).toLocaleString()}
                         {log.followUpDate && (
-                          <span className="ml-2 text-amber-400">
+                          <span className="ml-2 text-red-400">
                             • Follow-up: {new Date(log.followUpDate).toLocaleDateString()}
                           </span>
                         )}

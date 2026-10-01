@@ -160,7 +160,7 @@ export default function MediaLibrary() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <Images className="w-3.5 h-3.5" />
             Assets & Storage
           </div>
@@ -187,9 +187,9 @@ export default function MediaLibrary() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { key: 'total', label: 'Files', value: summary.total || 0, tone: 'text-white' },
-          { key: 'inUse', label: 'In use on the site', value: summary.inUse || 0, tone: 'text-emerald-300' },
-          { key: 'unused', label: 'Unused', value: summary.unused || 0, tone: 'text-amber-300' },
-          { key: 'durableOnly', label: 'Durable only (disk wiped)', value: summary.durableOnly || 0, tone: 'text-indigo-300' },
+          { key: 'inUse', label: 'In use on the site', value: summary.inUse || 0, tone: 'text-blue-300' },
+          { key: 'unused', label: 'Unused', value: summary.unused || 0, tone: 'text-red-300' },
+          { key: 'durableOnly', label: 'Durable only (disk wiped)', value: summary.durableOnly || 0, tone: 'text-blue-300' },
         ].map((card) => (
           <div key={card.key} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
             <div className={`text-2xl font-black font-heading ${card.tone}`}>{card.value}</div>
@@ -199,7 +199,7 @@ export default function MediaLibrary() {
       </div>
 
       {(summary.diskOnly || 0) > 0 && (
-        <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 text-[11px] font-mono text-amber-200 flex items-start gap-2">
+        <div className="rounded-xl border border-red-500/25 bg-red-500/5 p-3 text-[11px] font-mono text-red-200 flex items-start gap-2">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <span>
             {summary.diskOnly} file(s) exist on disk only — they were never written to durable
@@ -219,7 +219,7 @@ export default function MediaLibrary() {
               onClick={() => setFilter(key)}
               className={`px-3 py-1.5 rounded-lg text-[11px] font-mono whitespace-nowrap border transition-colors ${
                 filter === key
-                  ? 'bg-indigo-500 text-slate-950 border-indigo-400 font-bold'
+                  ? 'bg-blue-600 text-white border-blue-400 font-bold'
                   : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
               }`}
             >
@@ -235,7 +235,7 @@ export default function MediaLibrary() {
             onChange={(event) => setSearchTerm(event.target.value)}
             aria-label="Search media"
             placeholder="Search file name or where it is used…"
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+            className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -247,7 +247,7 @@ export default function MediaLibrary() {
         </div>
       ) : visibleFiles.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-10 text-center space-y-2">
-          <ImageOff className="w-6 h-6 text-indigo-400 mx-auto" />
+          <ImageOff className="w-6 h-6 text-blue-400 mx-auto" />
           <p className="text-sm text-slate-300 font-semibold">
             {files.length ? 'No files match this filter.' : 'No images have been uploaded yet.'}
           </p>
@@ -286,14 +286,14 @@ export default function MediaLibrary() {
                 {file.persisted ? (
                   <span
                     title="Stored in MongoDB — this copy survives a redeploy."
-                    className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-300 inline-flex items-center gap-1"
+                    className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-500/25 bg-blue-500/10 text-blue-300 inline-flex items-center gap-1"
                   >
                     <ShieldCheck className="w-2.5 h-2.5" /> durable
                   </span>
                 ) : (
                   <span
                     title="Only on the server disk — it will disappear on the next deploy."
-                    className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/10 text-amber-300 inline-flex items-center gap-1"
+                    className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-red-500/25 bg-red-500/10 text-red-300 inline-flex items-center gap-1"
                   >
                     <AlertTriangle className="w-2.5 h-2.5" /> disk only
                   </span>
@@ -304,7 +304,7 @@ export default function MediaLibrary() {
                   </span>
                 )}
                 {file.usedBy.length > 0 ? (
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 text-indigo-300">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-500/25 bg-blue-500/10 text-blue-300">
                     in use ×{file.usedBy.length}
                   </span>
                 ) : (
@@ -359,7 +359,7 @@ export default function MediaLibrary() {
                   disabled={!canDelete}
                   aria-label={`Delete ${file.filename}`}
                   title={canDelete ? 'Delete this file' : 'Your account needs MEDIA_DELETE to delete a file.'}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-rose-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-red-300 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -376,11 +376,11 @@ export default function MediaLibrary() {
             role="dialog"
             aria-modal="true"
             aria-label={`Delete ${pendingDelete.filename}`}
-            className="w-full max-w-lg rounded-2xl border border-slate-800 bg-[#0B1220] p-5 space-y-4 shadow-2xl"
+            className="w-full max-w-lg rounded-2xl border border-slate-800 bg-[#002060] p-5 space-y-4 shadow-2xl"
           >
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-sm font-bold text-white font-heading flex items-center gap-2">
-                <Trash2 className="w-4 h-4 text-rose-400" />
+                <Trash2 className="w-4 h-4 text-red-400" />
                 Delete this file?
               </h2>
               <button
@@ -409,18 +409,18 @@ export default function MediaLibrary() {
             </div>
 
             {pendingDelete.usedBy.length > 0 ? (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 space-y-2">
-                <p className="text-[11px] font-bold text-rose-200 flex items-center gap-1.5">
+              <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 space-y-2">
+                <p className="text-[11px] font-bold text-red-200 flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   This image is still used in {pendingDelete.usedBy.length} place
                   {pendingDelete.usedBy.length === 1 ? '' : 's'}:
                 </p>
                 <ul className="space-y-1">
                   {pendingDelete.usedBy.map((label) => (
-                    <li key={label} className="text-[11px] text-rose-100">• {label}</li>
+                    <li key={label} className="text-[11px] text-red-100">• {label}</li>
                   ))}
                 </ul>
-                <p className="text-[11px] text-rose-200">
+                <p className="text-[11px] text-red-200">
                   Deleting it will leave a broken image on the live site wherever it is used.
                 </p>
               </div>
@@ -443,9 +443,9 @@ export default function MediaLibrary() {
                 type="button"
                 onClick={() => confirmDelete(pendingDelete, pendingDelete.usedBy.length > 0)}
                 disabled={deleting}
-                // rose-500 with white text is only ~3.6:1 — rose-700 keeps the
+                // red-500 with white text is only ~3.6:1 — red-700 keeps the
                 // destructive colour and clears the contrast threshold.
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-600 disabled:opacity-50 text-white text-xs font-bold"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white text-xs font-bold"
               >
                 {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                 {pendingDelete.usedBy.length > 0 ? 'Delete anyway' : 'Delete file'}
@@ -461,8 +461,8 @@ export default function MediaLibrary() {
           role="status"
           className={`fixed bottom-6 right-6 z-50 max-w-sm px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl flex items-start gap-2 ${
             toast.tone === 'error'
-              ? 'bg-rose-950/90 border-rose-500/40 text-rose-100'
-              : 'bg-emerald-950/90 border-emerald-500/40 text-emerald-100'
+              ? 'bg-red-950/90 border-red-500/40 text-red-100'
+              : 'bg-blue-950/90 border-blue-500/40 text-blue-100'
           }`}
         >
           {toast.tone === 'error'

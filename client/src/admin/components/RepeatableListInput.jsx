@@ -97,7 +97,7 @@ export default function RepeatableListInput({
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/90 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 transition-colors focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-slate-700 bg-slate-900/90 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <button
           type="button"
@@ -107,7 +107,7 @@ export default function RepeatableListInput({
               setInputValue('');
             }
           }}
-          className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors shrink-0"
+          className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-600 transition-colors shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
           Add
@@ -115,7 +115,7 @@ export default function RepeatableListInput({
       </div>
 
       <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
-        <ClipboardPaste className="w-3 h-3 text-indigo-400" />
+        <ClipboardPaste className="w-3 h-3 text-blue-400" />
         <span>Tip: Paste multi-line text to auto-split into individual bullet items.</span>
       </p>
 
@@ -155,7 +155,7 @@ export default function RepeatableListInput({
                 <button
                   type="button"
                   onClick={() => removeItem(idx)}
-                  className="p-1 rounded text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 transition-colors ml-1"
+                  className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-950/40 transition-colors ml-1"
                   title="Remove item"
                 >
                   <X className="w-3 h-3" />

@@ -111,11 +111,11 @@ export default function StudentProfile() {
     <div className="p-6 sm:p-8 space-y-8 max-w-5xl mx-auto w-full">
       {/* Header */}
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
-          <User className="w-3.5 h-3.5 text-[#4338CA]" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
+          <User className="w-3.5 h-3.5 text-[#1D4ED8]" />
           <span>Learner Identity & Security</span>
         </div>
-        <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[#0B1220]">
+        <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[#002060]">
           Student Profile & Credentials
         </h1>
         <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed max-w-xl">
@@ -126,10 +126,10 @@ export default function StudentProfile() {
       {feedback.message && (
         <div className={`p-4 rounded-2xl text-xs flex items-center gap-3 shadow-xs ${
           feedback.type === 'success'
-            ? 'bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220]'
-            : 'bg-rose-50 border border-rose-200 text-rose-800'
+            ? 'bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060]'
+            : 'bg-red-50 border border-red-200 text-red-800'
         }`}>
-          {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-[#4338CA] shrink-0" /> : <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />}
+          {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-[#1D4ED8] shrink-0" /> : <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
           <span className="font-medium">{feedback.message}</span>
         </div>
       )}
@@ -137,13 +137,13 @@ export default function StudentProfile() {
       {/* Verified Student ID Card */}
       <div className="p-6 rounded-2xl bg-white border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#F7F7F5] border border-slate-300 flex items-center justify-center text-[#0B1220] font-black text-xl font-heading shadow-xs">
+          <div className="w-14 h-14 rounded-2xl bg-[#F7F7F5] border border-slate-300 flex items-center justify-center text-[#002060] font-black text-xl font-heading shadow-xs">
             {name ? name.charAt(0).toUpperCase() : 'S'}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-heading font-bold text-[#0B1220]">{name || 'Enrolled Student'}</h2>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EFE6D6] text-[#0B1220]">
+              <h2 className="text-base font-heading font-bold text-[#002060]">{name || 'Enrolled Student'}</h2>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FCE7E7] text-[#002060]">
                 ACTIVE
               </span>
             </div>
@@ -154,7 +154,7 @@ export default function StudentProfile() {
         <div className="grid grid-cols-2 gap-4 border-t md:border-t-0 md:border-l border-slate-200 pt-4 md:pt-0 md:pl-6 text-xs font-mono">
           <div>
             <span className="text-slate-400 block uppercase tracking-wider text-[10px] font-bold">ENROLLMENT ID</span>
-            <span className="text-[#0B1220] font-bold tracking-wider">
+            <span className="text-[#002060] font-bold tracking-wider">
               {user?.studentDetails?.enrollmentNumber || 'AFT-STU-8821'}
             </span>
           </div>
@@ -169,8 +169,8 @@ export default function StudentProfile() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Personal Details */}
         <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
-          <h3 className="text-sm font-heading font-bold text-[#0B1220] uppercase tracking-wider flex items-center gap-2">
-            <User className="w-4 h-4 text-[#4338CA]" />
+          <h3 className="text-sm font-heading font-bold text-[#002060] uppercase tracking-wider flex items-center gap-2">
+            <User className="w-4 h-4 text-[#1D4ED8]" />
             Personal Information
           </h3>
 
@@ -182,7 +182,7 @@ export default function StudentProfile() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
               />
             </div>
 
@@ -205,7 +205,7 @@ export default function StudentProfile() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1 (555) 000-0000"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
               />
             </div>
 
@@ -216,7 +216,7 @@ export default function StudentProfile() {
                 value={avatar}
                 onChange={(e) => setAvatar(e.target.value)}
                 placeholder="https://images.unsplash.com/..."
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
               />
             </div>
           </div>
@@ -228,15 +228,15 @@ export default function StudentProfile() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="e.g. Aspiring AI engineer focusing on LLMs and scalable inference pipelines..."
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white resize-none transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white resize-none transition-all"
             />
           </div>
         </div>
 
         {/* Section 2: Security & Password */}
         <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
-          <h3 className="text-sm font-heading font-bold text-[#0B1220] uppercase tracking-wider flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-[#4338CA]" />
+          <h3 className="text-sm font-heading font-bold text-[#002060] uppercase tracking-wider flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-[#1D4ED8]" />
             Security & Password Change
           </h3>
           <p className="text-xs text-slate-500">Leave password fields blank if you do not wish to change your existing password.</p>
@@ -249,7 +249,7 @@ export default function StudentProfile() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full md:w-1/2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all font-mono"
+                className="w-full md:w-1/2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all font-mono"
               />
             </div>
 
@@ -261,7 +261,7 @@ export default function StudentProfile() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Minimum 6 characters"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all font-mono"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all font-mono"
                 />
               </div>
 
@@ -272,7 +272,7 @@ export default function StudentProfile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat new password"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#0B1220] focus:bg-white transition-all font-mono"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all font-mono"
                 />
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function StudentProfile() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-xs transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Saving Changes...' : 'Save Profile Changes'}

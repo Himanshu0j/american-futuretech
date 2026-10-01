@@ -98,19 +98,19 @@ export default function BulletContent({
         >
           {variant === 'check' && (
             <CheckCircle2
-              className={`w-4 h-4 text-emerald-500 shrink-0 mt-0.5 ${bulletClassName}`}
+              className={`w-4 h-4 text-blue-500 shrink-0 mt-0.5 ${bulletClassName}`}
               aria-hidden="true"
             />
           )}
           {variant === 'bullet' && (
             <span
-              className={`w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0 mt-2 ${bulletClassName}`}
+              className={`w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0 mt-2 ${bulletClassName}`}
               aria-hidden="true"
             />
           )}
           {variant === 'numeric' && (
             <span
-              className={`w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${bulletClassName}`}
+              className={`w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${bulletClassName}`}
             >
               {idx + 1}
             </span>

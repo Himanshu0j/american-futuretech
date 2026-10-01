@@ -151,7 +151,7 @@ export default function EnrollmentsManager() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}

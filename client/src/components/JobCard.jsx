@@ -83,7 +83,7 @@ export default function JobCard({
   const locationText = job.location || 'Remote (US & Global)';
 
   return (
-    <div className="p-6 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
+    <div className="p-6 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-blue-500/40 dark:hover:border-blue-500/40 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
       
       {/* 1. TOP ROW: Prominent Company Logo + Title & Key Metadata Tags */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -95,14 +95,14 @@ export default function JobCard({
             fallbackText={job.company || 'FT'}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2.5 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
             imageClassName="w-full h-full object-contain rounded-xl"
-            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-[#E5C275] font-black text-lg flex items-center justify-center"
+            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#002060] to-[#1D4ED8] text-[#FF6B6B] font-black text-lg flex items-center justify-center"
           />
 
           {/* Job Title & Structured Tags Row */}
           <div className="space-y-2 flex-1">
             <Link
               to={`/jobs/${jobId}`}
-              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#0B1220] dark:group-hover:text-[#E5C275] transition-colors leading-snug block"
+              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#002060] dark:group-hover:text-[#FF6B6B] transition-colors leading-snug block"
             >
               {job.title}
             </Link>
@@ -118,21 +118,21 @@ export default function JobCard({
 
               <span className="text-slate-300 dark:text-slate-600">•</span>
 
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/80">
                 {employmentType}
               </span>
 
               <span className="text-slate-300 dark:text-slate-600">•</span>
 
               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
-                <MapPin className="w-3 h-3 text-rose-500" />
+                <MapPin className="w-3 h-3 text-red-500" />
                 {locationText}
               </span>
 
               <span className="text-slate-300 dark:text-slate-600">•</span>
 
               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
-                <Clock className="w-3 h-3 text-amber-500" />
+                <Clock className="w-3 h-3 text-red-500" />
                 {experience}
               </span>
 
@@ -142,11 +142,11 @@ export default function JobCard({
 
         {/* Right: Compensation & Actively Hiring Badge */}
         <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
-          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#0B1220] dark:text-[#E5C275] font-mono tracking-tight bg-[#EFE6D6]/70 dark:bg-emerald-950/60 px-3.5 py-1.5 rounded-xl border border-[#E5C275]/60 dark:border-emerald-800 shadow-2xs">
+          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#002060] dark:text-[#FF6B6B] font-mono tracking-tight bg-[#FCE7E7]/70 dark:bg-blue-950/60 px-3.5 py-1.5 rounded-xl border border-[#F00000]/60 dark:border-blue-800 shadow-2xs">
             {formatSalary() || 'Salary on request'}
           </div>
-          <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-emerald-800 dark:text-emerald-300 bg-emerald-50/90 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+          <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-blue-800 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-950/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
             <span>Actively Hiring</span>
           </div>
         </div>
@@ -155,12 +155,12 @@ export default function JobCard({
       {/* 2. Recommended Course Track Banner */}
       {(job.recommendedCourseTitle || (job.recommendedCourse && job.recommendedCourse.title) || job.course) && (
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200">
-          <GraduationCap className="w-4 h-4 text-[#4338CA] dark:text-[#E5C275] shrink-0" />
+          <GraduationCap className="w-4 h-4 text-[#1D4ED8] dark:text-[#FF6B6B] shrink-0" />
           <span className="font-semibold text-slate-500 dark:text-slate-400">Recommended Track:</span>
           {job.recommendedCourse?.slug ? (
             <Link
               to={`/courses/${job.recommendedCourse.slug}`}
-              className="font-bold text-[#0B1220] dark:text-[#E5C275] hover:underline truncate"
+              className="font-bold text-[#002060] dark:text-[#FF6B6B] hover:underline truncate"
             >
               {job.recommendedCourse.title || job.recommendedCourseTitle}
             </Link>
@@ -220,13 +220,13 @@ export default function JobCard({
 
           <button
             onClick={handleApplyClick}
-            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#0B1220] hover:bg-[#4338CA] text-[#EFE6D6] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#002060] hover:bg-[#1D4ED8] text-[#FFD9D9] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>APPLY NOW</span>
             {job.applyLink ? (
-              <ExternalLink className="w-3.5 h-3.5 text-[#E5C275]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#FF6B6B]" />
             ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-[#E5C275]" />
+              <ChevronRight className="w-3.5 h-3.5 text-[#FF6B6B]" />
             )}
           </button>
         </div>

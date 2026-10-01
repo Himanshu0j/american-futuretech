@@ -137,18 +137,18 @@ export default function LearningJourney() {
   return (
     <section id="journey" className="py-12 sm:py-16 bg-[#F7F7F5] text-[#1b1b1b] relative z-10 overflow-hidden">
       {/* Subtle Background Accent */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#E5C275]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#4338CA]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#F00000]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#1D4ED8]/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] border border-[#10b981]/30 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FCE7E7] border border-[#2563EB]/30 text-[#002060] text-xs font-bold font-heading uppercase tracking-wider shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
             <span>Interactive 5-Step Story</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-[#0B1220] tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-heading text-[#002060] tracking-tight leading-tight">
             How You Evolve From Technologist to Leader
           </h2>
 
@@ -162,7 +162,7 @@ export default function LearningJourney() {
           {/* Connecting Track Line */}
           <div className="hidden lg:block absolute top-16 left-12 right-12 h-1 bg-gray-200 rounded-full z-0">
             <div
-              className="h-full bg-gradient-to-r from-[#10b981] via-[#E5C275] to-[#0B1220] rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-gradient-to-r from-[#2563EB] via-[#F00000] to-[#002060] rounded-full transition-all duration-500 ease-out"
               style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
             />
           </div>
@@ -180,7 +180,7 @@ export default function LearningJourney() {
                   onClick={() => setActiveStep(idx)}
                   className={`group text-left p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative cursor-pointer ${
                     isActive
-                      ? 'bg-white border-[#0B1220] shadow-xl ring-2 ring-[#10b981]/40 -translate-y-1'
+                      ? 'bg-white border-[#002060] shadow-xl ring-2 ring-[#2563EB]/40 -translate-y-1'
                       : 'bg-white/80 hover:bg-white border-gray-200 hover:border-gray-300 shadow-xs hover:shadow-md'
                   }`}
                 >
@@ -189,9 +189,9 @@ export default function LearningJourney() {
                     <span
                       className={`font-mono text-xs font-black px-2.5 py-0.5 rounded-full ${
                         isActive
-                          ? 'bg-[#0B1220] text-[#E5C275]'
+                          ? 'bg-[#002060] text-[#FF6B6B]'
                           : isPast
-                          ? 'bg-[#EFE6D6] text-[#0B1220]'
+                          ? 'bg-[#FCE7E7] text-[#002060]'
                           : 'bg-gray-100 text-gray-700'
                       }`}
                     >
@@ -200,8 +200,8 @@ export default function LearningJourney() {
 
                     {isActive && (
                       <span className="flex h-2.5 w-2.5 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10b981]" />
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2563EB] opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2563EB]" />
                       </span>
                     )}
                   </div>
@@ -219,7 +219,7 @@ export default function LearningJourney() {
                   <div className="space-y-1">
                     <div
                       className={`text-xs sm:text-sm font-black font-heading tracking-tight ${
-                        isActive ? 'text-[#0B1220]' : 'text-gray-700'
+                        isActive ? 'text-[#002060]' : 'text-gray-700'
                       }`}
                     >
                       {step.title}
@@ -240,13 +240,13 @@ export default function LearningJourney() {
             {/* Left Narrative Column */}
             <div className="lg:col-span-6 space-y-4">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-[#047857] uppercase tracking-wider px-3 py-1 rounded-full bg-[#EFE6D6]/70 border border-[#10b981]/20">
+                <span className="text-xs font-mono font-bold text-[#1D4ED8] uppercase tracking-wider px-3 py-1 rounded-full bg-[#FCE7E7]/70 border border-[#2563EB]/20">
                   {current.tag}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">Step {current.number} of 05</span>
               </div>
 
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0B1220] font-heading leading-tight tracking-tight">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#002060] font-heading leading-tight tracking-tight">
                 {current.tagline}
               </h3>
 
@@ -258,7 +258,7 @@ export default function LearningJourney() {
               <div className="space-y-3 pt-2">
                 {current.highlights.map((item, hIdx) => (
                   <div key={hIdx} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold shadow-xs">
+                    <div className="w-5 h-5 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold shadow-xs">
                       <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     </div>
                     <span className="text-sm text-gray-700 font-medium leading-normal">{item}</span>
@@ -290,12 +290,12 @@ export default function LearningJourney() {
                 <div className="p-6 rounded-2xl bg-[#f8fafc] border border-gray-200/90 shadow-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-gray-200">
                     <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
-                      <span className="text-xs font-bold text-[#0B1220] font-heading uppercase">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+                      <span className="text-xs font-bold text-[#002060] font-heading uppercase">
                         Technical Skill Diagnostic Scorecard
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EFE6D6] text-[#0B1220] font-bold">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCE7E7] text-[#002060] font-bold">
                       Calibrated Tier 1
                     </span>
                   </div>
@@ -309,37 +309,37 @@ export default function LearningJourney() {
                       <div>
                         <div className="flex justify-between mb-1">
                           <span className="font-semibold text-gray-700">Python & Algorithmic DSA</span>
-                          <span className="font-mono font-bold text-[#0B1220]">92%</span>
+                          <span className="font-mono font-bold text-[#002060]">92%</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-                          <div className="h-full bg-[#10b981] rounded-full" style={{ width: '92%' }} />
+                          <div className="h-full bg-[#2563EB] rounded-full" style={{ width: '92%' }} />
                         </div>
                       </div>
                       <div>
                         <div className="flex justify-between mb-1">
                           <span className="font-semibold text-gray-700">Distributed System Design</span>
-                          <span className="font-mono font-bold text-[#0B1220]">88%</span>
+                          <span className="font-mono font-bold text-[#002060]">88%</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-                          <div className="h-full bg-[#4338CA] rounded-full" style={{ width: '88%' }} />
+                          <div className="h-full bg-[#1D4ED8] rounded-full" style={{ width: '88%' }} />
                         </div>
                       </div>
                       <div>
                         <div className="flex justify-between mb-1">
                           <span className="font-semibold text-gray-700">Cloud Infrastructure (AWS/K8s)</span>
-                          <span className="font-mono font-bold text-[#0B1220]">85%</span>
+                          <span className="font-mono font-bold text-[#002060]">85%</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-                          <div className="h-full bg-[#4338CA] rounded-full" style={{ width: '85%' }} />
+                          <div className="h-full bg-[#1D4ED8] rounded-full" style={{ width: '85%' }} />
                         </div>
                       </div>
                       <div>
                         <div className="flex justify-between mb-1">
                           <span className="font-semibold text-gray-700">AI / LLM Architecture</span>
-                          <span className="font-mono font-bold text-[#0B1220]">94%</span>
+                          <span className="font-mono font-bold text-[#002060]">94%</span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-                          <div className="h-full bg-[#f59e0b] rounded-full" style={{ width: '94%' }} />
+                          <div className="h-full bg-[#F00000] rounded-full" style={{ width: '94%' }} />
                         </div>
                       </div>
                     </div>
@@ -347,11 +347,11 @@ export default function LearningJourney() {
 
                   <div className="p-3 rounded-xl bg-white border border-gray-200 text-xs flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#047857]" />
-                      <span className="font-semibold text-[#0B1220]">Recommended Path:</span>
+                      <Sparkles className="w-4 h-4 text-[#1D4ED8]" />
+                      <span className="font-semibold text-[#002060]">Recommended Path:</span>
                       <span className="text-gray-600">Advanced AI & Systems Track (24 Wks)</span>
                     </div>
-                    <span className="font-mono text-[11px] font-bold text-emerald-700">Verified Fit</span>
+                    <span className="font-mono text-[11px] font-bold text-blue-700">Verified Fit</span>
                   </div>
                 </div>
               )}
@@ -366,24 +366,24 @@ export default function LearningJourney() {
                       alt="Curriculum & Masterclass Environment"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0B1220]/85 via-[#0B1220]/60 to-transparent flex items-center p-4">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#002060]/85 via-[#002060]/60 to-transparent flex items-center p-4">
                       <div className="text-white space-y-1">
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] text-[10px] font-mono font-bold uppercase">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#C81E1E] text-white text-[10px] font-mono font-bold uppercase">
                           Live Masterclass Studio
                         </span>
                         <div className="text-base font-bold font-heading">
                           Interactive Weekend Labs with Silicon Valley Faculty
                         </div>
-                        <div className="text-[#EFE6D6] text-xs">Production scale architecture walkthroughs</div>
+                        <div className="text-[#FFD9D9] text-xs">Production scale architecture walkthroughs</div>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                    <span className="text-xs font-bold text-[#0B1220] font-heading uppercase">
+                    <span className="text-xs font-bold text-[#002060] font-heading uppercase">
                       Curriculum Syllabus Architecture
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EFE6D6] text-[#0B1220] font-bold">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCE7E7] text-[#002060] font-bold">
                       24 Weeks · Accredited
                     </span>
                   </div>
@@ -391,38 +391,38 @@ export default function LearningJourney() {
                   <div className="space-y-2 text-xs">
                     <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-lg bg-[#FCE7E7] text-[#002060] flex items-center justify-center font-bold text-[10px]">
                           M1
                         </div>
-                        <span className="font-bold text-[#0B1220]">
+                        <span className="font-bold text-[#002060]">
                           Foundations: Vector Spaces, PyTorch & Linear Algebra
                         </span>
                       </div>
-                      <span className="text-emerald-700 font-semibold text-[11px]">Completed</span>
+                      <span className="text-blue-700 font-semibold text-[11px]">Completed</span>
                     </div>
 
                     <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-lg bg-[#FCE7E7] text-[#002060] flex items-center justify-center font-bold text-[10px]">
                           M2
                         </div>
-                        <span className="font-bold text-[#0B1220]">
+                        <span className="font-bold text-[#002060]">
                           Transformers, Multi-Head Attention & Fine-Tuning
                         </span>
                       </div>
-                      <span className="text-emerald-700 font-semibold text-[11px]">Completed</span>
+                      <span className="text-blue-700 font-semibold text-[11px]">Completed</span>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#F7F7F5] border border-[#4338CA]/40 shadow-xs flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-[#F7F7F5] border border-[#1D4ED8]/40 shadow-xs flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-lg bg-[#0B1220] text-white flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-lg bg-[#002060] text-white flex items-center justify-center font-bold text-[10px]">
                           M3
                         </div>
-                        <span className="font-bold text-[#0B1220]">
+                        <span className="font-bold text-[#002060]">
                           Production RAG Pipelines & Multi-Agent LangGraph
                         </span>
                       </div>
-                      <span className="text-xs px-2 py-0.5 rounded bg-[#4338CA] text-white font-bold">
+                      <span className="text-xs px-2 py-0.5 rounded bg-[#1D4ED8] text-white font-bold">
                         In Progress
                       </span>
                     </div>
@@ -453,29 +453,29 @@ export default function LearningJourney() {
                     />
                   </div>
 
-                  <div className="rounded-2xl bg-[#0f1b11] border border-[#4338CA] shadow-xl p-5 sm:p-6 text-left text-white font-mono text-xs space-y-3 relative z-10">
-                    <div className="flex items-center justify-between pb-2 border-b border-[#4338CA]/60 text-[11px] text-gray-400">
-                      <span className="text-[#EFE6D6] font-semibold">// terminal: pytest production_suite</span>
-                      <span className="text-[#E5C275]">Python 3.12 · Docker</span>
+                  <div className="rounded-2xl bg-[#0f1b11] border border-[#1D4ED8] shadow-xl p-5 sm:p-6 text-left text-white font-mono text-xs space-y-3 relative z-10">
+                    <div className="flex items-center justify-between pb-2 border-b border-[#1D4ED8]/60 text-[11px] text-gray-400">
+                      <span className="text-[#FFD9D9] font-semibold">// terminal: pytest production_suite</span>
+                      <span className="text-[#FF6B6B]">Python 3.12 · Docker</span>
                     </div>
                     <div className="space-y-1.5 text-[11px] leading-relaxed">
-                      <div className="text-[#E5C275]">$ docker-compose -f docker-compose.prod.yml up -d</div>
+                      <div className="text-[#FF6B6B]">$ docker-compose -f docker-compose.prod.yml up -d</div>
                       <div className="text-gray-400">[+] Running 3/3: Container aft-vector-db Started</div>
-                      <div className="text-[#E5C275]">$ pytest -v tests/test_agent_orchestrator.py</div>
-                      <div className="text-emerald-400">
+                      <div className="text-[#FF6B6B]">$ pytest -v tests/test_agent_orchestrator.py</div>
+                      <div className="text-blue-400">
                         PASSED tests/test_agent.py::test_vector_store_retrieval (0.34s)
                       </div>
-                      <div className="text-emerald-400">
+                      <div className="text-blue-400">
                         PASSED tests/test_agent.py::test_langchain_agent_tools (0.82s)
                       </div>
-                      <div className="text-emerald-400">
+                      <div className="text-blue-400">
                         PASSED tests/test_agent.py::test_guardrails_latency (0.21s)
                       </div>
-                      <div className="text-emerald-400">
+                      <div className="text-blue-400">
                         PASSED tests/test_agent.py::test_jwt_rbac_authorization (0.15s)
                       </div>
-                      <div className="pt-2 text-white font-bold flex items-center gap-2 border-t border-[#4338CA]/40 mt-3">
-                        <span className="w-2 h-2 rounded-full bg-[#E5C275]" />
+                      <div className="pt-2 text-white font-bold flex items-center gap-2 border-t border-[#1D4ED8]/40 mt-3">
+                        <span className="w-2 h-2 rounded-full bg-[#F00000]" />
                         <span>4 passed, 0 warnings in 1.52s · Test Coverage: 99.1%</span>
                       </div>
                     </div>
@@ -494,10 +494,10 @@ export default function LearningJourney() {
                     />
                   </div>
 
-                  <div className="p-6 rounded-2xl bg-[#fffdfa] border-2 border-[#0B1220]/30 shadow-xl text-center space-y-4 shimmer-active relative z-10">
+                  <div className="p-6 rounded-2xl bg-[#fffdfa] border-2 border-[#002060]/30 shadow-xl text-center space-y-4 shimmer-active relative z-10">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-mono font-bold text-[#0B1220]">REGISTRY ID: AFT-CERT-AI9821</span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold text-[10px] border border-[#10b981]/30">
+                      <span className="font-mono font-bold text-[#002060]">REGISTRY ID: AFT-CERT-AI9821</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#FCE7E7] text-[#002060] font-bold text-[10px] border border-[#2563EB]/30">
                         SHA-256 VERIFIED
                       </span>
                     </div>
@@ -510,13 +510,13 @@ export default function LearningJourney() {
                           className="w-12 h-12 object-contain drop-shadow-md shrink-0 animate-float-slow"
                         />
                         <div className="text-left">
-                          <div className="text-xl sm:text-2xl font-black font-heading text-[#0B1220]">
+                          <div className="text-xl sm:text-2xl font-black font-heading text-[#002060]">
                             Ethan Hunt
                           </div>
                           <div className="text-xs text-gray-600 font-medium">
                             6-Month Comprehensive Fellowship in Applied AI
                           </div>
-                          <div className="text-xs font-bold text-[#047857]">
+                          <div className="text-xs font-bold text-[#1D4ED8]">
                             Conferred with Highest Academic Honors · GPA 3.96
                           </div>
                         </div>
@@ -534,7 +534,7 @@ export default function LearningJourney() {
                       <span>30 N Gould St, Sheridan, WY</span>
                       <Link
                         to="/certificate/AFT-CERT-AI9821"
-                        className="font-mono text-[#047857] font-bold hover:underline flex items-center gap-1"
+                        className="font-mono text-[#1D4ED8] font-bold hover:underline flex items-center gap-1"
                       >
                         <span>Open Public Registry</span>
                         <ExternalLink className="w-3 h-3" />
@@ -556,15 +556,15 @@ export default function LearningJourney() {
                   </div>
 
                   <div className="p-6 rounded-2xl bg-[#f8fafc] border border-gray-200/90 shadow-sm space-y-4 relative z-10">
-                    <div className="relative rounded-xl overflow-hidden min-h-[6rem] border border-gray-200 group flex items-center bg-gradient-to-r from-[#0B1220] via-[#152a17] to-[#4338CA] p-4">
+                    <div className="relative rounded-xl overflow-hidden min-h-[6rem] border border-gray-200 group flex items-center bg-gradient-to-r from-[#002060] via-[#002060] to-[#1D4ED8] p-4">
                       <div className="flex-1 text-white space-y-0.5">
-                        <span className="px-2 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] text-[9px] font-mono font-bold uppercase">
+                        <span className="px-2 py-0.5 rounded-full bg-[#C81E1E] text-white text-[9px] font-mono font-bold uppercase">
                           Phase 05: Placement
                         </span>
                         <div className="text-sm font-bold font-heading">
                           High-Impact Technical Career Outcomes
                         </div>
-                        <div className="text-[#EFE6D6] text-[10px]">
+                        <div className="text-[#FFD9D9] text-[10px]">
                           Direct introductions across 200+ partner network
                         </div>
                       </div>
@@ -574,30 +574,30 @@ export default function LearningJourney() {
                     </div>
 
                     <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                      <span className="text-xs font-bold text-[#0B1220] font-heading uppercase">
+                      <span className="text-xs font-bold text-[#002060] font-heading uppercase">
                         Career Acceleration Pipeline
                       </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EFE6D6] text-[#0B1220] font-bold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCE7E7] text-[#002060] font-bold">
                         Top 5% Talent Pool
                       </span>
                     </div>
 
                     <div className="space-y-2.5 text-xs">
                       <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-between">
-                        <div className="font-bold text-[#0B1220]">ATS Resume Engineering Score</div>
-                        <span className="text-emerald-700 font-mono font-black text-sm">98 / 100</span>
+                        <div className="font-bold text-[#002060]">ATS Resume Engineering Score</div>
+                        <span className="text-blue-700 font-mono font-black text-sm">98 / 100</span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-between">
-                        <div className="font-bold text-[#0B1220]">1-on-1 System Design Mock Defense</div>
-                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#4338CA] text-white font-bold">
+                        <div className="font-bold text-[#002060]">1-on-1 System Design Mock Defense</div>
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#1D4ED8] text-white font-bold">
                           Passed · Exceeds Bar
                         </span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-white border border-gray-200 shadow-xs flex items-center justify-between">
-                        <div className="font-bold text-[#0B1220]">Direct Partner Referral Pipeline</div>
-                        <span className="text-emerald-700 font-bold">3 Active Interview Loops</span>
+                        <div className="font-bold text-[#002060]">Direct Partner Referral Pipeline</div>
+                        <span className="text-blue-700 font-bold">3 Active Interview Loops</span>
                       </div>
 
                       <div className="pt-2 text-center text-[11px] text-gray-500 font-medium">

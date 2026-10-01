@@ -29,8 +29,8 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070C17] flex items-center justify-center text-indigo-400">
-        <div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#001845] flex items-center justify-center text-blue-400">
+        <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -40,12 +40,12 @@ export default function BlogDetailPage() {
   // "Article Not Found" message measured 1.04 contrast (dark on dark).
   if (!blog) {
     return (
-      <div className="min-h-screen bg-[#070C17] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#001845] flex flex-col items-center justify-center p-4">
         <h2 className="text-xl font-bold mb-4 text-white">Article Not Found</h2>
         <p className="text-slate-300 text-sm mb-6 text-center max-w-sm">
           This article may have been moved or unpublished. The journal index below is the fastest way back.
         </p>
-        <Link to="/blog" className="px-5 py-2.5 bg-indigo-500 text-slate-950 rounded-xl font-semibold text-sm">
+        <Link to="/blog" className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm">
           Return to Tech Journal
         </Link>
       </div>
@@ -53,14 +53,14 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
         <TrustMarquee />        <Link
           to="/blog"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#0B1220] transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-[#002060] transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to all papers
@@ -68,11 +68,11 @@ export default function BlogDetailPage() {
 
         <article className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-sm text-left">
           <div className="flex flex-wrap items-center gap-3 mb-5">
-            <span className="text-xs font-bold text-[#0B1220] bg-[#EFE6D6] px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-[#002060] bg-[#FCE7E7] px-3 py-1 rounded-full">
               {blog.category}
             </span>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-              <Clock className="w-3.5 h-3.5 text-[#047857]" />
+              <Clock className="w-3.5 h-3.5 text-[#1D4ED8]" />
               <span>{blog.readTimeMinutes} min read</span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
@@ -81,16 +81,16 @@ export default function BlogDetailPage() {
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight leading-snug mb-6">
+          <h1 className="text-2xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight leading-snug mb-6">
             {blog.title}
           </h1>
 
           <div className="flex items-center gap-4 py-4 border-y border-slate-100 mb-8">
-            <div className="w-10 h-10 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center font-bold text-sm">
-              <User className="w-5 h-5 text-[#4338CA]" />
+            <div className="w-10 h-10 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center font-bold text-sm">
+              <User className="w-5 h-5 text-[#1D4ED8]" />
             </div>
             <div>
-              <div className="text-sm font-display font-bold text-[#0B1220]">{blog.author?.name || 'American FutureTech AI Research Group'}</div>
+              <div className="text-sm font-display font-bold text-[#002060]">{blog.author?.name || 'American FutureTech AI Research Group'}</div>
               <div className="text-xs text-slate-500">{blog.author?.role || 'Principal Engineering Faculty'}</div>
             </div>
           </div>

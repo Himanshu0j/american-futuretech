@@ -57,11 +57,11 @@ export default function StudentPayments() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
-            <CreditCard className="w-3.5 h-3.5 text-[#4338CA]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
+            <CreditCard className="w-3.5 h-3.5 text-[#1D4ED8]" />
             <span>Official Billing Ledger</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[#0B1220]">
+          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[#002060]">
             Tuition Ledger & Official Invoices
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed max-w-xl">
@@ -72,7 +72,7 @@ export default function StudentPayments() {
         <div className="flex items-center gap-3">
           <div className="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-right shadow-xs">
             <div className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Total Settled</div>
-            <div className="text-2xl font-heading font-black text-[#4338CA] mt-0.5">
+            <div className="text-2xl font-heading font-black text-[#1D4ED8] mt-0.5">
               ${totalPaid.toLocaleString()} <span className="text-xs font-sans text-slate-500">USD</span>
             </div>
           </div>
@@ -84,17 +84,17 @@ export default function StudentPayments() {
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Invoices</span>
-            <Receipt className="w-4 h-4 text-[#4338CA]" />
+            <Receipt className="w-4 h-4 text-[#1D4ED8]" />
           </div>
-          <div className="text-2xl font-heading font-black text-[#0B1220]">{payments.length}</div>
+          <div className="text-2xl font-heading font-black text-[#002060]">{payments.length}</div>
         </div>
 
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Settled Payments</span>
-            <CheckCircle2 className="w-4 h-4 text-[#4338CA]" />
+            <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
           </div>
-          <div className="text-2xl font-heading font-black text-[#4338CA]">
+          <div className="text-2xl font-heading font-black text-[#1D4ED8]">
             {payments.filter(p => p.status === 'Paid').length}
           </div>
         </div>
@@ -102,9 +102,9 @@ export default function StudentPayments() {
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Enrollment Standing</span>
-            <ShieldCheck className="w-4 h-4 text-[#4338CA]" />
+            <ShieldCheck className="w-4 h-4 text-[#1D4ED8]" />
           </div>
-          <div className="text-sm font-bold text-[#0B1220] mt-1">Active Student • Good Standing</div>
+          <div className="text-sm font-bold text-[#002060] mt-1">Active Student • Good Standing</div>
         </div>
       </div>
 
@@ -118,13 +118,13 @@ export default function StudentPayments() {
       ) : payments.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center max-w-xl mx-auto shadow-xs">
           <Receipt className="w-12 h-12 mx-auto text-slate-400 mb-3" />
-          <h3 className="text-base font-heading font-bold text-[#0B1220] mb-1">No Invoices Found</h3>
+          <h3 className="text-base font-heading font-bold text-[#002060] mb-1">No Invoices Found</h3>
           <p className="text-slate-500 text-xs mb-6">
             You currently have no recorded payments or invoice receipts in your student portal.
           </p>
           <Link
             to="/courses"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-colors"
           >
             Explore Courses & Reserve Seat
           </Link>
@@ -147,7 +147,7 @@ export default function StudentPayments() {
               <tbody className="divide-y divide-slate-100 text-xs">
                 {payments.map((p) => (
                   <tr key={p._id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-4 px-6 font-mono font-bold text-[#0B1220]">
+                    <td className="py-4 px-6 font-mono font-bold text-[#002060]">
                       {p.invoiceNumber || 'INV-2026-N/A'}
                     </td>
                     <td className="py-4 px-6 font-bold text-slate-800">
@@ -158,7 +158,7 @@ export default function StudentPayments() {
                         {p.tier === 'deposit' ? '$99 Seat Deposit' : p.tier === 'personalized' ? 'Personalized Track' : 'Full Tuition'}
                       </span>
                     </td>
-                    <td className="py-4 px-6 font-mono font-bold text-[#4338CA]">
+                    <td className="py-4 px-6 font-mono font-bold text-[#1D4ED8]">
                       ${p.amount} {p.currency || 'USD'}
                     </td>
                     <td className="py-4 px-6 text-slate-500 font-mono">
@@ -171,20 +171,20 @@ export default function StudentPayments() {
                     <td className="py-4 px-6">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                         p.status === 'Paid'
-                          ? 'bg-[#EFE6D6] text-[#0B1220]'
+                          ? 'bg-[#FCE7E7] text-[#002060]'
                           : p.status === 'Pending'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-rose-100 text-rose-800'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-red-100 text-red-800'
                       }`}>
-                        {p.status === 'Paid' && <CheckCircle2 className="w-3 h-3 text-[#4338CA]" />}
-                        {p.status === 'Pending' && <Clock className="w-3 h-3 text-amber-700" />}
+                        {p.status === 'Paid' && <CheckCircle2 className="w-3 h-3 text-[#1D4ED8]" />}
+                        {p.status === 'Pending' && <Clock className="w-3 h-3 text-red-700" />}
                         {p.status}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => setSelectedInvoice(p)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-100 border border-slate-300 text-[#0B1220] text-xs font-semibold shadow-xs transition-all"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-slate-100 border border-slate-300 text-[#002060] text-xs font-semibold shadow-xs transition-all"
                       >
                         <Receipt className="w-3.5 h-3.5" />
                         <span>View Statement</span>
@@ -211,15 +211,15 @@ export default function StudentPayments() {
               {/* Modal Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-[#F7F7F5]">
                 <div className="flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-[#4338CA]" />
-                  <h3 className="text-sm font-bold text-[#0B1220] font-mono">
+                  <Receipt className="w-4 h-4 text-[#1D4ED8]" />
+                  <h3 className="text-sm font-bold text-[#002060] font-mono">
                     {selectedInvoice.invoiceNumber || 'INVOICE RECEIPT'}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={printInvoice}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-xs"
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-xs"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     Print Receipt
@@ -238,7 +238,7 @@ export default function StudentPayments() {
                 {/* Org & Address */}
                 <div className="flex justify-between items-start border-b border-slate-200 pb-6">
                   <div>
-                    <div className="text-lg font-heading font-black tracking-tight text-[#0B1220]">
+                    <div className="text-lg font-heading font-black tracking-tight text-[#002060]">
                       AMERICAN FUTURETECH LLC
                     </div>
                     <div className="text-xs text-slate-500 mt-1 leading-relaxed">
@@ -247,7 +247,7 @@ export default function StudentPayments() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[#EFE6D6] text-[#0B1220] uppercase">
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[#FCE7E7] text-[#002060] uppercase">
                       {selectedInvoice.status}
                     </span>
                     <div className="text-xs text-slate-600 font-mono mt-2">
@@ -260,14 +260,14 @@ export default function StudentPayments() {
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
                     <span className="text-slate-400 block uppercase tracking-wider text-[10px] font-bold">BILLED TO:</span>
-                    <div className="text-[#0B1220] font-bold mt-1 text-sm">
+                    <div className="text-[#002060] font-bold mt-1 text-sm">
                       {selectedInvoice.student?.name || 'Student Account'}
                     </div>
                     <div className="text-slate-600 text-xs">{selectedInvoice.student?.email || selectedInvoice.email}</div>
                   </div>
                   <div className="text-right">
                     <span className="text-slate-400 block uppercase tracking-wider text-[10px] font-bold">TRANSACTION ID:</span>
-                    <div className="text-[#0B1220] font-mono font-bold mt-1 break-all text-xs">
+                    <div className="text-[#002060] font-mono font-bold mt-1 break-all text-xs">
                       {selectedInvoice.transactionId || selectedInvoice._id}
                     </div>
                     <div className="text-slate-500 text-xs mt-0.5">Method: {selectedInvoice.paymentMethod || 'Credit / Debit Card'}</div>
@@ -288,7 +288,7 @@ export default function StudentPayments() {
                     <tbody className="divide-y divide-slate-100">
                       <tr>
                         <td className="py-3 px-4">
-                          <div className="font-bold text-[#0B1220]">
+                          <div className="font-bold text-[#002060]">
                             {selectedInvoice.course?.title || selectedInvoice.courseTitle || 'Applied Engineering Curriculum'}
                           </div>
                           <div className="text-slate-500 text-[11px] mt-0.5">
@@ -299,7 +299,7 @@ export default function StudentPayments() {
                         </td>
                         <td className="py-3 px-4 text-center font-mono text-slate-600">1</td>
                         <td className="py-3 px-4 text-right font-mono text-slate-600">${selectedInvoice.amount}</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-[#0B1220]">
+                        <td className="py-3 px-4 text-right font-mono font-bold text-[#002060]">
                           ${selectedInvoice.amount} USD
                         </td>
                       </tr>
@@ -307,7 +307,7 @@ export default function StudentPayments() {
                     <tfoot className="bg-[#F7F7F5] font-mono border-t border-slate-200">
                       <tr>
                         <td colSpan={3} className="py-3 px-4 text-right font-bold text-slate-600">TOTAL:</td>
-                        <td className="py-3 px-4 text-right font-bold text-[#4338CA] text-sm">
+                        <td className="py-3 px-4 text-right font-bold text-[#1D4ED8] text-sm">
                           ${selectedInvoice.amount} USD
                         </td>
                       </tr>

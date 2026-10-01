@@ -120,7 +120,7 @@ export default function CertificateVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-[#1b1b1b] font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-[#1b1b1b] font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
 
       <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
@@ -133,7 +133,7 @@ export default function CertificateVerificationPage() {
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-[#0B1220] font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-[#002060] font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to American FutureTech</span>
@@ -143,9 +143,9 @@ export default function CertificateVerificationPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={handlePrint}
-                className="py-2 px-5 rounded-full border border-[#0B1220] text-[#0B1220] bg-white hover:bg-gray-50 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
+                className="py-2 px-5 rounded-full border border-[#002060] text-[#002060] bg-white hover:bg-gray-50 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
               >
-                <Printer className="w-3.5 h-3.5 text-[#047857]" />
+                <Printer className="w-3.5 h-3.5 text-[#1D4ED8]" />
                 <span>Print / Save PDF</span>
               </button>
 
@@ -153,7 +153,7 @@ export default function CertificateVerificationPage() {
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="py-2 px-4 rounded-full bg-[#0B1220] text-white hover:bg-[#4338CA] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                className="py-2 px-4 rounded-full bg-[#002060] text-white hover:bg-[#1D4ED8] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Add to LinkedIn</span>
@@ -164,12 +164,12 @@ export default function CertificateVerificationPage() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="w-10 h-10 border-4 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin" />
             <div className="text-xs font-mono text-gray-500">Querying Cryptographic Credential Registry...</div>
           </div>
         ) : error ? (
-          <div className="p-6 sm:p-7 rounded-3xl bg-white border border-rose-200 text-center max-w-lg mx-auto shadow-md">
-            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-200 shadow-xs">
+          <div className="p-6 sm:p-7 rounded-3xl bg-white border border-red-200 text-center max-w-lg mx-auto shadow-md">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-200 shadow-xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold font-heading text-gray-900 mb-2">Record Not Found</h3>
@@ -177,7 +177,7 @@ export default function CertificateVerificationPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/certificate/AFT-CERT-AI9821"
-                className="py-2.5 px-5 bg-[#0B1220] hover:bg-[#4338CA] text-white rounded-full text-xs font-bold transition-colors shadow-xs w-full sm:w-auto"
+                className="py-2.5 px-5 bg-[#002060] hover:bg-[#1D4ED8] text-white rounded-full text-xs font-bold transition-colors shadow-xs w-full sm:w-auto"
               >
                 Inspect Sample Verified Certificate
               </Link>
@@ -212,7 +212,7 @@ export default function CertificateVerificationPage() {
                   onClick={() => setActiveTab('us-diploma')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                     activeTab === 'us-diploma'
-                      ? 'bg-[#0B1220] text-white shadow-sm'
+                      ? 'bg-[#002060] text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
@@ -224,7 +224,7 @@ export default function CertificateVerificationPage() {
                   onClick={() => setActiveTab('microsoft')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                     activeTab === 'microsoft'
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
@@ -235,17 +235,17 @@ export default function CertificateVerificationPage() {
               </div>
 
               <div className="text-[11px] font-mono text-slate-500 px-2 hidden sm:flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse`} />
+                <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-red-500' : 'bg-blue-500'} animate-pulse`} />
                 <span>{cert.isSample ? 'Sample record — demonstration only, not a verification source' : 'Dual Verified: US Institutional Senate + Microsoft Certified Partner'}</span>
               </div>
             </div>
 
             {/* TAB 1: Official High-Resolution Double-Bordered US Diploma Presentation */}
             {(activeTab === 'us-diploma' || activeTab === 'both') && (
-              <div className="rounded-3xl bg-white border-8 border-double border-[#0B1220]/40 p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[#0B1220] print:border-4 print:p-6">
+              <div className="rounded-3xl bg-white border-8 border-double border-[#002060]/40 p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[#002060] print:border-4 print:p-6">
                 {/* Background Crest Watermark */}
                 <div className="absolute right-4 -bottom-10 opacity-[0.03] pointer-events-none">
-                  <Award className="w-96 h-96 text-[#0B1220]" />
+                  <Award className="w-96 h-96 text-[#002060]" />
                 </div>
 
                 {/* Top Institutional Bar */}
@@ -257,10 +257,10 @@ export default function CertificateVerificationPage() {
                       className="w-12 h-12 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-md"
                     />
                     <div>
-                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#047857]">
+                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#1D4ED8]">
                         Accredited Technical Education
                       </div>
-                      <div className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] mt-0.5">
+                      <div className="text-xl sm:text-2xl font-black font-heading text-[#002060] mt-0.5">
                         American FutureTech Institute
                       </div>
                       <div className="text-xs text-gray-500">
@@ -272,16 +272,16 @@ export default function CertificateVerificationPage() {
                   <div className="flex flex-col items-center sm:items-end gap-1.5">
                     {cert.isSample ? (
                       <>
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-400/60 text-amber-900 text-xs font-bold shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-50 border border-red-400/60 text-red-900 text-xs font-bold shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-red-500" />
                           <span>Sample Record — Not a Verified Credential</span>
                         </div>
                         <span className="text-[10px] font-mono text-gray-500">Registry Status: Demonstration Only</span>
                       </>
                     ) : (
                       <>
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] border border-[#10b981]/40 text-[#0B1220] text-xs font-bold shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FCE7E7] border border-[#2563EB]/40 text-[#002060] text-xs font-bold shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
                           <span>Officially Verified Credential</span>
                         </div>
                         <span className="text-[10px] font-mono text-gray-500">Registry Status: Active &amp; Conferred</span>
@@ -293,7 +293,7 @@ export default function CertificateVerificationPage() {
                 {/* A showcase record is not a graduate. Say so, so nobody can quote
                     this page as proof of a real conferred credential. */}
                 {cert.isSample && (
-                  <div className="mt-4 rounded-lg border border-amber-400/60 bg-amber-50 px-4 py-3 text-center text-[11px] font-semibold text-amber-900 space-y-1">
+                  <div className="mt-4 rounded-lg border border-red-400/60 bg-red-50 px-4 py-3 text-center text-[11px] font-semibold text-red-900 space-y-1">
                     <div className="font-bold uppercase tracking-wide">Sample credential — for demonstration only</div>
                     <div className="font-medium">
                       This ID is a design specimen. It is not evidence of a conferred qualification, and the
@@ -312,7 +312,7 @@ export default function CertificateVerificationPage() {
                   <div className="text-xs text-gray-600">This official diploma is proudly conferred upon</div>
 
                   {/* Graduate Name */}
-                  <div className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-[#0B1220] tracking-tight py-1">
+                  <div className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-[#002060] tracking-tight py-1">
                     {cert.studentName}
                   </div>
 
@@ -321,13 +321,13 @@ export default function CertificateVerificationPage() {
                   </div>
 
                   {/* Course Title Badge */}
-                  <div className="text-lg sm:text-2xl font-black font-heading text-[#0B1220] py-3 px-8 rounded-2xl bg-[#F7F7F5] inline-block border border-[#0B1220]/20 shadow-sm">
+                  <div className="text-lg sm:text-2xl font-black font-heading text-[#002060] py-3 px-8 rounded-2xl bg-[#F7F7F5] inline-block border border-[#002060]/20 shadow-sm">
                     {cert.courseTitle}
                   </div>
 
                   {/* Academic Distinction & Credits */}
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <span className="px-3 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold">
+                    <span className="px-3 py-1 rounded-full bg-[#FCE7E7] text-[#002060] text-xs font-bold">
                       {cert.grade}
                     </span>
                     <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-mono font-medium">
@@ -342,7 +342,7 @@ export default function CertificateVerificationPage() {
                   <div className="text-center sm:text-left space-y-1">
                     <div>
                       <span className="text-gray-600 font-mono text-[10px] block">CONFERRAL DATE</span>
-                      <strong className="text-[#0B1220] font-medium">
+                      <strong className="text-[#002060] font-medium">
                         {new Date(cert.issueDate).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -352,7 +352,7 @@ export default function CertificateVerificationPage() {
                     </div>
                     <div>
                       <span className="text-gray-600 font-mono text-[10px] block">PERMANENT REGISTRY ID</span>
-                      <strong className="font-mono text-[#0B1220] font-black">{cert.certificateId}</strong>
+                      <strong className="font-mono text-[#002060] font-black">{cert.certificateId}</strong>
                     </div>
                   </div>
 
@@ -370,7 +370,7 @@ export default function CertificateVerificationPage() {
 
                   {/* Right Column: Academic Director Signature */}
                   <div className="text-center sm:text-right space-y-1">
-                    <div className="font-serif italic text-lg sm:text-xl text-[#0B1220]">Alexander Pierce</div>
+                    <div className="font-serif italic text-lg sm:text-xl text-[#002060]">Alexander Pierce</div>
                     <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">
                       Dean & Academic Director
                     </div>
@@ -383,13 +383,13 @@ export default function CertificateVerificationPage() {
                 {/* Cryptographic Hash Strip */}
                 <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-gray-500 bg-gray-50/80 -mx-6 -mb-6 sm:-mx-14 sm:-mb-10 p-4 px-6 sm:px-14">
                   <div className="flex items-center gap-1.5">
-                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-amber-500' : 'text-[#047857]'}`} />
+                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-red-500' : 'text-[#1D4ED8]'}`} />
                     <span className="text-gray-600">
                       {cert.isSample ? 'Reference (illustrative, no ledger entry):' : 'SHA-256 Ledger Hash:'}
                     </span>
                     <span className="text-gray-800 break-all">{cert.completionHash}</span>
                   </div>
-                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-amber-600' : 'text-[#047857]'}`}>
+                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-red-600' : 'text-[#1D4ED8]'}`}>
                     {cert.isSample
                       ? 'Sample Record \u2022 Not a Cryptographic Proof'
                       : 'Verified Cryptographic Signature \u2022 US Jurisdiction'}
@@ -400,18 +400,18 @@ export default function CertificateVerificationPage() {
 
             {/* TAB 2: Official Microsoft Certified Credential Presentation */}
             {(activeTab === 'microsoft' || activeTab === 'both') && (
-              <div className="rounded-3xl bg-slate-900 border-4 border-indigo-500/30 p-6 sm:p-12 shadow-2xl relative overflow-hidden text-white print:border-2 print:p-6 print:bg-white print:text-black">
+              <div className="rounded-3xl bg-slate-900 border-4 border-blue-500/30 p-6 sm:p-12 shadow-2xl relative overflow-hidden text-white print:border-2 print:p-6 print:bg-white print:text-black">
                 {/* Background Grid Pattern */}
                 <div className="absolute inset-0 bg-[radial-gradient(#6366f115_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
                 {/* Top Microsoft Header Bar */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800 text-center sm:text-left relative z-10">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
                       <ShieldCheck className="w-8 h-8" />
                     </div>
                     <div>
-                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-indigo-400">
+                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-blue-400">
                         Official Microsoft Credential Partner
                       </div>
                       <div className="text-xl sm:text-2xl font-black font-heading text-white mt-0.5 print:text-black">
@@ -427,11 +427,11 @@ export default function CertificateVerificationPage() {
                     <div
                       className={`inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold shadow-xs ${
                         cert.isSample
-                          ? 'bg-amber-500/20 border border-amber-400/40 text-amber-200'
-                          : 'bg-emerald-500/20 border border-emerald-400/30 text-emerald-300'
+                          ? 'bg-red-500/20 border border-red-400/40 text-red-200'
+                          : 'bg-blue-500/20 border border-blue-400/30 text-blue-300'
                       }`}
                     >
-                      <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
+                      <span className={`w-2 h-2 rounded-full ${cert.isSample ? 'bg-red-400' : 'bg-blue-400 animate-pulse'}`} />
                       <span>{cert.isSample ? 'Framework Illustration Only' : 'Certified Active & Validated'}</span>
                     </div>
                     <span className="text-[10px] font-mono text-slate-400">Exam Track: {selectedMicrosoftCert.code}</span>
@@ -444,7 +444,7 @@ export default function CertificateVerificationPage() {
                   <div className="flex flex-col items-center justify-center">
                     <div
                       onClick={() => setSelectedModalCert(selectedMicrosoftCert)}
-                      className="group relative cursor-pointer rounded-2xl overflow-hidden border-2 border-indigo-400/40 shadow-2xl bg-white max-w-2xl w-full transition-all duration-300 hover:scale-[1.01] hover:border-indigo-400"
+                      className="group relative cursor-pointer rounded-2xl overflow-hidden border-2 border-blue-400/40 shadow-2xl bg-white max-w-2xl w-full transition-all duration-300 hover:scale-[1.01] hover:border-blue-400"
                     >
                       <img
                         src={selectedMicrosoftCert.image}
@@ -453,14 +453,14 @@ export default function CertificateVerificationPage() {
                       />
                       <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px] print:hidden">
                         <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-2 shadow-xl">
-                          <ZoomIn className="w-4 h-4 text-indigo-600" />
+                          <ZoomIn className="w-4 h-4 text-blue-600" />
                           <span>Inspect Full Resolution (4K)</span>
                         </span>
                       </div>
-                      <div className="p-3 bg-slate-950 border-t border-slate-800 text-center flex items-center justify-between text-xs font-mono text-indigo-300 px-4 print:hidden">
+                      <div className="p-3 bg-slate-950 border-t border-slate-800 text-center flex items-center justify-between text-xs font-mono text-blue-300 px-4 print:hidden">
                         <span className="font-bold text-white">{selectedMicrosoftCert.code} &bull; {selectedMicrosoftCert.title}</span>
                         <span className="text-slate-400 flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-indigo-400" /> Click to Enlarge
+                          <Eye className="w-3.5 h-3.5 text-blue-400" /> Click to Enlarge
                         </span>
                       </div>
                     </div>
@@ -471,13 +471,13 @@ export default function CertificateVerificationPage() {
                     <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/80">
                       <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">CONFERRED TO FELLOW</div>
                       <div className="text-base font-bold text-white print:text-black">{cert.studentName}</div>
-                      <div className="text-xs text-indigo-300 font-mono mt-0.5">{cert.certificateId}</div>
+                      <div className="text-xs text-blue-300 font-mono mt-0.5">{cert.certificateId}</div>
                     </div>
 
                     <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/80">
                       <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1">CREDENTIAL SPECIALIZATION</div>
                       <div className="text-base font-bold text-white print:text-black">{selectedMicrosoftCert.title.replace('Microsoft Certified: ', '')}</div>
-                      <div className="text-xs text-emerald-400 font-semibold mt-0.5">{selectedMicrosoftCert.level} Level Credential</div>
+                      <div className="text-xs text-blue-400 font-semibold mt-0.5">{selectedMicrosoftCert.level} Level Credential</div>
                     </div>
 
                     <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/80">
@@ -498,7 +498,7 @@ export default function CertificateVerificationPage() {
                           key={idx}
                           className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5"
                         >
-                          <Check className="w-3 h-3 text-emerald-400" />
+                          <Check className="w-3 h-3 text-blue-400" />
                           <span>{skill}</span>
                         </span>
                       ))}
@@ -517,7 +517,7 @@ export default function CertificateVerificationPage() {
                           onClick={() => setSelectedMicrosoftCert(mCert)}
                           className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
                             selectedMicrosoftCert.id === mCert.id
-                              ? 'bg-indigo-600 text-white border-indigo-400 shadow-md ring-2 ring-indigo-400/40'
+                              ? 'bg-blue-600 text-white border-blue-400 shadow-md ring-2 ring-blue-400/40'
                               : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border-slate-700'
                           }`}
                         >
@@ -534,11 +534,11 @@ export default function CertificateVerificationPage() {
                 {/* Cryptographic Hash Strip */}
                 <div className="mt-4 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-slate-400 bg-slate-950/80 -mx-6 -mb-6 sm:-mx-12 sm:-mb-12 p-4 px-6 sm:px-12 relative z-10">
                   <div className="flex items-center gap-1.5">
-                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-amber-400' : 'text-indigo-400'}`} />
+                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-red-400' : 'text-blue-400'}`} />
                     <span>{cert.isSample ? 'Reference (illustrative):' : 'Microsoft Partner Verification Hash:'}</span>
                     <span className="text-slate-200 break-all">{cert.completionHash}</span>
                   </div>
-                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-amber-300' : 'text-indigo-400'}`}>
+                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-red-300' : 'text-blue-400'}`}>
                     {cert.isSample
                       ? 'Sample Record \u2022 Not a Verification Source'
                       : 'Dual Verified \u2022 Conferred via American FutureTech'}

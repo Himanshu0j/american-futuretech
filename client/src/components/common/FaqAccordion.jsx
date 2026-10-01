@@ -171,8 +171,8 @@ export default function FaqAccordion({
       {/* Optional Header */}
       {title && (
         <div className="text-left space-y-2 mb-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
-            <HelpCircle className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-semibold">
+            <HelpCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>KNOWLEDGEBASE & DISCLOSURES</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -229,7 +229,7 @@ export default function FaqAccordion({
                 key={faq._id || idx}
                 className={`rounded-2xl transition-all duration-200 border ${
                   isOpen
-                    ? 'bg-white dark:bg-slate-900 border-indigo-500/50 dark:border-indigo-500/60 shadow-md ring-1 ring-indigo-500/20'
+                    ? 'bg-white dark:bg-slate-900 border-blue-500/50 dark:border-blue-500/60 shadow-md ring-1 ring-blue-500/20'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs'
                 } overflow-hidden text-left`}
               >
@@ -238,7 +238,7 @@ export default function FaqAccordion({
                   className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 transition-colors cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
+                    <span className="w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold flex items-center justify-center shrink-0">
                       Q
                     </span>
                     <span className="text-sm sm:text-base font-display font-bold text-slate-900 dark:text-white leading-snug">
@@ -250,7 +250,7 @@ export default function FaqAccordion({
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                     className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                      isOpen ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                      isOpen ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                     }`}
                   >
                     <ChevronDown className="w-4 h-4" />
@@ -282,7 +282,7 @@ export default function FaqAccordion({
       <div className="pt-2 text-center">
         <a
           href="/faq"
-          className="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 hover:underline transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 hover:underline transition-colors"
         >
           <span>Have more questions? Browse all disclosures & academic FAQs</span>
           <Sparkles className="w-3.5 h-3.5" />

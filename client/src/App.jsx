@@ -103,9 +103,9 @@ function MaintenanceScreen() {
   if (settings?.isMaintenanceMode !== true || isStaffArea) return null;
 
   return (
-    <div className="fixed inset-0 z-[9998] bg-[#070C17] flex items-center justify-center px-6">
-      <div className="max-w-lg w-full rounded-3xl border border-white/10 bg-[#0B1220] p-10 text-center space-y-5">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 flex items-center justify-center mx-auto font-black">
+    <div className="fixed inset-0 z-[9998] bg-[#001845] flex items-center justify-center px-6">
+      <div className="max-w-lg w-full rounded-3xl border border-white/10 bg-[#002060] p-10 text-center space-y-5">
+        <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/25 text-blue-300 flex items-center justify-center mx-auto font-black">
           AF
         </div>
         <h1 className="text-2xl font-black text-white font-heading">We'll be right back</h1>
@@ -129,7 +129,7 @@ function AdminProtectedRoute({ children }) {
   const { isAuthenticated, loading, user } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070b14] flex items-center justify-center text-indigo-400 font-mono text-sm">
+      <div className="min-h-screen bg-[#001845] flex items-center justify-center text-blue-400 font-mono text-sm">
         Verifying Enterprise Credentials...
       </div>
     );

@@ -27,13 +27,13 @@ export default function WhatsAppButton() {
     >
       {/* Expanding Tooltip Pill on Hover */}
       <div
-        className={`mr-3 px-3.5 py-2 rounded-2xl bg-[#0B1220] text-[#EFE6D6] border border-[#4338CA] shadow-xl text-xs font-medium transition-all duration-300 pointer-events-none hidden sm:flex items-center gap-2 ${
+        className={`mr-3 px-3.5 py-2 rounded-2xl bg-[#002060] text-[#FFD9D9] border border-[#1D4ED8] shadow-xl text-xs font-medium transition-all duration-300 pointer-events-none hidden sm:flex items-center gap-2 ${
           isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
         }`}
       >
         <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
         <span>Chat on WhatsApp: <strong className="text-white">{phoneNumber}</strong></span>
-        <ArrowUpRight className="w-3.5 h-3.5 text-[#E5C275]" />
+        <ArrowUpRight className="w-3.5 h-3.5 text-[#FF6B6B]" />
       </div>
 
       {/* Floating Action Button */}

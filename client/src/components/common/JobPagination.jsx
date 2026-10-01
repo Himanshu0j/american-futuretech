@@ -53,7 +53,7 @@ export default function JobPagination({ pagination, onPageChange, label = 'openi
                 aria-current={num === page ? 'page' : undefined}
                 className={`min-w-[34px] h-9 px-2.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
                   num === page
-                    ? 'bg-[#0B1220] dark:bg-indigo-500 text-[#EFE6D6] dark:text-slate-950 border-[#0B1220] dark:border-indigo-500'
+                    ? 'bg-[#002060] dark:bg-blue-600 text-[#FFD9D9] dark:text-white border-[#002060] dark:border-blue-500'
                     : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >

@@ -367,7 +367,7 @@ export default function JobsManager() {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <Briefcase className="w-3.5 h-3.5" />
             Corporate Placement Network CMS
           </div>
@@ -384,7 +384,7 @@ export default function JobsManager() {
             <button
               onClick={() => setActiveTab('jobs')}
               className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                activeTab === 'jobs' ? 'bg-indigo-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                activeTab === 'jobs' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Job Openings ({jobs.length})
@@ -392,7 +392,7 @@ export default function JobsManager() {
             <button
               onClick={() => setActiveTab('applications')}
               className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
-                activeTab === 'applications' ? 'bg-indigo-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                activeTab === 'applications' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Applicant Resumes ({applications.length})
@@ -402,7 +402,7 @@ export default function JobsManager() {
           {activeTab === 'jobs' && (
             <button
               onClick={() => handleOpenJobModal()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 transition-all hover:brightness-110 cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all hover:brightness-110 cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               Post New Partner Job
@@ -456,7 +456,7 @@ export default function JobsManager() {
                               <div className="text-slate-400 text-xs flex items-center gap-2">
                                 <span>{job.company}</span>
                                 <span>•</span>
-                                <span className="text-indigo-400">{job.department}</span>
+                                <span className="text-blue-400">{job.department}</span>
                               </div>
                             </div>
                           </div>
@@ -464,7 +464,7 @@ export default function JobsManager() {
 
                         <td className="py-4 px-5">
                           {job.recommendedCourseTitle || job.recommendedCourse?.title ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-medium">
                               <GraduationCap className="w-3.5 h-3.5" />
                               <span className="max-w-[180px] truncate">{job.recommendedCourseTitle || job.recommendedCourse?.title}</span>
                             </span>
@@ -474,7 +474,7 @@ export default function JobsManager() {
                         </td>
 
                         <td className="py-4 px-5">
-                          <div className="font-mono text-emerald-400 font-bold">
+                          <div className="font-mono text-blue-400 font-bold">
                             {job.salaryMin && job.salaryMax ? `$${Number(job.salaryMin).toLocaleString()} - $${Number(job.salaryMax).toLocaleString()}` : job.salaryRange || 'N/A'}
                           </div>
                           <div className="text-slate-400 text-[11px]">{job.location || 'Remote'}</div>
@@ -485,7 +485,7 @@ export default function JobsManager() {
                             onClick={() => handleTogglePublish(job)}
                             className={`px-2.5 py-1 rounded-full text-[10px] font-mono uppercase font-bold border transition-colors cursor-pointer ${
                               job.isActive !== false
-                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30'
                                 : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
                             }`}
                           >
@@ -494,7 +494,7 @@ export default function JobsManager() {
                         </td>
 
                         <td className="py-4 px-5">
-                          <span className="font-mono text-indigo-400 font-bold bg-indigo-950/60 px-2 py-1 rounded-md border border-indigo-800/40">
+                          <span className="font-mono text-blue-400 font-bold bg-blue-950/60 px-2 py-1 rounded-md border border-blue-800/40">
                             {job.applicantCount || 0}
                           </span>
                         </td>
@@ -512,7 +512,7 @@ export default function JobsManager() {
                             </a>
                             <button
                               onClick={() => handleOpenJobModal(job)}
-                              className="p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 transition-colors cursor-pointer"
                               title="Edit Job"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -526,7 +526,7 @@ export default function JobsManager() {
                             </button>
                             <button
                               onClick={() => handleDeleteJob(job._id)}
-                              className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer"
                               title="Delete Job"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -575,7 +575,7 @@ export default function JobsManager() {
                           </div>
                         </td>
                         <td className="py-4 px-5">
-                          <div className="font-bold text-indigo-400">{app.jobTitle || 'Talent Pool Concierge'}</div>
+                          <div className="font-bold text-blue-400">{app.jobTitle || 'Talent Pool Concierge'}</div>
                           <div className="text-slate-400 text-xs">{app.company || 'Direct Matching'}</div>
                         </td>
                         <td className="py-4 px-5 font-mono text-slate-400">
@@ -586,7 +586,7 @@ export default function JobsManager() {
                           <select
                             value={app.status || 'Submitted'}
                             onChange={(e) => handleStatusChange(app._id, e.target.value)}
-                            className="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
+                            className="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-white focus:outline-none focus:border-blue-500"
                           >
                             <option value="Submitted">Submitted</option>
                             <option value="Reviewing">Reviewing</option>
@@ -652,7 +652,7 @@ export default function JobsManager() {
                       value={jobForm.title}
                       onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
                       placeholder="e.g. Cloud DevOps Associate"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -663,17 +663,17 @@ export default function JobsManager() {
                       value={jobForm.company}
                       onChange={(e) => setJobForm({ ...jobForm, company: e.target.value })}
                       placeholder="e.g. HyperScale Cloud Partners"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
 
                 {/* Company Logo Section — the image/brand asset for this listing
                     (it is what the public job card shows next to the title). */}
-                <div className="bg-slate-950/70 p-3.5 rounded-xl border border-indigo-500/30 space-y-2">
+                <div className="bg-slate-950/70 p-3.5 rounded-xl border border-blue-500/30 space-y-2">
                   <div>
                     <h4 className="font-bold text-white text-[12px] flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
+                      <ImageIcon className="w-3.5 h-3.5 text-blue-400" />
                       Company Logo (Image)
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
@@ -694,13 +694,13 @@ export default function JobsManager() {
                 {/* Recommended Course Selector */}
                 <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-2">
                   <label className="text-slate-300 font-bold uppercase text-[11px] flex items-center gap-1.5">
-                    <GraduationCap className="w-3.5 h-3.5 text-indigo-400" />
+                    <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
                     Recommended Course Track (Optional)
                   </label>
                   <select
                     value={jobForm.recommendedCourse}
                     onChange={handleCourseSelect}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500"
                   >
                     <option value="">-- None / General Placement --</option>
                     {courses.map((c) => (
@@ -714,7 +714,7 @@ export default function JobsManager() {
                 {/* Direct External Application Link */}
                 <div>
                   <label className="block text-slate-400 uppercase mb-1 flex items-center gap-1.5">
-                    <LinkIcon className="w-3.5 h-3.5 text-indigo-400" />
+                    <LinkIcon className="w-3.5 h-3.5 text-blue-400" />
                     Apply URL (Direct external link or leave blank for internal portal modal)
                   </label>
                   <input
@@ -722,7 +722,7 @@ export default function JobsManager() {
                     value={jobForm.applyLink}
                     onChange={(e) => setJobForm({ ...jobForm, applyLink: e.target.value })}
                     placeholder="https://company.greenhouse.io/jobs/123456 or leave blank"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -733,7 +733,7 @@ export default function JobsManager() {
                     <select
                       value={jobForm.department}
                       onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     >
                       <option value="">-- Select Department --</option>
                       <option value="AI Research & Deployment">AI Research &amp; Deployment</option>
@@ -747,7 +747,7 @@ export default function JobsManager() {
                     <select
                       value={jobForm.type}
                       onChange={(e) => setJobForm({ ...jobForm, type: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     >
                       <option value="Full-time">Full-time</option>
                       <option value="Contract">Contract</option>
@@ -762,7 +762,7 @@ export default function JobsManager() {
                       value={jobForm.experienceLevel}
                       onChange={(e) => setJobForm({ ...jobForm, experienceLevel: e.target.value })}
                       placeholder="e.g. Entry to Mid Level"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -776,7 +776,7 @@ export default function JobsManager() {
                       value={jobForm.location}
                       onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
                       placeholder="e.g. Remote, Dallas TX, On-site..."
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -786,7 +786,7 @@ export default function JobsManager() {
                       value={jobForm.salaryMin}
                       onChange={(e) => handleSalaryChange('salaryMin', e.target.value)}
                       placeholder="e.g. 95000"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div>
@@ -796,7 +796,7 @@ export default function JobsManager() {
                       value={jobForm.salaryMax}
                       onChange={(e) => handleSalaryChange('salaryMax', e.target.value)}
                       placeholder="e.g. 135000"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -809,7 +809,7 @@ export default function JobsManager() {
                     value={jobForm.description}
                     onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
                     placeholder="Brief summary of the role for candidate cards and job header..."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500 resize-none"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500 resize-none"
                   />
                 </div>
 
@@ -820,7 +820,7 @@ export default function JobsManager() {
                     value={jobForm.careerGrowth}
                     onChange={(e) => setJobForm({ ...jobForm, careerGrowth: e.target.value })}
                     placeholder="Describe mentorship, promotion timelines, and leadership pathways..."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500 resize-none"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500 resize-none"
                   />
                 </div>
 
@@ -828,7 +828,7 @@ export default function JobsManager() {
                 <div className="space-y-4 pt-2 border-t border-slate-800">
                   <div className="text-slate-300 font-bold uppercase text-[11px] flex items-center justify-between">
                     <span>Structured Role Qualifications & Bullets</span>
-                    <span className="text-indigo-400 font-mono text-[10px]">Multi-Line Paste Split Enabled</span>
+                    <span className="text-blue-400 font-mono text-[10px]">Multi-Line Paste Split Enabled</span>
                   </div>
 
                   {/* Responsibilities */}
@@ -922,7 +922,7 @@ export default function JobsManager() {
                       value={jobForm.postedAt ? String(jobForm.postedAt).slice(0, 10) : ''}
                       max={new Date().toISOString().slice(0, 10)}
                       onChange={(e) => setJobForm({ ...jobForm, postedAt: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                     <p className="text-[10px] text-slate-400 mt-1 font-sans">
                       Drives the public &ldquo;Posted 2 hours ago&rdquo; label. Empty = today. Future dates are rejected.
@@ -934,7 +934,7 @@ export default function JobsManager() {
                       type="number"
                       value={jobForm.order ?? 0}
                       onChange={(e) => setJobForm({ ...jobForm, order: Number(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                     />
                     <p className="text-[10px] text-slate-400 mt-1 font-sans">Lower number shows first when sorting by order.</p>
                   </div>
@@ -944,10 +944,10 @@ export default function JobsManager() {
                         type="checkbox"
                         checked={Boolean(jobForm.isFeatured)}
                         onChange={(e) => setJobForm({ ...jobForm, isFeatured: e.target.checked })}
-                        className="accent-indigo-500"
+                        className="accent-blue-500"
                       />
                       <span className="flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Featured role
+                        <Sparkles className="w-3.5 h-3.5 text-red-400" /> Featured role
                       </span>
                     </label>
                     <label className="inline-flex items-center gap-2 text-slate-300 cursor-pointer">
@@ -955,7 +955,7 @@ export default function JobsManager() {
                         type="checkbox"
                         checked={Boolean(jobForm.isPublished)}
                         onChange={(e) => setJobForm({ ...jobForm, isPublished: e.target.checked })}
-                        className="accent-indigo-500"
+                        className="accent-blue-500"
                       />
                       <span>Publish on the public board</span>
                     </label>
@@ -970,7 +970,7 @@ export default function JobsManager() {
                       id="publish-toggle"
                       checked={jobForm.isActive}
                       onChange={(e) => setJobForm({ ...jobForm, isActive: e.target.checked, isPublished: e.target.checked })}
-                      className="w-4 h-4 rounded text-indigo-500 focus:ring-indigo-500 bg-slate-900 border-slate-700 cursor-pointer"
+                      className="w-4 h-4 rounded text-blue-500 focus:ring-blue-500 bg-slate-900 border-slate-700 cursor-pointer"
                     />
                     <label htmlFor="publish-toggle" className="text-xs text-slate-300 cursor-pointer select-none">
                       Publish immediately to public Live Jobs portal (/jobs & /careers)
@@ -989,7 +989,7 @@ export default function JobsManager() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold font-sans hover:brightness-110 transition-all cursor-pointer shadow-lg shadow-indigo-500/20"
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold font-sans hover:brightness-110 transition-all cursor-pointer shadow-lg shadow-blue-500/20"
                   >
                     {editingJob ? 'Save & Update Position' : 'Publish Job Listing'}
                   </button>
@@ -1027,7 +1027,7 @@ export default function JobsManager() {
                 </div>
                 <div className="flex justify-between border-b border-slate-800/60 pb-2">
                   <span className="text-slate-400">Position:</span>
-                  <span className="font-bold text-indigo-400">{selectedApp.jobTitle || 'Talent Pool Concierge'}</span>
+                  <span className="font-bold text-blue-400">{selectedApp.jobTitle || 'Talent Pool Concierge'}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-800/60 pb-2">
                   <span className="text-slate-400">Email:</span>
@@ -1040,7 +1040,7 @@ export default function JobsManager() {
                 {selectedApp.linkedinUrl && (
                   <div className="flex justify-between border-b border-slate-800/60 pb-2">
                     <span className="text-slate-400">LinkedIn:</span>
-                    <a href={selectedApp.linkedinUrl} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
+                    <a href={selectedApp.linkedinUrl} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">
                       View Profile
                     </a>
                   </div>
@@ -1048,7 +1048,7 @@ export default function JobsManager() {
                 {selectedApp.resumeUrl && (
                   <div className="flex justify-between border-b border-slate-800/60 pb-2">
                     <span className="text-slate-400">Resume / Dossier:</span>
-                    <a href={selectedApp.resumeUrl} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline">
+                    <a href={selectedApp.resumeUrl} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">
                       View Document
                     </a>
                   </div>

@@ -62,7 +62,7 @@ const emptyDraft = () => ({
 
 const STATUS_BADGE = (active) =>
   active
-    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+    ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
     : 'bg-slate-700/40 text-slate-300 border-slate-600';
 
 export default function StudentsManager() {
@@ -286,7 +286,7 @@ export default function StudentsManager() {
     }
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500';
+  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500';
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   const batchLabel = (batch) =>
@@ -296,7 +296,7 @@ export default function StudentsManager() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-mono uppercase tracking-widest mb-2">
             <GraduationCap className="w-3.5 h-3.5" />
             Enrolled Students &amp; LMS Access
           </div>
@@ -314,11 +314,11 @@ export default function StudentsManager() {
           </div>
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
             <span className="text-[10px] font-mono uppercase text-slate-400">Personalized</span>
-            <span className="text-lg font-bold text-amber-300">{stats.personalized}</span>
+            <span className="text-lg font-bold text-red-300">{stats.personalized}</span>
           </div>
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 hover:brightness-110 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 hover:brightness-110 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             Add Student
@@ -329,8 +329,8 @@ export default function StudentsManager() {
       {feedback.message && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-xs ${
           feedback.type === 'error'
-            ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+            ? 'bg-red-500/10 border-red-500/30 text-red-200'
+            : 'bg-blue-500/10 border-blue-500/30 text-blue-200'
         }`}>
           {feedback.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
           <span>{feedback.message}</span>
@@ -338,22 +338,22 @@ export default function StudentsManager() {
       )}
 
       {credentials && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-100 space-y-2">
+        <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-100 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold flex items-center gap-2">
               <KeyRound className="w-4 h-4" />
               Share these credentials securely — the password is shown only once
             </span>
-            <button onClick={() => setCredentials(null)} className="text-amber-200 hover:text-white cursor-pointer">
+            <button onClick={() => setCredentials(null)} className="text-red-200 hover:text-white cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-            <span className="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-amber-500/30">{credentials.email}</span>
-            <span className="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-amber-500/30">{credentials.temporaryPassword}</span>
+            <span className="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-red-500/30">{credentials.email}</span>
+            <span className="px-3 py-1.5 rounded-lg bg-slate-950/60 border border-red-500/30">{credentials.temporaryPassword}</span>
             <button
               onClick={() => copyText(`${credentials.email} / ${credentials.temporaryPassword}`)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 cursor-pointer"
             >
               <Copy className="w-3.5 h-3.5" /> Copy
             </button>
@@ -369,7 +369,7 @@ export default function StudentsManager() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search name, email, phone or student ID…"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
           />
         </div>
         <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={inputClass}>
@@ -429,13 +429,13 @@ export default function StudentsManager() {
                       </td>
                       <td className="py-3 px-4">
                         {student.courses.length === 0 ? (
-                          <span className="text-[11px] text-amber-300">No program assigned</span>
+                          <span className="text-[11px] text-red-300">No program assigned</span>
                         ) : (
                           <div className="flex flex-wrap gap-1 max-w-[240px]">
                             {student.courses.map((course) => (
                               <span
                                 key={String(course.courseId)}
-                                className="px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-200 text-[10px] font-medium"
+                                className="px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-200 text-[10px] font-medium"
                               >
                                 {course.title}
                               </span>
@@ -448,7 +448,7 @@ export default function StudentsManager() {
                       </td>
                       <td className="py-3 px-4">
                         {student.personalizedLearning ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-200 text-[10px] font-bold">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-red-200 text-[10px] font-bold">
                             <Sparkles className="w-3 h-3" /> 1-on-1
                           </span>
                         ) : (
@@ -463,7 +463,7 @@ export default function StudentsManager() {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div className="w-16 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                            <div className="h-full bg-indigo-500" style={{ width: `${avgProgress}%` }} />
+                            <div className="h-full bg-blue-500" style={{ width: `${avgProgress}%` }} />
                           </div>
                           <span className="text-[10px] font-mono text-slate-400">{avgProgress}%</span>
                         </div>
@@ -473,19 +473,19 @@ export default function StudentsManager() {
                           <button onClick={() => openDetail(student)} title="View profile" className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white cursor-pointer">
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => openEdit(student)} title="Edit / assign" className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 cursor-pointer">
+                          <button onClick={() => openEdit(student)} title="Edit / assign" className="p-1.5 rounded-lg bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 cursor-pointer">
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => resetAccess(student)} title="Reset access" className="p-1.5 rounded-lg bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 cursor-pointer">
+                          <button onClick={() => resetAccess(student)} title="Reset access" className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer">
                             <KeyRound className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => revokeAccess(student)} title="Remove all course access" className="p-1.5 rounded-lg bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 cursor-pointer">
+                          <button onClick={() => revokeAccess(student)} title="Remove all course access" className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer">
                             <ShieldOff className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => toggleActive(student)}
                             title={student.isActive ? 'Deactivate' : 'Activate'}
-                            className={`p-1.5 rounded-lg cursor-pointer ${student.isActive ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'}`}
+                            className={`p-1.5 rounded-lg cursor-pointer ${student.isActive ? 'bg-blue-500/15 text-blue-300' : 'bg-slate-800 text-slate-400'}`}
                           >
                             <Power className="w-3.5 h-3.5" />
                           </button>
@@ -549,7 +549,7 @@ export default function StudentsManager() {
                   onClick={() => setStep(item.id)}
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase tracking-wider border cursor-pointer ${
                     item.id === step
-                      ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-200 font-bold'
+                      ? 'bg-blue-500/20 border-blue-500/40 text-blue-200 font-bold'
                       : 'bg-slate-950 border-slate-800 text-slate-400'
                   }`}
                 >
@@ -587,7 +587,7 @@ export default function StudentsManager() {
                       type="checkbox"
                       checked={draft.generatePassword}
                       onChange={(e) => setDraft({ ...draft, generatePassword: e.target.checked })}
-                      className="accent-indigo-500"
+                      className="accent-blue-500"
                     />
                     Generate a secure temporary password and show it once
                   </label>
@@ -608,7 +608,7 @@ export default function StudentsManager() {
                       type="checkbox"
                       checked={draft.isActive}
                       onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })}
-                      className="accent-indigo-500"
+                      className="accent-blue-500"
                     />
                     Account active (student can log in)
                   </label>
@@ -631,7 +631,7 @@ export default function StudentsManager() {
                         onClick={() => toggleCourse(course._id)}
                         className={`text-left px-3 py-2.5 rounded-xl border transition-colors cursor-pointer ${
                           draft.courseIds.includes(course._id)
-                            ? 'bg-indigo-500/15 border-indigo-500/40 text-indigo-100'
+                            ? 'bg-blue-500/15 border-blue-500/40 text-blue-100'
                             : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
                         }`}
                       >
@@ -651,10 +651,10 @@ export default function StudentsManager() {
                       type="checkbox"
                       checked={draft.personalizedLearning}
                       onChange={(e) => setDraft({ ...draft, personalizedLearning: e.target.checked })}
-                      className="accent-amber-500"
+                      className="accent-red-500"
                     />
                     <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                      <Sparkles className="w-3.5 h-3.5 text-red-400" />
                       Personalized 1-on-1 mentorship (separate fee &amp; duration)
                     </span>
                   </label>
@@ -677,7 +677,7 @@ export default function StudentsManager() {
                     if (!batch) return null;
                     return (
                       <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-300 space-y-1">
-                        <div className="flex items-center gap-2"><CalendarDays className="w-3.5 h-3.5 text-indigo-400" /> Starts {batch.startDate ? new Date(batch.startDate).toLocaleDateString() : 'TBA'}</div>
+                        <div className="flex items-center gap-2"><CalendarDays className="w-3.5 h-3.5 text-blue-400" /> Starts {batch.startDate ? new Date(batch.startDate).toLocaleDateString() : 'TBA'}</div>
                         <div>Schedule: {batch.timing || 'To be announced'}</div>
                         <div>Seats: {batch.enrolled}/{batch.maxCapacity || '—'}</div>
                       </div>
@@ -702,7 +702,7 @@ export default function StudentsManager() {
                         key={item.key}
                         className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer ${
                           draft.lmsAccess[item.key]
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-100'
+                            ? 'bg-blue-500/10 border-blue-500/30 text-blue-100'
                             : 'bg-slate-950 border-slate-800 text-slate-400'
                         }`}
                       >
@@ -713,7 +713,7 @@ export default function StudentsManager() {
                             ...draft,
                             lmsAccess: { ...draft.lmsAccess, [item.key]: e.target.checked },
                           })}
-                          className="accent-emerald-500"
+                          className="accent-blue-500"
                         />
                         <span className="text-[11px] font-medium">{item.label}</span>
                       </label>
@@ -731,7 +731,7 @@ export default function StudentsManager() {
                     <div className="text-slate-400 font-mono">{draft.email || '(no email)'} {draft.phone ? `· ${draft.phone}` : ''}</div>
                     <div className="text-slate-300">
                       Programs: {draft.courseIds.length === 0
-                        ? <span className="text-amber-300">none assigned yet</span>
+                        ? <span className="text-red-300">none assigned yet</span>
                         : draft.courseIds
                           .map((id) => options.courses.find((c) => c._id === id)?.title)
                           .filter(Boolean)
@@ -771,7 +771,7 @@ export default function StudentsManager() {
                 {step < WIZARD_STEPS.length ? (
                   <button
                     onClick={() => setStep((s) => s + 1)}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-100 text-xs font-bold hover:bg-indigo-500/30 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/40 text-blue-100 text-xs font-bold hover:bg-blue-500/30 cursor-pointer"
                   >
                     Next
                   </button>
@@ -779,7 +779,7 @@ export default function StudentsManager() {
                   <button
                     onClick={saveStudent}
                     disabled={busy}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
                   >
                     {busy ? 'Saving…' : editingId ? 'Save Changes' : 'Create Student'}
                   </button>
@@ -838,7 +838,7 @@ export default function StudentsManager() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-indigo-300 font-bold font-mono">{course.progressPercent || 0}%</div>
+                      <div className="text-blue-300 font-bold font-mono">{course.progressPercent || 0}%</div>
                       <div className="text-[10px] text-slate-400">completed</div>
                     </div>
                   </div>
@@ -854,7 +854,7 @@ export default function StudentsManager() {
                     <div key={payment._id} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
                       <div>
                         <div className="text-white font-bold flex items-center gap-2">
-                          <CreditCard className="w-3.5 h-3.5 text-indigo-400" />
+                          <CreditCard className="w-3.5 h-3.5 text-blue-400" />
                           {payment.courseTitle}
                         </div>
                         <div className="text-[10px] text-slate-400 font-mono">
@@ -864,7 +864,7 @@ export default function StudentsManager() {
                       </div>
                       <div className="text-right">
                         <div className="text-white font-mono font-bold">${payment.amount}</div>
-                        <div className={`text-[10px] font-mono ${payment.status === 'Paid' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                        <div className={`text-[10px] font-mono ${payment.status === 'Paid' ? 'text-blue-300' : 'text-red-300'}`}>
                           {payment.status}
                         </div>
                       </div>
@@ -880,7 +880,7 @@ export default function StudentsManager() {
                 ) : (
                   (detail.detail.certificates || []).map((cert) => (
                     <div key={cert._id} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-2">
-                      <Award className="w-4 h-4 text-amber-400" />
+                      <Award className="w-4 h-4 text-red-400" />
                       <div>
                         <div className="text-white font-bold">{cert.courseTitle}</div>
                         <div className="text-[10px] text-slate-400 font-mono">{cert.certificateId}</div>

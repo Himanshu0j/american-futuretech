@@ -150,9 +150,9 @@ export default function AIChatbox() {
           <button
             onClick={() => setIsOpen(true)}
             aria-label="Open AI Advisor Chat"
-            className="flex items-center justify-center sm:justify-start gap-2.5 w-14 h-14 sm:w-auto sm:h-auto sm:px-4 sm:py-3 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#E5C275]/40 group cursor-pointer"
+            className="flex items-center justify-center sm:justify-start gap-2.5 w-14 h-14 sm:w-auto sm:h-auto sm:px-4 sm:py-3 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 border border-[#F00000]/40 group cursor-pointer"
           >
-            <div className="w-6 h-6 rounded-full bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold shrink-0">
+            <div className="w-6 h-6 rounded-full bg-[#C81E1E] text-white flex items-center justify-center font-bold shrink-0">
               <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
             </div>
             {/* The label is dropped on phones: at 390px the wide pill sat on top of
@@ -167,17 +167,17 @@ export default function AIChatbox() {
         <div className="fixed bottom-6 right-6 z-50 w-[92vw] sm:w-96 rounded-3xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] h-[540px] text-left animate-in fade-in slide-in-from-bottom-5 duration-200 font-sans">
           
           {/* Header */}
-          <div className="p-4 bg-[#0B1220] text-white flex items-center justify-between shrink-0">
+          <div className="p-4 bg-[#002060] text-white flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[#E5C275] text-[#0B1220] flex items-center justify-center font-bold">
+              <div className="w-9 h-9 rounded-2xl bg-[#C81E1E] text-white flex items-center justify-center font-bold">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="text-sm font-bold flex items-center gap-2">
                   <span>American Future Tech AI</span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                 </div>
-                <div className="text-[10px] text-[#EFE6D6]/80 font-mono">
+                <div className="text-[10px] text-[#FFD9D9]/80 font-mono">
                   Online • Instant Admissions Guidance
                 </div>
               </div>
@@ -202,14 +202,14 @@ export default function AIChatbox() {
                 }`}
               >
                 {msg.sender === 'bot' && (
-                  <div className="w-6 h-6 rounded-full bg-[#0B1220] text-[#E5C275] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-full bg-[#002060] text-[#FF6B6B] flex items-center justify-center shrink-0 mt-0.5">
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                 )}
                 <div
                   className={`p-3 rounded-2xl max-w-[82%] leading-relaxed whitespace-pre-line ${
                     msg.sender === 'user'
-                      ? 'bg-[#0B1220] text-white rounded-tr-none'
+                      ? 'bg-[#002060] text-white rounded-tr-none'
                       : 'bg-white border border-slate-200 text-slate-800 shadow-2xs rounded-tl-none'
                   }`}
                 >
@@ -230,8 +230,8 @@ export default function AIChatbox() {
             {/* Quick Lead Capture Box */}
             {showLeadForm && !leadSubmitted && (
               <form onSubmit={handleLeadSubmit} className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2 mt-2">
-                <div className="font-bold text-[#0B1220] text-xs flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-[#4338CA]" />
+                <div className="font-bold text-[#002060] text-xs flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#1D4ED8]" />
                   <span>Request Admissions Call Back</span>
                 </div>
                 <input
@@ -240,7 +240,7 @@ export default function AIChatbox() {
                   placeholder="Your Full Name"
                   value={leadName}
                   onChange={(e) => setLeadName(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#002060]"
                 />
                 <input
                   type="email"
@@ -248,7 +248,7 @@ export default function AIChatbox() {
                   placeholder="Email Address"
                   value={leadEmail}
                   onChange={(e) => setLeadEmail(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#002060]"
                 />
                 <input
                   type="tel"
@@ -256,11 +256,11 @@ export default function AIChatbox() {
                   placeholder="Phone Number (with country code)"
                   value={leadPhone}
                   onChange={(e) => setLeadPhone(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#0B1220]"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#002060]"
                 />
                 <button
                   type="submit"
-                  className="w-full py-2 rounded-lg bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-xs cursor-pointer transition-colors"
+                  className="w-full py-2 rounded-lg bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-xs cursor-pointer transition-colors"
                 >
                   Confirm Counseling Request
                 </button>
@@ -276,7 +276,7 @@ export default function AIChatbox() {
               <button
                 key={idx}
                 onClick={() => handleSend(pill)}
-                className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#EFE6D6] text-slate-700 hover:text-[#0B1220] text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0"
+                className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-[#FCE7E7] text-slate-700 hover:text-[#002060] text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer shrink-0"
               >
                 {pill}
               </button>
@@ -297,12 +297,12 @@ export default function AIChatbox() {
                 placeholder="Ask about admissions, courses, or jobs..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#0B1220]"
+                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#002060]"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim()}
-                className="p-2.5 rounded-xl bg-[#0B1220] hover:bg-[#4338CA] text-white disabled:opacity-40 transition-all cursor-pointer"
+                className="p-2.5 rounded-xl bg-[#002060] hover:bg-[#1D4ED8] text-white disabled:opacity-40 transition-all cursor-pointer"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />

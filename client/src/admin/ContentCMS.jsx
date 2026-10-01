@@ -259,7 +259,7 @@ export default function ContentCMS() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <FileText className="w-3.5 h-3.5" />
             Brand Content & Publications
           </div>
@@ -276,7 +276,7 @@ export default function ContentCMS() {
             <button
               onClick={() => setActiveTab('blogs')}
               className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors ${
-                activeTab === 'blogs' ? 'bg-indigo-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                activeTab === 'blogs' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Blog Posts ({blogs.length})
@@ -284,7 +284,7 @@ export default function ContentCMS() {
             <button
               onClick={() => setActiveTab('faqs')}
               className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors ${
-                activeTab === 'faqs' ? 'bg-indigo-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                activeTab === 'faqs' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Curriculum FAQs ({faqs.length})
@@ -292,7 +292,7 @@ export default function ContentCMS() {
             <button
               onClick={() => setActiveTab('stories')}
               className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors ${
-                activeTab === 'stories' ? 'bg-indigo-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                activeTab === 'stories' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
               }`}
             >
               Alumni Reviews ({stories.length})
@@ -301,7 +301,7 @@ export default function ContentCMS() {
 
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             Add {activeTab === 'blogs' ? 'Article' : activeTab === 'faqs' ? 'FAQ' : 'Alumni Review'}
@@ -324,14 +324,14 @@ export default function ContentCMS() {
             blogs.map((b) => (
               <div
                 key={b._id}
-                className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-indigo-500/40 transition-all flex flex-col justify-between"
+                className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/40 transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between text-xs font-mono text-indigo-400 mb-2">
+                  <div className="flex items-center justify-between text-xs font-mono text-blue-400 mb-2">
                     <span>{b.category}</span>
                     <span className="text-slate-400">{b.readTime}</span>
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors line-clamp-2">
+                  <h3 className="text-base font-bold text-white mb-2 group-hover:text-blue-300 transition-colors line-clamp-2">
                     {b.title}
                   </h3>
                   <p className="text-slate-400 text-xs line-clamp-3 mb-4">
@@ -347,14 +347,14 @@ export default function ContentCMS() {
                     <button
                       onClick={() => handleOpenEdit(b)}
                       aria-label={`Edit article: ${b.title}`}
-                      className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Edit2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <button
                       onClick={() => handleDelete(b._id)}
                       aria-label={`Delete article: ${b.title}`}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
@@ -379,7 +379,7 @@ export default function ContentCMS() {
                 <div key={f._id} className="p-5 flex items-start justify-between gap-4 hover:bg-slate-800/30 transition-colors">
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-400 border border-slate-700">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-blue-400 border border-slate-700">
                         {f.category}
                       </span>
                       <div className="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-xs text-slate-400 font-mono">
@@ -387,7 +387,7 @@ export default function ContentCMS() {
                         <button
                           type="button"
                           onClick={() => handleReorderFaq(f, 'up')}
-                          className="hover:text-indigo-400 p-0.5"
+                          className="hover:text-blue-400 p-0.5"
                           title="Move Up"
                         >
                           <ChevronUp className="w-3 h-3" />
@@ -395,7 +395,7 @@ export default function ContentCMS() {
                         <button
                           type="button"
                           onClick={() => handleReorderFaq(f, 'down')}
-                          className="hover:text-indigo-400 p-0.5"
+                          className="hover:text-blue-400 p-0.5"
                           title="Move Down"
                         >
                           <ChevronDown className="w-3 h-3" />
@@ -408,8 +408,8 @@ export default function ContentCMS() {
                         onClick={() => handleToggleFaqPublished(f)}
                         className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
                           f.isPublished !== false
-                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25'
-                            : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25'
+                            ? 'bg-blue-500/15 text-blue-400 border-blue-500/30 hover:bg-blue-500/25'
+                            : 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'
                         }`}
                         title="Click to toggle publish state"
                       >
@@ -432,14 +432,14 @@ export default function ContentCMS() {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleOpenEdit(f)}
-                      className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 transition-colors"
                       title="Edit FAQ"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(f._id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
                       title="Delete FAQ"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -467,7 +467,7 @@ export default function ContentCMS() {
             stories.map((s) => (
               <div
                 key={s._id}
-                className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-indigo-500/40 transition-all flex flex-col justify-between"
+                className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/40 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
@@ -478,12 +478,12 @@ export default function ContentCMS() {
                           Not on site
                         </span>
                       )}
-                      <span className="px-2 py-0.5 rounded text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                      <span className="px-2 py-0.5 rounded text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">
                         +{s.salaryHikePercent ?? 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="text-xs text-indigo-400 font-mono mb-2">
+                  <div className="text-xs text-blue-400 font-mono mb-2">
                     {s.role} @ {s.company}
                   </div>
                   <p className="text-xs text-slate-300 italic leading-relaxed line-clamp-4">
@@ -499,14 +499,14 @@ export default function ContentCMS() {
                     <button
                       onClick={() => handleOpenEdit(s)}
                       aria-label={`Edit alumni review from ${s.studentName}`}
-                      className="p-1.5 text-slate-400 hover:text-indigo-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Edit2 className="w-4 h-4" aria-hidden="true" />
                     </button>
                     <button
                       onClick={() => handleDelete(s._id)}
                       aria-label={`Delete alumni review from ${s.studentName}`}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" aria-hidden="true" />
                     </button>
@@ -555,7 +555,7 @@ export default function ContentCMS() {
                           const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
                           setBlogForm({ ...blogForm, title, slug });
                         }}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                       />
                     </div>
 
@@ -567,7 +567,7 @@ export default function ContentCMS() {
                           required
                           value={blogForm.slug}
                           onChange={(e) => setBlogForm({ ...blogForm, slug: e.target.value })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -575,7 +575,7 @@ export default function ContentCMS() {
                         <select
                           value={blogForm.category}
                           onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         >
                           <option value="AI & Data Science">AI & Data Science</option>
                           <option value="Cybersecurity">Cybersecurity</option>
@@ -593,7 +593,7 @@ export default function ContentCMS() {
                         required
                         value={blogForm.excerpt}
                         onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500 resize-none"
                       />
                     </div>
 
@@ -604,7 +604,7 @@ export default function ContentCMS() {
                         required
                         value={blogForm.content}
                         onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </>
@@ -618,7 +618,7 @@ export default function ContentCMS() {
                         <select
                           value={faqForm.category}
                           onChange={(e) => setFaqForm({ ...faqForm, category: e.target.value })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         >
                           <option value="Admissions & Fees">Admissions & Fees</option>
                           <option value="Curriculum & Projects">Curriculum & Projects</option>
@@ -638,7 +638,7 @@ export default function ContentCMS() {
                           type="number"
                           value={faqForm.order}
                           onChange={(e) => setFaqForm({ ...faqForm, order: parseInt(e.target.value) || 1 })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -649,7 +649,7 @@ export default function ContentCMS() {
                         id="faqIsPublished"
                         checked={faqForm.isPublished !== false}
                         onChange={(e) => setFaqForm({ ...faqForm, isPublished: e.target.checked })}
-                        className="rounded border-slate-700 text-indigo-500 focus:ring-indigo-500 w-4 h-4 bg-slate-950 cursor-pointer"
+                        className="rounded border-slate-700 text-blue-500 focus:ring-blue-500 w-4 h-4 bg-slate-950 cursor-pointer"
                       />
                       <label htmlFor="faqIsPublished" className="text-slate-300 font-medium cursor-pointer">
                         Published & Active on Live Website
@@ -663,7 +663,7 @@ export default function ContentCMS() {
                         required
                         value={faqForm.question}
                         onChange={(e) => setFaqForm({ ...faqForm, question: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                       />
                     </div>
 
@@ -674,7 +674,7 @@ export default function ContentCMS() {
                         required
                         value={faqForm.answer}
                         onChange={(e) => setFaqForm({ ...faqForm, answer: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500 resize-none"
                       />
                     </div>
                   </>
@@ -690,7 +690,7 @@ export default function ContentCMS() {
                           required
                           value={storyForm.studentName}
                           onChange={(e) => setStoryForm({ ...storyForm, studentName: e.target.value })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -701,14 +701,14 @@ export default function ContentCMS() {
                             placeholder="Role (e.g. AI Engineer)"
                             value={storyForm.role}
                             onChange={(e) => setStoryForm({ ...storyForm, role: e.target.value })}
-                            className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                            className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                           />
                           <input
                             type="text"
                             placeholder="Company (e.g. Google)"
                             value={storyForm.company}
                             onChange={(e) => setStoryForm({ ...storyForm, company: e.target.value })}
-                            className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                            className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                           />
                         </div>
                       </div>
@@ -723,7 +723,7 @@ export default function ContentCMS() {
                           value={storyForm.salaryHikePercent}
                           onChange={(e) => setStoryForm({ ...storyForm, salaryHikePercent: Number(e.target.value) || 0 })}
                           placeholder="140"
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -733,7 +733,7 @@ export default function ContentCMS() {
                           value={storyForm.course}
                           onChange={(e) => setStoryForm({ ...storyForm, course: e.target.value })}
                           placeholder="Course Completed (e.g. Data Science with AI)"
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -744,7 +744,7 @@ export default function ContentCMS() {
                           rows={4}
                           required                            value={storyForm.testimonial}
                           onChange={(e) => setStoryForm({ ...storyForm, testimonial: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500 resize-none"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500 resize-none"
                       />
                     </div>
 
@@ -757,7 +757,7 @@ export default function ContentCMS() {
                           max="5"
                           value={storyForm.rating}
                           onChange={(e) => setStoryForm({ ...storyForm, rating: Math.min(5, Math.max(1, Number(e.target.value) || 5)) })}
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                       <div>
@@ -767,25 +767,25 @@ export default function ContentCMS() {
                           value={storyForm.graduationYear}
                           onChange={(e) => setStoryForm({ ...storyForm, graduationYear: e.target.value })}
                           placeholder="2025"
-                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-indigo-500"
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                         />
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
+                    <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
                           id="storyIsFeatured"
                           checked={storyForm.isFeatured !== false}
                           onChange={(e) => setStoryForm({ ...storyForm, isFeatured: e.target.checked })}
-                          className="rounded border-slate-700 text-indigo-500 focus:ring-indigo-500 w-4 h-4 bg-slate-950 cursor-pointer"
+                          className="rounded border-slate-700 text-blue-500 focus:ring-blue-500 w-4 h-4 bg-slate-950 cursor-pointer"
                         />
                         <label htmlFor="storyIsFeatured" className="text-slate-200 font-medium cursor-pointer text-sm">
                           Show on the public Success Stories page
                         </label>
                       </div>
-                      <p className="text-[11px] text-amber-300/80 mt-1.5 leading-relaxed">
+                      <p className="text-[11px] text-red-300/80 mt-1.5 leading-relaxed">
                         Tick rakho — sirf ticked stories hi website par dikhti hain. Untick karke aap draft rakh sakte ho.
                       </p>
                     </div>
@@ -802,7 +802,7 @@ export default function ContentCMS() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-indigo-500 text-slate-950 font-bold font-sans hover:bg-indigo-400 transition-colors"
+                    className="px-5 py-2 rounded-xl bg-blue-600 text-white font-bold font-sans hover:bg-blue-600 transition-colors"
                   >
                     {editingItem ? 'Update Content' : 'Publish Content'}
                   </button>

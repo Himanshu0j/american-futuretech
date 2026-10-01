@@ -143,7 +143,7 @@ export default function LessonPlayer() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F7F5] text-slate-900 flex flex-col antialiased">
-        <header className="h-16 bg-[#0B1220] border-b border-[#0B1220] px-4 sm:px-6 flex items-center justify-between">
+        <header className="h-16 bg-[#002060] border-b border-[#002060] px-4 sm:px-6 flex items-center justify-between">
           <div className="flex items-center gap-3 animate-pulse">
             <div className="w-8 h-8 rounded-full bg-white/20" />
             <div className="space-y-1.5">
@@ -177,16 +177,16 @@ export default function LessonPlayer() {
   if (!data?.course) {
     return (
       <div className="min-h-screen bg-[#F7F7F5] text-slate-900 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 mb-4">
+        <div className="w-16 h-16 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mb-4">
           <AlertCircle className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-heading font-bold text-[#0B1220] mb-2">Course Curriculum Unavailable</h2>
+        <h2 className="text-xl font-heading font-bold text-[#002060] mb-2">Course Curriculum Unavailable</h2>
         <p className="text-slate-600 text-sm max-w-md mb-6">
           We could not load the course modules. You may not be enrolled in this cohort or the program is being updated.
         </p>
         <Link
           to="/student/courses"
-          className="px-6 py-2.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-xs"
+          className="px-6 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-xs"
         >
           Return to My Courses
         </Link>
@@ -197,7 +197,7 @@ export default function LessonPlayer() {
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-slate-900 flex flex-col antialiased">
       {/* Top Navbar - Easy LMS Deep Green Executive Bar */}
-      <header className="h-16 bg-[#0B1220] border-b border-[#0B1220] px-4 sm:px-6 flex items-center justify-between z-20 sticky top-0 shadow-sm">
+      <header className="h-16 bg-[#002060] border-b border-[#002060] px-4 sm:px-6 flex items-center justify-between z-20 sticky top-0 shadow-sm">
         <div className="flex items-center gap-3 min-w-0">
           <Link
             to="/student/dashboard"
@@ -220,17 +220,17 @@ export default function LessonPlayer() {
           <div className="hidden sm:flex items-center gap-3">
             <div className="text-right">
               <div className="text-[10px] text-slate-300 uppercase tracking-wider font-semibold">Course Progress</div>
-              <div className="text-xs font-bold text-[#E5C275]">{progressPercent}% Completed</div>
+              <div className="text-xs font-bold text-[#FF6B6B]">{progressPercent}% Completed</div>
             </div>
             <div className="w-24 bg-white/20 h-2 rounded-full overflow-hidden">
-              <div className="bg-[#E5C275] h-full rounded-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+              <div className="bg-[#F00000] h-full rounded-full transition-all duration-300" style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
 
           {progressPercent === 100 && (
             <Link
               to="/student/certificates"
-              className="py-1.5 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+              className="py-1.5 px-4 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <Award className="w-4 h-4" />
               Claim Certificate
@@ -243,14 +243,14 @@ export default function LessonPlayer() {
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
         {/* Left Column: Interactive Curriculum Drawer */}
         <aside className="w-full lg:w-80 lg:shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col max-h-[40vh] lg:max-h-[calc(100vh-4rem)] overflow-y-auto shadow-xs">
-          <div className="p-4 border-b border-slate-100 font-heading font-bold text-xs uppercase tracking-wider text-[#0B1220]">
+          <div className="p-4 border-b border-slate-100 font-heading font-bold text-xs uppercase tracking-wider text-[#002060]">
             Course Curriculum ({data?.curriculum?.length} Modules)
           </div>
 
           <div className="divide-y divide-slate-100">
             {data?.curriculum?.map((mod, mIdx) => (
               <div key={mod._id || mIdx} className="p-3">
-                <div className="px-2 py-1.5 text-xs font-bold text-[#4338CA] flex items-center justify-between">
+                <div className="px-2 py-1.5 text-xs font-bold text-[#1D4ED8] flex items-center justify-between">
                   <span>Module 0{mod.moduleNumber}: {mod.title}</span>
                 </div>
 
@@ -264,15 +264,15 @@ export default function LessonPlayer() {
                         onClick={() => handleSelectLesson(lesson)}
                         className={`w-full p-2.5 rounded-xl text-left text-xs flex items-center justify-between gap-2 transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[#F7F7F5] text-[#0B1220] border-2 border-[#0B1220] font-bold shadow-xs'
+                            ? 'bg-[#F7F7F5] text-[#002060] border-2 border-[#002060] font-bold shadow-xs'
                             : 'text-slate-700 hover:bg-slate-50 border border-transparent'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           {isDone ? (
-                            <CheckCircle2 className="w-4 h-4 text-[#4338CA] shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-[#1D4ED8] shrink-0" />
                           ) : (
-                            <Play className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#0B1220] fill-current' : 'text-slate-400'}`} />
+                            <Play className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-[#002060] fill-current' : 'text-slate-400'}`} />
                           )}
                           <span className="truncate">{lesson.title}</span>
                         </div>
@@ -285,13 +285,13 @@ export default function LessonPlayer() {
                   {mod.quiz && (
                     <button
                       onClick={() => handleOpenQuiz(mod.quiz)}
-                      className="w-full p-2.5 rounded-xl text-left text-xs flex items-center justify-between gap-2 bg-[#fcf5fa] hover:bg-[#faeaf6] text-[#4338CA] border border-[#4338CA]/30 transition-colors cursor-pointer"
+                      className="w-full p-2.5 rounded-xl text-left text-xs flex items-center justify-between gap-2 bg-[#fcf5fa] hover:bg-[#faeaf6] text-[#1D4ED8] border border-[#1D4ED8]/30 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
-                        <Award className="w-4 h-4 text-[#4338CA] shrink-0" />
+                        <Award className="w-4 h-4 text-[#1D4ED8] shrink-0" />
                         <span className="font-bold">{mod.quiz.title}</span>
                       </div>
-                      <span className="text-[10px] font-bold text-[#4338CA] uppercase">Test</span>
+                      <span className="text-[10px] font-bold text-[#1D4ED8] uppercase">Test</span>
                     </button>
                   )}
                 </div>
@@ -345,8 +345,8 @@ export default function LessonPlayer() {
                 disabled={completing}
                 className={`py-2 px-5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
                   isCurrentCompleted
-                    ? 'bg-[#EFE6D6] text-[#0B1220] border border-[#E5C275]/40'
-                    : 'bg-[#4338CA] hover:bg-[#0B1220] text-white'
+                    ? 'bg-[#FCE7E7] text-[#002060] border border-[#F00000]/40'
+                    : 'bg-[#1D4ED8] hover:bg-[#002060] text-white'
                 }`}
               >
                 <Check className="w-4 h-4" />
@@ -362,7 +362,7 @@ export default function LessonPlayer() {
                 onClick={() => setActiveTab('overview')}
                 className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
                   activeTab === 'overview'
-                    ? 'text-[#0B1220] border-b-2 border-[#0B1220]'
+                    ? 'text-[#002060] border-b-2 border-[#002060]'
                     : 'text-slate-400 hover:text-slate-700'
                 }`}
               >
@@ -372,7 +372,7 @@ export default function LessonPlayer() {
                 onClick={() => setActiveTab('resources')}
                 className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
                   activeTab === 'resources'
-                    ? 'text-[#0B1220] border-b-2 border-[#0B1220]'
+                    ? 'text-[#002060] border-b-2 border-[#002060]'
                     : 'text-slate-400 hover:text-slate-700'
                 }`}
               >
@@ -382,7 +382,7 @@ export default function LessonPlayer() {
 
             {activeTab === 'overview' ? (
               <div className="space-y-4">
-                <h2 className="text-xl font-heading font-bold text-[#0B1220]">{activeLesson?.title}</h2>
+                <h2 className="text-xl font-heading font-bold text-[#002060]">{activeLesson?.title}</h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   {activeLesson?.description}
                 </p>
@@ -399,7 +399,7 @@ export default function LessonPlayer() {
                 {!activeLesson?.resources?.length ? (
                   <div className="p-6 rounded-2xl bg-white border border-dashed border-slate-300 text-center">
                     <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                    <p className="text-xs font-bold text-[#0B1220]">No resources attached to this lesson</p>
+                    <p className="text-xs font-bold text-[#002060]">No resources attached to this lesson</p>
                     <p className="text-[11px] text-slate-500 mt-1">
                       Your instructor has not added slides or starter files for this lesson yet.
                     </p>
@@ -411,11 +411,11 @@ export default function LessonPlayer() {
                       className="p-5 rounded-2xl bg-white border border-slate-200 flex items-center justify-between gap-4 shadow-xs"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#EFE6D6] text-[#4338CA] flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-[#FCE7E7] text-[#1D4ED8] flex items-center justify-center shrink-0">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-[#0B1220]">{res.title}</div>
+                          <div className="text-xs font-bold text-[#002060]">{res.title}</div>
                           <div className="text-[10px] text-slate-500">{res.fileType} • {res.fileSize}</div>
                         </div>
                       </div>
@@ -423,7 +423,7 @@ export default function LessonPlayer() {
                         href={res.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="py-2 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                        className="py-2 px-4 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
                       >
                         <Download className="w-3.5 h-3.5" /> Download
                       </a>
@@ -448,10 +448,10 @@ export default function LessonPlayer() {
             </button>
 
             <div className="mb-6">
-              <span className="text-[11px] font-bold text-[#0B1220] uppercase tracking-wider bg-[#EFE6D6] px-3 py-1 rounded-full border border-[#E5C275]/40">
+              <span className="text-[11px] font-bold text-[#002060] uppercase tracking-wider bg-[#FCE7E7] px-3 py-1 rounded-full border border-[#F00000]/40">
                 Module Assessment
               </span>
-              <h2 className="text-2xl font-heading font-black text-[#0B1220] mt-3">{activeQuiz.title}</h2>
+              <h2 className="text-2xl font-heading font-black text-[#002060] mt-3">{activeQuiz.title}</h2>
               <p className="text-xs text-slate-600 mt-1">{activeQuiz.description || 'Answer all questions to validate module competency.'}</p>
             </div>
 
@@ -460,8 +460,8 @@ export default function LessonPlayer() {
               <div className="space-y-6">
                 <div className={`p-6 rounded-2xl text-center border ${
                   quizResult.passed
-                    ? 'bg-[#EFE6D6] border-[#E5C275]/40 text-[#0B1220]'
-                    : 'bg-rose-50 border-rose-200 text-rose-800'
+                    ? 'bg-[#FCE7E7] border-[#F00000]/40 text-[#002060]'
+                    : 'bg-red-50 border-red-200 text-red-800'
                 }`}>
                   <div className="text-4xl font-heading font-black mb-1">{quizResult.scorePercent}%</div>
                   <div className="text-xs font-bold uppercase tracking-wider">
@@ -476,17 +476,17 @@ export default function LessonPlayer() {
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Detailed Question Breakdown:</h4>
                   {quizResult.evaluatedAnswers?.map((ans, idx) => (
                     <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                      <div className="font-bold text-[#0B1220] flex items-start gap-2">
+                      <div className="font-bold text-[#002060] flex items-start gap-2">
                         {ans.isCorrect ? (
-                          <CheckCircle2 className="w-4 h-4 text-[#4338CA] shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-[#1D4ED8] shrink-0 mt-0.5" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                         )}
                         <span>{ans.questionText}</span>
                       </div>
                       {ans.explanation && (
                         <div className="text-[11px] text-slate-600 pl-6 bg-white p-2.5 rounded-lg border border-slate-200">
-                          <strong className="text-[#0B1220]">Explanation:</strong> {ans.explanation}
+                          <strong className="text-[#002060]">Explanation:</strong> {ans.explanation}
                         </div>
                       )}
                     </div>
@@ -495,7 +495,7 @@ export default function LessonPlayer() {
 
                 <button
                   onClick={() => { setQuizResult(null); setQuizAnswers({}); }}
-                  className="w-full py-3 rounded-full bg-white hover:bg-slate-50 border-2 border-[#0B1220] text-[#0B1220] text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                  className="w-full py-3 rounded-full bg-white hover:bg-slate-50 border-2 border-[#002060] text-[#002060] text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   Retake Assessment
                 </button>
@@ -505,8 +505,8 @@ export default function LessonPlayer() {
               <div className="space-y-6">
                 {activeQuiz.questions?.map((q, qIdx) => (
                   <div key={q._id || qIdx} className="p-5 rounded-2xl bg-[#F7F7F5] border border-slate-200 space-y-3 shadow-xs">
-                    <div className="font-bold text-sm text-[#0B1220] flex items-start gap-2">
-                      <span className="text-[#4338CA] font-mono font-bold">Q{qIdx + 1}.</span>
+                    <div className="font-bold text-sm text-[#002060] flex items-start gap-2">
+                      <span className="text-[#1D4ED8] font-mono font-bold">Q{qIdx + 1}.</span>
                       <span>{q.questionText}</span>
                     </div>
 
@@ -520,12 +520,12 @@ export default function LessonPlayer() {
                             onClick={() => handleSelectOption(q._id, oIdx)}
                             className={`w-full p-3.5 rounded-xl text-left text-xs transition-all flex items-center justify-between cursor-pointer ${
                               isSelected
-                                ? 'bg-white border-2 border-[#0B1220] text-[#0B1220] font-bold shadow-xs'
+                                ? 'bg-white border-2 border-[#002060] text-[#002060] font-bold shadow-xs'
                                 : 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300'
                             }`}
                           >
                             <span>{opt}</span>
-                            {isSelected && <Check className="w-4 h-4 text-[#4338CA]" />}
+                            {isSelected && <Check className="w-4 h-4 text-[#1D4ED8]" />}
                           </button>
                         );
                       })}
@@ -536,7 +536,7 @@ export default function LessonPlayer() {
                 <button
                   onClick={handleSubmitQuiz}
                   disabled={submittingQuiz || Object.keys(quizAnswers).length < (activeQuiz.questions?.length || 1)}
-                  className="w-full py-3.5 px-6 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {submittingQuiz ? 'Grading Answers...' : 'Submit Assessment for Grading'}
                 </button>

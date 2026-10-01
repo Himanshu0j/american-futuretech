@@ -59,7 +59,7 @@ export default function LmsSettings() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}
@@ -146,7 +146,7 @@ export default function LmsSettings() {
                   type="checkbox"
                   checked={settings.allowLessonPreview !== false}
                   onChange={(e) => set('allowLessonPreview', e.target.checked)}
-                  className="rounded border-white/20 bg-[#111A2E]"
+                  className="rounded border-white/20 bg-[#001C57]"
                 />
                 Allow free-preview lessons before enrollment
               </label>
@@ -155,7 +155,7 @@ export default function LmsSettings() {
                   type="checkbox"
                   checked={settings.showAnnouncementsInLms !== false}
                   onChange={(e) => set('showAnnouncementsInLms', e.target.checked)}
-                  className="rounded border-white/20 bg-[#111A2E]"
+                  className="rounded border-white/20 bg-[#001C57]"
                 />
                 Show announcements on the student dashboard
               </label>

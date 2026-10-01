@@ -161,9 +161,9 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
         </div>
 
         {/* ── Video ─────────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111A2E]/60 p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
           <div className="flex items-center gap-2 text-[11px] font-bold text-slate-200">
-            <Video className="w-3.5 h-3.5 text-indigo-300" /> Video lesson
+            <Video className="w-3.5 h-3.5 text-blue-300" /> Video lesson
           </div>
 
           <Field
@@ -185,7 +185,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
             {video.isEmbed && draft.videoUrl && <Badge tone="slate">stored as {video.url}</Badge>}
           </div>
 
-          {video.warning && <p className="text-[10px] text-amber-200">{video.warning}</p>}
+          {video.warning && <p className="text-[10px] text-red-200">{video.warning}</p>}
 
           <Field label="Displayed duration" hint="Shown next to the lesson in the curriculum list.">
             <input
@@ -244,10 +244,10 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
         </Field>
 
         {/* ── Resources ─────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111A2E]/60 p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-[11px] font-bold text-slate-200">
-              <FileText className="w-3.5 h-3.5 text-indigo-300" /> Lab resources
+              <FileText className="w-3.5 h-3.5 text-blue-300" /> Lab resources
             </div>
             <button type="button" className={btnGhost} onClick={addResource}>
               <Plus className="w-3.5 h-3.5" /> Add resource
@@ -293,7 +293,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
                   <button
                     type="button"
                     onClick={() => removeResource(index)}
-                    className={`${btnIcon} col-span-1 justify-self-end text-rose-300`}
+                    className={`${btnIcon} col-span-1 justify-self-end text-red-300`}
                     aria-label={`Remove resource ${index + 1}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -310,7 +310,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
               type="checkbox"
               checked={draft.isPublished}
               onChange={(e) => set('isPublished', e.target.checked)}
-              className="rounded border-white/20 bg-[#111A2E]"
+              className="rounded border-white/20 bg-[#001C57]"
             />
             Published to students
           </label>
@@ -319,7 +319,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
               type="checkbox"
               checked={draft.isPreview}
               onChange={(e) => set('isPreview', e.target.checked)}
-              className="rounded border-white/20 bg-[#111A2E]"
+              className="rounded border-white/20 bg-[#001C57]"
             />
             Free preview (visible before enrollment)
           </label>

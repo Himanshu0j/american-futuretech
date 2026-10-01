@@ -41,17 +41,17 @@ export default function FaqPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
 
         <TrustMarquee />        <div className="text-center max-w-3xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">
-            <HelpCircle className="w-3.5 h-3.5 text-[#4338CA]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-semibold mb-4">
+            <HelpCircle className="w-3.5 h-3.5 text-[#1D4ED8]" />
             <span>Academic Disclosures & FAQs</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#0B1220] mb-4">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#002060] mb-4">
             Frequently Asked <span className="highlight">Questions</span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
@@ -68,7 +68,7 @@ export default function FaqPage() {
               placeholder="Search knowledgebase (e.g. refund policy, prerequisites, placement rate)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] shadow-xs transition-all"
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] shadow-xs transition-all"
             />
           </div>
 
@@ -79,7 +79,7 @@ export default function FaqPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-[#0B1220] text-white shadow-xs'
+                    ? 'bg-[#002060] text-white shadow-xs'
                     : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
                 }`}
               >
@@ -92,11 +92,11 @@ export default function FaqPage() {
         {/* FAQs Accordion */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-3 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-3 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin" />
           </div>
         ) : filteredFaqs.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-            <h3 className="text-base font-display font-bold text-[#0B1220] mb-1">No matching questions found</h3>
+            <h3 className="text-base font-display font-bold text-[#002060] mb-1">No matching questions found</h3>
             <p className="text-slate-500 text-xs">Try an alternate search query or speak with our admissions officers directly.</p>
           </div>
         ) : (
@@ -108,19 +108,19 @@ export default function FaqPage() {
                   key={faq._id || index}
                   className={`rounded-2xl transition-all border ${
                     isOpen
-                      ? 'bg-white border-[#0B1220]/40 shadow-sm'
-                      : 'bg-white border-slate-200 hover:border-[#0B1220]/25 shadow-xs'
+                      ? 'bg-white border-[#002060]/40 shadow-sm'
+                      : 'bg-white border-slate-200 hover:border-[#002060]/25 shadow-xs'
                   } overflow-hidden`}
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
                     className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 transition-colors cursor-pointer"
                   >
-                    <span className="text-sm sm:text-base font-display font-bold text-[#0B1220] leading-snug">
+                    <span className="text-sm sm:text-base font-display font-bold text-[#002060] leading-snug">
                       {faq.question}
                     </span>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                      isOpen ? 'bg-[#EFE6D6] text-[#0B1220]' : 'bg-slate-100 text-slate-500'
+                      isOpen ? 'bg-[#FCE7E7] text-[#002060]' : 'bg-slate-100 text-slate-500'
                     }`}>
                       {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
@@ -138,14 +138,14 @@ export default function FaqPage() {
         )}
 
         {/* Academic Callback Card */}
-        <div className="p-6 sm:p-6 rounded-3xl bg-[#0B1220] text-white border border-[#4338CA] text-center shadow-lg">
+        <div className="p-6 sm:p-6 rounded-3xl bg-[#002060] text-white border border-[#1D4ED8] text-center shadow-lg">
           <h3 className="text-xl font-display font-bold text-white mb-2">Need direct guidance on tracks?</h3>
-          <p className="text-xs sm:text-sm text-emerald-100 mb-6 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-blue-100 mb-6 max-w-md mx-auto leading-relaxed">
             Our admissions directors in Sheridan, Wyoming and online faculty provide personalized curriculum reviews.
           </p>
           <button
             onClick={() => setIsLeadModalOpen(true)}
-            className="py-3 px-7 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs inline-flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
+            className="py-3 px-7 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs inline-flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
           >
             <PhoneCall className="w-4 h-4" />
             Request Free Academic Callback

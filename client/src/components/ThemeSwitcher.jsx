@@ -7,7 +7,7 @@ export default function ThemeSwitcher() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-fadeIn select-none">
-      <div className="flex items-center p-1.5 rounded-full bg-[#121214]/90 backdrop-blur-2xl border border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.85)]">
+      <div className="flex items-center p-1.5 rounded-full bg-[#001333]/90 backdrop-blur-2xl border border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.85)]">
         {/* Apple Pro Button */}
         <button
           onClick={() => setThemeMode('apple')}
@@ -27,7 +27,7 @@ export default function ThemeSwitcher() {
           onClick={() => setThemeMode('cyber')}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-300 cursor-pointer ${
             themeMode === 'cyber'
-              ? 'bg-gradient-to-r from-indigo-500 to-indigo-400 text-black font-bold shadow-[0_0_15px_rgba(14,165,233,0.5)] scale-102'
+              ? 'bg-gradient-to-r from-blue-500 to-blue-400 text-white font-bold shadow-[0_0_15px_rgba(14,165,233,0.5)] scale-102'
               : 'text-[#86868b] hover:text-white'
           }`}
           title="Switch to Cyberpunk Neon 3D Laptop Design"

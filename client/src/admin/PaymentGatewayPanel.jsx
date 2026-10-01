@@ -89,7 +89,7 @@ export default function PaymentGatewayPanel() {
     }
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500';
+  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500';
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   if (loading || !gateway) {
@@ -105,7 +105,7 @@ export default function PaymentGatewayPanel() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-indigo-400" />
+              <CreditCard className="w-4 h-4 text-blue-400" />
               Stripe Payment Gateway
             </h3>
             <p className="text-[11px] text-slate-400 leading-relaxed mt-1 max-w-2xl">
@@ -119,8 +119,8 @@ export default function PaymentGatewayPanel() {
             !gateway.enabled
               ? 'bg-slate-800/60 border-slate-700 text-slate-300'
               : ready
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-                : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                ? 'bg-blue-500/10 border-blue-500/30 text-blue-200'
+                : 'bg-red-500/10 border-red-500/30 text-red-200'
           }`}>
             {!gateway.enabled ? <PlugZap className="w-3.5 h-3.5" /> : ready ? <ShieldCheck className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
             <span>
@@ -136,8 +136,8 @@ export default function PaymentGatewayPanel() {
         {feedback.message && (
           <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-xs ${
             feedback.type === 'error'
-              ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-              : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+              ? 'bg-red-500/10 border-red-500/30 text-red-200'
+              : 'bg-blue-500/10 border-blue-500/30 text-blue-200'
           }`}>
             {feedback.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
             <span>{feedback.message}</span>
@@ -150,7 +150,7 @@ export default function PaymentGatewayPanel() {
               type="checkbox"
               checked={gateway.enabled}
               onChange={(e) => setGateway({ ...gateway, enabled: e.target.checked })}
-              className="accent-indigo-500"
+              className="accent-blue-500"
             />
             Enable online payments
           </label>
@@ -253,7 +253,7 @@ export default function PaymentGatewayPanel() {
         </div>
 
         {liveKey && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-[11px] flex items-start gap-2">
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-200 text-[11px] flex items-start gap-2">
             <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
             <span>
               LIVE mode charges real cards. Test the full flow in TEST mode first — a live key can only be saved while
@@ -284,7 +284,7 @@ export default function PaymentGatewayPanel() {
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-bold text-xs transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving…' : 'Save Gateway Settings'}

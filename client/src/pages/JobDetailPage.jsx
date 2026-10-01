@@ -101,10 +101,10 @@ export default function JobDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0B132B] text-slate-800 dark:text-slate-200 font-sans antialiased">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#001C57] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
         <div className="pt-40 pb-20 flex flex-col items-center justify-center space-y-4">
-          <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
           <div className="text-xs font-mono text-slate-500">Retrieving official position dossier...</div>
         </div>
         <Footer />
@@ -114,7 +114,7 @@ export default function JobDetailPage() {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0B132B] text-slate-800 dark:text-slate-200 font-sans antialiased">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#001C57] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
         <div className="pt-40 pb-20 container mx-auto px-4 text-center max-w-lg space-y-4">
           <Briefcase className="w-12 h-12 text-slate-400 mx-auto" />
@@ -122,7 +122,7 @@ export default function JobDetailPage() {
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{error || 'This career opening may have been filled or unpublished.'}</p>
           <Link
             to="/careers"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-indigo-600 text-white text-xs font-bold shadow-md hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 text-white text-xs font-bold shadow-md hover:bg-blue-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Return to Live Jobs</span>
@@ -152,7 +152,7 @@ export default function JobDetailPage() {
   })();
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
 
       <main className="pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
@@ -163,16 +163,16 @@ export default function JobDetailPage() {
             pushed the row 64px past a 320px viewport. */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-8 text-xs font-mono text-slate-600">
           <div className="flex items-center gap-2 min-w-0">
-            <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#002060] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/careers" className="hover:text-[#0B1220] transition-colors">Live Jobs</Link>
+            <Link to="/careers" className="hover:text-[#002060] transition-colors">Live Jobs</Link>
             <span>/</span>
             <span className="text-slate-900 font-semibold truncate min-w-0 max-w-[130px] sm:max-w-none">{job.title}</span>
           </div>
 
           <Link
             to="/careers"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4338CA] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1D4ED8] hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Openings</span>
@@ -181,7 +181,7 @@ export default function JobDetailPage() {
 
         {/* Hero Header Card (Department & Verified Partner REMOVED) */}
         <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#E5C275]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F00000]/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
             {/* Left: Logo & Core Identity */}
@@ -193,7 +193,7 @@ export default function JobDetailPage() {
                 fallbackText={job.company || 'AFT'}
                 className="w-12 h-12 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
                 imageClassName="w-full h-full object-contain rounded-xl"
-                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#0B1220] to-[#4338CA] text-white font-bold text-xl flex items-center justify-center"
+                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#002060] to-[#1D4ED8] text-white font-bold text-xl flex items-center justify-center"
               />
 
               <div className="space-y-1.5">
@@ -219,13 +219,13 @@ export default function JobDetailPage() {
             <div className="w-full md:w-auto shrink-0 flex flex-col items-start md:items-end gap-2">
               <button
                 onClick={handleApplyClick}
-                className="w-full md:w-auto py-3 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]"
+                className="w-full md:w-auto py-3 px-8 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]"
               >
                 <span>Apply Now</span>
                 <ExternalLink className="w-4 h-4" />
               </button>
-              <div className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              <div className="text-[11px] font-mono text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
                 <span>Actively Reviewing Candidates</span>
               </div>
             </div>
@@ -235,7 +235,7 @@ export default function JobDetailPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
               <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">COMPENSATION</span>
-              <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">
                 {salaryText}
               </span>
             </div>
@@ -243,7 +243,7 @@ export default function JobDetailPage() {
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
               <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">LOCATION</span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                <MapPin className="w-3.5 h-3.5 text-red-500" />
                 {job.location}
               </span>
             </div>
@@ -259,7 +259,7 @@ export default function JobDetailPage() {
             <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
               <span className="text-[10px] uppercase font-mono font-bold text-slate-600 block mb-0.5">EXPERIENCE LEVEL</span>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                <Clock className="w-3.5 h-3.5 text-red-500" />
                 {job.experienceLevel}
               </span>
             </div>
@@ -328,9 +328,9 @@ export default function JobDetailPage() {
 
             {/* 5. Required Certificates */}
             {(job.requiredCertificates && job.requiredCertificates.length > 0) && (
-              <section className="space-y-3 p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80">
-                <h3 className="text-xs sm:text-sm font-display font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-2">
-                  <Award className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <section className="space-y-3 p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/80">
+                <h3 className="text-xs sm:text-sm font-display font-bold text-blue-900 dark:text-blue-200 flex items-center gap-2">
+                  <Award className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>Required / Preferred Institutional Credentials</span>
                 </h3>
                 <BulletContent
@@ -370,15 +370,15 @@ export default function JobDetailPage() {
 
             {/* 8. Career Growth */}
             {job.careerGrowth && (
-              <section className="space-y-3 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60">
-                <h3 className="text-xs sm:text-sm font-display font-bold text-amber-950 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-600" />
+              <section className="space-y-3 p-4 rounded-2xl bg-red-50/50 border border-red-200/60">
+                <h3 className="text-xs sm:text-sm font-display font-bold text-red-950 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-red-600" />
                   <span>Career Growth & Promotion Pathway</span>
                 </h3>
                 <BulletContent
                   content={job.careerGrowth}
                   as="auto"
-                  paragraphClassName="text-xs text-amber-900 leading-relaxed"
+                  paragraphClassName="text-xs text-red-900 leading-relaxed"
                 />
               </section>
             )}
@@ -404,7 +404,7 @@ export default function JobDetailPage() {
               </div>
               <button
                 onClick={handleApplyClick}
-                className="w-full sm:w-auto py-3 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto py-3 px-8 rounded-xl bg-blue-600 hover:bg-blue-600 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Apply Now</span>
                 <ExternalLink className="w-4 h-4" />
@@ -417,10 +417,10 @@ export default function JobDetailPage() {
             
             {/* Recommended Course Card with $99 CTA */}
             {(job.recommendedCourse || job.recommendedCourseTitle || job.course) && (
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#0B132B] via-slate-900 to-indigo-950 border border-indigo-500/30 text-white shadow-2xl space-y-4 text-left relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#001C57] via-slate-900 to-blue-950 border border-blue-500/30 text-white shadow-2xl space-y-4 text-left relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
 
-                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-indigo-400">
+                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-blue-400">
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>Recommended Curriculum</span>
                 </div>
@@ -446,7 +446,7 @@ export default function JobDetailPage() {
 
                   <Link
                     to={job.recommendedCourse?._id ? `/checkout?courseId=${job.recommendedCourse._id}&tier=deposit` : '/checkout?tier=deposit'}
-                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-red-500 to-red-500 hover:from-red-400 hover:to-red-400 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
                   >
                     <span>Reserve Seat with $99</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -458,7 +458,7 @@ export default function JobDetailPage() {
             {/* Placement Network Card */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-left space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                <ShieldCheck className="w-4 h-4 text-blue-500" />
                 <span>Corporate Hiring Network</span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -470,7 +470,7 @@ export default function JobDetailPage() {
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
                 <span>Status</span>
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400">Actively Interviewing</span>
+                <span className="font-semibold text-blue-700 dark:text-blue-400">Actively Interviewing</span>
               </div>
             </div>
 
@@ -482,7 +482,7 @@ export default function JobDetailPage() {
               </p>
               <Link
                 to="/contact"
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 pt-1"
+                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 pt-1"
               >
                 <span>Schedule a 15-min call</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -505,16 +505,16 @@ export default function JobDetailPage() {
 
             {applySuccess ? (
               <div className="text-center py-6">
-                <div className="w-12 h-12 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center mx-auto mb-4 border border-[#E5C275]">
-                  <CheckCircle2 className="w-8 h-8 text-[#4338CA]" />
+                <div className="w-12 h-12 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center mx-auto mb-4 border border-[#F00000]">
+                  <CheckCircle2 className="w-8 h-8 text-[#1D4ED8]" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-[#0B1220] mb-2">Application Transmitted!</h3>
+                <h3 className="text-xl font-display font-bold text-[#002060] mb-2">Application Transmitted!</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-6">
                   Your application for <strong className="text-slate-900">{job.title}</strong> has been transmitted directly to <strong className="text-slate-900">{job.company}</strong>. Our Placement Officer will follow up within 24 hours.
                 </p>
                 <button
                   onClick={() => setApplyModalOpen(false)}
-                  className="w-full py-3 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
                 >
                   Done
                 </button>
@@ -522,8 +522,8 @@ export default function JobDetailPage() {
             ) : (
               <form onSubmit={handleApplySubmit} className="space-y-4">
                 <div>
-                  <div className="text-[11px] font-bold text-[#4338CA] uppercase tracking-wider mb-1">Direct Application</div>
-                  <h3 className="text-lg font-display font-bold text-[#0B1220]">{job.title}</h3>
+                  <div className="text-[11px] font-bold text-[#1D4ED8] uppercase tracking-wider mb-1">Direct Application</div>
+                  <h3 className="text-lg font-display font-bold text-[#002060]">{job.title}</h3>
                   <div className="text-xs text-slate-500">{job.company} • {job.location}</div>
                 </div>
 
@@ -535,7 +535,7 @@ export default function JobDetailPage() {
                     placeholder="Jane Doe"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                   />
                 </div>
 
@@ -548,7 +548,7 @@ export default function JobDetailPage() {
                       placeholder="jane@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                     />
                   </div>
                   <div>
@@ -559,7 +559,7 @@ export default function JobDetailPage() {
                       placeholder="+1 (555) 019-2834"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                     />
                   </div>
                 </div>
@@ -571,7 +571,7 @@ export default function JobDetailPage() {
                     placeholder="https://linkedin.com/in/janedoe"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                   />
                 </div>
 
@@ -583,7 +583,7 @@ export default function JobDetailPage() {
                     placeholder="https://drive.google.com/your-resume.pdf"
                     value={resumeUrl}
                     onChange={(e) => setResumeUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                   />
                 </div>
 
@@ -594,14 +594,14 @@ export default function JobDetailPage() {
                     placeholder="Relevant capstone projects, certifications, and availability..."
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? 'Transmitting Application...' : (
                     <>

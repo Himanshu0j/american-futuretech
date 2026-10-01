@@ -192,13 +192,13 @@ export default function QuizEditor({ open, quiz, courseId, moduleId, defaults = 
 
         <div className="space-y-3">
           {draft.questions.map((question, qIndex) => (
-            <div key={qIndex} className="rounded-xl border border-white/[0.08] bg-[#111A2E]/60 p-4 space-y-3">
+            <div key={qIndex} className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-bold text-slate-200">Question {qIndex + 1}</span>
                 {draft.questions.length > 1 && (
                   <button
                     type="button"
-                    className={`${btnIcon} text-rose-300`}
+                    className={`${btnIcon} text-red-300`}
                     onClick={() => removeQuestion(qIndex)}
                     aria-label={`Remove question ${qIndex + 1}`}
                   >
@@ -227,7 +227,7 @@ export default function QuizEditor({ open, quiz, courseId, moduleId, defaults = 
                       onClick={() => updateQuestion(qIndex, 'correctOptionIndex', oIndex)}
                       className={`p-1.5 rounded-lg transition-colors ${
                         question.correctOptionIndex === oIndex
-                          ? 'bg-emerald-500/20 text-emerald-300'
+                          ? 'bg-blue-500/20 text-blue-300'
                           : 'bg-white/[0.06] text-slate-400 hover:text-slate-300'
                       }`}
                       aria-label={`Mark option ${oIndex + 1} correct`}
@@ -267,7 +267,7 @@ export default function QuizEditor({ open, quiz, courseId, moduleId, defaults = 
             type="checkbox"
             checked={draft.isPublished}
             onChange={(e) => set('isPublished', e.target.checked)}
-            className="rounded border-white/20 bg-[#111A2E]"
+            className="rounded border-white/20 bg-[#001C57]"
           />
           Published to students
         </label>

@@ -71,7 +71,7 @@ export default function PaymentsManager() {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <DollarSign className="w-3.5 h-3.5" />
             Financial Transactions
           </div>
@@ -85,10 +85,10 @@ export default function PaymentsManager() {
             <div
               className={`mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[11px] font-mono ${
                 gateway.ready
-                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+                  ? 'bg-blue-500/10 border-blue-500/25 text-blue-300'
                   : gateway.configured
-                    ? 'bg-amber-500/10 border-amber-500/25 text-amber-300'
-                    : 'bg-rose-500/10 border-rose-500/25 text-rose-300'
+                    ? 'bg-red-500/10 border-red-500/25 text-red-300'
+                    : 'bg-red-500/10 border-red-500/25 text-red-300'
               }`}
             >
               <CreditCard className="w-3.5 h-3.5" />
@@ -116,9 +116,9 @@ export default function PaymentsManager() {
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-mono text-slate-400 uppercase">Total Revenue</span>
-            <DollarSign className="w-4 h-4 text-emerald-400" />
+            <DollarSign className="w-4 h-4 text-blue-400" />
           </div>
-          <div className="text-2xl font-black text-emerald-400 font-mono">
+          <div className="text-2xl font-black text-blue-400 font-mono">
             ${totalRevenue.toLocaleString()} USD
           </div>
           <div className="text-[11px] text-slate-400 font-mono mt-1">Verified gross deposits</div>
@@ -127,7 +127,7 @@ export default function PaymentsManager() {
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-mono text-slate-400 uppercase">Total Transactions</span>
-            <Receipt className="w-4 h-4 text-indigo-400" />
+            <Receipt className="w-4 h-4 text-blue-400" />
           </div>
           <div className="text-2xl font-black text-white font-mono">{payments.length}</div>
           <div className="text-[11px] text-slate-400 font-mono mt-1">All recorded payments</div>
@@ -145,9 +145,9 @@ export default function PaymentsManager() {
         <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-mono text-slate-400 uppercase">Full Tuition Paid</span>
-            <CheckCircle2 className="w-4 h-4 text-purple-400" />
+            <CheckCircle2 className="w-4 h-4 text-blue-400" />
           </div>
-          <div className="text-2xl font-black text-purple-400 font-mono">{fullTuitionCount}</div>
+          <div className="text-2xl font-black text-blue-400 font-mono">{fullTuitionCount}</div>
           <div className="text-[11px] text-slate-400 font-mono mt-1">100% upfront tuition</div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function PaymentsManager() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by student, invoice #, or course..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-400"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 placeholder:text-slate-400"
           />
         </div>
 
@@ -172,7 +172,7 @@ export default function PaymentsManager() {
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
                 statusFilter === st
-                  ? 'bg-indigo-500 text-slate-950 font-bold shadow-md shadow-indigo-500/20'
+                  ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
                   : 'bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
@@ -210,7 +210,7 @@ export default function PaymentsManager() {
               <tbody className="divide-y divide-slate-800/60 text-xs font-mono">
                 {filteredPayments.map((p) => (
                   <tr key={p._id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="py-3.5 px-5 font-bold text-indigo-400">
+                    <td className="py-3.5 px-5 font-bold text-blue-400">
                       {p.invoiceNumber || 'INV-2026-N/A'}
                     </td>
                     <td className="py-3.5 px-5 font-sans font-medium text-white">
@@ -225,7 +225,7 @@ export default function PaymentsManager() {
                         {p.tier === 'deposit' ? '$99 Deposit' : p.tier === 'personalized' ? 'Personalized' : 'Full Tuition'}
                       </span>
                     </td>
-                    <td className="py-3.5 px-5 font-bold text-emerald-400">
+                    <td className="py-3.5 px-5 font-bold text-blue-400">
                       ${p.amount} {p.currency || 'USD'}
                     </td>
                     <td className="py-3.5 px-5 text-slate-400">
@@ -234,10 +234,10 @@ export default function PaymentsManager() {
                     <td className="py-3.5 px-5">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] ${
                         p.status === 'Paid'
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                           : p.status === 'Pending'
-                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                          : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                          : 'bg-red-500/10 text-red-400 border border-red-500/20'
                       }`}>
                         {p.status}
                       </span>
@@ -247,7 +247,7 @@ export default function PaymentsManager() {
                         onClick={() => setSelectedInvoice(p)}
                         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
                       >
-                        <Receipt className="w-3.5 h-3.5 text-indigo-400" />
+                        <Receipt className="w-3.5 h-3.5 text-blue-400" />
                         Invoice
                       </button>
                     </td>
@@ -271,7 +271,7 @@ export default function PaymentsManager() {
             >
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div className="flex items-center gap-2">
-                  <Receipt className="w-5 h-5 text-indigo-400" />
+                  <Receipt className="w-5 h-5 text-blue-400" />
                   <h3 className="text-lg font-bold text-white font-mono">
                     {selectedInvoice.invoiceNumber}
                   </h3>
@@ -279,7 +279,7 @@ export default function PaymentsManager() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => window.print()}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-500 text-slate-950 text-xs font-bold"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     Print
@@ -302,7 +302,7 @@ export default function PaymentsManager() {
                   </div>
                   <div>
                     <span className="text-slate-400 block">TRANSACTION ID:</span>
-                    <span className="text-indigo-400 font-bold break-all">{selectedInvoice.transactionId || selectedInvoice._id}</span>
+                    <span className="text-blue-400 font-bold break-all">{selectedInvoice.transactionId || selectedInvoice._id}</span>
                   </div>
                 </div>
 
@@ -321,7 +321,7 @@ export default function PaymentsManager() {
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-800 text-sm">
                     <span className="text-slate-300 font-bold">Total Amount:</span>
-                    <span className="text-emerald-400 font-bold">${selectedInvoice.amount} USD</span>
+                    <span className="text-blue-400 font-bold">${selectedInvoice.amount} USD</span>
                   </div>
                 </div>
               </div>

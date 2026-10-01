@@ -47,7 +47,7 @@ export default function CareerSupportPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-10">
@@ -55,12 +55,12 @@ export default function CareerSupportPage() {
         <TrustMarquee />
 
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-semibold mb-4">
-            <Award className="w-3.5 h-3.5 text-[#4338CA]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-semibold mb-4">
+            <Award className="w-3.5 h-3.5 text-[#1D4ED8]" />
             <span>ALUMNI PLACEMENT ACCELERATION</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-[#0B1220] mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-[#002060] mb-6">
             We Don't Just Teach Code. <br className="hidden sm:inline" />
             We <span className="highlight">Architect High-Impact Careers</span>.
           </h1>
@@ -72,13 +72,13 @@ export default function CareerSupportPage() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => setIsLeadModalOpen(true)}
-              className="py-3 px-7 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
+              className="py-3 px-7 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
             >
               Book Free Career Strategy Session &rarr;
             </button>
             <Link
               to="/courses"
-              className="py-3 px-6 rounded-full border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] text-xs font-bold transition-colors"
+              className="py-3 px-6 rounded-full border-2 border-[#002060] hover:bg-[#002060] hover:text-white text-[#002060] text-xs font-bold transition-colors"
             >
               Explore Programs
             </Link>
@@ -91,13 +91,13 @@ export default function CareerSupportPage() {
             {pillars.map((p) => (
               <div
                 key={p.num}
-                className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#0B1220]/30 hover:shadow-md transition-all"
+                className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#002060]/30 hover:shadow-md transition-all"
               >
                 <div>
-                  <span className="text-xs font-bold text-[#0B1220] px-2.5 py-1 rounded-full bg-[#EFE6D6] mb-3 inline-block">
+                  <span className="text-xs font-bold text-[#002060] px-2.5 py-1 rounded-full bg-[#FCE7E7] mb-3 inline-block">
                     PILLAR {p.num}
                   </span>
-                  <h3 className="text-lg sm:text-xl font-display font-bold text-[#0B1220] tracking-tight mb-3">
+                  <h3 className="text-lg sm:text-xl font-display font-bold text-[#002060] tracking-tight mb-3">
                     {p.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
@@ -108,7 +108,7 @@ export default function CareerSupportPage() {
                 <div className="pt-4 border-t border-slate-100 space-y-2">
                   {p.features.map((f, fIdx) => (
                     <div key={fIdx} className="flex items-start gap-2 text-xs text-slate-600">
-                      <Check className="w-3.5 h-3.5 text-[#047857] shrink-0 mt-0.5" />
+                      <Check className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0 mt-0.5" />
                       <span>{f}</span>
                     </div>
                   ))}
@@ -121,11 +121,11 @@ export default function CareerSupportPage() {
         {/* ── Six-Stage Career Acceleration Framework ───────────────────── */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#4338CA]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8]" />
               <span>Our 6-Stage Framework</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#0B1220] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-[#002060] tracking-tight">
               {career.title}
             </h2>
             <p className="text-sm text-slate-600 mt-2">{career.subtitle}</p>
@@ -135,23 +135,23 @@ export default function CareerSupportPage() {
             {(career.stages || []).map((st, idx) => {
               const Icon = stageIcons[st.icon] || FileText;
               return (
-                <div key={idx} className="rounded-3xl bg-white border border-slate-200 p-6 shadow-xs hover:shadow-lg hover:border-[#0B1220]/25 transition-all flex flex-col">
+                <div key={idx} className="rounded-3xl bg-white border border-slate-200 p-6 shadow-xs hover:shadow-lg hover:border-[#002060]/25 transition-all flex flex-col">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-[#0B1220] text-[#E5C275] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-2xl bg-[#002060] text-[#FF6B6B] flex items-center justify-center">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] tracking-wider">
+                    <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-[#FCE7E7] text-[#002060] tracking-wider">
                       {st.stage}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold font-heading text-[#0B1220] leading-tight">{st.title}</h3>
-                  <p className="text-[11px] font-semibold text-[#4338CA] mb-3">{st.tagline}</p>
+                  <h3 className="text-lg font-bold font-heading text-[#002060] leading-tight">{st.title}</h3>
+                  <p className="text-[11px] font-semibold text-[#1D4ED8] mb-3">{st.tagline}</p>
 
                   <div className="space-y-2 pt-3 border-t border-slate-100 flex-1">
                     {(st.points || []).map((pt, pi) => (
                       <div key={pi} className="flex items-start gap-2 text-[11px] text-slate-700 leading-relaxed">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#047857] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0 mt-0.5" />
                         <span>{pt}</span>
                       </div>
                     ))}
@@ -165,11 +165,11 @@ export default function CareerSupportPage() {
         {/* ── Transparency: What Placement Assistance Actually Means ────── */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-10">
           <div className="rounded-3xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
-              <Shield className="w-3.5 h-3.5 text-[#4338CA]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+              <Shield className="w-3.5 h-3.5 text-[#1D4ED8]" />
               <span>Transparency First</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] tracking-tight mb-2">
+            <h2 className="text-xl sm:text-2xl font-black font-heading text-[#002060] tracking-tight mb-2">
               {career.transparency?.title}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed mb-8">
@@ -178,29 +178,29 @@ export default function CareerSupportPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-6 rounded-2xl bg-[#f7f9f6] border border-slate-200">
-                <div className="flex items-center gap-2 text-sm font-bold text-[#0B1220] mb-4">
-                  <CheckCircle2 className="w-4 h-4 text-[#047857]" />
+                <div className="flex items-center gap-2 text-sm font-bold text-[#002060] mb-4">
+                  <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
                   What We Provide
                 </div>
                 <div className="space-y-3">
                   {(career.transparency?.whatWeProvide || []).map((item, i) => (
                     <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] shrink-0 mt-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0 mt-1.5" />
                       <span>{item}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-amber-50 border border-amber-200">
-                <div className="flex items-center gap-2 text-sm font-bold text-amber-900 mb-4">
-                  <Info className="w-4 h-4 text-amber-600" />
+              <div className="p-6 rounded-2xl bg-red-50 border border-red-200">
+                <div className="flex items-center gap-2 text-sm font-bold text-red-900 mb-4">
+                  <Info className="w-4 h-4 text-red-600" />
                   Student Accountability
                 </div>
                 <div className="space-y-3">
                   {(career.transparency?.studentAccountability || []).map((item, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-amber-900/90 leading-relaxed">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-red-900/90 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 mt-1.5" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -214,11 +214,11 @@ export default function CareerSupportPage() {
         {(career.transitions || []).length > 0 && (
           <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mb-10">
             <div className="text-center max-w-2xl mx-auto mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE6D6] border border-[#E5C275]/40 text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-[#4338CA]" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold font-heading uppercase tracking-wider mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
                 <span>Student Transitions</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black font-heading text-[#0B1220] tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black font-heading text-[#002060] tracking-tight">
                 Learners Who Reached Their Target Roles
               </h2>
             </div>
@@ -226,14 +226,14 @@ export default function CareerSupportPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {career.transitions.map((t, idx) => (
                 <div key={idx} className="rounded-3xl bg-white border border-slate-200 p-6 shadow-xs hover:shadow-lg transition-all flex flex-col">
-                  <Quote className="w-6 h-6 text-[#E5C275] mb-3" />
+                  <Quote className="w-6 h-6 text-[#FF6B6B] mb-3" />
                   <p className="text-xs text-slate-600 italic leading-relaxed flex-1 mb-4">&ldquo;{t.quote}&rdquo;</p>
                   <div className="pt-4 border-t border-slate-100">
-                    <div className="text-sm font-bold text-[#0B1220]">{t.name}</div>
+                    <div className="text-sm font-bold text-[#002060]">{t.name}</div>
                     <div className="text-[11px] text-slate-500">
                       {t.fromRole}{t.toRole && t.toRole !== t.fromRole ? ` → ${t.toRole}` : ''}
                     </div>
-                    {t.company && <div className="text-[11px] font-semibold text-[#4338CA] mt-1">{t.company}</div>}
+                    {t.company && <div className="text-[11px] font-semibold text-[#1D4ED8] mt-1">{t.company}</div>}
                   </div>
                 </div>
               ))}
@@ -247,7 +247,7 @@ export default function CareerSupportPage() {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">
               EMPLOYER NETWORK
             </span>
-            <h3 className="text-2xl font-display font-bold text-[#0B1220] mb-3">
+            <h3 className="text-2xl font-display font-bold text-[#002060] mb-3">
               Where Our Alumni Excel
             </h3>
             <p className="text-slate-600 text-xs sm:text-sm max-w-2xl mx-auto mb-8">

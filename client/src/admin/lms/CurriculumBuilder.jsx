@@ -308,7 +308,7 @@ export default function CurriculumBuilder() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}
@@ -459,11 +459,11 @@ export default function CurriculumBuilder() {
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
                         <Badge tone="slate">{contentTypeLabel[lesson.contentType] || lesson.contentType}</Badge>
                         {lesson.videoUrl ? (
-                          <span className="inline-flex items-center gap-1 text-emerald-300">
+                          <span className="inline-flex items-center gap-1 text-blue-300">
                             <Video className="w-3 h-3" /> {lesson.videoDuration || 'video linked'}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-amber-200">
+                          <span className="inline-flex items-center gap-1 text-red-200">
                             <Video className="w-3 h-3" /> no video
                           </span>
                         )}
@@ -500,7 +500,7 @@ export default function CurriculumBuilder() {
                     </button>
                     <button
                       type="button"
-                      className={`${btnIcon} text-rose-300`}
+                      className={`${btnIcon} text-red-300`}
                       onClick={() => deleteLesson(lesson)}
                       aria-label={`Delete ${lesson.title}`}
                     >
@@ -517,14 +517,14 @@ export default function CurriculumBuilder() {
                   >
                     <Plus className="w-3.5 h-3.5" /> Add lesson
                   </button>
-                  {dragging && <span className="ml-3 text-[10px] text-indigo-300">Drop here to move the lesson into this module</span>}
+                  {dragging && <span className="ml-3 text-[10px] text-blue-300">Drop here to move the lesson into this module</span>}
                 </div>
               </div>
 
               {mod.quiz && (
                 <div className="px-4 py-2.5 border-t border-white/[0.06] flex items-center justify-between gap-3">
                   <span className="text-[11px] text-slate-300 inline-flex items-center gap-2">
-                    <ListChecks className="w-3.5 h-3.5 text-indigo-300" />
+                    <ListChecks className="w-3.5 h-3.5 text-blue-300" />
                     {mod.quiz.title}
                     <Badge tone="slate">{mod.quiz.questions?.length || 0} questions</Badge>
                     <Badge tone="slate">pass {mod.quiz.passingScorePercent ?? 70}%</Badge>
@@ -543,7 +543,7 @@ export default function CurriculumBuilder() {
                       }
                     }}
                   >
-                    <Trash2 className="w-3.5 h-3.5 text-rose-300" />
+                    <Trash2 className="w-3.5 h-3.5 text-red-300" />
                   </button>
                 </div>
               )}

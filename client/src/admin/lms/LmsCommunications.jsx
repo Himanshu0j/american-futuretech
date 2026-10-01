@@ -176,7 +176,7 @@ export default function LmsCommunications() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}
@@ -233,7 +233,7 @@ export default function LmsCommunications() {
                     </button>
                     <button
                       type="button"
-                      className={`${btnIcon} text-rose-300`}
+                      className={`${btnIcon} text-red-300`}
                       onClick={() => remove(row)}
                       aria-label={`Delete ${row.title}`}
                     >
@@ -250,7 +250,7 @@ export default function LmsCommunications() {
           <Card className="p-4">
             <div className="flex items-center justify-between gap-3 mb-3">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
-                <LifeBuoy className="w-4 h-4 text-indigo-300" /> Support desk
+                <LifeBuoy className="w-4 h-4 text-blue-300" /> Support desk
               </div>
               <Badge tone={openTickets ? 'amber' : 'emerald'}>{openTickets} open</Badge>
             </div>
@@ -373,7 +373,7 @@ export default function LmsCommunications() {
                 type="checkbox"
                 checked={draft.pinned}
                 onChange={(e) => setDraft((prev) => ({ ...prev, pinned: e.target.checked }))}
-                className="rounded border-white/20 bg-[#111A2E]"
+                className="rounded border-white/20 bg-[#001C57]"
               />
               Pin to the top
             </label>
@@ -382,7 +382,7 @@ export default function LmsCommunications() {
                 type="checkbox"
                 checked={draft.isPublished}
                 onChange={(e) => setDraft((prev) => ({ ...prev, isPublished: e.target.checked }))}
-                className="rounded border-white/20 bg-[#111A2E]"
+                className="rounded border-white/20 bg-[#001C57]"
               />
               Publish now
             </label>

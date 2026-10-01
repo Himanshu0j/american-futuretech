@@ -98,19 +98,19 @@ export function ListContent({
       {points.map((point, idx) => (
         <li key={idx} className={`flex items-start gap-3 ${itemClassName}`}>
           {variant === 'check' && (
-            <div className={`w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs ${iconClassName}`}>
+            <div className={`w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs ${iconClassName}`}>
               <Check className="w-2.5 h-2.5 stroke-[3]" />
             </div>
           )}
           {variant === 'bullet' && (
             <span
-              className={`w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 mt-2 ${iconClassName}`}
+              className={`w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0 mt-2 ${iconClassName}`}
               aria-hidden="true"
             />
           )}
           {variant === 'numeric' && (
             <span
-              className={`w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 ${iconClassName}`}
+              className={`w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 ${iconClassName}`}
             >
               {idx + 1}
             </span>

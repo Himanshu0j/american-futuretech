@@ -39,10 +39,10 @@ const emptyForm = () => ({
 });
 
 const STATE_STYLES = {
-  live: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
+  live: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
   inactive: 'bg-slate-700/30 text-slate-300 border-slate-600',
-  expired: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
-  exhausted: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
+  expired: 'bg-red-500/10 text-red-300 border-red-500/30',
+  exhausted: 'bg-red-500/10 text-red-300 border-red-500/30',
 };
 
 export default function CouponsManager() {
@@ -228,14 +228,14 @@ export default function CouponsManager() {
     }));
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500';
+  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500';
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-mono uppercase tracking-widest mb-2">
             <TicketPercent className="w-3.5 h-3.5" />
             Coupons &amp; Promotions
           </div>
@@ -249,15 +249,15 @@ export default function CouponsManager() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
             <span className="text-[10px] font-mono uppercase text-slate-400">Live coupons</span>
-            <span className="text-lg font-bold text-emerald-300">{stats.live}</span>
+            <span className="text-lg font-bold text-blue-300">{stats.live}</span>
           </div>
           <div className="hidden sm:flex flex-col px-4 py-2 rounded-xl bg-slate-900 border border-slate-800">
             <span className="text-[10px] font-mono uppercase text-slate-400">Redemptions</span>
-            <span className="text-lg font-bold text-indigo-300">{stats.redemptions}</span>
+            <span className="text-lg font-bold text-blue-300">{stats.redemptions}</span>
           </div>
           <button
             onClick={() => handleOpen()}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 hover:brightness-110 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 hover:brightness-110 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             Create Coupon
@@ -268,8 +268,8 @@ export default function CouponsManager() {
       {feedback.message && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-xs ${
           feedback.type === 'error'
-            ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+            ? 'bg-red-500/10 border-red-500/30 text-red-200'
+            : 'bg-blue-500/10 border-blue-500/30 text-blue-200'
         }`}>
           {feedback.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
           <span>{feedback.message}</span>
@@ -283,14 +283,14 @@ export default function CouponsManager() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by code or description…"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filter coupons by status"
-          className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+          className="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
         >
           <option value="all">All statuses</option>
           <option value="live">Live</option>
@@ -334,7 +334,7 @@ export default function CouponsManager() {
                       </div>
                       <div className="text-[11px] text-slate-400">{coupon.description || '—'}</div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-emerald-300 font-bold">
+                    <td className="py-3 px-4 font-mono text-blue-300 font-bold">
                       {coupon.discountType === 'percent'
                         ? `${coupon.discountValue}% OFF`
                         : `$${Number(coupon.discountValue).toLocaleString()} OFF`}
@@ -367,7 +367,7 @@ export default function CouponsManager() {
                           title={coupon.active ? 'Deactivate' : 'Activate'}
                           className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                             coupon.active
-                              ? 'bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
+                              ? 'bg-blue-500/10 text-blue-300 hover:bg-blue-500/20'
                               : 'bg-slate-800 text-slate-400 hover:text-white'
                           }`}
                         >
@@ -376,14 +376,14 @@ export default function CouponsManager() {
                         <button
                           onClick={() => handleOpen(coupon)}
                           title="Edit"
-                          className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleDelete(coupon)}
                           title="Delete"
-                          className="p-1.5 rounded-lg bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 cursor-pointer"
+                          className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -547,7 +547,7 @@ export default function CouponsManager() {
                       onClick={() => toggleTier(tier.id)}
                       className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
                         form.applicableTiers.includes(tier.id)
-                          ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-200'
+                          ? 'bg-blue-500/20 border-blue-500/40 text-blue-200'
                           : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-white'
                       }`}
                     >
@@ -567,7 +567,7 @@ export default function CouponsManager() {
                       onClick={() => toggleCourse(course._id)}
                       className={`px-3 py-1.5 rounded-lg text-[11px] border transition-colors cursor-pointer ${
                         form.applicableCourses.includes(course._id)
-                          ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200'
+                          ? 'bg-blue-500/20 border-blue-500/40 text-blue-200'
                           : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-white'
                       }`}
                     >
@@ -582,7 +582,7 @@ export default function CouponsManager() {
                   type="checkbox"
                   checked={form.active}
                   onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                  className="accent-indigo-500"
+                  className="accent-blue-500"
                 />
                 <span>Active — customers can use this code right now</span>
               </label>
@@ -607,7 +607,7 @@ export default function CouponsManager() {
                     </button>
                   </div>
                   {preview && (
-                    <div className={`text-[11px] font-mono ${preview.ok ? 'text-emerald-300' : 'text-amber-300'}`}>
+                    <div className={`text-[11px] font-mono ${preview.ok ? 'text-blue-300' : 'text-red-300'}`}>
                       {preview.ok
                         ? `$${preview.sampleAmount} → $${preview.finalAmount} (saves $${preview.discountAmount})`
                         : `Not applicable: ${preview.message}`}
@@ -629,7 +629,7 @@ export default function CouponsManager() {
                 type="button"
                 onClick={handleSave}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
               >
                 <DollarSign className="w-4 h-4" />
                 {busy ? 'Saving…' : editing ? 'Save Changes' : 'Create Coupon'}

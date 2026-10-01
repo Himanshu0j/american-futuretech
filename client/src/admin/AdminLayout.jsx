@@ -114,10 +114,10 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070C17] text-slate-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-[#001845] text-slate-100 flex flex-col md:flex-row antialiased">
       
       {/* Mobile Topbar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0B1220] border-b border-white/[0.08] sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#002060] border-b border-white/[0.08] sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 border border-white/15 flex items-center justify-center font-bold text-white text-xs">
             AF
@@ -149,7 +149,7 @@ export default function AdminLayout() {
       <aside
         className={`${
           mobileOpen ? 'block' : 'hidden'
-        } md:flex flex-col flex-shrink-0 bg-[#0B1220] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
+        } md:flex flex-col flex-shrink-0 bg-[#002060] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -163,11 +163,16 @@ export default function AdminLayout() {
                 className="w-8 h-8 object-contain"
               />
             ) : (
-              <img
-                src="/images/logo-horizontal-white.webp"
-                alt="American FutureTech"
-                className="h-8 w-auto object-contain"
-              />
+              /* White plate + the DARK lockup: the white-on-blue lockup showed
+                 the crest's own light box as a stray square against this blue
+                 sidebar (same fix as the public footer). */
+              <span className="inline-flex items-center rounded-xl bg-white px-2.5 py-1.5">
+                <img
+                  src="/images/logo-horizontal.png"
+                  alt="American FutureTech"
+                  className="h-7 w-auto object-contain"
+                />
+              </span>
             )}
           </Link>
 
@@ -182,16 +187,16 @@ export default function AdminLayout() {
 
         {/* User Quick Info */}
         <div className="p-3 border-b border-white/[0.06]">
-          <div className={`p-2.5 rounded-xl bg-[#0B1220] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 rounded-lg bg-[#111A2E] border border-white/10 flex items-center justify-center font-bold text-xs text-indigo-400 flex-shrink-0">
+          <div className={`p-2.5 rounded-xl bg-[#002060] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
+            <div className="w-8 h-8 rounded-lg bg-[#001C57] border border-white/10 flex items-center justify-center font-bold text-xs text-blue-400 flex-shrink-0">
               {user?.name ? user.name.charAt(0) : 'A'}
             </div>
             {!collapsed && (
               <div className="overflow-hidden text-left">
                 <div className="text-xs font-bold text-white truncate">{user?.name || 'Administrator'}</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] font-mono text-indigo-400">{user?.role || 'SuperAdmin'}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  <span className="text-[10px] font-mono text-blue-400">{user?.role || 'SuperAdmin'}</span>
                 </div>
               </div>
             )}
@@ -212,7 +217,7 @@ export default function AdminLayout() {
             return (
               <React.Fragment key={item.path}>
                 {showSection && !collapsed && (
-                  <div className="px-3.5 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-200">
+                  <div className="px-3.5 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-200">
                     {item.section}
                   </div>
                 )}
@@ -221,12 +226,12 @@ export default function AdminLayout() {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group ${
                     isActive
-                      ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-indigo-400 shadow-sm'
+                      ? 'bg-white/[0.08] text-white font-semibold border-l-2 border-blue-400 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                   } ${collapsed ? 'justify-center' : ''}`}
                   title={collapsed ? item.name : undefined}
                 >
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
                   {!collapsed && <span>{item.name}</span>}
                 </Link>
               </React.Fragment>
@@ -240,7 +245,7 @@ export default function AdminLayout() {
             href="/?edit=1"
             target="_blank"
             rel="noreferrer"
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-300 hover:text-amber-200 hover:bg-amber-400/10 border border-amber-400/20 transition-colors ${
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-300 hover:text-red-200 hover:bg-red-400/10 border border-red-400/20 transition-colors ${
               collapsed ? 'justify-center' : ''
             }`}
             title="Edit any text or image directly on the live site"
@@ -258,13 +263,13 @@ export default function AdminLayout() {
             }`}
             title="View Live Landing Page"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+            <ExternalLink className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
             {!collapsed && <span>Live Public Site</span>}
           </a>
 
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors ${
+            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-500/10 transition-colors ${
               collapsed ? 'justify-center' : ''
             }`}
             title="Sign Out"
@@ -279,7 +284,7 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header Bar */}
-        <header className="h-16 px-6 sm:px-8 bg-[#070C17]/90 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
+        <header className="h-16 px-6 sm:px-8 bg-[#001845]/90 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-2 text-left">
             <span className="text-xs font-mono text-slate-400">Executive /</span>
             <span className="text-sm font-semibold text-white">
@@ -288,8 +293,8 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               <span>System Online</span>
             </div>
 
@@ -297,35 +302,35 @@ export default function AdminLayout() {
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#111A2E] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#001C57] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
               title="Open the live site in a new tab (keeps you signed in here)"
             >
               <span>Landing Page</span>
-              <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
             </a>
           </div>
         </header>
 
         {/* Body Content */}
-        <main ref={contentRef} className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#070C17]">
+        <main ref={contentRef} className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#001845]">
           {(() => {
             const matchedNav = navItems.find((n) => location.pathname.startsWith(n.path));
             if (matchedNav && !hasItemAccess(matchedNav)) {
               return (
-                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#0B1220] border border-rose-500/30 text-center space-y-4 shadow-2xl">
-                  <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#002060] border border-red-500/30 text-center space-y-4 shadow-2xl">
+                  <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
                     <ShieldAlert className="w-7 h-7" />
                   </div>
                   <h2 className="text-xl font-bold text-white font-heading">
                     Access Restricted (403 Forbidden)
                   </h2>
                   <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
-                    Your account (<span className="text-white font-mono">{user?.email}</span>) does not possess the required permission (<strong className="text-rose-400 font-mono">{matchedNav.permission}</strong>) to access this administrative module.
+                    Your account (<span className="text-white font-mono">{user?.email}</span>) does not possess the required permission (<strong className="text-red-400 font-mono">{matchedNav.permission}</strong>) to access this administrative module.
                   </p>
                   <div className="pt-2">
                     <Link
                       to="/admin/dashboard"
-                      className="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 text-xs font-bold transition-colors inline-block"
+                      className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-600 text-white text-xs font-bold transition-colors inline-block"
                     >
                       Return to Executive Dashboard
                     </Link>

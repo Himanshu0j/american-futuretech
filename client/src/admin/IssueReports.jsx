@@ -75,17 +75,17 @@ const COMMON_PAGES = [
 ];
 
 const STATUS_STYLES = {
-  Open: 'bg-amber-500/10 text-amber-300 border-amber-500/25',
-  'In Progress': 'bg-sky-500/10 text-sky-300 border-sky-500/25',
-  Fixed: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
-  Verified: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/25',
+  Open: 'bg-red-500/10 text-red-300 border-red-500/25',
+  'In Progress': 'bg-blue-500/10 text-blue-300 border-blue-500/25',
+  Fixed: 'bg-blue-500/10 text-blue-300 border-blue-500/25',
+  Verified: 'bg-blue-500/10 text-blue-300 border-blue-500/25',
 };
 
 const SEVERITY_STYLES = {
   Low: 'bg-slate-800 text-slate-300 border-slate-700',
-  Medium: 'bg-sky-500/10 text-sky-200 border-sky-500/20',
-  High: 'bg-orange-500/10 text-orange-300 border-orange-500/25',
-  Urgent: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
+  Medium: 'bg-blue-500/10 text-blue-200 border-blue-500/20',
+  High: 'bg-red-500/10 text-red-300 border-red-500/25',
+  Urgent: 'bg-red-500/10 text-red-300 border-red-500/30',
 };
 
 const authHeaders = () => {
@@ -525,7 +525,7 @@ export default function IssueReports() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <ClipboardList className="w-3.5 h-3.5" />
             Client Feedback Board
           </div>
@@ -552,7 +552,7 @@ export default function IssueReports() {
           <button
             type="button"
             onClick={copyAllFiltered}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-slate-950 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-600 text-white text-xs font-bold transition-colors"
           >
             <ClipboardCopy className="w-3.5 h-3.5" />
             Copy all shown ({filteredIssues.length})
@@ -569,12 +569,12 @@ export default function IssueReports() {
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
         className={`rounded-2xl border bg-slate-900/60 backdrop-blur-xl p-5 space-y-4 transition-colors ${
-          dragging ? 'border-indigo-400 ring-2 ring-indigo-500/30' : 'border-slate-800'
+          dragging ? 'border-blue-400 ring-2 ring-blue-500/30' : 'border-slate-800'
         }`}
       >
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-sm font-bold text-white font-heading flex items-center gap-2">
-            <Camera className="w-4 h-4 text-indigo-400" />
+            <Camera className="w-4 h-4 text-blue-400" />
             {editingId ? 'Edit this issue report' : 'New issue report'}
           </h2>
           {editingId && (
@@ -599,7 +599,7 @@ export default function IssueReports() {
               value={draft.title}
               onChange={(event) => setDraft({ ...draft, title: event.target.value })}
               placeholder="e.g. The $499 reservation button shows the wrong price"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
             />
           </div>
 
@@ -614,7 +614,7 @@ export default function IssueReports() {
               value={draft.page}
               onChange={(event) => setDraft({ ...draft, page: event.target.value })}
               placeholder="/courses/devops-and-cloud-with-ai"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm font-mono focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm font-mono focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
             />
             <datalist id="issue-page-options">
               {COMMON_PAGES.map((page) => <option key={page} value={page} />)}
@@ -630,7 +630,7 @@ export default function IssueReports() {
                 id="issue-category"
                 value={draft.category}
                 onChange={(event) => setDraft({ ...draft, category: event.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
               >
                 {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
               </select>
@@ -643,7 +643,7 @@ export default function IssueReports() {
                 id="issue-severity"
                 value={draft.severity}
                 onChange={(event) => setDraft({ ...draft, severity: event.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
               >
                 {SEVERITIES.map((severity) => <option key={severity} value={severity}>{severity}</option>)}
               </select>
@@ -660,7 +660,7 @@ export default function IssueReports() {
               value={draft.description}
               onChange={(event) => setDraft({ ...draft, description: event.target.value })}
               placeholder="Explain what you see and what you expected instead. Hinglish is fine."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm leading-relaxed focus:outline-none focus:border-indigo-500 placeholder:text-slate-500 resize-y"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm leading-relaxed focus:outline-none focus:border-blue-500 placeholder:text-slate-500 resize-y"
             />
           </div>
         </div>
@@ -669,10 +669,10 @@ export default function IssueReports() {
         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-950/50 p-4 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="text-[11px] font-mono uppercase text-slate-400 font-bold flex items-center gap-1.5">
-              <Images className="w-3.5 h-3.5 text-indigo-400" />
+              <Images className="w-3.5 h-3.5 text-blue-400" />
               Screenshots ({draft.images.length})
               {uploading > 0 && (
-                <span className="text-indigo-400 flex items-center gap-1 normal-case">
+                <span className="text-blue-400 flex items-center gap-1 normal-case">
                   <Loader2 className="w-3 h-3 animate-spin" /> uploading {uploading}
                 </span>
               )}
@@ -710,7 +710,7 @@ export default function IssueReports() {
                 <div key={image.id} className="rounded-xl border border-slate-800 bg-slate-900/70 p-2 space-y-2">
                   <div className="relative h-32 rounded-lg bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
                     {image.uploading ? (
-                      <span className="text-[11px] font-mono text-indigo-400 flex items-center gap-1.5">
+                      <span className="text-[11px] font-mono text-blue-400 flex items-center gap-1.5">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" /> uploading…
                       </span>
                     ) : (
@@ -724,7 +724,7 @@ export default function IssueReports() {
                       type="button"
                       onClick={() => removeImage(image.id)}
                       aria-label="Remove screenshot"
-                      className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/70 text-rose-300 hover:text-rose-200"
+                      className="absolute top-1.5 right-1.5 p-1 rounded-lg bg-black/70 text-red-300 hover:text-red-200"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -735,7 +735,7 @@ export default function IssueReports() {
                     onChange={(event) => setCaption(image.id, event.target.value)}
                     aria-label="Screenshot caption"
                     placeholder="Caption (optional)"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-[11px] focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-[11px] focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
                   />
                 </div>
               ))}
@@ -750,7 +750,7 @@ export default function IssueReports() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-slate-950 text-xs font-bold transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-600 disabled:opacity-50 text-white text-xs font-bold transition-colors"
           >
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             {editingId ? 'Save changes' : 'Save issue report'}
@@ -768,7 +768,7 @@ export default function IssueReports() {
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 rounded-lg text-[11px] font-mono whitespace-nowrap border transition-colors ${
                 statusFilter === status
-                  ? 'bg-indigo-500 text-slate-950 border-indigo-400 font-bold'
+                  ? 'bg-blue-600 text-white border-blue-400 font-bold'
                   : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
               }`}
             >
@@ -784,7 +784,7 @@ export default function IssueReports() {
             onChange={(event) => setSearchTerm(event.target.value)}
             aria-label="Search issue reports"
             placeholder="Search title, note or page…"
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+            className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -796,7 +796,7 @@ export default function IssueReports() {
         </div>
       ) : filteredIssues.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-10 text-center space-y-2">
-          <Bug className="w-6 h-6 text-indigo-400 mx-auto" />
+          <Bug className="w-6 h-6 text-blue-400 mx-auto" />
           <p className="text-sm text-slate-300 font-semibold">
             {issues.length ? 'No reports match this filter.' : 'No issue reports yet.'}
           </p>
@@ -825,7 +825,7 @@ export default function IssueReports() {
                         {issue.category}
                       </span>
                       {issue.images?.length > 0 && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-slate-800 bg-slate-950 text-indigo-300 inline-flex items-center gap-1">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-slate-800 bg-slate-950 text-blue-300 inline-flex items-center gap-1">
                           <Images className="w-3 h-3" /> {issue.images.length}
                         </span>
                       )}
@@ -845,14 +845,14 @@ export default function IssueReports() {
                       value={issue.status}
                       onChange={(event) => patchIssue(issue._id, { status: event.target.value })}
                       aria-label={`Status of ${issue.title}`}
-                      className="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-[11px] font-mono text-white focus:outline-none focus:border-indigo-500"
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-[11px] font-mono text-white focus:outline-none focus:border-blue-500"
                     >
                       {STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
                     </select>
                     <button
                       type="button"
                       onClick={() => copyBrief(issue)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-950 text-[11px] font-bold"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-600 text-white text-[11px] font-bold"
                       title="Copy the note plus every screenshot URL"
                     >
                       <ClipboardCopy className="w-3.5 h-3.5" /> Copy brief
@@ -883,7 +883,7 @@ export default function IssueReports() {
                       type="button"
                       onClick={() => deleteIssue(issue)}
                       aria-label={`Delete ${issue.title}`}
-                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-rose-300"
+                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-red-500/20 text-red-300"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -963,13 +963,13 @@ export default function IssueReports() {
                       value={resolutionValue}
                       onChange={(event) => setResolutionDraft({ ...resolutionDraft, [issue._id]: event.target.value })}
                       placeholder="e.g. Changed the button back to $499 on the course page."
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500 placeholder:text-slate-500 resize-y"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-blue-500 placeholder:text-slate-500 resize-y"
                     />
                     {resolutionValue !== (issue.resolution || '') && (
                       <button
                         type="button"
                         onClick={() => patchIssue(issue._id, { resolution: resolutionValue }, 'Note saved.')}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-bold"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 border border-blue-500/30 text-[10px] font-mono font-bold"
                       >
                         <Save className="w-3 h-3" /> Save note
                       </button>
@@ -1014,8 +1014,8 @@ export default function IssueReports() {
           role="status"
           className={`fixed bottom-6 right-6 z-50 max-w-sm px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl flex items-start gap-2 ${
             toast.tone === 'error'
-              ? 'bg-rose-950/90 border-rose-500/40 text-rose-100'
-              : 'bg-emerald-950/90 border-emerald-500/40 text-emerald-100'
+              ? 'bg-red-950/90 border-red-500/40 text-red-100'
+              : 'bg-blue-950/90 border-blue-500/40 text-blue-100'
           }`}
         >
           {toast.tone === 'error'

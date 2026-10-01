@@ -165,14 +165,14 @@ export default function ToolsSection() {
   ];
 
   return (
-    <section id="tools" className="py-12 bg-slate-50 dark:bg-[#0B132B] border-t border-slate-200/60 dark:border-slate-800 relative">
+    <section id="tools" className="py-12 bg-slate-50 dark:bg-[#001C57] border-t border-slate-200/60 dark:border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div className="max-w-2xl text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-3">
-              <Terminal className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-3">
+              <Terminal className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>{capstone.title || 'CAPSTONE DEFENSES & TOOLSTACK'}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -190,7 +190,7 @@ export default function ToolsSection() {
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               <span>View All 12+ Tools</span>
-              <ExternalLink className="w-3.5 h-3.5 text-indigo-500" />
+              <ExternalLink className="w-3.5 h-3.5 text-blue-500" />
             </button>
           </div>
         </div>
@@ -200,7 +200,7 @@ export default function ToolsSection() {
           {featuredTools.map((tool, idx) => (
             <div
               key={tool.name || idx}
-              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
+              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
             >
               <div className="space-y-3">
                 {/* Logo & Category Badge */}
@@ -222,16 +222,16 @@ export default function ToolsSection() {
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                     {tool.badge || 'Core'}
                   </span>
                 </div>
 
                 <div>
-                  <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-0.5">
+                  <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5">
                     {tool.category || 'Production Tool'}
                   </div>
-                  <h3 className="text-base font-display font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-base font-display font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {tool.name}
                   </h3>
                 </div>
@@ -243,25 +243,27 @@ export default function ToolsSection() {
 
               <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                 <span className="text-[10px] font-medium text-slate-500 font-mono">Verified in Cohorts</span>
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Capstone Real-World Outcomes Banner */}
-        <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* Capstone Real-World Outcomes Banner — title/badge/copy are edited in
+            Admin → Settings → Capstone & Tools → “Benchmark Banner”. */}
+        <div className="mt-6 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-center gap-6">
             <div className="space-y-2 flex-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-                <Sparkles className="w-4 h-4 text-indigo-500" />
-                <span>Capstone Engineering Benchmark</span>
+              <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-blue-500" />
+                <span>{capstone.benchmark?.badge || 'Capstone Engineering Benchmark'}</span>
               </div>
               <h4 className="text-lg sm:text-xl font-display font-extrabold text-slate-900 dark:text-white">
-                What You Build & Defend in Capstone Defense
+                {capstone.benchmark?.title || 'What You Build & Defend in Capstone Defense'}
               </h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-                Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.
+              <p className="text-xs text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                {capstone.benchmark?.description ||
+                  'Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.'}
               </p>
             </div>
           </div>
@@ -269,7 +271,7 @@ export default function ToolsSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
             {outcomes.map((outcome, idx) => (
               <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                <div className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   ✓
                 </div>
                 <span className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{outcome}</span>
@@ -288,8 +290,8 @@ export default function ToolsSection() {
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
               <div>
-                <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                <div className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                   <span>Curriculum Toolchain Catalog</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 dark:text-white">
@@ -318,7 +320,7 @@ export default function ToolsSection() {
                   placeholder="Search tool by name or keyword (e.g. Docker, Python, AWS, React, Kubernetes)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -329,7 +331,7 @@ export default function ToolsSection() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                       selectedCategory === cat
-                        ? 'bg-indigo-600 text-white font-bold'
+                        ? 'bg-blue-600 text-white font-bold'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -345,17 +347,17 @@ export default function ToolsSection() {
                 {filteredTools.map((tool, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 hover:border-indigo-500/30 hover:shadow-xs transition-all flex flex-col justify-between"
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 hover:border-blue-500/30 hover:shadow-xs transition-all flex flex-col justify-between"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-1 flex items-center justify-center overflow-hidden">
                         {tool.logo ? (
                           <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" />
                         ) : (
-                          <span className="text-[10px] font-bold text-indigo-600">{tool.name?.slice(0, 2)}</span>
+                          <span className="text-[10px] font-bold text-blue-600">{tool.name?.slice(0, 2)}</span>
                         )}
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
+                      <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
                         {tool.badge || 'Core'}
                       </span>
                     </div>

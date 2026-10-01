@@ -36,12 +36,12 @@ export default function TrustMarquee() {
   return (
     <section className="py-6 sm:py-8 bg-white/70 dark:bg-slate-900/60 border-y border-slate-200/80 dark:border-slate-800 backdrop-blur-md relative overflow-hidden">
       {/* Decorative background glow accents */}
-      <div className="absolute top-0 left-1/4 w-96 h-24 bg-emerald-400/10 dark:bg-emerald-400/5 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-24 bg-indigo-400/10 dark:bg-indigo-400/5 blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-24 bg-blue-400/10 dark:bg-blue-400/5 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-24 bg-blue-400/10 dark:bg-blue-400/5 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 text-center space-y-1.5">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold uppercase tracking-wider">
-          <Sparkles className="w-3 h-3 text-[#4338CA] dark:text-[#E5C275]" />
+          <Sparkles className="w-3 h-3 text-[#1D4ED8] dark:text-[#FF6B6B]" />
           <span>Global Enterprise Alumni Network</span>
         </div>
 
@@ -64,7 +64,7 @@ export default function TrustMarquee() {
           {duplicatedCompanies.map((comp, idx) => (
             <div
               key={`${comp.name}-${idx}`}
-              className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-500/50 transition-all duration-200 flex items-center justify-center shrink-0 group"
+              className="px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-blue-500/50 transition-all duration-200 flex items-center justify-center shrink-0 group"
             >
               <img
                 src={comp.logoUrl || `/images/companies/${comp.name.toLowerCase().replace(/\s+/g, '')}.svg`}

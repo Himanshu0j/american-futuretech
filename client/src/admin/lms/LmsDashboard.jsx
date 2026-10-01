@@ -104,7 +104,7 @@ export default function LmsDashboard() {
                       to={link.to}
                       className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] transition-colors"
                     >
-                      <link.icon className="w-4 h-4 text-indigo-300 shrink-0" />
+                      <link.icon className="w-4 h-4 text-blue-300 shrink-0" />
                       <span className="min-w-0">
                         <span className="block text-[11px] font-bold text-white">{link.label}</span>
                         <span className="block text-[10px] text-slate-400">{link.hint}</span>

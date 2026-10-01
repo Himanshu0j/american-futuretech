@@ -29,7 +29,7 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
             
             {/* Apple Pill Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-xs font-sans text-[#f5f5f7] backdrop-blur-xl">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4338CA]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1D4ED8]" />
               <span className="font-semibold text-white">American FutureTech</span>
               <span className="text-white/20">•</span>
               <span className="text-[#86868b]">Accredited US Tech Academy</span>
@@ -50,8 +50,8 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
             </p>
 
             {/* Apple Dignified Cohort Notice */}
-            <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#121214] border border-white/[0.08] text-xs text-[#86868b]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#001333] border border-white/[0.08] text-xs text-[#86868b]">
+              <span className="w-2 h-2 rounded-full bg-blue-400" />
               <span className="text-[#f5f5f7] font-medium">Spring 2026 Admissions Open</span>
               <span className="text-white/20">•</span>
               <span>Limited to 25 fellows per track</span>
@@ -71,7 +71,7 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
                 onClick={onOpenLeadModal}
                 className="apple-btn-secondary !py-3.5 !px-6 !text-sm cursor-pointer"
               >
-                <PhoneCall className="w-4 h-4 text-[#4338CA]" />
+                <PhoneCall className="w-4 h-4 text-[#1D4ED8]" />
                 <span>Schedule Consultation</span>
               </button>
             </div>
@@ -79,15 +79,15 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
             {/* Institutional Endorsements */}
             <div className="flex flex-wrap items-center gap-6 pt-3 text-xs text-[#86868b]">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#4338CA]" />
+                <CheckCircle className="w-4 h-4 text-[#1D4ED8]" />
                 <span>Wyoming Registered LLC</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#4338CA]" />
+                <CheckCircle className="w-4 h-4 text-[#1D4ED8]" />
                 <span>US Industry Standards</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#4338CA]" />
+                <CheckCircle className="w-4 h-4 text-[#1D4ED8]" />
                 <span>1-on-1 Faculty Mentorship</span>
               </div>
             </div>
@@ -98,12 +98,12 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
           <div className="lg:col-span-5 relative w-full">
             
             {/* Ambient Ground Reflection */}
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-20 bg-[#4338CA]/10 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-20 bg-[#1D4ED8]/10 blur-3xl rounded-full pointer-events-none" />
 
             {/* Apple Studio Display Chassis */}
             <motion.div
               whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 25 } }}
-              className="relative w-full rounded-3xl bg-[#121214] border-t border-white/20 border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.95)] overflow-hidden"
+              className="relative w-full rounded-3xl bg-[#001333] border-t border-white/20 border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.95)] overflow-hidden"
             >
               {/* macOS Window Topbar */}
               <div className="h-11 px-4 bg-[#1c1c1e]/90 border-b border-white/[0.08] flex items-center justify-between backdrop-blur-xl">
@@ -145,14 +145,14 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
                   <div className="space-y-3 leading-relaxed">
                     <div className="text-[#86868b]"># American FutureTech AI Research Cluster</div>
                     <div className="flex items-center gap-2 text-white">
-                      <span className="text-[#4338CA]">$</span>
+                      <span className="text-[#1D4ED8]">$</span>
                       <span>python -m aft_agents.train --model llama-3.3-70b</span>
                     </div>
 
                     <div className="p-3.5 rounded-xl bg-black/60 border border-white/5 space-y-1.5 text-[11px] text-[#86868b]">
                       <div className="flex justify-between text-white">
                         <span>Cluster: US-East-H100-SXM5</span>
-                        <span className="text-emerald-400 font-semibold">ONLINE</span>
+                        <span className="text-blue-400 font-semibold">ONLINE</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Throughput:</span>
@@ -160,14 +160,14 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
                       </div>
                       <div className="flex justify-between">
                         <span>Convergence Loss:</span>
-                        <span className="text-emerald-400">0.0842 (Epoch 12/12)</span>
+                        <span className="text-blue-400">0.0842 (Epoch 12/12)</span>
                       </div>
                       <div className="w-full bg-[#1c1c1e] h-1.5 rounded-full overflow-hidden mt-2">
-                        <div className="bg-[#4338CA] h-full w-[94%] rounded-full" />
+                        <div className="bg-[#1D4ED8] h-full w-[94%] rounded-full" />
                       </div>
                     </div>
 
-                    <div className="text-emerald-400 flex items-center gap-2 pt-1 text-[11px]">
+                    <div className="text-blue-400 flex items-center gap-2 pt-1 text-[11px]">
                       <CheckCircle className="w-3.5 h-3.5" />
                       <span>Model Weights Verified & Exported to Production Registry</span>
                     </div>
@@ -179,26 +179,26 @@ export default function AppleHero({ onOpenLeadModal, onExploreCourses }) {
                     </div>
                     
                     <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="p-3 rounded-xl bg-[#121214] border border-white/10">
-                        <Cpu className="w-5 h-5 text-[#4338CA] mx-auto mb-1.5" />
+                      <div className="p-3 rounded-xl bg-[#001333] border border-white/10">
+                        <Cpu className="w-5 h-5 text-[#1D4ED8] mx-auto mb-1.5" />
                         <div className="font-semibold text-white">LLM Foundation</div>
                         <div className="text-[10px] text-[#86868b] mt-0.5">Quantized 4-Bit</div>
                       </div>
-                      <div className="p-3 rounded-xl bg-[#121214] border border-white/10">
-                        <Layers className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
+                      <div className="p-3 rounded-xl bg-[#001333] border border-white/10">
+                        <Layers className="w-5 h-5 text-blue-400 mx-auto mb-1.5" />
                         <div className="font-semibold text-white">RAG Vector DB</div>
                         <div className="text-[10px] text-[#86868b] mt-0.5">Pinecone Hybrid</div>
                       </div>
-                      <div className="p-3 rounded-xl bg-[#121214] border border-white/10">
-                        <ShieldCheck className="w-5 h-5 text-purple-400 mx-auto mb-1.5" />
+                      <div className="p-3 rounded-xl bg-[#001333] border border-white/10">
+                        <ShieldCheck className="w-5 h-5 text-blue-400 mx-auto mb-1.5" />
                         <div className="font-semibold text-white">Guardrails</div>
                         <div className="text-[10px] text-[#86868b] mt-0.5">Zero Hallucination</div>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#121214] border border-white/10 flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-[#001333] border border-white/10 flex items-center justify-between">
                       <span className="text-[#86868b]">Curriculum Capstone</span>
-                      <span className="text-[#4338CA] font-medium">Autonomous Support Co-Pilot</span>
+                      <span className="text-[#1D4ED8] font-medium">Autonomous Support Co-Pilot</span>
                     </div>
                   </div>
                 )}

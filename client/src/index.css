@@ -7,27 +7,49 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Premium brand ramp: deep navy ink · electric indigo · champagne gold ── */
-  --ink-950: #070C17;
-  --ink-900: #0B1220;
-  --ink-800: #111A2E;
-  --ink-700: #1B2740;
-  --ink-600: #26344F;
+  /* ══════════════════════════════════════════════════════════
+     BRAND PALETTE — red + blue + white
+     ══════════════════════════════════════════════════════════
+                     brand blue        brand red
+       #002060  ·  #F00000  ·  #FFFFFF
 
-  --indigo-700: #4338CA;
-  --indigo-600: #4F46E5;
-  --indigo-500: #6366F1;
-  --indigo-100: #EEF2FF;
+     Both were sampled from the client's own logo artwork
+     (client/public/images/logo-horizontal.png). Deep blue carries the dark
+     sections, headings and structure; brand red is the accent — badges, CTAs,
+     highlights, icon fills; white is the page base. Green and champagne-gold
+     are gone from the site on purpose.
 
-  --violet-600: #6D28D9;
+     The token names below are historical (--gold-* / --sand-* now hold red
+     values) so 60+ files of existing markup kept working through the rebrand;
+     new work should use --brand-red-* and the blue ramp.
+     ══════════════════════════════════════════════════════════ */
+  --brand-blue: #002060;
+  --brand-blue-deep: #001845;
+  --brand-blue-bright: #1D4ED8;
+  --brand-red: #F00000;
+  --brand-red-readable: #FF6B6B;
 
-  --gold-500: #C9A227;
-  --gold-400: #E5C275;
-  --gold-200: #F4E6C4;
-  --gold-100: #FBF5E6;
+  /* ── Deep blue ink ramp (dark surfaces, headings, solid buttons) ── */
+  --ink-950: #001845;
+  --ink-900: #002060;
+  --ink-800: #001C57;
+  --ink-700: #0A2A63;
+  --ink-600: #0B3A80;
 
-  --sand-200: #EFE6D6;
-  --sand-100: #F7F3EA;
+  --blue-700: #1D4ED8;
+  --blue-600: #2563EB;
+  --blue-500: #3B82F6;
+  --blue-100: #EFF6FF;
+
+  --brand-blue-700: #1E40AF;
+
+  --brand-red-700: #C81E1E;
+  --brand-red-500: #F00000;
+  --brand-red-200: #F9C9C9;
+  --brand-red-50: #FDECEC;
+
+  --brand-red-tint: #FCE7E7;
+  --brand-red-tint-soft: #FAF0F0;
 
   --canvas: #F7F7F5;
   --canvas-cool: #F8FAFC;
@@ -35,32 +57,35 @@
   --hairline: #E6E8EC;
   --hairline-strong: #D5D9E0;
 
-  --text-strong: #0B1220;
+  --text-strong: #002060;
   --text-body: #44506B;
   --text-muted: #6B7280;
   --text-faint: #9AA3B2;
 
-  --ring: rgba(79, 70, 229, 0.35);
+  --ring: rgba(29, 78, 216, 0.35);
 
   --shadow-xs: 0 1px 2px rgba(11, 18, 32, 0.05);
   --shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.05), 0 4px 12px -4px rgba(11, 18, 32, 0.08);
   --shadow-md: 0 1px 2px rgba(11, 18, 32, 0.05), 0 12px 28px -10px rgba(11, 18, 32, 0.14);
   --shadow-lg: 0 2px 4px rgba(11, 18, 32, 0.04), 0 24px 48px -18px rgba(11, 18, 32, 0.22);
-  --shadow-indigo: 0 10px 30px -12px rgba(79, 70, 229, 0.55);
-  --shadow-gold: 0 10px 30px -12px rgba(201, 162, 39, 0.5);
+  --shadow-indigo: 0 10px 30px -12px rgba(29, 78, 216, 0.55);
+  --shadow-red: 0 10px 30px -12px rgba(200, 30, 30, 0.5);
 
   /* Legacy aliases kept so older markup keeps resolving */
   --color-brand-beige: #F7F7F5;
-  --color-brand-green-900: #0B1220;
-  --color-brand-green-700: #1B2740;
-  --color-brand-green-500: #4338CA;
-  --color-brand-green-300: #E5C275;
-  --color-brand-green-100: #EFE6D6;
-  --color-brand-purple-900: #1E1B4B;
-  --color-brand-purple-500: #4F46E5;
-  --color-brand-purple-100: #E0E7FF;
-  --color-foreground: #0B1220;
-  --color-heading: #0B1220;
+  --color-brand-blue-900: #001845;
+  --color-brand-blue-700: #0A2A63;
+  --color-brand-blue-500: #2563EB;
+  --color-brand-blue-300: #60A5FA;
+  --color-brand-blue-100: #DBEAFE;
+  /* The alias that used to hold the gold accent now holds brand red, under a
+     name that says so. Each shade is declared exactly once: the previous
+     green/purple aliases all renamed onto --color-brand-blue-* and duplicated
+     shades, so the last one silently won. */
+  --color-brand-red-500: #F00000;
+  --color-brand-red-100: #FCE7E7;
+  --color-foreground: #002060;
+  --color-heading: #002060;
   --color-muted: #6B7280;
   --color-border: #E6E8EC;
 
@@ -73,14 +98,14 @@
   --aft-border-strong: #D5D9E0;
   --aft-specular-top: rgba(255, 255, 255, 0.06);
 
-  --aft-text-primary: #0B1220;
+  --aft-text-primary: #002060;
   --aft-text-secondary: #44506B;
   --aft-text-muted: #6B7280;
 
-  --aft-brand-blue: #0B1220;
-  --aft-brand-blue-hover: #1B2740;
-  --aft-brand-sky: #4F46E5;
-  --aft-brand-emerald: #10B981;
+  --aft-brand-blue: #002060;
+  --aft-brand-blue-hover: #0A2A63;
+  --aft-brand-sky: #2563EB;
+  --aft-brand-emerald: #2563EB;
 }
 
 @layer base {
@@ -121,13 +146,13 @@
 
   /* Brand-tinted text selection */
   ::selection {
-    background: rgba(229, 194, 117, 0.38);
+    background: rgba(240, 0, 0, 0.38);
     color: var(--ink-900);
   }
 
   /* Accessible focus rings */
   :focus-visible {
-    outline: 2px solid var(--indigo-600);
+    outline: 2px solid var(--blue-600);
     outline-offset: 2px;
   }
 
@@ -142,7 +167,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .highlight {
-  background-image: linear-gradient(180deg, rgba(229, 194, 117, 0.34) 0%, rgba(229, 194, 117, 0.5) 100%);
+  background-image: linear-gradient(180deg, rgba(240, 0, 0, 0.34) 0%, rgba(240, 0, 0, 0.5) 100%);
   color: var(--ink-900);
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   font-weight: 700;
@@ -187,7 +212,7 @@
 }
 
 .elms-card-dark {
-  background-image: linear-gradient(165deg, #0B1220 0%, #111A2E 100%);
+  background-image: linear-gradient(165deg, #002060 0%, #001C57 100%);
   color: #E8ECF4;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
@@ -213,7 +238,7 @@
   border-color: #B9C0CC;
 }
 .glass-input:focus {
-  border-color: var(--indigo-600);
+  border-color: var(--blue-600);
   box-shadow: 0 0 0 3px var(--ring);
   outline: none;
 }
@@ -225,7 +250,7 @@
 /* Primary Action Button (Indigo → Violet premium gradient) */
 .elms-btn-primary, .aft-btn-primary, .apple-btn-primary {
   position: relative;
-  background-image: linear-gradient(135deg, #4F46E5 0%, #4338CA 55%, #6D28D9 100%);
+  background-image: linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%);
   color: #FFFFFF;
   font-family: "Inter", system-ui, sans-serif;
   font-weight: 700;
@@ -246,16 +271,21 @@
   filter: saturate(115%) brightness(1.05);
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 14px 34px -12px rgba(79, 70, 229, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 14px 34px -12px rgba(29, 78, 216, 0.7);
 }
 .elms-btn-primary:active, .aft-btn-primary:active, .apple-btn-primary:active {
   transform: translateY(0);
 }
 
-/* Premium Gold CTA — reserved for high-intent actions */
+/* Brand Red CTA — reserved for high-intent actions.
+   The class keeps its historical name; the colour is the client's brand red and
+   the label is WHITE (dark blue on red was unreadable after the rebrand). */
 .elms-btn-gold {
-  background-image: linear-gradient(135deg, #E5C275 0%, #C9A227 100%);
-  color: var(--ink-900);
+  /* Deepened from the pure #F00000: white on that red is 3.99:1 and fails WCAG
+     AA (the real-browser audit flagged every red button). #DC0000 keeps the
+     brand red while white text clears 4.5:1 across the whole gradient. */
+  background-image: linear-gradient(135deg, #DC0000 0%, #B01616 100%);
+  color: #FFFFFF;
   font-weight: 700;
   font-size: 14px;
   padding: 12px 28px;
@@ -265,13 +295,14 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-gold);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--shadow-red);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
   cursor: pointer;
 }
 .elms-btn-gold:hover {
+  color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -14px rgba(201, 162, 39, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -14px rgba(200, 30, 30, 0.65);
 }
 
 /* Secondary Action Button (Executive Clean Outline) */
@@ -305,7 +336,7 @@
 
 /* Executive Solid Ink Button */
 .elms-btn-green {
-  background-image: linear-gradient(180deg, #16203A 0%, #0B1220 100%);
+  background-image: linear-gradient(180deg, #001A4D 0%, #002060 100%);
   color: #FFFFFF;
   font-family: "Inter", system-ui, sans-serif;
   font-weight: 600;
@@ -341,8 +372,8 @@
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 .elms-btn-ghost:hover {
-  color: var(--indigo-700);
-  background-color: var(--indigo-100);
+  color: var(--blue-700);
+  background-color: var(--blue-100);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -350,7 +381,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .apple-headline-gradient {
-  background-image: linear-gradient(120deg, #0B1220 0%, #26344F 55%, #4338CA 100%);
+  background-image: linear-gradient(120deg, #002060 0%, #0B3A80 55%, #1D4ED8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -421,10 +452,10 @@
 
 @keyframes pulseMint {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(118, 255, 138, 0.4);
+    box-shadow: 0 0 0 0 rgba(255, 90, 90, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(118, 255, 138, 0);
+    box-shadow: 0 0 0 8px rgba(255, 90, 90, 0);
   }
 }
 
@@ -550,7 +581,7 @@
 
 .hover-glow-ambient:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 30px -8px rgba(11, 18, 32, 0.12), 0 0 0 1px rgba(118, 255, 138, 0.25);
+  box-shadow: 0 14px 30px -8px rgba(11, 18, 32, 0.12), 0 0 0 1px rgba(255, 90, 90, 0.25);
 }
 
 /* Responsive Parallax Container */
@@ -603,8 +634,11 @@
 }
 
 /* Visitors who ask for reduced motion get the row standing still: the first
-   tiles stay visible inside the clipped track, nothing moves. */
+   tiles stay visible inside the clipped track, nothing moves. The tools strips
+   now use the same right-to-left loop as the company marquee, so both share the
+   reduced-motion opt-out. */
 @media (prefers-reduced-motion: reduce) {
+  .animate-infinite-marquee,
   .animate-infinite-marquee-ltr {
     animation: none;
   }
@@ -625,29 +659,32 @@
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--indigo-600);
-  background: rgba(79, 70, 229, 0.07);
-  border: 1px solid rgba(79, 70, 229, 0.14);
+  color: var(--blue-600);
+  background: rgba(29, 78, 216, 0.07);
+  border: 1px solid rgba(29, 78, 216, 0.14);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
 }
 
 .section-eyebrow-dark {
-  color: var(--gold-400);
-  background: rgba(229, 194, 117, 0.1);
-  border-color: rgba(229, 194, 117, 0.22);
+  color: var(--brand-red-500);
+  background: rgba(240, 0, 0, 0.1);
+  border-color: rgba(240, 0, 0, 0.22);
 }
 
 /* Gradient display type for hero headlines */
 .text-premium-gradient {
-  background-image: linear-gradient(115deg, #0B1220 0%, #26344F 45%, #4338CA 100%);
+  background-image: linear-gradient(115deg, #002060 0%, #0B3A80 45%, #1D4ED8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.text-gold-gradient {
-  background-image: linear-gradient(110deg, #C9A227 0%, #E5C275 45%, #B98A1F 100%);
+/* Gradient red display type — the class kept its old name so existing markup
+   keeps working; `.text-brand-gradient` is the name to use from now on. */
+.text-gold-gradient,
+.text-brand-gradient {
+  background-image: linear-gradient(110deg, #C81E1E 0%, #F00000 45%, #C81E1E 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -658,14 +695,14 @@
   height: 2px;
   width: 56px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #E5C275, rgba(229, 194, 117, 0));
+  background: linear-gradient(90deg, #F00000, rgba(240, 0, 0, 0));
 }
 
 .rule-indigo {
   height: 2px;
   width: 56px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #4F46E5, rgba(79, 70, 229, 0));
+  background: linear-gradient(90deg, #2563EB, rgba(29, 78, 216, 0));
 }
 
 /* Badges & chips */
@@ -684,14 +721,14 @@
 }
 
 .chip-indigo {
-  background: var(--indigo-100);
-  border-color: rgba(79, 70, 229, 0.18);
-  color: var(--indigo-700);
+  background: var(--blue-100);
+  border-color: rgba(29, 78, 216, 0.18);
+  color: var(--blue-700);
 }
 
 .chip-gold {
-  background: var(--gold-100);
-  border-color: rgba(201, 162, 39, 0.24);
+  background: var(--brand-red-50);
+  border-color: rgba(200, 30, 30, 0.24);
   color: #8A6D12;
 }
 
@@ -717,16 +754,16 @@
 /* Soft light wash for hero / header areas */
 .bg-aurora-light {
   background-image:
-    radial-gradient(900px 420px at 12% -10%, rgba(79, 70, 229, 0.10), transparent 60%),
-    radial-gradient(760px 420px at 88% 0%, rgba(229, 194, 117, 0.14), transparent 62%),
+    radial-gradient(900px 420px at 12% -10%, rgba(29, 78, 216, 0.10), transparent 60%),
+    radial-gradient(760px 420px at 88% 0%, rgba(240, 0, 0, 0.14), transparent 62%),
     linear-gradient(180deg, #FFFFFF 0%, var(--canvas) 100%);
 }
 
 .bg-aurora-ink {
   background-image:
-    radial-gradient(820px 420px at 8% -15%, rgba(79, 70, 229, 0.30), transparent 62%),
-    radial-gradient(720px 460px at 92% 10%, rgba(201, 162, 39, 0.16), transparent 60%),
-    linear-gradient(165deg, #070C17 0%, #0B1220 55%, #111A2E 100%);
+    radial-gradient(820px 420px at 8% -15%, rgba(29, 78, 216, 0.30), transparent 62%),
+    radial-gradient(720px 460px at 92% 10%, rgba(200, 30, 30, 0.16), transparent 60%),
+    linear-gradient(165deg, #001845 0%, #002060 55%, #001C57 100%);
 }
 
 /* Fade the edges of marquees and long scrollers */

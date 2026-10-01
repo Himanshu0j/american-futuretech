@@ -98,9 +98,9 @@ export default function ListItemsEditor({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
-            <Layers className="w-3.5 h-3.5 text-indigo-400" />
+            <Layers className="w-3.5 h-3.5 text-blue-400" />
             <span>{label}</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-indigo-400 border border-slate-700">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-blue-400 border border-slate-700">
               {currentItems.length} {currentItems.length === 1 ? 'item' : 'items'}
             </span>
           </label>
@@ -117,7 +117,7 @@ export default function ListItemsEditor({
             className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white text-[11px] font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
             title="Paste multiple lines of text to automatically split into bullet points"
           >
-            <ClipboardPaste className="w-3.5 h-3.5 text-emerald-400" />
+            <ClipboardPaste className="w-3.5 h-3.5 text-blue-400" />
             <span>Paste Multiple Lines</span>
           </button>
 
@@ -125,7 +125,7 @@ export default function ListItemsEditor({
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+            className="px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Pointer</span>
@@ -137,9 +137,9 @@ export default function ListItemsEditor({
       {currentItems.length === 0 ? (
         <div
           onClick={handleAddItem}
-          className="p-5 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 hover:border-indigo-500/40 text-center cursor-pointer transition-colors group"
+          className="p-5 rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 hover:border-blue-500/40 text-center cursor-pointer transition-colors group"
         >
-          <div className="text-xs text-slate-400 group-hover:text-indigo-400 flex items-center justify-center gap-2">
+          <div className="text-xs text-slate-400 group-hover:text-blue-400 flex items-center justify-center gap-2">
             <ListPlus className="w-4 h-4" />
             <span>No points added yet. Click to add the first pointer or use "Paste Multiple Lines".</span>
           </div>
@@ -149,7 +149,7 @@ export default function ListItemsEditor({
           {currentItems.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950 border border-slate-800/90 focus-within:border-indigo-500/50 transition-colors shadow-inner"
+              className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950 border border-slate-800/90 focus-within:border-blue-500/50 transition-colors shadow-inner"
             >
               {/* Order Indicator */}
               <span className="w-6 text-center text-[10px] font-mono font-bold text-slate-400 shrink-0">
@@ -191,7 +191,7 @@ export default function ListItemsEditor({
               <button
                 type="button"
                 onClick={() => handleDeleteItem(idx)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors shrink-0"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors shrink-0"
                 title="Remove Item"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -204,10 +204,10 @@ export default function ListItemsEditor({
       {/* Paste Multiple Lines Modal */}
       {showPasteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#0B1220] border border-white/[0.12] p-6 shadow-2xl text-left space-y-4">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[#002060] border border-white/[0.12] p-6 shadow-2xl text-left space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   <ClipboardPaste className="w-4 h-4" />
                 </div>
                 <div>
@@ -232,7 +232,7 @@ export default function ListItemsEditor({
               value={pasteContent}
               onChange={(e) => setPasteContent(e.target.value)}
               placeholder="Build React applications&#10;Work with REST APIs&#10;Create reusable components&#10;Deploy to production on AWS"
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 leading-relaxed"
+              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs placeholder:text-slate-400 focus:outline-none focus:border-blue-500 leading-relaxed"
             />
 
             {/* Mode selection & submit */}
@@ -244,7 +244,7 @@ export default function ListItemsEditor({
                     name="pasteMode"
                     checked={appendMode}
                     onChange={() => setAppendMode(true)}
-                    className="text-indigo-500 focus:ring-0"
+                    className="text-blue-500 focus:ring-0"
                   />
                   <span>Append to existing</span>
                 </label>
@@ -254,7 +254,7 @@ export default function ListItemsEditor({
                     name="pasteMode"
                     checked={!appendMode}
                     onChange={() => setAppendMode(false)}
-                    className="text-indigo-500 focus:ring-0"
+                    className="text-blue-500 focus:ring-0"
                   />
                   <span>Replace current items</span>
                 </label>
@@ -272,7 +272,7 @@ export default function ListItemsEditor({
                   type="button"
                   onClick={handleApplyPasted}
                   disabled={!pasteContent.trim()}
-                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                 >
                   <Check className="w-3.5 h-3.5 stroke-[3]" />
                   <span>Convert into Pointers</span>

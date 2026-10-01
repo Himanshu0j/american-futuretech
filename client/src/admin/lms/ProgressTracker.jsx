@@ -137,7 +137,7 @@ export default function ProgressTracker() {
 
       <ErrorNote>{error}</ErrorNote>
       {status && (
-        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-[11px] text-emerald-200">
+        <div className="mb-4 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-400/20 text-[11px] text-blue-200">
           {status}
         </div>
       )}
@@ -176,7 +176,7 @@ export default function ProgressTracker() {
                     <td className="py-3 px-4">
                       <div className="text-xs font-semibold text-white flex items-center gap-2">
                         {row.studentName}
-                        {row.isCompleted && <Award className="w-3.5 h-3.5 text-emerald-300" />}
+                        {row.isCompleted && <Award className="w-3.5 h-3.5 text-blue-300" />}
                       </div>
                       <div className="text-[10px] text-slate-400">{row.studentEmail}</div>
                     </td>
@@ -190,7 +190,7 @@ export default function ProgressTracker() {
                     <td className="py-3 px-4 text-[11px] text-slate-400">
                       {formatDate(row.lastActivity)}
                       {row.isCompleted && (
-                        <span className="block text-[10px] text-emerald-300">
+                        <span className="block text-[10px] text-blue-300">
                           completed {formatDate(row.completionDate)}
                         </span>
                       )}

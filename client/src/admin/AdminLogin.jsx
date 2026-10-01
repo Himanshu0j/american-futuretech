@@ -34,9 +34,9 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070b14] flex flex-col justify-center items-center p-4 relative overflow-hidden antialiased">
+    <div className="min-h-screen bg-[#001845] flex flex-col justify-center items-center p-4 relative overflow-hidden antialiased">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Brand Header */}
@@ -47,14 +47,14 @@ export default function AdminLogin() {
             alt="American FutureTech"
             className="h-12 w-auto object-contain"
           />
-          <div className="text-xs font-semibold text-indigo-400 uppercase tracking-widest font-mono">
+          <div className="text-xs font-semibold text-blue-400 uppercase tracking-widest font-mono">
             Enterprise Control Plane
           </div>
         </Link>
       </div>
 
       {/* Card */}
-      <div className="relative w-full max-w-md rounded-3xl bg-[#0B1220]/90 backdrop-blur-2xl border border-white/[0.1] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(14,165,233,0.15)] p-8 sm:p-9 z-10">
+      <div className="relative w-full max-w-md rounded-3xl bg-[#002060]/90 backdrop-blur-2xl border border-white/[0.1] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(14,165,233,0.15)] p-8 sm:p-9 z-10">
         
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold font-heading text-white tracking-tight">
@@ -66,7 +66,7 @@ export default function AdminLogin() {
         </div>
 
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs">
+          <div className="mb-4 p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs">
             {errorMsg}
           </div>
         )}
@@ -84,7 +84,7 @@ export default function AdminLogin() {
                 placeholder="admin@americanfuturetech.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
               />
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function AdminLogin() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all"
               />
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-3 rounded-xl font-bold text-sm text-slate-950 bg-gradient-to-r from-indigo-400 via-indigo-400 to-indigo-300 hover:from-indigo-300 hover:to-indigo-200 shadow-[0_0_20px_rgba(14,165,233,0.35)] transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50"
+            className="w-full mt-2 py-3 rounded-xl font-bold text-sm text-slate-950 bg-gradient-to-r from-blue-400 via-blue-400 to-blue-300 hover:from-blue-300 hover:to-blue-200 shadow-[0_0_20px_rgba(14,165,233,0.35)] transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50"
           >
             {loading ? (
               <span>Authenticating...</span>
@@ -126,7 +126,7 @@ export default function AdminLogin() {
             advertising a staff password is how the old default leaked. */}
         <div className="mt-8 pt-6 border-t border-white/[0.08] text-center">
           <div className="text-[11px] font-semibold text-slate-400 flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
             <span>Staff access only — credentials are issued by your SuperAdmin.</span>
           </div>
           <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
@@ -138,7 +138,7 @@ export default function AdminLogin() {
       </div>
 
       <div className="mt-6 text-xs text-slate-400 relative z-10">
-        <Link to="/" className="text-indigo-400 hover:underline">
+        <Link to="/" className="text-blue-400 hover:underline">
           ← Back to Public Website
         </Link>
       </div>

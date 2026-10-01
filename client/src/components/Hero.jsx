@@ -75,37 +75,52 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
     <section className="relative pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-aurora-light dark:bg-aurora-ink overflow-hidden">
 
       {/* ============================================================
-          FULL-BLEED BANNER: the client's graduation photograph fills the
-          whole hero and the editorial column reads on top of it.
+          BANNER: the client's graduation photograph, in two layouts.
+
+          Below `lg` it is a real, visible block at the top of the hero: a phone
+          is far too narrow for a masked background (the photo ended up as a
+          sliver behind the navbar), so it gets a proper banner instead. From
+          `lg` the very same element becomes the section's full-bleed
+          background with the editorial column reading on top of it.
+
+          One element on purpose: a phone fetches exactly one crop. A separate
+          hidden desktop image was still downloaded on mobile browsers.
           ============================================================ */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        {/* Masked below `lg`: on a phone the hero is several screens tall, so
-            the photo would otherwise be cropped to a thin vertical slice and
-            the trust ledger would sit on the gowns in the dark half of the
-            frame. The fade hands everything below the headline back to the
-            section's own wash. */}
-        <picture>
-          <source media="(min-width: 1024px)" srcSet={HERO_BANNER_IMG} />
-          <img
-            src={HERO_BANNER_IMG_TALL}
-            alt=""
-            width="1920"
-            height="1080"
-            fetchpriority="high"
-            decoding="async"
-            className="w-full h-full object-cover object-[50%_28%] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_10%,transparent_32%)] [mask-image:linear-gradient(to_bottom,#000_0%,#000_10%,transparent_32%)] lg:[-webkit-mask-image:none] lg:[mask-image:none]"
-          />
-        </picture>
-        {/* Scrim: heavier behind the copy, easing off on the right so the
-            photograph still reads as a photograph. Keeps the page's light
-            aesthetic in light mode and its ink aesthetic in dark mode. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/52 dark:from-slate-950/95 dark:via-slate-950/88 dark:to-slate-950/72" />
-        {/* The trust ledger and the intake line sit over the gowns and caps in
-            the lower half of the photograph, where a 55%-white veil is not
-            enough for the smaller type. This taller bottom rise carries them
-            and doubles as the fade into the section's own aurora wash, so the
-            banner has no hard seam against the sections below. */}
-        <div className="absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-5% via-white/82 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/88" />
+      <div className="relative z-10 -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 mb-7 lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:pointer-events-none">
+        <div className="relative h-[18.5rem] sm:h-[19rem] overflow-hidden lg:h-full">
+          {/* A phone is narrower than either crop, so the portrait frame is used
+              there and the wide band takes over from `sm`. Below `lg` the photo
+              is anchored to its bottom edge: that keeps the laughing faces
+              mid-frame with the gowns running off the lower edge, instead of a
+              strip of empty sky above them. */}
+          <picture>
+            <source media="(min-width: 640px)" srcSet={HERO_BANNER_IMG} />
+            <img
+              src={HERO_BANNER_IMG_TALL}
+              alt="American FutureTech graduates celebrating at commencement"
+              width="1100"
+              height="1325"
+              fetchpriority="high"
+              decoding="async"
+              className="w-full h-full object-cover object-[50%_100%] lg:object-[50%_28%]"
+            />
+          </picture>
+
+          {/* Phone/tablet: a short rise that hides the photo's bottom edge
+              without veiling the graduates' faces. */}
+          <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-[#001845] dark:via-[#001845]/55 lg:hidden" />
+
+          {/* Desktop scrim: heavier behind the copy, easing off on the right so
+              the photograph still reads as a photograph. Keeps the page's light
+              aesthetic in light mode and its ink aesthetic in dark mode. */}
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/52 dark:from-slate-950/95 dark:via-slate-950/88 dark:to-slate-950/72" />
+          {/* On desktop the trust ledger and the intake line sit over the gowns
+              and caps, where a 55%-white veil is not enough for the smaller
+              type. This taller bottom rise carries them and doubles as the fade
+              into the section's own aurora wash, so the banner has no hard seam
+              against the sections below. */}
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-5% via-white/82 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/88" />
+        </div>
       </div>
 
       {/* Background Architectural Grid Accent */}

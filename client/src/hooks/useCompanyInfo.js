@@ -12,8 +12,8 @@ export const COMPANY_FALLBACK = {
   siteName: 'American FutureTech',
   legalName: 'American FutureTech LLC',
   tagline: 'Empowering Next-Gen Tech Leaders with AI, Cyber Security & Cloud',
-  phone: '+1 (816) 846-6717',
-  email: 'info@americantechgloballlc.com',
+  phone: '+1 (660) 310-8528',
+  email: 'info@americanfuturetechllc.com',
   address: '30 N Gould St Ste R, Sheridan, WY 82801, United States',
   socials: {
     linkedin: 'https://linkedin.com/company/american-futuretech',

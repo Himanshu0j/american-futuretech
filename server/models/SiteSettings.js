@@ -67,8 +67,8 @@ const FooterSchema = new mongoose.Schema({
   contactEmails: {
     type: [String],
     default: [
-      'info@americantechgloballlc.com',
-      'support@americantechgloballlc.com',
+      'info@americanfuturetechllc.com',
+      'support@americanfuturetechllc.com',
     ],
   },
   // Live "Wyoming current time" clock in the footer contact row.
@@ -334,11 +334,11 @@ const SiteSettingsSchema = new mongoose.Schema({
   },
   contactEmail: {
     type: String,
-    default: 'info@americantechgloballlc.com',
+    default: 'info@americanfuturetechllc.com',
   },
   contactPhone: {
     type: String,
-    default: '+1 (816) 846-6717',
+    default: '+1 (660) 310-8528',
   },
   headquartersAddress: {
     type: String,

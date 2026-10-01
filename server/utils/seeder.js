@@ -151,8 +151,8 @@ const autoSeedIfEmpty = async () => {
     await SiteSettings.create({
       siteName: 'American FutureTech',
       tagline: 'Live, build-first training in Data Science, AI, Generative AI, Cyber Security and Cloud',
-      contactEmail: 'info@americantechgloballlc.com',
-      contactPhone: '+1 (816) 846-6717',
+      contactEmail: 'info@americanfuturetechllc.com',
+      contactPhone: '+1 (660) 310-8528',
       headquartersAddress: '30 N Gould St Ste R, Sheridan, WY 82801, United States',
       announcementBanner: {
         enabled: true,

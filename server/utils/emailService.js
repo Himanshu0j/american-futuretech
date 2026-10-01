@@ -69,7 +69,7 @@ const sendLeadConfirmationEmail = async (lead, courseTitle = 'Technology Program
 };
 
 const sendAdminLeadAlert = async (lead, courseTitle = 'Technology Program') => {
-  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americantechgloballlc.com';
+  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americanfuturetechllc.com';
   const subject = `[NEW LEAD] ${lead.fullName} - ${courseTitle}`;
   const text = `New application received for ${courseTitle} from ${lead.fullName} (${lead.email}, ${lead.phone}). Preferred Batch: ${lead.preferredBatch}.`;
   return await sendEmail({ to: adminEmail, subject, text });
@@ -139,7 +139,7 @@ const sendEnrollmentCredentialsEmail = async ({ payment, tempPassword, loginUrl 
 
 // Internal alert so the team sees money landing in real time.
 const sendAdminPaymentAlert = async (payment) => {
-  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americantechgloballlc.com';
+  const adminEmail = process.env.NOTIFICATION_EMAIL || 'info@americanfuturetechllc.com';
   const subject = `[PAYMENT] ${money(payment.amount)} — ${payment.studentName} (${payment.courseTitle})`;
   const text = `${payment.studentName} (${payment.email}, ${payment.phone}) paid ${money(payment.amount)} ${payment.currency} via ${payment.tier} for ${payment.courseTitle}. Invoice ${payment.invoiceNumber}, transaction ${payment.transactionId}.`;
   return await sendEmail({ to: adminEmail, subject, text });

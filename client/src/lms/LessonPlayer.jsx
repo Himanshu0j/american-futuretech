@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import confetti from 'canvas-confetti';
+import LessonNotes from './LessonNotes';
 
 export default function LessonPlayer() {
   const { courseId } = useParams();
@@ -251,7 +252,9 @@ export default function LessonPlayer() {
             {data?.curriculum?.map((mod, mIdx) => (
               <div key={mod._id || mIdx} className="p-3">
                 <div className="px-2 py-1.5 text-xs font-bold text-[#1D4ED8] flex items-center justify-between">
-                  <span>Module 0{mod.moduleNumber}: {mod.title}</span>
+                  {/* Numbered by position: stored moduleNumber values can keep gaps
+                      after curriculum edits, which showed up as "Module 02, 03, 05". */}
+                  <span>Module {String(mIdx + 1).padStart(2, '0')}: {mod.title}</span>
                 </div>
 
                 <div className="space-y-1 mt-1">
@@ -388,9 +391,7 @@ export default function LessonPlayer() {
                 </p>
                 {activeLesson?.textContent && (
                   <div className="p-6 rounded-2xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-3 shadow-xs leading-relaxed">
-                    {activeLesson.textContent.split('\n\n').map((p, i) => (
-                      <p key={i}>{p}</p>
-                    ))}
+                    <LessonNotes content={activeLesson.textContent} />
                   </div>
                 )}
               </div>

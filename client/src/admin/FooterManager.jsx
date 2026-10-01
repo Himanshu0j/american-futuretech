@@ -79,7 +79,7 @@ export default function FooterManager() {
         logoPlate: incoming.logoPlate !== false,
         contactEmails: Array.isArray(incoming.contactEmails) && incoming.contactEmails.length > 0
           ? incoming.contactEmails
-          : ['info@americantechgloballlc.com', 'support@americantechgloballlc.com'],
+          : ['info@americanfuturetechllc.com', 'support@americanfuturetechllc.com'],
         localTime: {
           enabled: incoming.localTime?.enabled !== false,
           timeZone: incoming.localTime?.timeZone || 'America/Denver',

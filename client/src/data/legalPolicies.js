@@ -78,7 +78,7 @@ export const LEGAL_POLICY_DEFAULTS = {
         heading: '2. Refund Eligibility Criteria',
         body: '',
         bullets: [
-          'Refund requests must be formally submitted in writing to info@americantechgloballlc.com before the conclusion of Day 14 of the cohort.',
+          'Refund requests must be formally submitted in writing to info@americanfuturetechllc.com before the conclusion of Day 14 of the cohort.',
           'Students must have attended or viewed all orientation sessions and submitted initial diagnostic assessments to qualify for unconditional withdrawal.',
           'After the 14-day trial period, tuition payments are committed to reserving faculty instruction and live sandbox infrastructure; prorated refunds will be evaluated on a case-by-case basis under verified medical emergencies.',
         ],

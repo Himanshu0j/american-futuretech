@@ -3,6 +3,7 @@
  *
  *   npm run audit:browser                                   # local stack
  *   LB_BASE=https://american-futuretech.vercel.app ...      # production
+ *   LB_WIDTHS=390,768,1440                                  # quick sweep
  *
  * The accessibility audit answers "is this page usable with a screen reader".
  * This one answers the questions a client actually hits in week one:
@@ -33,7 +34,14 @@ const CHROME =
 
 // Every width the handover promises to have checked: small phones, large
 // phones, both tablet orientations, small laptops and full desktop monitors.
-const WIDTHS = [320, 375, 390, 414, 768, 1024, 1280, 1440, 1920];
+// LB_WIDTHS narrows the sweep (comma separated). The full nine-width run takes
+// ~15 minutes against a live deployment on a cold API tier, and a focused
+// `LB_WIDTHS=390,768,1440` run finishes in a couple, so the same script can be
+// used both as the release gate and as a quick post-deploy sanity pass.
+const DEFAULT_WIDTHS = [320, 375, 390, 414, 768, 1024, 1280, 1440, 1920];
+const WIDTHS = process.env.LB_WIDTHS
+  ? process.env.LB_WIDTHS.split(',').map((w) => Number(w.trim())).filter((w) => Number.isFinite(w) && w > 0)
+  : DEFAULT_WIDTHS;
 // Roles to sweep. Production cannot be swept with a session (the rotated admin
 // credential is deliberately not in this workspace), so `LB_ROLES=public` runs
 // the visitor-facing surface instead of reporting 30 fake "wrong route" errors.

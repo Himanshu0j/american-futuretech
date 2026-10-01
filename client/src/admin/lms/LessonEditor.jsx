@@ -224,7 +224,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
           />
         </Field>
 
-        <Field label="Lesson notes" hint="Blank lines start a new paragraph in the student's player.">
+        <Field label="Lesson notes" hint="Blank lines start a new paragraph. Markdown works too: ### headings, **bold**, - bullets, 1. lists, [links](https://…).">
           <textarea
             className={inputClass}
             rows={6}

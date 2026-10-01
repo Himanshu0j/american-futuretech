@@ -508,22 +508,27 @@ const run = async () => {
 
     // Mutate a REAL leaf inside each tab — an unknown probe key would be dropped
     // by the schema on purpose and would only test strict mode, not the tab.
-    const findLeaf = (obj, prefix = '') => {
+    //
+    // A filled-in field is preferred, but some blocks default to EMPTY on purpose
+    // (Legal & Policies, Checkout copy: the pages fall back to coded copy until the
+    // client types something), and an all-empty block used to report "no editable
+    // field" even though the tab saves fine. `allowEmpty` gives those a second pass.
+    const findLeaf = (obj, prefix = '', allowEmpty = false) => {
       if (!obj || typeof obj !== 'object') return null;
       for (const key of Object.keys(obj)) {
         if (SKIP_KEYS.includes(key)) continue;
         const value = obj[key];
         const path = prefix + key;
         if (typeof value === 'boolean') return { path, kind: 'boolean' };
-        if (typeof value === 'string' && value.length > 0) {
+        if (typeof value === 'string' && (value.length > 0 || allowEmpty)) {
           return { path, kind: TEXT_KEYS.includes(key) ? 'text' : 'string' };
         }
         if (Array.isArray(value) && value.length && value[0] && typeof value[0] === 'object') {
-          const nested = findLeaf(value[0], `${path}.0.`);
+          const nested = findLeaf(value[0], `${path}.0.`, allowEmpty);
           if (nested) return nested;
         }
         if (value && typeof value === 'object' && !Array.isArray(value)) {
-          const nested = findLeaf(value, `${path}.`);
+          const nested = findLeaf(value, `${path}.`, allowEmpty);
           if (nested) return nested;
         }
       }
@@ -551,7 +556,7 @@ const run = async () => {
         : typeof current === 'boolean' ? { path: null, kind: 'boolean' }
         : typeof current === 'number' ? { path: null, kind: 'number' }
         : null;
-      const leaf = directLeaf || findLeaf(current);
+      const leaf = directLeaf || findLeaf(current) || findLeaf(current, '', true);
       if (!leaf) { tabFailures.push(`${tab} (no editable field)`); continue; }
 
       const original = leaf.path ? getPath(current, leaf.path) : current;

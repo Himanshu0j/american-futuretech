@@ -41,10 +41,55 @@ const setRuntimeSecrets = ({ secretKey, webhookSecret } = {}) => {
 };
 
 const hasRuntimeSecret = () => Boolean(runtimeSecrets.secretKey);
+const hasRuntimeWebhookSecret = () => Boolean(runtimeSecrets.webhookSecret);
 
 const isStripeConfigured = () => getSecretKey().startsWith('sk_');
 const isWebhookConfigured = () => getWebhookSecret().startsWith('whsec_');
 const isLiveMode = () => getSecretKey().startsWith('sk_live_');
+
+/**
+ * Keep the saved environment label in sync with the key that was actually
+ * pasted, instead of refusing the save.
+ *
+ * A live key saved while the panel said "test" used to be a 400 error, which is
+ * exactly the wall a non-technical client hits: they paste the key they copied
+ * from the Stripe dashboard and the form refuses it without fixing anything.
+ * Aligning the label is the safe direction in both cases — an `sk_live_` key can
+ * only ever be live, and an `sk_test_` key can only ever be test — so the couple
+ * can no longer disagree. Returns the aligned mode plus a plain-language notice.
+ */
+const alignModeWithSecret = ({ mode, secretKey }) => {
+  const key = String(secretKey || '').trim();
+  const current = mode === 'live' ? 'live' : 'test';
+  if (key.startsWith('sk_live_') && current !== 'live') {
+    return {
+      mode: 'live',
+      changed: true,
+      notice: 'A live key (sk_live_…) was saved, so the gateway was switched to LIVE mode automatically.',
+    };
+  }
+  if (key.startsWith('sk_test_') && current === 'live') {
+    return {
+      mode: 'test',
+      changed: true,
+      notice: 'A test key (sk_test_…) was saved, so the gateway was switched to TEST mode automatically. No real card can be charged.',
+    };
+  }
+  return { mode: current, changed: false, notice: null };
+};
+
+/** The events the platform must receive to settle an order. Shared by the API, the
+ *  admin panel (copy-paste checklist) and the setup verification, so the three can
+ *  never drift apart. */
+const REQUIRED_WEBHOOK_EVENTS = [
+  'checkout.session.completed',
+  'checkout.session.async_payment_succeeded',
+  'checkout.session.async_payment_failed',
+  'checkout.session.expired',
+  'payment_intent.payment_failed',
+];
+
+const WEBHOOK_PATH = '/api/payments/webhook';
 
 /**
  * Lazy singleton — the SDK is only instantiated when a key exists so that the
@@ -97,11 +142,15 @@ module.exports = {
   isStripeConfigured,
   isWebhookConfigured,
   isLiveMode,
+  alignModeWithSecret,
+  REQUIRED_WEBHOOK_EVENTS,
+  WEBHOOK_PATH,
   getCurrency,
   getPaymentStatus,
   getSecretKey,
   getWebhookSecret,
   setRuntimeSecrets,
   hasRuntimeSecret,
+  hasRuntimeWebhookSecret,
   setRuntimeCurrency,
 };

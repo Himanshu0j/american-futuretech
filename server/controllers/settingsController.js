@@ -6,6 +6,10 @@ const {
   getPaymentStatus,
   setRuntimeSecrets,
   setRuntimeCurrency,
+  getStripe,
+  alignModeWithSecret,
+  REQUIRED_WEBHOOK_EVENTS,
+  WEBHOOK_PATH,
 } = require('../config/payments');
 
 // @desc    Get site settings
@@ -525,6 +529,88 @@ const getSiteEditorSummary = async (req, res) => {
   }
 };
 
+/**
+ * The API origin as the outside world reaches it. The admin panel always talks
+ * to the API host, so its own request is the most reliable source once Render's
+ * proxy headers are taken into account (`trust proxy` is not relied upon here).
+ */
+const publicApiOrigin = (req) => {
+  // An explicit override always wins (proxy setups that rewrite the host).
+  const override = String(process.env.PUBLIC_API_URL || '').trim();
+  if (override) return override.replace(/\/+$/, '');
+
+  const host = String(req?.headers?.['x-forwarded-host'] || req?.get?.('host') || '')
+    .split(',')[0]
+    .trim();
+  if (!host) return '';
+
+  const forwardedProto = String(req?.headers?.['x-forwarded-proto'] || '').split(',')[0].trim();
+  // `trust proxy` is intentionally not enabled, so req.protocol is "http" behind
+  // a TLS-terminating proxy. Anything that is not a local host is therefore
+  // https, unless the proxy explicitly told us otherwise — the URL handed to
+  // Stripe must not be http or the webhook will never arrive.
+  const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
+  const proto = forwardedProto || (isLocal ? req?.protocol || 'http' : 'https');
+  return `${proto}://${host}`.replace(/\/+$/, '');
+};
+
+/**
+ * The single source of truth for "can this gateway take money right now?" —
+ * shared by the admin panel, so the steps it lists and the API's own status can
+ * never disagree.
+ */
+const buildGatewaySetup = ({ gateway = {}, payments, req }) => {
+  const secretKeyConfigured =
+    Boolean(gateway.secretKeyEncrypted) || Boolean(process.env.STRIPE_SECRET_KEY);
+  const webhookSecretConfigured =
+    Boolean(gateway.webhookSecretEncrypted) || Boolean(process.env.STRIPE_WEBHOOK_SECRET);
+  const enabled = gateway.enabled !== false;
+  const live = (gateway.mode === 'live') || payments?.mode === 'live';
+
+  const steps = [
+    {
+      id: 'account',
+      title: 'Stripe keys',
+      done: secretKeyConfigured,
+      hint: secretKeyConfigured
+        ? 'Secret key saved. Publishable key is optional but recommended.'
+        : 'Stripe → Developers → API keys → copy the publishable (pk_…) and secret (sk_…) key here.',
+    },
+    {
+      id: 'webhook',
+      title: 'Webhook endpoint',
+      done: webhookSecretConfigured,
+      hint: webhookSecretConfigured
+        ? 'Signing secret saved. Stripe can now confirm enrollments automatically.'
+        : `Stripe → Developers → Webhooks → Add endpoint → paste the URL and pick the ${REQUIRED_WEBHOOK_EVENTS.length} events below, then paste the signing secret (whsec_…) here.`,
+    },
+    {
+      id: 'enabled',
+      title: 'Switch card payments on',
+      done: enabled && secretKeyConfigured && webhookSecretConfigured,
+      hint: !enabled
+        ? 'Online payments are switched OFF right now — checkout shows the manual admissions form instead.'
+        : secretKeyConfigured && webhookSecretConfigured
+          ? 'Checkout is live on the public site.'
+          : 'Finish the two steps above first.',
+    },
+  ];
+
+  return {
+    origin: publicApiOrigin(req),
+    webhook: {
+      path: WEBHOOK_PATH,
+      url: `${publicApiOrigin(req)}${WEBHOOK_PATH}`,
+      events: REQUIRED_WEBHOOK_EVENTS,
+      configured: webhookSecretConfigured,
+    },
+    steps,
+    ready: Boolean(payments?.ready),
+    live,
+    modeLabel: live ? 'LIVE — real cards are charged' : 'TEST — Stripe test cards only',
+  };
+};
+
 /** Remove anything the browser must never receive. */
 const stripGatewaySecrets = (settings) => {
   const plain = settings?.toObject ? settings.toObject() : settings;
@@ -544,8 +630,10 @@ const getPaymentGatewayStatus = async (req, res) => {
   try {
     const settings = (await SiteSettings.findOne().lean()) || {};
     const gateway = settings.paymentGateway || {};
+    const payments = getPaymentStatus();
     return res.status(200).json({
       success: true,
+      setup: buildGatewaySetup({ gateway, payments, req }),
       gateway: {
         enabled: gateway.enabled !== false,
         provider: gateway.provider || 'stripe',
@@ -561,7 +649,7 @@ const getPaymentGatewayStatus = async (req, res) => {
         lastUpdatedBy: gateway.lastUpdatedBy || '',
         lastUpdatedAt: gateway.lastUpdatedAt || null,
       },
-      payments: getPaymentStatus(),
+      payments,
     });
   } catch (error) {
     return sendError(res, error);
@@ -635,22 +723,15 @@ const updatePaymentGateway = async (req, res) => {
     }
 
     // Live keys must never be mixed with test ones — a live key in test mode (or
-    // the reverse) is the classic way to charge a real card by accident.
+    // the reverse) is the classic way to charge a real card by accident. Rather
+    // than rejecting the save (which leaves a non-technical admin stuck with no
+    // idea what to change), the environment label follows the key that was
+    // pasted, and the panel is told that it happened.
     const effectiveSecret = secretKeyToApply !== undefined
       ? secretKeyToApply
       : decryptSecret(gateway.secretKeyEncrypted) || process.env.STRIPE_SECRET_KEY || '';
-    if (effectiveSecret.startsWith('sk_live_') && gateway.mode !== 'live') {
-      return res.status(400).json({
-        success: false,
-        message: 'A live secret key can only be saved with the gateway in LIVE mode.',
-      });
-    }
-    if (effectiveSecret.startsWith('sk_test_') && gateway.mode === 'live') {
-      return res.status(400).json({
-        success: false,
-        message: 'A test secret key cannot be used in LIVE mode. Switch to TEST or paste a live key.',
-      });
-    }
+    const aligned = alignModeWithSecret({ mode: gateway.mode, secretKey: effectiveSecret });
+    if (aligned.changed) gateway.mode = aligned.mode;
 
     gateway.lastUpdatedBy = req.user?.email || req.user?.name || 'admin';
     gateway.lastUpdatedAt = new Date();
@@ -671,9 +752,17 @@ const updatePaymentGateway = async (req, res) => {
       details: `Gateway ${gateway.enabled ? 'enabled' : 'disabled'} in ${gateway.mode} mode${secretKeyToApply ? ' (secret key updated)' : ''}${webhookSecretToApply ? ' (webhook secret updated)' : ''}`,
     }).catch(() => {});
 
+    // Read the status AFTER the runtime secrets were applied, so the panel sees
+    // the effect of this save immediately (no redeploy needed).
+    const payments = getPaymentStatus();
+
     return res.status(200).json({
       success: true,
-      message: 'Payment gateway settings saved. Secrets are stored encrypted and never displayed again.',
+      message: aligned.notice
+        ? `Payment gateway settings saved. ${aligned.notice}`
+        : 'Payment gateway settings saved. Secrets are stored encrypted and never displayed again.',
+      notice: aligned.notice,
+      setup: buildGatewaySetup({ gateway, payments, req }),
       gateway: {
         enabled: gateway.enabled !== false,
         mode: gateway.mode,
@@ -683,8 +772,195 @@ const updatePaymentGateway = async (req, res) => {
         secretKeyHint: gateway.secretKeyHint || (process.env.STRIPE_SECRET_KEY ? 'set via environment' : ''),
         webhookSecretConfigured: Boolean(gateway.webhookSecretEncrypted) || Boolean(process.env.STRIPE_WEBHOOK_SECRET),
         webhookSecretHint: gateway.webhookSecretHint || (process.env.STRIPE_WEBHOOK_SECRET ? 'set via environment' : ''),
+        lastUpdatedBy: gateway.lastUpdatedBy || '',
+        lastUpdatedAt: gateway.lastUpdatedAt || null,
       },
-      payments: getPaymentStatus(),
+      payments,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+/**
+ * "Test connection" — the button that turns a confusing setup into a verified
+ * one. It calls Stripe with the key the admin just pasted (or the saved one) and
+ * reports back in plain language:
+ *
+ *   · is the secret key valid, and is it a test or a live key?
+ *   · which Stripe account does it belong to, and in which currency?
+ *   · is the webhook endpoint registered at OUR url, with ALL required events?
+ *
+ * No secret is ever echoed — the response only carries booleans, an account id
+ * and masked hints. Nothing is written to the database here.
+ */
+const testPaymentGatewayConnection = async (req, res) => {
+  try {
+    const body = req.body || {};
+    const settings = (await SiteSettings.findOne().lean()) || {};
+    const gateway = settings.paymentGateway || {};
+    const expectedUrl = `${publicApiOrigin(req)}${WEBHOOK_PATH}`;
+
+    // A key pasted into the panel can be tested before it is saved.
+    const pastedKey = String(body.secretKey || '').trim();
+    if (pastedKey && !pastedKey.startsWith('sk_')) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'INVALID_SECRET_KEY',
+        message: 'That does not look like a Stripe secret key — it must start with "sk_".',
+      });
+    }
+    const pastedWebhookSecret = String(body.webhookSecret || '').trim();
+    if (pastedWebhookSecret && !pastedWebhookSecret.startsWith('whsec_')) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'INVALID_WEBHOOK_SECRET',
+        message: 'That does not look like a Stripe signing secret — it must start with "whsec_".',
+      });
+    }
+
+    const keyToTest = pastedKey
+      || decryptSecret(gateway.secretKeyEncrypted)
+      || String(process.env.STRIPE_SECRET_KEY || '').trim();
+    const webhookSecretPresent = Boolean(pastedWebhookSecret)
+      || Boolean(gateway.webhookSecretEncrypted)
+      || Boolean(process.env.STRIPE_WEBHOOK_SECRET);
+
+    if (!keyToTest) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'NO_KEY',
+        message: 'Paste your Stripe secret key (sk_test_… or sk_live_…) first, then run the test.',
+        webhook: { expectedUrl, requiredEvents: REQUIRED_WEBHOOK_EVENTS, configured: webhookSecretPresent },
+      });
+    }
+
+    // The key may have been pasted without saving it yet, so build a throwaway
+    // client instead of mutating the live singleton.
+    let stripe;
+    try {
+      const Stripe = require('stripe');
+      stripe = pastedKey
+        ? new Stripe(pastedKey, { maxNetworkRetries: 1, timeout: 15000 })
+        : getStripe();
+    } catch (sdkError) {
+      stripe = null;
+    }
+    if (!stripe) {
+      const runtimeStripe = getStripe();
+      if (!runtimeStripe) {
+        return res.status(400).json({
+          success: false,
+          ok: false,
+          code: 'STRIPE_UNAVAILABLE',
+          message: 'Stripe could not be initialised with that key. Check the key and try again.',
+        });
+      }
+      stripe = runtimeStripe;
+    }
+
+    let account = null;
+    let accountError = null;
+    try {
+      account = await stripe.accounts.retrieve();
+    } catch (primaryError) {
+      // Restricted keys can lack the account permission but still charge cards.
+      try {
+        const balance = await stripe.balance.retrieve();
+        account = { id: '', livemode: balance?.livemode, country: '', default_currency: '' };
+      } catch (fallbackError) {
+        accountError = primaryError;
+      }
+    }
+
+    if (!account) {
+      const reason = accountError?.message || 'Stripe rejected the request.';
+      return res.status(200).json({
+        success: true,
+        ok: false,
+        code: 'KEY_REJECTED',
+        message: `Stripe rejected that key: ${reason}`,
+        key: {
+          source: pastedKey ? 'pasted' : (gateway.secretKeyEncrypted ? 'admin-panel' : 'environment'),
+          hint: maskSecret(keyToTest),
+          live: keyToTest.startsWith('sk_live_'),
+          // Reported even on rejection: the panel shows it next to the hint so the
+          // admin can see at a glance which environment the bad key belonged to.
+          mode: keyToTest.startsWith('sk_live_') ? 'live' : 'test',
+        },
+        webhook: { expectedUrl, requiredEvents: REQUIRED_WEBHOOK_EVENTS, configured: webhookSecretPresent },
+      });
+    }
+
+    // ── Webhook endpoint check ───────────────────────────────────────────────
+    let endpoints = [];
+    let endpointError = null;
+    try {
+      const list = await stripe.webhookEndpoints.list({ limit: 20 });
+      endpoints = (list?.data || []).map((endpoint) => ({
+        id: endpoint.id,
+        url: endpoint.url,
+        status: endpoint.status,
+        enabledEvents: endpoint.enabled_events || [],
+      }));
+    } catch (error) {
+      endpointError = error.message;
+    }
+
+    const matching = endpoints.find((endpoint) => endpoint.url === expectedUrl) || null;
+    const enabled = matching?.enabledEvents || [];
+    const wildcard = enabled.includes('*');
+    const missingEvents = wildcard
+      ? []
+      : REQUIRED_WEBHOOK_EVENTS.filter((name) => !enabled.includes(name));
+
+    const problems = [];
+    if (!webhookSecretPresent) {
+      problems.push('No webhook signing secret saved yet, so paid orders cannot be confirmed automatically.');
+    }
+    if (!matching && !endpointError) {
+      problems.push(`No Stripe webhook points at ${expectedUrl}. Add it in Stripe → Developers → Webhooks.`);
+    }
+    if (matching && matching.status !== 'enabled') {
+      problems.push(`The Stripe webhook at ${expectedUrl} is ${matching.status}. Re-enable it in Stripe.`);
+    }
+    if (matching && missingEvents.length) {
+      problems.push(`The webhook is missing ${missingEvents.length} event(s): ${missingEvents.join(', ')}.`);
+    }
+
+    return res.status(200).json({
+      success: true,
+      ok: problems.length === 0,
+      message: problems.length === 0
+        ? 'Stripe accepted the key and the webhook is registered with every required event.'
+        : problems[0],
+      key: {
+        source: pastedKey ? 'pasted' : (gateway.secretKeyEncrypted ? 'admin-panel' : 'environment'),
+        hint: maskSecret(keyToTest),
+        live: Boolean(account.livemode),
+        mode: account.livemode ? 'live' : 'test',
+      },
+      account: {
+        id: account.id || '',
+        country: account.country || '',
+        currency: (account.default_currency || '').toUpperCase(),
+        livemode: Boolean(account.livemode),
+      },
+      webhook: {
+        expectedUrl,
+        requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+        configured: webhookSecretPresent,
+        registered: Boolean(matching),
+        status: matching?.status || null,
+        enabledEvents: enabled,
+        missingEvents,
+        listError: endpointError,
+        otherEndpoints: endpoints.filter((endpoint) => endpoint.url !== expectedUrl).map((endpoint) => endpoint.url),
+      },
+      problems,
     });
   } catch (error) {
     return sendError(res, error);
@@ -718,6 +994,7 @@ module.exports = {
   stripGatewaySecrets,
   getPaymentGatewayStatus,
   updatePaymentGateway,
+  testPaymentGatewayConnection,
   loadPaymentGatewaySecrets,
   getAuditLogs,
   getSiteEditorOverrides,
@@ -725,7 +1002,7 @@ module.exports = {
   saveSiteEditorOverrides,
   resetSiteEditorRoute,
   // Exposed for the CMS schema/field contract test.
-  __test__: { findUnstorablePaths, sanitizeSettingsPayload },
+  __test__: { findUnstorablePaths, sanitizeSettingsPayload, publicApiOrigin, buildGatewaySetup },
   // The inline editor's ceilings are exported so the regression test asserts
   // against the SHIPPED numbers: it previously hard-coded the old 90-char key
   // limit, so raising the ceilings made a healthy server look broken.

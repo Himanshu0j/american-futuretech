@@ -9,7 +9,7 @@ Real card payments with **webhook-only settlement**. No browser request can ever
 | 1 | `POST /api/payments/quote` | Server computes the authoritative price (tier + voucher). Nothing is stored. |
 | 2 | `POST /api/payments/checkout` | Creates a **Pending** `Payment` row + a Stripe Checkout Session, then returns the hosted page URL. |
 | 3 | Stripe hosted page | Customer pays. Card data never touches our servers or database. |
-| 4 | `POST /api/payments/webhook` | Signature-verified event settles the payment: status → `Paid`, student account (random temp password), enrollment, progress, cohort seat, audit log, receipt + credentials emails. |
+| 4 | `POST /api/payments/webhook` | Signature-verified event settles the payment: status → `Paid`, student account (random temp password), enrollment, progress, cohort seat, audit log, receipt + credentials emails. The receipt is linked to the new student account, so it appears in Student → Payments and in the admin ledger. |
 | 5 | `GET /api/payments/checkout-status/:sessionId` | Success screen polls this. If Stripe has the money but the webhook is late, the server reconciles directly with Stripe. |
 
 **Guarantees**
@@ -20,7 +20,32 @@ Real card payments with **webhook-only settlement**. No browser request can ever
 - A late `expired` / `failed` event can never downgrade a settled payment.
 - New students receive a **cryptographically random** temporary password, delivered by email only — never in an API response.
 
-## Required environment variables
+## Configuring the gateway (two supported paths)
+
+### Path A — from the admin panel, no redeploy (recommended for the client)
+
+Admin → **Settings → Payment Gateway** is a guided 3-step setup. It is also where
+secrets are applied *immediately*: `PUT /api/settings/payment-gateway` stores them
+AES-256-GCM encrypted (key derived from `JWT_SECRET`) and loads them into server
+memory, so no restart and no redeploy is needed.
+
+1. **Keys** — paste the publishable key (`pk_…`) and the secret key (`sk_…`).
+   The environment label follows the key: pasting an `sk_live_…` key switches the
+   gateway to `live` automatically (see `alignModeWithSecret`), so the client can
+   never get stuck on a mode-mismatch error.
+2. **Webhook** — the panel shows the exact endpoint URL plus the five required
+   events in one copyable block. Stripe → Developers → Webhooks → Add endpoint,
+   then paste the signing secret (`whsec_…`).
+3. **Verify** — `POST /api/settings/payment-gateway/test` calls Stripe with the
+   saved (or just-pasted) key and reports: key accepted/rejected, account id and
+   mode, whether a webhook is registered at *our* URL, and which required events
+   are missing. **Test connection** in the panel is that endpoint.
+
+`GET /api/settings/payment-gateway` returns the same information as a checklist
+(`setup.steps[]`, `setup.webhook`, `setup.ready`) and never returns secret
+material — only booleans and masked hints (`sk_live_…4f2a`).
+
+### Path B — environment variables (infrastructure-level)
 
 ```bash
 STRIPE_SECRET_KEY=sk_live_...        # or sk_test_... while testing
@@ -28,22 +53,28 @@ STRIPE_WEBHOOK_SECRET=whsec_...      # Stripe → Developers → Webhooks → yo
 PAYMENT_CURRENCY=USD
 ```
 
+An environment variable always wins over a key saved in the panel.
+
 `SMTP_USER` / `SMTP_PASS` must also be set, otherwise receipt and credential emails are only logged to the console (the enrollment still completes).
 
 ## Go-live checklist
 
-1. Stripe dashboard → **Developers → API keys** → copy the secret key into `STRIPE_SECRET_KEY`.
+1. Stripe dashboard → **Developers → API keys** → copy the secret key.
 2. **Developers → Webhooks → Add endpoint**
-   - URL: `https://<your-api-domain>/api/payments/webhook`
+   - URL: `https://american-futuretech-api.onrender.com/api/payments/webhook`
+     (the panel prints the correct URL for whichever API host serves it)
    - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
      `checkout.session.async_payment_failed`, `checkout.session.expired`, `payment_intent.payment_failed`
-   - Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
-3. Redeploy the API, then open `GET /api/health` — it must report:
+3. Save both secrets (panel or env) and press **Test connection** — it must come
+   back green: key accepted, webhook registered, no missing events.
+4. `GET /api/health` must report:
    ```json
    "payments": { "mode": "live", "configured": true, "webhookConfigured": true, "ready": true }
    ```
-   Admin → **Payments** shows the same status as a badge.
-4. Test with Stripe test cards (`4242 4242 4242 4242`, any future expiry, any CVC) while in test mode, then switch to live keys.
+   Admin → **Payments** shows the same status as a badge, and every settled order
+   appears in the Tuition & Billing Ledger with its Stripe reference (CSV export
+   included).
+5. Test with Stripe test cards (`4242 4242 4242 4242`, any future expiry, any CVC) while in test mode, then switch to live keys.
 
 ## Behaviour without keys
 
@@ -55,4 +86,14 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 36 checks: pricing/voucher math, temp-password strength, webhook signature enforcement (missing, forged, tampered payloads), and a full end-to-end settlement against a throwaway local MongoDB (settlement, idempotent replays, failed/expired handling, forged-webhook rejection). It forces dummy test keys, so it can never touch live money.
+Runs 45 checks: pricing/voucher math, temp-password strength, webhook signature
+enforcement (missing, forged, tampered payloads), a full end-to-end settlement
+against a throwaway local MongoDB (settlement, receipt-to-account linking,
+idempotent replays, failed/expired handling, forged-webhook rejection), and the
+admin setup contract (key/mode auto-alignment, webhook URL + event checklist).
+It forces dummy test keys, so it can never touch live money.
+
+The live suite (`npm run verify:live`) is safe to run with real keys saved: it
+verifies checkout input validation and status shape, and deliberately never
+creates a Stripe Checkout Session, so nothing unpaid is left in the client's
+Stripe dashboard.

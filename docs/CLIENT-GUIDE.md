@@ -313,7 +313,8 @@ Iske alawa:
 | `/admin/guide` (website ke andar) | Admin console ka in-app manual |
 | `docs/website-editor.md` | Website Editor ka detailed manual |
 | `docs/security.md` | Roles + permissions + security decisions |
-| `docs/payments.md` | Payment / Stripe setup |
+| `docs/stripe-setup-guide-hinglish.md` | **Stripe payment gateway khud chalu karne ki Hinglish guide** — 3 step, test connection, troubleshooting |
+| `docs/payments.md` | Payment / Stripe setup (technical) |
 | `docs/data-persistence.md` | Database aur data safe rakhne ke rules |
 
 ---

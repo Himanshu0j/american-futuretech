@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import {
@@ -47,8 +48,19 @@ import ImageUploadInput from './components/ImageUploadInput';
 import PaymentGatewayPanel from './PaymentGatewayPanel';
 
 export default function SettingsCMS() {
-  const [activeTab, setActiveTab] = useState('general');
-  // Tabs: 'general' | 'hero' | 'personalized' | 'capstone' | 'roadmap' | 'about' | 'globalCtas' | 'audit'
+  // `?tab=payments` lets other screens (e.g. the billing ledger's "gateway not
+  // ready" banner) deep-link straight to the right tab instead of dropping the
+  // admin on General settings to hunt for it.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'general');
+  // Tabs: 'general' | 'hero' | 'personalized' | 'capstone' | 'roadmap' | 'about' | 'globalCtas' | 'payments' | 'audit'
+
+  useEffect(() => {
+    const requested = searchParams.get('tab');
+    if (requested && requested !== activeTab) setActiveTab(requested);
+    // Only react to the URL — switching tabs in the UI must not fight the query.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -669,7 +681,10 @@ export default function SettingsCMS() {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setSearchParams({ tab: tab.id }, { replace: true });
+              }}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all cursor-pointer ${
                 isActive
                   ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'

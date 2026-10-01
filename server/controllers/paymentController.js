@@ -311,6 +311,14 @@ const fulfillPaidCheckout = async ({ payment, session, clientUrl }) => {
     });
   }
 
+  // 2b. Link the receipt to the account. Without this the buyer could never see
+  //     their own invoice under Student → Payments, and the admin ledger showed a
+  //     "guest checkout" even though a real account exists.
+  if (String(payment.student || '') !== String(student._id)) {
+    payment.student = student._id;
+    await payment.save();
+  }
+
   // 3. Enrollment + progress.
   let enrollment = await Enrollment.findOne({ student: student._id, course: payment.course });
   if (!enrollment) {
@@ -564,7 +572,11 @@ const getAllPayments = async (req, res) => {
       ];
     }
 
-    const payments = await Payment.find(query).sort({ createdAt: -1 });
+    // Populate the account so the admin sees who actually owns the receipt
+    // (name / email / phone) instead of a bare id or "guest checkout".
+    const payments = await Payment.find(query)
+      .populate('student', 'name email phone studentDetails.enrollmentNumber')
+      .sort({ createdAt: -1 });
     const totalRevenue = payments.reduce(
       (acc, curr) => (curr.status === 'Paid' ? acc + curr.amount : acc),
       0,
@@ -587,7 +599,14 @@ const getAllPayments = async (req, res) => {
 // @access  Private (Student)
 const getMyPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ student: req.user._id }).sort({ createdAt: -1 });
+    // Match on the linked account AND on the receipt email: checkouts taken
+    // before the account existed were saved without the student reference, and
+    // those receipts must not disappear from the buyer's own history.
+    const email = String(req.user?.email || '').toLowerCase().trim();
+    const query = email
+      ? { $or: [{ student: req.user._id }, { email }] }
+      : { student: req.user._id };
+    const payments = await Payment.find(query).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, payments });
   } catch (error) {
     return sendError(res, error);

@@ -48,7 +48,26 @@ const SECTIONS = [
     title: '6. Tuition & Billing Ledger',
     path: '/admin/payments',
     what: 'Saari fees payments ki master list — kaun kitna bhuka, kab bhuka.',
-    how: 'Filter lagao status ya date se. Payment record khud checkout aur students manager se banta hai — yahan se sirf track karo.',
+    how: 'Filter lagao status se (Paid / Pending / Failed / Expired / Refunded). Search box mein student ka naam, email, phone, invoice number, coupon ya Stripe ki payment id — kuch bhi daalo. Har row par student ka poora contact, tier, discount + coupon, payment gateway reference aur paid date dikhti hai; "Invoice" button se printable invoice khulti hai. Upar "Export CSV" se poori ledger Excel mein utaar lo.',
+    notes: [
+      'Stripe se payment aate hi row khud ban jaati hai (Paid) — koi entry manual nahi karni. Student ka account, enrollment aur receipt email bhi automatic hote hain.',
+      'Upar jo badge "Stripe checkout" ke sath dikhta hai wo batata hai gateway chalu hai ya nahi. Red ho to usi badge ke link se seedha Payment Gateway tab khul jata hai.',
+    ],
+  },
+  {
+    icon: CreditCard,
+    title: '6b. Payment Gateway (Stripe) — 3-Step Khud Setup',
+    path: '/admin/settings',
+    what: 'Online card payments (Stripe) — publishable key, secret key aur webhook secret daal kar checkout chalu karna. Sirf admin panel se, koi developer ya redeploy ki zarurat nahi.',
+    how: 'Admin → Settings → "Payment Gateway" tab. 3 steps screen par hi likhe hain: (1) Stripe → Developers → API keys se publishable key (pk_…) aur secret key (sk_…) paste karo — LIVE key paste karte hi environment khud LIVE ho jata hai, error nahi aata; (2) Stripe → Developers → Webhooks → "Add endpoint" → isi page ka webhook URL copy karke daalo, niche diye gaye paanch events select karo, phir wahan se Signing secret (whsec_…) copy karke paste karo; (3) "Test connection" dabao, phir "Save Gateway Settings".',
+    notes: [
+      'Test connection button Stripe se hi poochta hai: key sahi hai ya nahi, kis account ki hai, aur webhook sahi URL + saare 5 events ke sath laga hai ya nahi. Sab green = payments live. Save se pehle bhi test kar sakte ho — jo key aap paste karo wahi test hoti hai.',
+      'Save karte hi change turant live ho jaata hai — server restart ya redeploy ki zarurat nahi. Status upar wale badge aur step tick (✅) se dikhta hai.',
+      'Secret key kabhi dobara screen par nahi aati — sirf masked hint (jaise sk_live_…4f2a) dikhta hai. Kho jaaye to Stripe dashboard se nayi banao aur dobara paste kar do.',
+      'Pehle TEST mode mein try karo: card 4242 4242 4242 4242, koi bhi future expiry, koi bhi CVC. Sab theek chale to LIVE key paste karo.',
+      'Dono cheezein zaroori hain — secret key aur webhook secret. Sirf key rakhne par paisa kat jayega par student ko access turant nahi milega (confirmation webhook se aati hai).',
+      'Enable/disable switch off karne par checkout apne aap "secure payment link" wale admissions form par chala jaata hai — website kabhi crash ya fake-paid nahi dikhati.',
+    ],
   },
   {
     icon: Briefcase,

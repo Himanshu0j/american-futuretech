@@ -11,6 +11,7 @@ const {
   resetSiteEditorRoute,
   getPaymentGatewayStatus,
   updatePaymentGateway,
+  testPaymentGatewayConnection,
 } = require('../controllers/settingsController');
 const { protect, checkPermission } = require('../middleware/auth');
 
@@ -37,6 +38,17 @@ router.delete('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAG
 // ── Payment gateway (Stripe) — secrets go in, never come back out ────────────
 router.get('/payment-gateway', protect, checkPermission('SETTINGS_VIEW', 'SETTINGS_EDIT'), getPaymentGatewayStatus);
 router.put('/payment-gateway', protect, checkPermission('SETTINGS_EDIT'), updatePaymentGateway);
+
+// "Test connection" calls Stripe, so it is rate-limited: a mis-click can never
+// burn through the gateway's API quota.
+const gatewayTestLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many gateway tests this minute. Please wait a moment and try again.' },
+});
+router.post('/payment-gateway/test', protect, checkPermission('SETTINGS_EDIT'), gatewayTestLimiter, testPaymentGatewayConnection);
 
 // ── Whole-site settings document ─────────────────────────────────────────────
 router.get('/', getSiteSettings);

@@ -597,18 +597,54 @@ const run = async () => {
   const gateway = await request('GET', '/api/settings/payment-gateway', { token: adminToken });
   const gatewayJson = JSON.stringify(gateway.json || {});
   check('Gateway status is readable by an authorised admin', gateway.status === 200, `status=${gateway.status}`);
-  check('No Stripe secret is ever returned to the browser', !/sk_(live|test)_/.test(gatewayJson) && !gatewayJson.includes('secretKeyEncrypted'), 'response contains no secret material');
+  // A masked hint ("sk_live_…4f2a") is expected and safe; a usable key is not.
+  // The old pattern flagged the hint itself, so this check used to pass only
+  // because no key had been saved yet.
+  check(
+    'No Stripe secret is ever returned to the browser',
+    !/sk_(live|test)_[A-Za-z0-9]{8,}/.test(gatewayJson)
+      && !gatewayJson.includes('secretKeyEncrypted')
+      && !gatewayJson.includes('webhookSecretEncrypted'),
+    'response contains no secret material',
+  );
   check('Gateway status reports configuration as booleans', typeof gateway.json?.gateway?.secretKeyConfigured === 'boolean', `secretKeyConfigured=${gateway.json?.gateway?.secretKeyConfigured}`);
 
-  const checkout = await request('POST', '/api/payments/checkout', {
-    body: { courseId: quoteCourse?._id, tier: 'deposit', fullName: `${TAG} Buyer`, email: `qa-buyer-${STAMP}@example.com`, phone: '+1 (555) 000-0000' },
-  });
   const gatewayOff = gateway.json?.gateway?.secretKeyConfigured === false;
+
+  // A QA run must never mint a real Stripe Checkout Session: once the client's
+  // live keys are saved, an abandoned session plus a Pending payment row would
+  // appear in their own Stripe dashboard. An unknown program exercises the same
+  // endpoint, proves it validates input, and never reaches Stripe.
+  const unknownOrder = await request('POST', '/api/payments/checkout', {
+    body: { courseId: '000000000000000000000000', tier: 'deposit', fullName: `${TAG} Buyer`, email: `qa-buyer-${STAMP}@example.com`, phone: '+1 (555) 000-0000' },
+  });
   check(
-    gatewayOff ? 'With no gateway configured, checkout refuses instead of faking success' : 'With a gateway configured, checkout returns a real Stripe session',
-    gatewayOff ? checkout.status === 503 : checkout.status === 200 && Boolean(checkout.json?.sessionUrl),
-    `status=${checkout.status} code=${checkout.json?.code}`,
+    'Checkout rejects an unknown program before touching the gateway',
+    unknownOrder.status === 404 || unknownOrder.status === 400,
+    `status=${unknownOrder.status} code=${unknownOrder.json?.code || '-'} (no Stripe session created)`,
   );
+
+  const missingFields = await request('POST', '/api/payments/checkout', { body: {} });
+  check('Checkout demands the program, full name and email', missingFields.status === 400, `status=${missingFields.status}`);
+
+  if (gatewayOff) {
+    const checkout = await request('POST', '/api/payments/checkout', {
+      body: { courseId: quoteCourse?._id, tier: 'deposit', fullName: `${TAG} Buyer`, email: `qa-buyer-${STAMP}@example.com`, phone: '+1 (555) 000-0000' },
+    });
+    check('With no gateway configured, checkout refuses instead of faking success', checkout.status === 503,
+      `status=${checkout.status} code=${checkout.json?.code}`);
+    check('...and routes the buyer to the manual payment-link flow', checkout.json?.fallback === 'manual-enquiry',
+      `fallback=${checkout.json?.fallback}`);
+  } else {
+    // Pricing is side-effect free, so a configured gateway is verified without
+    // creating anything in the client's Stripe account.
+    const liveQuote = await request('POST', '/api/payments/quote', { body: { courseId: quoteCourse?._id, tier: 'deposit' } });
+    check('A configured gateway still prices orders server-side',
+      liveQuote.status === 200 && typeof liveQuote.json?.quote?.amount === 'number',
+      `amount=${liveQuote.json?.quote?.amount}`);
+    check('...and reports readiness for the admin badge', gateway.json?.payments?.ready === true,
+      `ready=${gateway.json?.payments?.ready} webhook=${gateway.json?.payments?.webhookConfigured}`);
+  }
 
   const webhook = await request('POST', '/api/payments/webhook', { body: { type: 'checkout.session.completed', data: { object: { id: 'qa-fake' } } } });
   check('An unsigned webhook is refused', webhook.status >= 400, `status=${webhook.status}`);

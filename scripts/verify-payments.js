@@ -7,6 +7,7 @@
  * Level 2  Stripe webhook signature enforcement (local HMAC, no network)
  * Level 3  full settlement through the webhook handler against a throwaway
  *          local MongoDB database (dropped at the end)
+ * Level 4  admin-panel setup contract (key/mode alignment, webhook checklist)
  *
  * Any real Stripe keys already present in server/.env are ignored — the script
  * forces test-only dummy credentials so it can never touch live money.
@@ -233,6 +234,15 @@ const run = async () => {
   check('Enrollment is created after settlement', Boolean(enrollment) && enrollment.status === 'Active');
   const progress = await Progress.findOne({ student: student?._id, course: dbCourse._id });
   check('Progress record is initialized', Boolean(progress) && progress.progressPercent === 0);
+  // The receipt must belong to the account, otherwise the buyer's own
+  // "My Payments" page (and the admin's student column) stays empty forever.
+  check(
+    'Settlement links the receipt to the student account',
+    String(settled.student || '') === String(student?._id),
+    `payment.student=${settled.student || 'unset'}`,
+  );
+  const ownReceipts = await Payment.find({ email: pending.email });
+  check('Receipt is reachable from the buyer email', ownReceipts.length === 1, `${ownReceipts.length} receipts`);
 
   // Retried delivery of the exact same event
   const replay = await deliverWebhook(paidEvent);
@@ -296,6 +306,78 @@ const run = async () => {
 
   await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('LEVEL 4 · Gateway setup guardrails (admin panel contract)');
+  const {
+    alignModeWithSecret,
+    REQUIRED_WEBHOOK_EVENTS,
+    WEBHOOK_PATH,
+  } = require(path.join(__dirname, '..', 'server', 'config', 'payments'));
+
+  const liveIntoTest = alignModeWithSecret({ mode: 'test', secretKey: 'sk_live_example' });
+  check('Pasting a live key switches the gateway to LIVE on its own',
+    liveIntoTest.mode === 'live' && liveIntoTest.changed === true,
+    `mode ${liveIntoTest.mode}`);
+  check('...and the admin is told about the switch', Boolean(liveIntoTest.notice));
+
+  const testIntoLive = alignModeWithSecret({ mode: 'live', secretKey: 'sk_test_example' });
+  check('Pasting a test key can never leave the gateway charging live cards',
+    testIntoLive.mode === 'test' && testIntoLive.changed === true,
+    `mode ${testIntoLive.mode}`);
+
+  const matching = alignModeWithSecret({ mode: 'live', secretKey: 'sk_live_example' });
+  check('A matching key leaves the chosen mode untouched',
+    matching.mode === 'live' && matching.changed === false && matching.notice === null);
+
+  const emptyKey = alignModeWithSecret({ mode: 'test', secretKey: '' });
+  check('An empty key never fabricates a mode change', emptyKey.changed === false && emptyKey.mode === 'test');
+
+  check('Webhook URL path is the documented one', WEBHOOK_PATH === '/api/payments/webhook', WEBHOOK_PATH);
+
+  // The webhook URL is handed to Stripe, so a wrong scheme/host silently breaks
+  // every settlement. Render terminates TLS in front of the API, where
+  // req.protocol alone reports "http".
+  const { __test__: settingsTest } = require(path.join(__dirname, '..', 'server', 'controllers', 'settingsController'));
+  const fakeReq = (headers = {}) => ({ headers, protocol: 'http', get: (name) => headers.host || '' });
+
+  const proxied = settingsTest.publicApiOrigin(
+    fakeReq({ host: 'american-futuretech-api.onrender.com', 'x-forwarded-proto': 'https' }),
+  );
+  check('A proxied production request yields an https API origin',
+    proxied === 'https://american-futuretech-api.onrender.com', proxied);
+
+  const noForwardedProto = settingsTest.publicApiOrigin(fakeReq({ host: 'example.onrender.com' }));
+  check('Without a forwarded proto a public host is still assumed https',
+    noForwardedProto === 'https://example.onrender.com', noForwardedProto);
+
+  const local = settingsTest.publicApiOrigin(fakeReq({ host: '127.0.0.1:5050' }));
+  check('A local host keeps http (no bogus TLS assumption in dev)',
+    local === 'http://127.0.0.1:5050', local);
+
+  process.env.PUBLIC_API_URL = 'https://api.example.com/';
+  const overridden = settingsTest.publicApiOrigin(fakeReq({ host: 'something-else' }));
+  delete process.env.PUBLIC_API_URL;
+  check('PUBLIC_API_URL overrides the derived origin (trailing slash trimmed)',
+    overridden === 'https://api.example.com', overridden);
+
+  const setupShape = settingsTest.buildGatewaySetup({
+    gateway: { enabled: true, mode: 'live', secretKeyEncrypted: 'v1:x', webhookSecretEncrypted: 'v1:y' },
+    payments: { ready: true },
+    req: fakeReq({ host: 'api.example.com' }),
+  });
+  check('A fully configured gateway reports all three setup steps done',
+    setupShape.steps.every((step) => step.done === true) && setupShape.ready === true);
+  check('The setup block tells the admin it is LIVE, not TEST', setupShape.live === true && setupShape.modeLabel.startsWith('LIVE'),
+    setupShape.modeLabel);
+  check('The setup block never carries secret material',
+    !JSON.stringify(setupShape).includes('v1:'), 'only booleans/labels are returned');
+  check('All five settlement events are required by the setup panel',
+    REQUIRED_WEBHOOK_EVENTS.length === 5
+      && REQUIRED_WEBHOOK_EVENTS.includes('checkout.session.completed')
+      && REQUIRED_WEBHOOK_EVENTS.includes('checkout.session.expired')
+      && REQUIRED_WEBHOOK_EVENTS.includes('payment_intent.payment_failed'),
+    REQUIRED_WEBHOOK_EVENTS.join(', '));
 
   // ───────────────────────────────────────────────────────────────────────
   const failedChecks = results.filter((r) => !r.passed);

@@ -35,7 +35,9 @@ const HERO_WORKSPACE_IMG_TALL = '/images/hero-innovator-tall.jpg';
 // a portrait crop so narrow screens are not squeezed into an unreadable sliver
 // (see scratch/build-hero-banner.py).
 const HERO_BANNER_IMG = '/images/hero-graduation.jpg';
-const HERO_BANNER_IMG_TALL = '/images/hero-graduation-tall.jpg';
+// Phone crop: square, framed from the thrown caps down to the gowns, so the
+// faces land at ~24-59% of the frame and the copy can start right below them.
+const HERO_BANNER_IMG_PHONE = '/images/hero-graduation-phone.jpg';
 
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
@@ -75,36 +77,39 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
     <section className="relative pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-aurora-light dark:bg-aurora-ink overflow-hidden">
 
       {/* ============================================================
-          BANNER: the client's graduation photograph, in two layouts.
+          BANNER: the client's graduation photograph, one layer per layout.
 
-          Below `lg` it is a real, visible block at the top of the hero: a phone
-          is far too narrow for a masked background (the photo ended up as a
-          sliver behind the navbar), so it gets a proper banner instead. From
-          `lg` the very same element becomes the section's full-bleed
-          background with the editorial column reading on top of it.
+          Phones draw it inside the editorial column, so the copy reads ON the
+          photograph (see the phone band below). Tablets get a real banner block
+          in the flow, and from `lg` this element becomes the section's
+          full-bleed background with the copy on top of it.
 
-          One element on purpose: a phone fetches exactly one crop. A separate
-          hidden desktop image was still downloaded on mobile browsers.
+          Each layout loads exactly one crop. Both halves of that are load-bearing:
+          the wide crop is lazy so phones skip it, and the square crop is a CSS
+          background that `sm:bg-none` removes above the phone breakpoint (an
+          <img> would be downloaded at every width, display:none or not).
           ============================================================ */}
-      <div className="relative z-10 -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 mb-7 lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:pointer-events-none">
-        <div className="relative h-[18.5rem] sm:h-[19rem] overflow-hidden lg:h-full">
-          {/* A phone is narrower than either crop, so the portrait frame is used
-              there and the wide band takes over from `sm`. Below `lg` the photo
-              is anchored to its bottom edge: that keeps the laughing faces
-              mid-frame with the gowns running off the lower edge, instead of a
-              strip of empty sky above them. */}
-          <picture>
-            <source media="(min-width: 640px)" srcSet={HERO_BANNER_IMG} />
-            <img
-              src={HERO_BANNER_IMG_TALL}
-              alt="American FutureTech graduates celebrating at commencement"
-              width="1100"
-              height="1325"
-              fetchpriority="high"
-              decoding="async"
-              className="w-full h-full object-cover object-[50%_100%] lg:object-[50%_28%]"
-            />
-          </picture>
+      {/* Hidden on phones: there the photo is the copy's own background instead
+          (see the phone band inside the editorial column). */}
+      <div className="hidden sm:block relative z-10 -mx-4 sm:-mx-6 -mt-8 sm:-mt-12 mb-7 lg:absolute lg:inset-0 lg:z-0 lg:m-0 lg:pointer-events-none">
+        <div className="relative h-[19rem] overflow-hidden lg:h-full">
+          {/* Tablet band: the wide crop, anchored to its bottom edge so the
+              laughing faces sit mid-frame with the gowns running off the lower
+              edge instead of a strip of empty sky above them. */}
+          <img
+            src={HERO_BANNER_IMG}
+            alt="American FutureTech graduates celebrating at commencement"
+            width="1920"
+            height="1080"
+            fetchpriority="high"
+            decoding="async"
+            // A hidden <img> is still downloaded, so without this every phone
+            // would fetch the wide crop on top of its own square one. Lazy is
+            // enough: from `sm` up the band is on screen at load, so it fetches
+            // immediately, and below `sm` it has no layout box at all.
+            loading="lazy"
+            className="w-full h-full object-cover object-[50%_100%] lg:object-[50%_28%]"
+          />
 
           {/* Phone/tablet: a short rise that hides the photo's bottom edge
               without veiling the graduates' faces. */}
@@ -132,8 +137,34 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
           {/* ============================================================
               LEFT COLUMN: Editorial Typography & Strategic Positioning
               ============================================================ */}
-          <div className="lg:col-span-6 space-y-4 text-left">
-            
+          <div className="lg:col-span-6 relative z-10 pt-[58vw] sm:pt-0 space-y-4 text-left">
+
+            {/* ============================================================
+                PHONE BAND (< sm): the copy reads ON the photograph.
+
+                The photo is the column's own background for its top part, so
+                no fixed offset is needed: the column's padding-top is the
+                space the photo gets to itself (clear of the badge), and the
+                copy then sits on its veiled lower half. It is full-bleed (the
+                section's padding is cancelled) and pulled up under the header,
+                and a negative z-index keeps it behind the copy while staying
+                inside the column's stacking context.
+                ============================================================ */}
+            <div
+              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[100vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              aria-hidden="true"
+            >
+              {/* Fully transparent over the faces and caps (the top ~30%), then
+                  a fast ramp: ~35% white at the badge's shoulder and ~85% by the
+                  headline, so the copy is never asked to fight the gowns. The
+                  band is white from 76% down, which is where the section's own
+                  wash takes over, so the two meet without a seam. */}
+              {/* The stops are arbitrary values on purpose: Tailwind's named
+                  stop scale only ships multiples of 5 (30%, 35%, 40%...), so a
+                  `to-76%` class compiles to nothing at all. */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent from-[30%] via-white/35 via-[52%] to-white to-[76%]" />
+            </div>
+
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">
               <div className="section-eyebrow shadow-xs">

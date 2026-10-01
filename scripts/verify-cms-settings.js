@@ -340,6 +340,17 @@ const run = async () => {
         columns: [{ title: 'Company', order: 1, active: true, links: [{ label: 'About Us', url: '/about', order: 1 }] }],
         legalLinks: [{ label: 'Privacy Policy', url: '/privacy', order: 1 }],
       },
+      // Header Menu CMS: the client's most frequent request is swapping a
+      // top-bar label (CERTIFICATIONS → SUCCESS STORIES). The menu must persist
+      // label, link, placement, order and the programs-dropdown flag.
+      headerMenu: [
+        { label: 'HOME', path: '/', placement: 'main', order: 1, active: true },
+        { label: 'LIVE JOBS', path: '/jobs', placement: 'main', order: 2, active: true },
+        { label: 'CAREER PROGRAMS', path: '/courses', placement: 'main', order: 3, active: true, hasDropdown: true },
+        { label: 'SUCCESS STORIES', path: '/success-stories', placement: 'main', order: 4, active: true },
+        { label: 'HIDDEN TEST LINK', path: '/hidden-test', placement: 'main', order: 5, active: false },
+        { label: 'Privacy Policy', path: '/privacy', placement: 'more', order: 1, active: true },
+      ],
       textOverrides: { '/privacy': { 'main>h1#0': { original: 'Privacy', value: 'Privacy Policy', updatedAt: new Date().toISOString() } } },
       imageOverrides: { '/about': { 'main>img#0': { original: '/a.png', value: '/b.png', updatedAt: new Date().toISOString() } } },
     };
@@ -362,6 +373,13 @@ const run = async () => {
       savedSettings.careerSupport?.transparency?.description === 'Honest scope' && savedSettings.careerSupport?.stages?.length === 1);
     check('Footer columns and legal links persist',
       savedSettings.footer?.columns?.[0]?.links?.[0]?.label === 'About Us' && savedSettings.footer?.legalLinks?.length === 1);
+    check('Header menu persists labels, order, placement and visibility',
+      savedSettings.headerMenu?.length === 6
+      && savedSettings.headerMenu?.[3]?.label === 'SUCCESS STORIES'
+      && savedSettings.headerMenu?.[3]?.path === '/success-stories'
+      && savedSettings.headerMenu?.[2]?.hasDropdown === true
+      && savedSettings.headerMenu?.[4]?.active === false
+      && savedSettings.headerMenu?.[5]?.placement === 'more');
     check('Admission notice persists',
       savedSettings.admissionNotice === 'Spring 2026 Admissions Open',
       `got "${savedSettings.admissionNotice}"`);

@@ -318,6 +318,22 @@ const CheckoutCopySchema = new mongoose.Schema({
   paymentMethodBody: { type: String, default: '' },
 }, { _id: false });
 
+// ── Header / top-bar menu CMS ───────────────────────────────────────────────
+// The main navigation used to be hard-coded in Navbar.jsx, so every label or
+// order change (CERTIFICATIONS → SUCCESS STORIES and similar requests) needed
+// a developer deploy. The menu now lives here: label, link, placement (`main`
+// = top bar, `more` = the MORE dropdown), order and visibility are all
+// editable from Admin → Header Menu CMS. `hasDropdown` keeps the Career
+// Programs mega-panel attached to an entry even after its label is renamed.
+const HeaderMenuItemSchema = new mongoose.Schema({
+  label: { type: String, default: '' },
+  path: { type: String, default: '/' },
+  placement: { type: String, enum: ['main', 'more'], default: 'main' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+  hasDropdown: { type: Boolean, default: false },
+}, { _id: true });
+
 const SiteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
@@ -360,6 +376,26 @@ const SiteSettingsSchema = new mongoose.Schema({
   admissionNotice: {
     type: String,
     default: 'Next Cohort Starts March 2026. Limited to 25 seats per track.',
+  },
+
+  // 🌟 HEADER / TOP-BAR MENU CMS (Admin → Header Menu CMS).
+  // Defaults mirror the navigation that used to live in Navbar.jsx, so an
+  // existing database that predates this field keeps its exact menu.
+  headerMenu: {
+    type: [HeaderMenuItemSchema],
+    default: [
+      { label: 'HOME', path: '/', placement: 'main', order: 1, active: true },
+      { label: 'LIVE JOBS', path: '/jobs', placement: 'main', order: 2, active: true },
+      { label: 'CAREER PROGRAMS', path: '/courses', placement: 'main', order: 3, active: true, hasDropdown: true },
+      { label: 'SUCCESS STORIES', path: '/success-stories', placement: 'main', order: 4, active: true },
+      { label: 'ABOUT US', path: '/about', placement: 'main', order: 5, active: true },
+      { label: 'Privacy Policy', path: '/privacy', placement: 'more', order: 1, active: true },
+      { label: 'Refund & Return Policy', path: '/refund-policy', placement: 'more', order: 2, active: true },
+      { label: 'Cookie Policy', path: '/cookie-policy', placement: 'more', order: 3, active: true },
+      { label: 'Terms & Conditions', path: '/terms', placement: 'more', order: 4, active: true },
+      { label: 'Insights & Blog', path: '/blog', placement: 'more', order: 5, active: true },
+      { label: 'Admissions FAQ', path: '/faq', placement: 'more', order: 6, active: true },
+    ],
   },
   socialLinks: {
     linkedin: { type: String, default: 'https://linkedin.com/company/american-futuretech' },

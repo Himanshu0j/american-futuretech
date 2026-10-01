@@ -70,6 +70,7 @@ const StudentsManager = lazy(() => import('./admin/StudentsManager'));
 const PaymentsManager = lazy(() => import('./admin/PaymentsManager'));
 const CouponsManager = lazy(() => import('./admin/CouponsManager'));
 const FooterManager = lazy(() => import('./admin/FooterManager'));
+const HeaderManager = lazy(() => import('./admin/HeaderManager'));
 const JobsManager = lazy(() => import('./admin/JobsManager'));
 const ContentCMS = lazy(() => import('./admin/ContentCMS'));
 const SupportManager = lazy(() => import('./admin/SupportManager'));
@@ -376,6 +377,7 @@ export default function App() {
                 <Route path="payments" element={<PaymentsManager />} />
                 <Route path="coupons" element={<CouponsManager />} />
                 <Route path="footer" element={<FooterManager />} />
+                <Route path="header" element={<HeaderManager />} />
                 <Route path="jobs" element={<JobsManager />} />
                 <Route path="content" element={<ContentCMS />} />
                 <Route path="support" element={<SupportManager />} />

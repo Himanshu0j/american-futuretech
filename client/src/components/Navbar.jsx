@@ -31,6 +31,57 @@ const DEFAULT_7_PROGRAMS = [
   { title: 'Placement Support', slug: 'placement-support', badge: 'Career Accelerator', duration: '3 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
 ];
 
+// Shipped fallback for the navigation menu. The live header menu comes from
+// Admin → Header Menu CMS (`settings.headerMenu`); these values are only used
+// until the settings API answers (or on a deployment whose database predates
+// the field), and they mirror the schema defaults exactly.
+const DEFAULT_MAIN_LINKS = [
+  { name: 'HOME', path: '/', hasDropdown: false, key: 'home' },
+  { name: 'LIVE JOBS', path: '/jobs', hasDropdown: false, key: 'live-jobs' },
+  { name: 'CAREER PROGRAMS', path: '/courses', hasDropdown: true, key: 'career-programs' },
+  // The CERTIFICATIONS slot in the top bar became Success Stories at the
+  // client's request. Credential verification still has its own home — the top
+  // strip's "Verify Credential" link and /certificate/:id — so nothing is lost.
+  { name: 'SUCCESS STORIES', path: '/success-stories', hasDropdown: false, key: 'success-stories' },
+  { name: 'ABOUT US', path: '/about', hasDropdown: false, key: 'about' },
+];
+
+const DEFAULT_MORE_LINKS = [
+  { name: 'Privacy Policy', path: '/privacy', key: 'privacy' },
+  { name: 'Refund & Return Policy', path: '/refund-policy', key: 'refund' },
+  { name: 'Cookie Policy', path: '/cookie-policy', key: 'cookie' },
+  { name: 'Terms & Conditions', path: '/terms', key: 'terms' },
+  { name: 'Insights & Blog', path: '/blog', key: 'blog' },
+  { name: 'Admissions FAQ', path: '/faq', key: 'faq' },
+];
+
+const sortByOrder = (items) =>
+  [...items].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+// One shape for both the admin-saved rows and the shipped fallbacks, so the
+// desktop nav, the MORE dropdown and the mobile drawer share the same data.
+const toNavLink = (item, index) => ({
+  name: item.label || item.name || 'Untitled',
+  path: item.path || '/',
+  hasDropdown: item.hasDropdown === true,
+  key: item._id || `${item.path || '/'}-${index}`,
+});
+
+// The top bar can only hold so many links before it collides with the LMS /
+// REGISTER buttons. Measured on the header: at 1024px the five shipped links +
+// MORE need ~503px but only ~442px exist — that is why "MORE" used to run into
+// "LMS LOGIN" on live. The admin can now lengthen the menu at will, so links
+// past the limit move into the MORE dropdown instead of overlapping:
+//   • 1024–1279px  → 3 in the bar (+MORE)   … measured 47px still spare at 1024
+//   • 1280px and up → 5 in the bar (+MORE)  … measured 51–63px still spare
+// The spare room is deliberate: labels are admin-editable and longer ones still
+// have to fit. The mobile drawer is unaffected and always lists every link —
+// order decides which links stay in the bar.
+const TOP_BAR_LIMIT_WIDE = 5;
+const TOP_BAR_LIMIT_COMPACT = 3;
+
+const WIDE_QUERY = '(min-width: 1280px)';
+
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const company = useCompanyInfo();
   const { settings } = useSiteSettings() || {};
@@ -45,6 +96,11 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const [coursesDropdown, setCoursesDropdown] = useState(false);
   const [moreDropdown, setMoreDropdown] = useState(false);
   const [dbCourses, setDbCourses] = useState([]);
+  const [isWide, setIsWide] = useState(() => (
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia(WIDE_QUERY).matches
+      : true
+  ));
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -71,6 +127,17 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     return () => { isMounted = false; };
   }, []);
 
+  // Re-evaluate how many links the desktop bar can hold as the viewport crosses
+  // (or resizes around) the 1280px breakpoint.
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return undefined;
+    const query = window.matchMedia(WIDE_QUERY);
+    const handleChange = (event) => setIsWide(event.matches);
+    setIsWide(query.matches);
+    query.addEventListener('change', handleChange);
+    return () => query.removeEventListener('change', handleChange);
+  }, []);
+
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -83,28 +150,32 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     };
   }, [mobileMenuOpen]);
 
-  const navLinks = [
-    { name: 'HOME', path: '/' },
-    { name: 'LIVE JOBS', path: '/jobs' },
-    { name: 'CAREER PROGRAMS', path: '/courses', hasDropdown: true },
+  // Menu comes from Admin → Header Menu CMS. The admin-edited list wins as soon
+  // as ANY rows are saved; hidden rows (`active: false`) are filtered here, and
+  // an item can be moved between the top bar and the MORE dropdown by changing
+  // its `placement`.
+  const savedMenu = Array.isArray(settings?.headerMenu) ? settings.headerMenu : [];
+  const hasSavedMenu = savedMenu.length > 0;
+  const activeMenu = hasSavedMenu
+    ? sortByOrder(savedMenu.filter((item) => item.active !== false))
+    : null;
 
-    // Client request: the CERTIFICATIONS slot in the top bar is now Success
-    // Stories. Credential verification still has its own home — the top strip's
-    // "Verify Credential" link and /certificate/:id — so nothing is lost.
-    { name: 'SUCCESS STORIES', path: '/success-stories' },
-    { name: 'ABOUT US', path: '/about' },
-  ];
+  const mainLinks = (activeMenu
+    ? activeMenu.filter((item) => (item.placement || 'main') === 'main')
+    : DEFAULT_MAIN_LINKS
+  ).map(toNavLink);
 
-  // Client request: drop the first two entries (AI Certification Program,
-  // Data Science Certification) and the Career Support entry from MORE.
-  const moreLinks = [
-    { name: 'Privacy Policy', path: '/privacy' },
-    { name: 'Refund & Return Policy', path: '/refund-policy' },
-    { name: 'Cookie Policy', path: '/cookie-policy' },
-    { name: 'Terms & Conditions', path: '/terms' },
-    { name: 'Insights & Blog', path: '/blog' },
-    { name: 'Admissions FAQ', path: '/faq' },
-  ];
+  const savedMoreLinks = (activeMenu
+    ? activeMenu.filter((item) => item.placement === 'more')
+    : DEFAULT_MORE_LINKS
+  ).map(toNavLink);
+
+  // Desktop: drop the tail of the top bar into MORE so a long admin menu can
+  // never overlap the CTAs. Mobile drawer: every link keeps its own place.
+  const topBarLimit = isWide ? TOP_BAR_LIMIT_WIDE : TOP_BAR_LIMIT_COMPACT;
+  const navLinks = mainLinks.slice(0, topBarLimit);
+  const moreLinks = [...mainLinks.slice(topBarLimit), ...savedMoreLinks];
+  const drawerNavLinks = mainLinks;
 
   // Merge DB courses with formatting
   const programList = dbCourses.length > 0
@@ -231,15 +302,15 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               if (link.hasDropdown) {
                 return (
                   <div
-                    key={link.name}
+                    key={link.key}
                     className="relative group py-2"
                     onMouseEnter={() => setCoursesDropdown(true)}
                     onMouseLeave={() => setCoursesDropdown(false)}
                   >
                     <div className="flex items-center">
-                      {/* Clicking the label itself navigates to the full courses page */}
+                      {/* Clicking the label itself navigates to its own page */}
                       <Link
-                        to="/courses"
+                        to={link.path}
                         onClick={() => setCoursesDropdown(false)}
                         className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 whitespace-nowrap ${
                           location.pathname.startsWith('/courses')
@@ -251,7 +322,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                       </Link>
                       <button
                         type="button"
-                        aria-label="Toggle Career Programs dropdown"
+                        aria-label={`Toggle ${link.name} dropdown`}
                         onClick={() => setCoursesDropdown(!coursesDropdown)}
                         className="pl-0.5 py-1 cursor-pointer"
                       >
@@ -311,7 +382,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
 
               return (
                 <Link
-                  key={link.name}
+                  key={link.key}
                   to={link.path}
                   className={`text-[12px] xl:text-[13px] font-bold transition-colors py-1 relative whitespace-nowrap ${
                     isActive
@@ -327,7 +398,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               );
             })}
 
-            {/* MORE ▾ Dropdown */}
+            {/* MORE ▾ Dropdown — hidden entirely when the admin leaves it empty */}
+            {moreLinks.length > 0 && (
             <div
               className="relative group py-2"
               onMouseEnter={() => setMoreDropdown(true)}
@@ -347,7 +419,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                   </div>
                   {moreLinks.map((item) => (
                     <Link
-                      key={item.name}
+                      key={item.key}
                       to={item.path}
                       onClick={() => setMoreDropdown(false)}
                       className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#002060] transition-colors"
@@ -358,6 +430,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 </div>
               )}
             </div>
+            )}
           </nav>
 
           {/* Desktop Right CTAs: LMS LOGIN and REGISTER NOW */}
@@ -419,9 +492,9 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
 
               {/* Main Links */}
               <div className="space-y-1">
-                {navLinks.map((link) => (
+                {drawerNavLinks.map((link) => (
                   <button
-                    key={link.name}
+                    key={link.key}
                     onClick={() => handleNavClick(link.path)}
                     className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
                   >
@@ -450,14 +523,15 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               </div>
 
               {/* Legal & More Links */}
+              {savedMoreLinks.length > 0 && (
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3">
                   Policies & Governance
                 </div>
                 <div className="grid grid-cols-2 gap-1 px-1">
-                  {moreLinks.map((item) => (
+                  {savedMoreLinks.map((item) => (
                     <button
-                      key={item.name}
+                      key={item.key}
                       onClick={() => handleNavClick(item.path)}
                       className="text-left text-[11px] py-1.5 px-2 rounded text-slate-600 dark:text-slate-400 hover:text-[#002060] hover:bg-slate-50 dark:hover:bg-slate-800"
                     >
@@ -466,6 +540,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                   ))}
                 </div>
               </div>
+              )}
             </div>
 
             {/* Bottom Actions in Drawer: LMS LOGIN and REGISTER NOW */}

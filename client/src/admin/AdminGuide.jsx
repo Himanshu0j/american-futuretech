@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
   ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2,
-  MessageSquareWarning, Images, PanelBottom, Award
+  MessageSquareWarning, Images, PanelBottom, PanelTop, Award
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -170,6 +170,13 @@ const SECTIONS = [
     path: '/admin/settings',
     what: 'About page ka "Led by Industry Practitioners" section — kisi bhi member ka naam, role, experience, bio aur skills.',
     how: 'Admin → Settings → "Team & Alliances" tab. Ek member ko hatana ho to uske saamne wala "Active" checkbox off karo (data delete nahi hota, baad me wapas on kar sakte ho). Poori team ek saath hatani ho to "Deactivate All" dabao → neeche "Publish Changes" — public About page se Leadership & Faculty section pura gayab ho jayega. Wapas laane ke liye "Activate All". Bio (about paragraph) khaali chhod do to us card par about text nahi dikhega. Poora section band karna ho to About & Mission tab se "Leadership team" visibility off kar do.',
+  },
+  {
+    icon: PanelTop,
+    title: '11g. Header Menu (Top Bar Links)',
+    path: '/admin/header',
+    what: 'Website ke header ka poora menu — HOME, LIVE JOBS, CAREER PROGRAMS, SUCCESS STORIES, ABOUT US aur "MORE" dropdown ki links.',
+    how: 'Admin → Header Menu CMS. "Top bar menu" mein label (jo website par dikhta hai), link, order (up/down arrows) aur eye icon se show/hide karo. "MORE" dropdown ke items neeche wale section mein hain — saare hide kar do to poora MORE button gayab ho jata hai. Kisi item ko top bar se MORE mein (ya wapas) bhejna ho to uske saamne wale dropdown se "Top bar / More menu" chuno. CAREER PROGRAMS ke saamne "Dropdown" button se programs ka mega-panel on/off hota hai. Naya link "Add item" se add karo, hataana ho to dustbin se. Sabse neeche "Save Header Menu" dabao — turant live, koi deploy nahi.',
   },
   {
     icon: Layers,

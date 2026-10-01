@@ -105,7 +105,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             enough for the smaller type. This taller bottom rise carries them
             and doubles as the fade into the section's own aurora wash, so the
             banner has no hard seam against the sections below. */}
-        <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white from-5% via-white/78 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/85" />
+        <div className="absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-5% via-white/82 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/88" />
       </div>
 
       {/* Background Architectural Grid Accent */}
@@ -148,7 +148,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             </div>
 
             {/* Supporting Editorial Paragraph */}
-            <p className="anim-hero-body text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl font-normal leading-relaxed">
+            <p className="anim-hero-body text-base sm:text-lg text-slate-700 dark:text-slate-200 max-w-xl font-normal leading-relaxed">
               {heroData.subheadline || 'Rigorous, mentor-guided 6-month career training and 1-on-1 personalized tracks engineered for real industry impact. Master production-grade AI, cybersecurity, and cloud systems with verifiable US credentials and direct placement support.'}
             </p>
 
@@ -182,7 +182,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 {/* One notch darker than the plain page styles: over the banner
                     photograph those small labels have to carry their own
                     contrast instead of relying on a flat white background. */}
-                <div className="text-[11px] text-slate-600 dark:text-slate-300 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
+                <div className="text-[11px] text-slate-700 dark:text-slate-300 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
               </div>
             </div>
 
@@ -212,17 +212,17 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-1">
                     <span>★ 4.9 / 5.0</span>
                   </div>
-                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Graduate Satisfaction</div>
+                  <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Graduate Satisfaction</div>
                 </div>
 
                 <div>
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading">100% Verifiable</div>
-                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Accredited US Registry</div>
+                  <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Accredited US Registry</div>
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
                   <div className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">$99 Deposit</div>
-                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
+                  <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
                 </div>
               </div>
 

@@ -56,6 +56,46 @@ Tuition & Billing Ledger shows a **Re-check** button on Pending rows.
 - A late `expired` / `failed` event can never downgrade a settled payment.
 - New students receive a **cryptographically random** temporary password, delivered by email only — never in an API response.
 
+## Live smoke test (the owner's end-to-end proof)
+
+Admin → **Settings → Payment Gateway → Live smoke test** takes one real charge on
+the live account, with the owner's own card, and refunds it the moment Stripe
+confirms it. In one run it proves what no screenshot can: the hosted Checkout
+page opens, the live key works, Stripe reaches our webhook and the signature
+verifies, the `Pending → Paid` transition happens, and the refund path works.
+
+How it works:
+
+1. `POST /api/payments/smoke-test` (`SETTINGS_EDIT`, plus the typed confirmation
+   token) creates a `Payment` row marked `smokeTest: true` and a real Stripe
+   Checkout Session for **one unit of the gateway currency** ($1.00 for USD).
+   The amount is fixed on the server — a request body can never scale it.
+2. The owner pays on Stripe's hosted page. Card data never touches this server
+   (same PCI posture as a real order) and is never stored.
+3. Stripe calls the normal webhook. The settlement branch for a smoke test takes
+   the exact production path — signature check, event claim, `Paid`, audit
+   entry — then **stops before any student, enrollment, coupon or email** and
+   refunds the charge with an idempotency key derived from the payment.
+4. The panel polls `GET /api/payments/smoke-test/:id`, which reconciles against
+   Stripe if the webhook was late, auto-retries a failed refund, and reports
+   *which* path settled the charge. A lost webhook shows up as a red step, not a
+   silent pass. `POST /api/payments/smoke-test/:id/refund` is the manual retry.
+
+Cost and abuse rails (a refunded charge is not free — Stripe keeps its fee):
+
+- the amount is fixed server-side and never read from the request;
+- a typed confirmation token is required, so a stray request cannot charge;
+- one unresolved test at a time, a 10-minute cooldown, and a 3-per-day cap;
+- an abandoned checkout is closed out after 30 minutes;
+- refund retries carry the same idempotency key, so money can never move twice;
+- `smokeTest` rows are excluded from the Tuition & Billing Ledger, from
+  `totalRevenue` and from the stuck-order list (`?includeSmokeTests=true` shows
+  them on request).
+
+Audit trail: `PAYMENT_SMOKE_TEST_STARTED`, `PAYMENT_SMOKE_TEST_SETTLED`,
+`PAYMENT_SMOKE_TEST_REFUND_FAILED`, `PAYMENT_SMOKE_TEST_REFUNDED`, and the
+webhook delivery itself appears in Webhook health like any other event.
+
 ## Configuring the gateway (two supported paths)
 
 ### Path A — from the admin panel, no redeploy (recommended for the client)
@@ -111,6 +151,10 @@ An environment variable always wins over a key saved in the panel.
    appears in the Tuition & Billing Ledger with its Stripe reference (CSV export
    included).
 5. Test with Stripe test cards (`4242 4242 4242 4242`, any future expiry, any CVC) while in test mode, then switch to live keys.
+6. With live keys saved, run **Live smoke test** once (Settings → Payment Gateway):
+   one real $1 charge on the owner's card, refunded automatically, proving
+   Checkout → webhook settlement → refund end to end. All four steps must go
+   green; a red "webhook" step means Stripe is not reaching the endpoint.
 
 ## Behaviour without keys
 
@@ -122,13 +166,21 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 73 checks: pricing/voucher math, temp-password strength, webhook signature
+Runs 119 checks: pricing/voucher math, temp-password strength, webhook signature
 enforcement (missing, forged, tampered payloads), a full end-to-end settlement
 against a throwaway local MongoDB (settlement, receipt-to-account linking,
 idempotent replays, failed/expired handling, forged-webhook rejection), the
 delivery log (processed/duplicate/unmatched/rejected rows, the health summary and
 its stuck-order list), the re-check guards, and the admin setup contract
-(key/mode auto-alignment, webhook URL + event checklist). It forces dummy test
+(key/mode auto-alignment, webhook URL + event checklist).
+
+The live smoke test is covered with the Stripe calls **stubbed**: the fixed
+amount (a forged body is ignored), the typed-confirmation gate, the cost rails
+(unresolved-run lock, cooldown, daily cap, release after a day), the webhook
+settlement branch (no student, no enrollment, audit entries), the idempotent
+refund (one Stripe call however many retries), a retried webhook that cannot
+un-refund a row, the ledger/revenue exclusion, and — via source assertions — the
+admin gating of all three routes. It forces dummy test
 keys, so it can never touch live money.
 
 The live suite (`npm run verify:live`) is safe to run with real keys saved: it

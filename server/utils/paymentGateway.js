@@ -102,6 +102,71 @@ const retrieveCheckoutSession = async (sessionId) => {
   return stripe.checkout.sessions.retrieve(sessionId);
 };
 
+/**
+ * The admin's "live smoke test": one real, tiny charge used to prove that
+ * Checkout, the signed webhook and the refund path all work on the live account.
+ *
+ * It is deliberately its own function rather than a mode of the course checkout:
+ * the line item says it is a test, the metadata carries `smokeTest`, and the
+ * redirect returns to the admin panel instead of a student's success screen.
+ * Checkout itself is unchanged — the admin types their own card on Stripe's
+ * hosted page, so no card data ever reaches this server.
+ */
+const createSmokeTestSession = async ({ payment, amountMinor, currency, clientUrl, adminName }) => {
+  const stripe = getStripe();
+  if (!stripe) throw new Error('Stripe is not configured');
+
+  const adminReturnUrl = `${stripTrailingSlash(clientUrl)}/admin/settings?tab=payments&smokeTest=${payment._id}`;
+
+  return stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    customer_email: payment.email,
+    client_reference_id: String(payment._id),
+    metadata: {
+      paymentId: String(payment._id),
+      smokeTest: 'true',
+      testedBy: String(adminName || 'Admin').slice(0, 120),
+    },
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency,
+          unit_amount: amountMinor,
+          product_data: {
+            name: 'Live payment smoke test — refunded immediately',
+            description:
+              'One-off end-to-end check: Stripe Checkout → signed webhook settlement → automatic refund. This is not a course purchase.',
+          },
+        },
+      },
+    ],
+    success_url: `${adminReturnUrl}&status=success`,
+    cancel_url: `${adminReturnUrl}&status=cancelled`,
+    expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes
+    allow_promotion_codes: false,
+  });
+};
+
+/**
+ * Put a settled charge back on the card.
+ *
+ * Money must never move twice, so the caller passes an idempotency key derived
+ * from the payment: retrying with the same key returns the same refund object
+ * instead of refunding again.
+ */
+const refundPaymentIntent = async ({ paymentIntentId, amountMinor, idempotencyKey, metadata }) => {
+  const stripe = getStripe();
+  if (!stripe) throw new Error('Stripe is not configured');
+  if (!paymentIntentId) throw new Error('No Stripe payment intent to refund');
+
+  const params = { payment_intent: paymentIntentId, metadata };
+  if (amountMinor != null) params.amount = Math.round(amountMinor);
+  const options = idempotencyKey ? { idempotencyKey } : undefined;
+  return stripe.refunds.create(params, options);
+};
+
 const expandPaymentIntent = async (paymentIntentId) => {
   const stripe = getStripe();
   if (!stripe || !paymentIntentId) return null;
@@ -130,7 +195,9 @@ module.exports = {
   ALLOWED_FALLBACK_ORIGINS,
   resolveClientUrl,
   createCheckoutSession,
+  createSmokeTestSession,
   retrieveCheckoutSession,
+  refundPaymentIntent,
   expandPaymentIntent,
   verifyWebhookSignature,
   isStripeConfigured,

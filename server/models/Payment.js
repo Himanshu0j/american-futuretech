@@ -111,6 +111,27 @@ const PaymentSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  // ── Refunds (currently the admin's live smoke test) ──
+  // Kept on the payment itself so the money-out step is as auditable as the
+  // money-in step, and so a retry can never refund the same charge twice.
+  refundId: {
+    type: String,
+    default: '',
+  },
+  refundAmount: {
+    type: Number,
+  },
+  refundedAt: {
+    type: Date,
+  },
+  // A smoke test is a real, tiny charge an admin takes to prove the whole
+  // pipeline, refunded immediately. It is never a sale: no student, enrollment
+  // or email is created, and the ledger/revenue totals skip it.
+  smokeTest: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   // Stripe event ids already processed — guarantees a retried webhook can never
   // enroll the same student twice.
   webhookEventIds: {

@@ -145,7 +145,7 @@ Editor **sirf signed-in admin** ko dikhta hai. Aam visitor ko sirf aapke kiye hu
 | 12 | **Certificates** | Eligible list, **issue / revoke / reinstate**, number se verify | `/admin/lms/certificates` |
 | 13 | **Communications** | Announcement bhejein — All Students / ek Course / ek Batch; pin karein | `/admin/lms/communications` |
 | 14 | **LMS Settings** | Welcome message, lesson preview on/off, quiz defaults, certificate wording | `/admin/lms/settings` |
-| 15 | **Tuition & Billing Ledger** | Payment records, reconciliation | `/admin/payments` |
+| 15 | **Tuition & Billing Ledger** | Payment records, reconciliation; gateway keys + **live smoke test** ($1 charge, turant refund) Settings → Payment Gateway ke andar | `/admin/payments` |
 | 16 | **Coupons & Promotions** | Discount coupon banao / band karo | `/admin/coupons` |
 | 17 | **Partner Job Board** | Job posting, applications | `/admin/jobs` |
 | 18 | **Content & FAQs CMS** | Blog, FAQs, testimonials, success stories | `/admin/content` |
@@ -209,6 +209,7 @@ Client ko live class ka poora scheduler chahiye to ye next phase ka kaam hai —
 | Staff permissions (RBAC) | Kaun kaunsa module dekh sakta hai |
 | Audit log | Kis admin ne kya badla — Settings ke andar record |
 | Lead form validation | Galat/adhoora data server par reject hota hai aur clean error milta hai |
+| **Online card payment (Stripe)** | Live keys active hain — checkout real card leta hai aur enrollment sirf Stripe ke **signed webhook** se confirm hota hai. Settings → Payment Gateway → **Live smoke test** se ek asli $1 charge karke poora path (checkout → webhook → refund) khud verify kar sakte hain — refund automatic hai |
 
 ### ⛔ Abhi nahi hai (aur uska kaam ka tareeka)
 
@@ -216,7 +217,6 @@ Client ko live class ka poora scheduler chahiye to ye next phase ka kaam hai —
 |---|---|
 | **Video / PDF file upload** (server storage chahiye) | YouTube / Vimeo / Drive ka **https link** use karein — student ko wahi player milta hai |
 | **Website Editor se image upload ka permanent hona** | Image ka **external https URL** use karein (upload temp disk par jata hai) |
-| **Online card payment (Stripe)** — keys set nahi hain | Abhi checkout "manual admissions enquiry" par jata hai; payment admin manually mark karta hai. Keys mil jayein to 1 din ka kaam |
 | **Live class scheduler** | Communications se announcement + lesson mein join link |
 | **Automatic emails** (lead confirmation, certificate issued, password reset) | Server par SMTP username/password set hone par hi email jayega. Record sab admin panel mein banta rehta hai. Set nahi hai to bata dein, kar dunga |
 | **Assignments + grading** | Next phase ka kaam |

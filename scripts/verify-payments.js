@@ -6,8 +6,12 @@
  * Level 1  pure pricing/coupon/temp-password logic (no DB, no network)
  * Level 2  Stripe webhook signature enforcement (local HMAC, no network)
  * Level 3  full settlement through the webhook handler against a throwaway
- *          local MongoDB database (dropped at the end)
- * Level 4  admin-panel setup contract (key/mode alignment, webhook checklist)
+ *          local MongoDB database (dropped at the end), including the admin's
+ *          live smoke test: fixed amount, typed confirmation, cost guards,
+ *          settle-then-refund with an idempotent refund, and the guarantee
+ *          that a smoke charge never creates a student or counts as revenue
+ * Level 4  admin-panel setup contract (key/mode alignment, webhook checklist,
+ *          smoke-test route gating and cost rails)
  *
  * Any real Stripe keys already present in server/.env are ignored — the script
  * forces test-only dummy credentials so it can never touch live money.
@@ -15,6 +19,7 @@
 
 const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
 
 // Server dependencies live in server/node_modules — make them resolvable from
 // this root-level script without duplicating the packages.
@@ -201,13 +206,13 @@ const run = async () => {
   };
 
   /** Call an admin controller directly and capture what it answered. */
-  const callController = async (fn, { params = {}, body = {}, user = { _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', role: 'ADMIN', name: 'Verify Admin', email: 'verify-admin@example.com' } } = {}) => {
+  const callController = async (fn, { params = {}, body = {}, query = {}, user = { _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', role: 'ADMIN', name: 'Verify Admin', email: 'verify-admin@example.com' } } = {}) => {
     const captured = { statusCode: 200, body: null };
     const res = {
       status(code) { captured.statusCode = code; return this; },
       json(body) { captured.body = body; return this; },
     };
-    await fn({ params, body, user, query: {}, headers: {} }, res);
+    await fn({ params, body, user, query, headers: {} }, res);
     return captured;
   };
 
@@ -412,6 +417,291 @@ const run = async () => {
   check('A freshly created Pending order is NOT flagged as stuck',
     !stuckIds.includes(String(freshPending._id)), 'only orders older than 30 minutes');
 
+  // ── Admin live smoke test: one real charge, refunded immediately ─────────
+  // Everything below runs with the Stripe calls stubbed, because the suite must
+  // never be able to touch real money. What is verified is our own contract:
+  // fixed amount, typed confirmation, cost guards, settle-then-refund, and the
+  // promise that a smoke charge never creates a student or counts as revenue.
+  const gatewayUtil = require(path.join(__dirname, '..', 'server', 'utils', 'paymentGateway'));
+  const AuditLog = require(path.join(__dirname, '..', 'server', 'models', 'AuditLog'));
+  const smokeTest = controller.__test__;
+  const SMOKE_CONFIRM = smokeTest.SMOKE_TEST_CONFIRMATION;
+
+  const smokeGuards = [];
+
+  // A stray request (a retry, a curious curl) must never charge a card.
+  const unconfirmed = await callController(controller.startSmokeTest, { body: {} });
+  smokeGuards.push([
+    'no typed confirmation → the charge cannot start',
+    unconfirmed.statusCode === 400 && unconfirmed.body?.code === 'CONFIRMATION_REQUIRED',
+  ]);
+
+  // A charge that cannot be signature-verified is worse than no test at all.
+  const secretBefore = process.env.STRIPE_WEBHOOK_SECRET;
+  process.env.STRIPE_WEBHOOK_SECRET = '';
+  const noWebhook = await callController(controller.startSmokeTest, { body: { confirm: SMOKE_CONFIRM } });
+  process.env.STRIPE_WEBHOOK_SECRET = secretBefore;
+  smokeGuards.push([
+    'without a webhook secret nothing is charged',
+    noWebhook.statusCode === 503 && noWebhook.body?.code === 'PAYMENTS_NOT_CONFIGURED',
+  ]);
+
+  // Refund-helper guards. Each one must return BEFORE any Stripe call.
+  const notSmokePayment = await smokeTest.refundSmokeTestPayment({ smokeTest: false });
+  const uncharged = await smokeTest.refundSmokeTestPayment({ smokeTest: true, stripePaymentIntentId: '' });
+  const refundedTwice = await smokeTest.refundSmokeTestPayment({
+    smokeTest: true,
+    stripePaymentIntentId: 'pi_smoke_x',
+    refundId: 're_done',
+  });
+  smokeGuards.push(['an ordinary order can never be refunded through this path',
+    notSmokePayment.refunded === false && notSmokePayment.reason === 'not-a-smoke-test']);
+  smokeGuards.push(['refunding before the charge settles is refused',
+    uncharged.refunded === false && uncharged.reason === 'no-charge-yet']);
+  smokeGuards.push(['an already refunded charge is never refunded again',
+    refundedTwice.refunded === true && refundedTwice.reason === 'already-refunded']);
+  for (const [name, passed] of smokeGuards) check(`Smoke test guard: ${name}`, passed);
+
+  // Start a run with session creation stubbed (this suite never hits Stripe).
+  const refundCalls = [];
+  const originalCreateSmokeSession = gatewayUtil.createSmokeTestSession;
+  const originalRefundIntent = gatewayUtil.refundPaymentIntent;
+  gatewayUtil.createSmokeTestSession = async ({ payment }) => ({
+    id: `cs_test_smoke_${Date.now()}`,
+    url: `https://checkout.stripe.com/c/pay/${payment._id}`,
+  });
+  // First let the refund fail, so we can prove an outstanding charge is tracked
+  // and the panel is told to retry — the one failure mode that costs money.
+  gatewayUtil.refundPaymentIntent = async () => {
+    throw new Error('Refund API temporarily unavailable');
+  };
+
+  const started = await callController(controller.startSmokeTest, {
+    body: { confirm: SMOKE_CONFIRM, amount: 999999, currency: 'EUR' },
+  });
+  const smokeRow = await Payment.findById(started.body?.smokeTest?.id);
+  check('Smoke test opens a real Checkout session with the server-fixed amount',
+    started.statusCode === 200 && smokeRow?.amount === 1 && smokeRow?.smokeTest === true,
+    `amount ${smokeRow?.amount}`);
+  check('A forged amount or currency in the body is ignored',
+    smokeRow?.amount === 1 && smokeRow?.currency === 'USD', `${smokeRow?.currency} ${smokeRow?.amount}`);
+  check('The charge is capped at one unit of the gateway currency on the server',
+    smokeTest.SMOKE_TEST_AMOUNT_MINOR === 100, `${smokeTest.SMOKE_TEST_AMOUNT_MINOR} minor units`);
+  check('Starting a run is written to the audit trail',
+    Boolean(await AuditLog.findOne({ action: 'PAYMENT_SMOKE_TEST_STARTED', entityId: String(smokeRow._id) })));
+
+  // Money may still be in flight: a second live test must not start.
+  const secondStart = await callController(controller.startSmokeTest, { body: { confirm: SMOKE_CONFIRM } });
+  check('A second run is refused while the first one is unresolved',
+    secondStart.statusCode === 409 && secondStart.body?.code === 'SMOKE_TEST_IN_PROGRESS');
+  check('The refused run creates no extra payment row',
+    (await Payment.countDocuments({ smokeTest: true })) === 1);
+
+  // A stale smoke session must never be mistaken for a student's stuck order.
+  await Payment.collection.updateOne(
+    { _id: smokeRow._id },
+    { $set: { createdAt: new Date(Date.now() - 45 * 60 * 1000) } },
+  );
+  const healthWithSmoke = await callController(controller.getWebhookHealth, { params: {}, query: {} });
+  check('A smoke test never appears in the stuck-order list',
+    !(healthWithSmoke.body?.stuck || []).some((row) => String(row._id) === String(smokeRow._id)));
+
+  // Settle it through the production webhook path, exactly like a real order.
+  await deliverWebhook({
+    id: `evt_smoke_${Date.now()}`,
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        id: smokeRow.checkoutSessionId,
+        object: 'checkout.session',
+        payment_status: 'paid',
+        status: 'complete',
+        payment_intent: 'pi_smoke_verify_0001',
+        payment_method_types: ['card'],
+        amount_total: 100,
+        metadata: { paymentId: String(smokeRow._id), smokeTest: 'true' },
+      },
+    },
+  });
+  const smokeSettled = await Payment.findById(smokeRow._id);
+  check('Smoke charge is settled by the signed webhook like a real order',
+    smokeSettled.status === 'Paid' && smokeSettled.stripePaymentIntentId === 'pi_smoke_verify_0001');
+  check('A smoke charge never creates a student account',
+    (await User.countDocuments({ email: smokeRow.email })) === 0);
+  check('A smoke charge never creates an enrollment',
+    (await Enrollment.countDocuments({ payment: smokeRow._id })) === 0);
+  check('A failed refund leaves the charge visible as outstanding',
+    smokeSettled.refundId === ''
+      && Boolean(await AuditLog.findOne({ action: 'PAYMENT_SMOKE_TEST_REFUND_FAILED' })),
+    `refundId "${smokeSettled.refundId}"`);
+
+  const ledger = await callController(controller.getAllPayments, { params: {}, query: {} });
+  const ledgerWithSmoke = await callController(controller.getAllPayments, {
+    params: {},
+    query: { includeSmokeTests: 'true' },
+  });
+  const listedIds = (ledger.body?.payments || []).map((row) => String(row._id));
+  const listedWithSmoke = (ledgerWithSmoke.body?.payments || []).map((row) => String(row._id));
+  check('A smoke test is hidden from the admin ledger',
+    !listedIds.includes(String(smokeRow._id)), `${listedIds.length} ledger row(s)`);
+  check('...but an admin can ask for it explicitly',
+    listedWithSmoke.includes(String(smokeRow._id)));
+  check('...and its charge is never counted as revenue',
+    ledgerWithSmoke.body?.totalRevenue === ledger.body?.totalRevenue,
+    `revenue ${ledgerWithSmoke.body?.totalRevenue} vs ${ledger.body?.totalRevenue}`);
+
+  const smokeStatus = await callController(controller.getSmokeTestStatus, { params: { id: String(smokeRow._id) } });
+  check('The status endpoint reports what actually happened',
+    smokeStatus.statusCode === 200
+      && smokeStatus.body?.smokeTest?.chargedAt
+      && smokeStatus.body?.smokeTest?.refundId === ''
+      && smokeStatus.body?.smokeTest?.needsRefund === true);
+  check('The status endpoint proves the signed webhook settled the charge',
+    smokeStatus.body?.smokeTest?.settledByWebhook === true,
+    JSON.stringify((smokeStatus.body?.smokeTest?.webhookDeliveries || []).map((row) => row.status)));
+  check('...and it never leaks key material',
+    !/sk_(test|live)_|whsec_[A-Za-z0-9]{6,}/.test(JSON.stringify(smokeStatus.body)), 'routing facts only');
+
+  // A charge recovered by the re-check path (webhook never arrived) must be
+  // reported as such, so a broken endpoint is visible instead of a silent pass.
+  const recoveredSmoke = await Payment.create({
+    studentName: 'Verify Admin (live smoke test)',
+    email: `smoke.recovered.${Date.now()}@example.com`,
+    course: dbCourse._id,
+    courseTitle: 'Live smoke test — not a sale (USD 1.00)',
+    tier: 'full',
+    amount: 1,
+    currency: 'USD',
+    status: 'Paid',
+    transactionId: `SMOKE-${Date.now()}-7777`,
+    invoiceNumber: `SMOKE-TEST-${Math.floor(Math.random() * 1e6)}`,
+    paymentMethod: 'Live smoke test (Stripe Checkout)',
+    provider: 'stripe',
+    smokeTest: true,
+    paidAt: new Date(),
+    stripePaymentIntentId: 'pi_smoke_recovered',
+    webhookEventIds: ['reconcile:cs_smoke_recovered'],
+  });
+  const recoveredStatus = await callController(controller.getSmokeTestStatus, {
+    params: { id: String(recoveredSmoke._id) },
+  });
+  check('A charge recovered without a webhook is reported as webhook-missing',
+    recoveredStatus.body?.smokeTest?.settledByWebhook === false
+      && recoveredStatus.body?.smokeTest?.needsRefund === true);
+  // Close this fixture out so the unresolved-charge lock is not tripped by it,
+  // and age it past the cooldown so the cost-rail checks below are isolated.
+  await Payment.updateOne(
+    { _id: recoveredSmoke._id },
+    { $set: { status: 'Refunded', refundId: 're_smoke_recovered', refundAmount: 1, refundedAt: new Date() } },
+  );
+  await Payment.collection.updateOne(
+    { _id: recoveredSmoke._id },
+    { $set: { createdAt: new Date(Date.now() - 45 * 60 * 1000) } },
+  );
+
+  // Now let the refund succeed and prove it is single-shot.
+  gatewayUtil.refundPaymentIntent = async ({ paymentIntentId, amountMinor, idempotencyKey }) => {
+    refundCalls.push({ paymentIntentId, amountMinor, idempotencyKey });
+    return { id: 're_smoke_verify', amount: amountMinor, payment_intent: paymentIntentId };
+  };
+
+  const refunded = await callController(controller.refundSmokeTest, { params: { id: String(smokeRow._id) } });
+  const smokeRefunded = await Payment.findById(smokeRow._id);
+  check('The refund is issued and stored on the payment',
+    refunded.statusCode === 200 && refunded.body?.refunded === true
+      && smokeRefunded.status === 'Refunded' && smokeRefunded.refundId === 're_smoke_verify');
+  check('The refund amount matches the charge (no partial silence)',
+    smokeRefunded.refundAmount === 1 && refundCalls[0]?.amountMinor === 100,
+    `${smokeRefunded.refundAmount} / ${refundCalls[0]?.amountMinor} minor`);
+  check('The refund carries an idempotency key derived from the payment',
+    refundCalls[0]?.idempotencyKey === `smoke-refund-${smokeRow._id}`, refundCalls[0]?.idempotencyKey);
+  check('Refunding is written to the audit trail',
+    Boolean(await AuditLog.findOne({ action: 'PAYMENT_SMOKE_TEST_REFUNDED', entityId: String(smokeRow._id) })));
+
+  const refundAgain = await callController(controller.refundSmokeTest, { params: { id: String(smokeRow._id) } });
+  check('A retried refund never moves money twice',
+    refundAgain.statusCode === 200 && refundAgain.body?.alreadyRefunded === true
+      && refundCalls.length === 1,
+    `${refundCalls.length} Stripe refund call(s)`);
+
+  // A retried settlement event must not flip a refunded row back to Paid.
+  await deliverWebhook({
+    id: `evt_smoke_retry_${Date.now()}`,
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        id: smokeRow.checkoutSessionId,
+        object: 'checkout.session',
+        payment_status: 'paid',
+        status: 'complete',
+        payment_intent: 'pi_smoke_verify_0001',
+        amount_total: 100,
+        metadata: { paymentId: String(smokeRow._id), smokeTest: 'true' },
+      },
+    },
+  });
+  const smokeStillRefunded = await Payment.findById(smokeRow._id);
+  check('A retried webhook cannot un-refund a smoke test',
+    smokeStillRefunded.status === 'Refunded' && smokeStillRefunded.refundId === 're_smoke_verify');
+
+  const doneStatus = await callController(controller.getSmokeTestStatus, { params: { id: String(smokeRow._id) } });
+  check('Every step of the run reports done once refunded',
+    (doneStatus.body?.smokeTest?.steps || []).length === 4
+      && doneStatus.body.smokeTest.steps.every((step) => step.done === true),
+    JSON.stringify((doneStatus.body?.smokeTest?.steps || []).map((step) => `${step.id}:${step.done}`)));
+
+  // Cost rails: a smoke test is not free (Stripe keeps its fee on a refund), so
+  // a click-fest is bounded in time as well as by the unresolved-run lock.
+  const backdateSmoke = (id, minutes) =>
+    Payment.collection.updateOne(
+      { _id: id },
+      { $set: { createdAt: new Date(Date.now() - minutes * 60 * 1000) } },
+    );
+
+  await backdateSmoke(smokeRow._id, 2);
+  const tooSoon = await callController(controller.startSmokeTest, { body: { confirm: SMOKE_CONFIRM } });
+  check('A run started moments ago is on cooldown',
+    tooSoon.statusCode === 429 && tooSoon.body?.code === 'SMOKE_TEST_COOLDOWN');
+
+  await backdateSmoke(smokeRow._id, 45);
+  for (const n of [1, 2]) {
+    const extra = await Payment.create({
+      studentName: `Verify Admin (live smoke test ${n})`,
+      email: `smoke.limit.${n}.${Date.now()}@example.com`,
+      course: dbCourse._id,
+      courseTitle: 'Live smoke test — not a sale (USD 1.00)',
+      tier: 'full',
+      amount: 1,
+      currency: 'USD',
+      status: 'Refunded',
+      transactionId: `SMOKE-LIMIT-${n}-${Date.now()}`,
+      invoiceNumber: `SMOKE-LIMIT-${n}-${Math.floor(Math.random() * 1e6)}`,
+      provider: 'stripe',
+      smokeTest: true,
+      paidAt: new Date(),
+      stripePaymentIntentId: `pi_smoke_limit_${n}`,
+      refundId: `re_smoke_limit_${n}`,
+      refundedAt: new Date(),
+    });
+    await backdateSmoke(extra._id, 45);
+  }
+  const capped = await callController(controller.startSmokeTest, { body: { confirm: SMOKE_CONFIRM } });
+  check('The daily cap stops a click-fest from burning real money',
+    capped.statusCode === 429 && capped.body?.code === 'SMOKE_TEST_DAILY_LIMIT',
+    `${smokeTest.SMOKE_TEST_DAILY_LIMIT}/day allowed`);
+
+  await Payment.collection.updateMany(
+    { smokeTest: true },
+    { $set: { createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) } },
+  );
+  const released = await callController(controller.startSmokeTest, { body: { confirm: SMOKE_CONFIRM } });
+  check('The rails release the next day (a resolved run never locks the feature out)',
+    released.statusCode === 200 && released.body?.smokeTest?.amount === 1,
+    `${released.statusCode}`);
+
+  gatewayUtil.createSmokeTestSession = originalCreateSmokeSession;
+  gatewayUtil.refundPaymentIntent = originalRefundIntent;
+
   await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
 
@@ -500,6 +790,49 @@ const run = async () => {
       && REQUIRED_WEBHOOK_EVENTS.includes('checkout.session.expired')
       && REQUIRED_WEBHOOK_EVENTS.includes('payment_intent.payment_failed'),
     REQUIRED_WEBHOOK_EVENTS.join(', '));
+
+  // ── Live smoke test: the money-moving rails must stay in the code ────────
+  const smokeContract = require(path.join(__dirname, '..', 'server', 'controllers', 'paymentController')).__test__;
+  check('Smoke-test amount is fixed on the server at one unit of currency',
+    smokeContract.SMOKE_TEST_AMOUNT_MINOR === 100, `${smokeContract.SMOKE_TEST_AMOUNT_MINOR} minor units`);
+  check('Smoke-test confirmation token is a real gate, not a boolean',
+    typeof smokeContract.SMOKE_TEST_CONFIRMATION === 'string'
+      && smokeContract.SMOKE_TEST_CONFIRMATION.length >= 12);
+  check('Smoke-test cost rails exist (cooldown, daily cap, checkout window)',
+    smokeContract.SMOKE_TEST_COOLDOWN_MS >= 5 * 60 * 1000
+      && smokeContract.SMOKE_TEST_DAILY_LIMIT >= 1 && smokeContract.SMOKE_TEST_DAILY_LIMIT <= 5
+      && smokeContract.SMOKE_TEST_CHECKOUT_WINDOW_MS >= 15 * 60 * 1000,
+    `${smokeContract.SMOKE_TEST_COOLDOWN_MS / 60000}min cooldown, ${smokeContract.SMOKE_TEST_DAILY_LIMIT}/day`);
+
+  const paymentControllerSource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'controllers', 'paymentController.js'),
+    'utf8',
+  );
+  check('The refund call carries an idempotency key derived from the payment',
+    paymentControllerSource.includes('idempotencyKey: `smoke-refund-${payment._id}`'));
+  check('A refunded smoke test is terminal for retried webhooks',
+    /payment\.status === 'Paid' \|\| payment\.status === 'Refunded'/.test(paymentControllerSource));
+  check('Smoke rows are excluded from the ledger and the revenue total',
+    paymentControllerSource.includes('query.smokeTest = { $ne: true }')
+      && paymentControllerSource.includes("curr.status === 'Paid' && !curr.smokeTest"));
+  check('The smoke settlement stops before creating a student or enrollment',
+    /if \(payment\.smokeTest\) \{[\s\S]{0,2000}?return \{\n\s+payment: fresh,\n\s+student: null,\n\s+enrollment: null,/.test(
+      paymentControllerSource,
+    ));
+
+  const paymentRoutesSource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'routes', 'paymentRoutes.js'),
+    'utf8',
+  );
+  const smokeRouteBlocks = paymentRoutesSource
+    .split('router.')
+    .filter((block) => block.includes("'/smoke-test"));
+  check('Every smoke-test route is admin-gated with the WRITE permission',
+    smokeRouteBlocks.length === 3
+      && smokeRouteBlocks.every(
+        (block) => block.includes('protect') && block.includes("'SETTINGS_EDIT'"),
+      ),
+    `${smokeRouteBlocks.length} route block(s)`);
 
   // ───────────────────────────────────────────────────────────────────────
   const failedChecks = results.filter((r) => !r.passed);

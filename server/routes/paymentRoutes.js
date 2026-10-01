@@ -12,6 +12,9 @@ const {
   getInvoiceDetails,
   getWebhookHealth,
   reconcilePayment,
+  startSmokeTest,
+  getSmokeTestStatus,
+  refundSmokeTest,
 } = require('../controllers/paymentController');
 const { protect, authorizeScoped } = require('../middleware/auth');
 
@@ -64,6 +67,31 @@ router.get(
 // module with SETTINGS_VIEW, so the API requires the same permission. A role
 // alone is no longer enough: a courses-only admin used to read every invoice.
 router.get('/', protect, authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_VIEW']), getAllPayments);
+
+// ── Live smoke test (admin only) ─────────────────────────────────────────────
+// Takes one real, tiny charge on the live account and refunds it immediately,
+// proving checkout → webhook settlement → refund. It moves real money, so every
+// route needs the WRITE permission (a view-only admin can never trigger it).
+router.post(
+  '/smoke-test',
+  protect,
+  authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_EDIT']),
+  startSmokeTest,
+);
+
+router.get(
+  '/smoke-test/:id',
+  protect,
+  authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_EDIT']),
+  getSmokeTestStatus,
+);
+
+router.post(
+  '/smoke-test/:id/refund',
+  protect,
+  authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_EDIT']),
+  refundSmokeTest,
+);
 
 // Re-check a stuck Pending order against Stripe and settle it if it was paid.
 // This can grant a student access, so it needs the WRITE permission (and it is

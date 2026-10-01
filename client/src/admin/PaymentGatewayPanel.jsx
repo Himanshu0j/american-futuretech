@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 import WebhookHealthPanel from './WebhookHealthPanel';
 import {
   CreditCard,
@@ -19,6 +20,9 @@ import {
   Zap,
   RefreshCw,
   CircleDashed,
+  FlaskConical,
+  RotateCcw,
+  CircleDollarSign,
 } from 'lucide-react';
 
 const authHeaders = () => {
@@ -92,6 +96,348 @@ function StepCard({ index, step, children }) {
         </div>
       </div>
       <div className="space-y-4">{children}</div>
+    </div>
+  );
+}
+
+const SMOKE_CONFIRMATION = 'charge-and-refund-1';
+const SMOKE_POLL_MS = 4000;
+const SMOKE_MAX_POLLS = 400; // ≈ 27 minutes, the lifetime of one Checkout page
+
+const formatMoney = (amount, currency) => `${currency || 'USD'} ${Number(amount ?? 0).toFixed(2)}`;
+
+/**
+ * The owner's end-to-end proof: one real, tiny charge on the live account with
+ * the owner's own card, refunded the moment Stripe confirms it.
+ *
+ * The card is typed on Stripe's hosted page — no card data ever reaches this
+ * app. Progress is polled from the API, which retries the refund if the webhook
+ * was late, and reports *which* path settled the charge, so a broken webhook
+ * shows up as a red step instead of a silent pass.
+ */
+function SmokeTestPanel({ ready, mode }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [smoke, setSmoke] = useState(null);
+  const [starting, setStarting] = useState(false);
+  const [armed, setArmed] = useState(false);
+  const [refunding, setRefunding] = useState(false);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+
+  const smokeId = searchParams.get('smokeTest') || '';
+  const smokeRef = useRef(null);
+  const autoRefundRef = useRef(false);
+  const refundBusyRef = useRef(false);
+  const pollCountRef = useRef(0);
+
+  useEffect(() => {
+    smokeRef.current = smoke;
+  }, [smoke]);
+
+  const fetchStatus = async (id = smokeId) => {
+    const res = await axios.get(`/api/payments/smoke-test/${id}`, { headers: authHeaders() });
+    const next = res.data?.smokeTest;
+    if (next) {
+      setSmoke(next);
+      setError('');
+    }
+    return next || null;
+  };
+
+  const refundNow = async ({ silent = false } = {}) => {
+    if (!smokeId || refundBusyRef.current) return;
+    refundBusyRef.current = true;
+    setRefunding(true);
+    try {
+      await axios.post(`/api/payments/smoke-test/${smokeId}/refund`, {}, { headers: authHeaders() });
+      await fetchStatus(smokeId);
+      if (!silent) setNotice('Refund issued — the charge is on its way back to the card.');
+    } catch (err) {
+      autoRefundRef.current = false;
+      setError(err.response?.data?.message || 'Stripe could not refund this charge yet.');
+    } finally {
+      refundBusyRef.current = false;
+      setRefunding(false);
+    }
+  };
+
+  // Poll while a run is in flight. The API reconciles from Stripe on each read,
+  // so a late (or lost) webhook still ends in a charge that is refunded.
+  useEffect(() => {
+    if (!smokeId) return undefined;
+    let cancelled = false;
+    pollCountRef.current = 0;
+
+    const poll = async () => {
+      try {
+        const res = await axios.get(`/api/payments/smoke-test/${smokeId}`, { headers: authHeaders() });
+        if (cancelled) return;
+        const next = res.data?.smokeTest;
+        if (!next) return;
+        setSmoke(next);
+        setError('');
+        if (next.needsRefund && !autoRefundRef.current) {
+          autoRefundRef.current = true;
+          refundNow({ silent: true });
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.response?.data?.message || 'Could not read the smoke test status.');
+      }
+    };
+
+    poll();
+    const timer = setInterval(() => {
+      const current = smokeRef.current;
+      const done = current && current.refundId && !current.needsRefund;
+      const abandoned = current && ['Failed', 'Expired'].includes(current.status);
+      if (done || abandoned || pollCountRef.current >= SMOKE_MAX_POLLS) return;
+      pollCountRef.current += 1;
+      poll();
+    }, SMOKE_POLL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [smokeId]);
+
+  const keepInUrl = (id) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', 'payments');
+    if (id) next.set('smokeTest', String(id));
+    setSearchParams(next);
+  };
+
+  const start = async () => {
+    setStarting(true);
+    setError('');
+    setNotice('');
+    autoRefundRef.current = false;
+    try {
+      const res = await axios.post(
+        '/api/payments/smoke-test',
+        { confirm: SMOKE_CONFIRMATION },
+        { headers: authHeaders() },
+      );
+      const created = res.data?.smokeTest;
+      setArmed(false);
+      if (created) {
+        setSmoke({ ...created, status: 'Pending', steps: [] });
+        keepInUrl(created.id);
+      }
+      if (created?.sessionUrl) window.open(created.sessionUrl, '_blank', 'noopener,noreferrer');
+      setNotice('Stripe Checkout opened in a new tab — pay with a real card there. The refund follows automatically.');
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.code === 'SMOKE_TEST_IN_PROGRESS' && data.smokeTestId) {
+        keepInUrl(data.smokeTestId);
+        if (data.sessionUrl) window.open(data.sessionUrl, '_blank', 'noopener,noreferrer');
+        setNotice(data.message);
+      } else {
+        setError(data?.message || 'Could not start the smoke test.');
+      }
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  const live = (smoke?.mode || mode) === 'live';
+  const currency = smoke?.currency || 'USD';
+  const amount = smoke?.amount ?? 1;
+  const charged = Boolean(smoke?.chargedAt);
+  const steps = smoke?.steps || [];
+  const finished = Boolean(smoke?.refundId);
+
+  return (
+    <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+            <FlaskConical className="w-4 h-4 text-amber-300" />
+            Live smoke test — poora payment pipeline ek baar chala kar dekhein
+          </h3>
+          <p className="text-[11px] text-slate-400 leading-relaxed mt-1 max-w-2xl">
+            Yeh test aapke card par asli {formatMoney(amount, currency)} charge karta hai — card details Stripe ke apne secure
+            page par typed hoti hain, is app mein kabhi nahi aati — aur charge confirm hote hi turant refund kar deta hai. Ek
+            hi run mein 4 cheezein prove hoti hain: Checkout page, live key, signed webhook settlement, aur refund path.
+            Refund par Stripe ki processing fee wapas nahi aati, isliye 10 minute ka gap aur din mein 3 se zyada run allowed
+            nahi hai.
+          </p>
+        </div>
+        <span
+          className={`px-3 py-2 rounded-xl border text-[11px] font-mono shrink-0 ${
+            live
+              ? 'bg-red-500/10 border-red-500/30 text-red-200'
+              : 'bg-slate-800/60 border-slate-700 text-slate-300'
+          }`}
+        >
+          {live ? 'LIVE — asli paisa' : 'TEST mode — koi asli charge nahi'}
+        </span>
+      </div>
+
+      {error && (
+        <div className="flex items-start gap-2 px-4 py-3 rounded-xl border bg-red-500/10 border-red-500/30 text-red-200 text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+      {notice && (
+        <div className="flex items-start gap-2 px-4 py-3 rounded-xl border bg-blue-500/10 border-blue-500/30 text-blue-200 text-xs">
+          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{notice}</span>
+        </div>
+      )}
+
+      {!ready && (
+        <div className="flex items-start gap-2 px-4 py-3 rounded-xl border bg-slate-950/70 border-slate-800 text-slate-300 text-xs">
+          <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Pehle secret key aur webhook signing secret save karein — bina webhook ke charge verify nahi ho sakta.</span>
+        </div>
+      )}
+
+      {ready && (
+        <div className="flex flex-wrap items-center gap-3">
+          {!armed ? (
+            <button
+              type="button"
+              onClick={() => {
+                setArmed(true);
+                setError('');
+                setNotice('');
+              }}
+              disabled={starting}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              <FlaskConical className="w-3.5 h-3.5 text-amber-300" />
+              Start live smoke test ({formatMoney(1, currency)} charge, refunded)
+            </button>
+          ) : (
+            <div className="w-full p-4 rounded-xl border border-red-500/40 bg-red-500/10 space-y-3">
+              <p className="text-xs text-red-100 leading-relaxed">
+                {live
+                  ? `Confirm: aapke card par ${formatMoney(1, currency)} ka asli charge hoga (Stripe page par card enter karenge) aur turant refund ho jayega.`
+                  : `TEST mode mein hai — test card (4242 4242 4242 4242) se ${formatMoney(1, currency)} charge hoga, koi asli paisa nahi.`}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={start}
+                  disabled={starting}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {starting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CircleDollarSign className="w-3.5 h-3.5" />}
+                  {starting ? 'Opening Stripe…' : `Yes, charge ${formatMoney(1, currency)} and refund it`}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setArmed(false)}
+                  disabled={starting}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+          <span className="text-[11px] text-slate-400">
+            Card details sirf Stripe ke page par — yahan save nahi hoti.
+          </span>
+        </div>
+      )}
+
+      {smoke && (
+        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-300">
+            <span>Invoice #{smoke.invoiceNumber}</span>
+            <span>
+              {smoke.status} · {formatMoney(smoke.amount, smoke.currency || currency)} · {String(smoke.mode || mode || '').toUpperCase()}
+            </span>
+          </div>
+
+          <ul className="space-y-1.5">
+            {steps.map((step) => (
+              <li key={step.id} className="flex items-center gap-2 text-xs">
+                {step.done ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                ) : (
+                  <CircleDashed className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                )}
+                <span className={step.done ? 'text-slate-200' : 'text-slate-400'}>{step.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          {smoke.sessionUrl && !charged && smoke.status === 'Pending' && (
+            <a
+              href={smoke.sessionUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-[11px] text-blue-300 underline decoration-dotted"
+            >
+              Stripe payment page kholein <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+
+          {charged && smoke.settledByWebhook === false && (
+            <div className="flex items-start gap-2 text-[11px] text-amber-200 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
+              <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>
+                Webhook nahi aaya — charge Stripe se direct recover kiya gaya. Refund phir bhi ho gaya, lekin Stripe →
+                Developers → Webhooks mein is endpoint ki delivery check karein.
+              </span>
+            </div>
+          )}
+
+          {smoke.needsRefund && (
+            <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] text-red-200 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+              <span className="flex items-start gap-2">
+                <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>Charge settle ho gaya hai lekin refund pending hai — turant refund karein.</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => refundNow()}
+                disabled={refunding}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-[11px] transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {refunding ? <RefreshCw className="w-3 h-3 animate-spin" /> : <RotateCcw className="w-3 h-3" />}
+                {refunding ? 'Refunding…' : 'Refund now'}
+              </button>
+            </div>
+          )}
+
+          {finished && (
+            <div className="text-[11px] text-emerald-200 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2 space-y-1">
+              <p className="font-semibold">Proof complete — checkout, webhook settlement aur refund teeno kaam kar rahe hain.</p>
+              <p className="font-mono text-emerald-300/90">
+                Refund {smoke.refundId} · {formatMoney(smoke.refundAmount, smoke.currency || currency)}
+                {smoke.refundedAt ? ` · ${new Date(smoke.refundedAt).toLocaleString()}` : ''}
+              </p>
+            </div>
+          )}
+
+          {smoke.status === 'Expired' && (
+            <p className="text-[11px] text-slate-400">Card entry nahi hui thi — koi charge nahi hua.</p>
+          )}
+          {smoke.status === 'Failed' && smoke.failureReason && (
+            <p className="text-[11px] text-red-300">{smoke.failureReason}</p>
+          )}
+
+          {smoke.webhookDeliveries?.length > 0 && (
+            <details className="text-[10px] font-mono text-slate-400">
+              <summary className="cursor-pointer">Webhook deliveries ({smoke.webhookDeliveries.length})</summary>
+              <ul className="mt-2 space-y-1">
+                {smoke.webhookDeliveries.slice(0, 5).map((row, index) => (
+                  <li key={`${row.eventId || row.type}-${index}`}>
+                    {row.status} · {row.type} — {row.message}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -599,6 +945,9 @@ export default function PaymentGatewayPanel() {
           </span>
         </div>
       </StepCard>
+
+      {/* One real charge, refunded immediately — the owner's end-to-end proof. */}
+      <SmokeTestPanel ready={ready} mode={status?.mode} />
 
       {/* Did Stripe actually call us, and what did we do with it? */}
       <WebhookHealthPanel />

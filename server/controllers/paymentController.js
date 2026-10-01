@@ -12,7 +12,7 @@ const { buildQuote, resolveOrderAmount } = require('../utils/pricing');
 const { resolveCoupon, redeemCoupon } = require('../utils/couponEngine');
 const { generateSecurePassword } = require('../utils/passwords');
 const gateway = require('../utils/paymentGateway');
-const { isStripeConfigured, isWebhookConfigured, getPaymentStatus } = require('../config/payments');
+const { isStripeConfigured, isWebhookConfigured, getPaymentStatus, getCurrency } = require('../config/payments');
 const { searchRegex } = require('../utils/search');
 const { sendError } = require('../utils/apiError');
 const {
@@ -42,6 +42,97 @@ const generateReference = (prefix) =>
 
 const generateInvoiceNumber = () =>
   `INV-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin live smoke test
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * One real charge, refunded immediately, used to prove the whole payment
+ * pipeline on the live account: Checkout → signed webhook → refund.
+ *
+ * Safety rails, in order of importance:
+ *   1. The amount is fixed HERE — one unit of the gateway currency ($1.00 for
+ *      USD) — and is never read from the request body, so no caller can scale it.
+ *   2. The caller must echo a typed confirmation token, so a stray retry or a
+ *      curious curl can never charge a card.
+ *   3. Stripe keeps its processing fee on a refunded charge, so a smoke test is
+ *      not free: a cooldown, a daily cap and an "unresolved test" lock keep an
+ *      accidental click-fest from burning money.
+ *   4. The refund is idempotent (stored refund id + idempotency key), so webhook
+ *      retries, panel polls and manual retries can race harmlessly.
+ */
+const SMOKE_TEST_AMOUNT_MINOR = 100;
+const SMOKE_TEST_CONFIRMATION = 'charge-and-refund-1';
+const SMOKE_TEST_COOLDOWN_MS = 10 * 60 * 1000;
+const SMOKE_TEST_DAILY_LIMIT = 3;
+const SMOKE_TEST_CHECKOUT_WINDOW_MS = 30 * 60 * 1000;
+
+const generateSmokeInvoiceNumber = () =>
+  `SMOKE-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+const generateSmokeReference = () =>
+  `SMOKE-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+/**
+ * Put the smoke test's money back on the card.
+ *
+ * Idempotent by design: an existing refund id short-circuits, and the Stripe
+ * call carries an idempotency key derived from the payment, so the webhook, the
+ * panel's poll and an admin clicking "refund now" can all race without ever
+ * moving money twice.
+ */
+const refundSmokeTestPayment = async (payment, { actorName = 'System' } = {}) => {
+  if (!payment?.smokeTest) return { refunded: false, reason: 'not-a-smoke-test' };
+  if (payment.refundId) return { refunded: true, reason: 'already-refunded', refundId: payment.refundId };
+  if (!isStripeConfigured()) return { refunded: false, reason: 'gateway-off' };
+  if (!payment.stripePaymentIntentId) return { refunded: false, reason: 'no-charge-yet' };
+
+  const amountMinor =
+    payment.amount != null ? Math.round(payment.amount * 100) : SMOKE_TEST_AMOUNT_MINOR;
+
+  let refund;
+  try {
+    refund = await gateway.refundPaymentIntent({
+      paymentIntentId: payment.stripePaymentIntentId,
+      amountMinor,
+      idempotencyKey: `smoke-refund-${payment._id}`,
+      metadata: {
+        paymentId: String(payment._id),
+        invoiceNumber: payment.invoiceNumber,
+        smokeTest: 'true',
+      },
+    });
+  } catch (error) {
+    console.error(`[Smoke Test] Refund failed for invoice ${payment.invoiceNumber}: ${error.message}`);
+    await AuditLog.create({
+      actorName,
+      actorRole: 'ADMIN',
+      action: 'PAYMENT_SMOKE_TEST_REFUND_FAILED',
+      entity: 'Payment',
+      entityId: payment._id.toString(),
+      details: `Refund attempt failed for live smoke test invoice #${payment.invoiceNumber}: ${error.message}`,
+    }).catch(() => {});
+    return { refunded: false, reason: 'refund-failed', error: error.message };
+  }
+
+  payment.refundId = refund.id || '';
+  payment.refundAmount = refund.amount != null ? refund.amount / 100 : amountMinor / 100;
+  payment.refundedAt = new Date();
+  payment.status = 'Refunded';
+  await payment.save();
+
+  await AuditLog.create({
+    actorName,
+    actorRole: 'ADMIN',
+    action: 'PAYMENT_SMOKE_TEST_REFUNDED',
+    entity: 'Payment',
+    entityId: payment._id.toString(),
+    details: `Live smoke test charge of ${payment.currency} ${payment.refundAmount} refunded (refund ${refund.id}, invoice #${payment.invoiceNumber}). Stripe keeps its processing fee on a refunded charge.`,
+  }).catch(() => {});
+
+  return { refunded: true, reason: 'refunded', refundId: refund.id, amount: payment.refundAmount };
+};
 
 const loadCheckoutContext = async (courseId, tier, couponCode, buyer = {}, depositAmount) => {
   if (!courseId) return { error: { status: 400, message: 'Please select a program to enroll in.' } };
@@ -341,6 +432,47 @@ const claimEvent = async (paymentId, eventId) => {
 const fulfillPaidCheckout = async ({ payment, session, clientUrl }) => {
   const gatewayData = dataOf(session);
 
+  // A smoke test proves the exact production settlement path — same signature
+  // check, same claim guard, same Pending → Paid transition — but it is not a
+  // sale, so it stops here: no student account, no enrollment, no coupon and no
+  // emails, and the charge is refunded right away (with a retry in the panel if
+  // Stripe refuses the refund at this instant).
+  if (payment.smokeTest) {
+    payment.status = 'Paid';
+    payment.paidAt = new Date();
+    payment.paymentDate = new Date();
+    payment.paymentMethod = `Stripe Checkout (${gatewayData.method}) — live smoke test`;
+    payment.stripePaymentIntentId = gatewayData.paymentIntentId;
+    payment.transactionId = gatewayData.paymentIntentId || session.id;
+    payment.failureReason = '';
+    if (gatewayData.amountTotal != null) payment.amount = gatewayData.amountTotal;
+    await payment.save();
+
+    await AuditLog.create({
+      actorName: payment.studentName,
+      actorRole: 'ADMIN',
+      action: 'PAYMENT_SMOKE_TEST_SETTLED',
+      entity: 'Payment',
+      entityId: payment._id.toString(),
+      details: `Live smoke test charge of ${payment.currency} ${payment.amount} settled (payment intent ${payment.stripePaymentIntentId || 'n/a'}, invoice #${payment.invoiceNumber}). No enrollment was created; the charge is refunded automatically.`,
+    }).catch(() => {});
+
+    const refund = await refundSmokeTestPayment(payment, {
+      actorName: 'Stripe webhook (automatic)',
+    });
+    const fresh = await Payment.findById(payment._id);
+
+    return {
+      payment: fresh,
+      student: null,
+      enrollment: null,
+      isNewStudent: false,
+      credentialsEmailSentTo: null,
+      smokeTest: true,
+      refund,
+    };
+  }
+
   // 1. Settle the payment record.
   payment.status = 'Paid';
   payment.paidAt = new Date();
@@ -546,9 +678,12 @@ const handleStripeWebhook = async (req, res) => {
           await record({ ...base, status: 'pending', message: `Stripe reported payment_status=${session.payment_status}.` });
           break;
         }
-        if (payment.status === 'Paid') {
-          console.log(`[Stripe Webhook] Payment ${payment._id} already settled — skipping.`);
-          await record({ ...base, status: 'duplicate', message: 'Payment was already settled; nothing changed.' });
+        // Refunded counts as settled too: a smoke test refunds itself, and a
+        // retried event must never flip a refunded row back to Paid.
+        if (payment.status === 'Paid' || payment.status === 'Refunded') {
+          const state = payment.status === 'Refunded' ? 'refunded' : 'settled';
+          console.log(`[Stripe Webhook] Payment ${payment._id} already ${state} — skipping.`);
+          await record({ ...base, status: 'duplicate', message: `Payment was already ${state}; nothing changed.` });
           break;
         }
         const claimed = await claimEvent(payment._id, event.id);
@@ -558,6 +693,20 @@ const handleStripeWebhook = async (req, res) => {
           break;
         }
         const result = await fulfillPaidCheckout({ payment: claimed, session, clientUrl });
+        if (result.smokeTest) {
+          console.log(
+            `[Stripe Webhook] 🧪 Live smoke test settled for ${result.payment.email} — invoice ${result.payment.invoiceNumber}, ${result.payment.currency} ${result.payment.amount}${result.refund?.refunded ? ' (refunded)' : ' (refund pending)'}`,
+          );
+          await record({
+            ...base,
+            payment: result.payment,
+            status: 'processed',
+            message: result.refund?.refunded
+              ? `Live smoke test charge settled and refunded (invoice ${result.payment.invoiceNumber}, refund ${result.refund.refundId}).`
+              : `Live smoke test charge settled; the refund still has to be issued (invoice ${result.payment.invoiceNumber}).`,
+          });
+          break;
+        }
         console.log(
           `[Stripe Webhook] ✅ Enrollment confirmed for ${result.payment.email} — invoice ${result.payment.invoiceNumber}, ${result.payment.currency} ${result.payment.amount}`,
         );
@@ -577,8 +726,8 @@ const handleStripeWebhook = async (req, res) => {
           await record({ ...base, status: 'unmatched', message: 'No payment record matched this session id.' });
           break;
         }
-        if (payment.status === 'Paid') {
-          // never downgrade a settled payment
+        if (payment.status === 'Paid' || payment.status === 'Refunded') {
+          // never downgrade a settled (or already refunded) payment
           await record({ ...base, status: 'ignored', message: 'Payment is already settled — not downgraded.' });
           break;
         }
@@ -720,6 +869,8 @@ const getWebhookHealth = async (req, res) => {
       status: 'Pending',
       checkoutSessionId: { $ne: '' },
       createdAt: { $lt: staleCutoff },
+      // A smoke test belongs to the admin, not to a student waiting for access.
+      smokeTest: { $ne: true },
     })
       .populate('student', 'name email')
       .sort({ createdAt: -1 })
@@ -850,6 +1001,318 @@ const reconcilePayment = async (req, res) => {
   }
 };
 
+// @desc    Start one real, tiny live charge (refunded immediately) to prove the pipeline
+// @route   POST /api/payments/smoke-test
+// @access  Private (Admin, SETTINGS_EDIT)
+const startSmokeTest = async (req, res) => {
+  try {
+    // 1. Explicit, typed confirmation. This endpoint moves real money, so a
+    //    retried request or a curious curl must not be able to charge anyone.
+    if (req.body?.confirm !== SMOKE_TEST_CONFIRMATION) {
+      return res.status(400).json({
+        success: false,
+        code: 'CONFIRMATION_REQUIRED',
+        message: 'This button charges a real card. Send the confirmation token to proceed.',
+      });
+    }
+
+    if (!isStripeConfigured() || !isWebhookConfigured()) {
+      return res.status(503).json({
+        success: false,
+        code: 'PAYMENTS_NOT_CONFIGURED',
+        message:
+          'Add both the secret key and the webhook signing secret first — a charge that cannot be verified is worse than no test.',
+        payments: getPaymentStatus(),
+      });
+    }
+
+    // 2. An abandoned checkout never blocks the next attempt: after its 30
+    //    minute window it is closed out, exactly as the expiry webhook would.
+    await Payment.updateMany(
+      {
+        smokeTest: true,
+        status: 'Pending',
+        createdAt: { $lt: new Date(Date.now() - SMOKE_TEST_CHECKOUT_WINDOW_MS) },
+      },
+      {
+        $set: {
+          status: 'Expired',
+          failureReason: 'Checkout page was never completed (abandoned live smoke test).',
+        },
+      },
+    );
+
+    // 3. Never two live tests at once: an unresolved one may still hold money.
+    const open = await Payment.findOne({
+      smokeTest: true,
+      $or: [
+        { status: 'Paid' }, // charged, refund still outstanding
+        {
+          status: 'Pending',
+          createdAt: { $gte: new Date(Date.now() - SMOKE_TEST_CHECKOUT_WINDOW_MS) },
+        },
+      ],
+    }).sort({ createdAt: -1 });
+
+    if (open) {
+      return res.status(409).json({
+        success: false,
+        code: 'SMOKE_TEST_IN_PROGRESS',
+        message:
+          open.status === 'Paid'
+            ? `The previous smoke test is charged but not refunded yet (invoice #${open.invoiceNumber}). Refund it before starting another.`
+            : `A smoke test is already waiting for its card entry (invoice #${open.invoiceNumber}). Finish it, or let it expire, before starting another.`,
+        smokeTestId: open._id,
+        sessionUrl: open.checkoutSessionUrl || '',
+      });
+    }
+
+    // 4. Cost guard: Stripe keeps its processing fee on a refunded charge, so a
+    //    smoke test is real money out. A short cooldown plus a small daily cap
+    //    keeps an accidental click-fest from burning the client's balance.
+    const [last, todayCount] = await Promise.all([
+      Payment.findOne({ smokeTest: true }).sort({ createdAt: -1 }).select('createdAt').lean(),
+      Payment.countDocuments({
+        smokeTest: true,
+        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      }),
+    ]);
+
+    if (last) {
+      const sinceLast = Date.now() - new Date(last.createdAt).getTime();
+      if (sinceLast < SMOKE_TEST_COOLDOWN_MS) {
+        const waitMinutes = Math.max(1, Math.ceil((SMOKE_TEST_COOLDOWN_MS - sinceLast) / 60000));
+        return res.status(429).json({
+          success: false,
+          code: 'SMOKE_TEST_COOLDOWN',
+          message: `A smoke test was started a moment ago. Try again in about ${waitMinutes} minute(s).`,
+        });
+      }
+    }
+
+    if (todayCount >= SMOKE_TEST_DAILY_LIMIT) {
+      return res.status(429).json({
+        success: false,
+        code: 'SMOKE_TEST_DAILY_LIMIT',
+        message: `The daily limit of ${SMOKE_TEST_DAILY_LIMIT} smoke tests is reached. Each one is a real charge — try again tomorrow.`,
+      });
+    }
+
+    // 5. The Payment row is what the webhook will settle. `course` is required
+    //    by the schema, so it points at any existing program; the title and the
+    //    invoice prefix make it unmistakable in every log and export.
+    const course = await Course.findOne().sort({ createdAt: 1 }).select('_id title').lean();
+    if (!course) {
+      return res.status(400).json({
+        success: false,
+        code: 'NO_COURSE',
+        message: 'Add at least one program before running a payment smoke test.',
+      });
+    }
+
+    const currency = getCurrency().toUpperCase();
+    const amount = SMOKE_TEST_AMOUNT_MINOR / 100;
+
+    const payment = await Payment.create({
+      // The admin is not a student, so no student account is linked; the email
+      // records who ran the test and the title says what it is.
+      studentName: `${req.user?.name || 'Admin'} (live smoke test)`,
+      email: String(req.user?.email || '').toLowerCase(),
+      phone: '',
+      course: course._id,
+      courseTitle: `Live smoke test — not a sale (${currency} ${amount.toFixed(2)})`,
+      tier: 'full',
+      amount,
+      originalPrice: amount,
+      discountAmount: 0,
+      currency,
+      status: 'Pending',
+      transactionId: generateSmokeReference(),
+      invoiceNumber: generateSmokeInvoiceNumber(),
+      paymentMethod: 'Live smoke test (Stripe Checkout)',
+      provider: 'stripe',
+      smokeTest: true,
+    });
+
+    // 6. Hosted Stripe Checkout — identical PCI posture to a real order: the
+    //    owner's card is typed on Stripe's page and never reaches this server.
+    let session;
+    try {
+      session = await gateway.createSmokeTestSession({
+        payment,
+        amountMinor: SMOKE_TEST_AMOUNT_MINOR,
+        currency,
+        clientUrl: gateway.resolveClientUrl(req),
+        adminName: req.user?.name || req.user?.email || 'Admin',
+      });
+    } catch (stripeError) {
+      payment.status = 'Failed';
+      payment.failureReason = `Smoke test session creation failed: ${stripeError.message}`;
+      await payment.save();
+      return res.status(502).json({
+        success: false,
+        code: 'SMOKE_TEST_SESSION_FAILED',
+        message: `Stripe refused to open the test Checkout page: ${stripeError.message}`,
+      });
+    }
+
+    payment.checkoutSessionId = session.id;
+    payment.checkoutSessionUrl = session.url || '';
+    await payment.save();
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Admin',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'PAYMENT_SMOKE_TEST_STARTED',
+      entity: 'Payment',
+      entityId: payment._id.toString(),
+      details: `Live smoke test started by ${req.user?.email || 'admin'} — a real ${currency} ${amount.toFixed(2)} charge on the live account, to be refunded as soon as Stripe confirms it. Session ${session.id}.`,
+    }).catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      message: `Pay ${currency} ${amount.toFixed(2)} with a real card on the Stripe page that just opened — it is refunded the moment the charge is confirmed.`,
+      smokeTest: {
+        id: payment._id,
+        invoiceNumber: payment.invoiceNumber,
+        sessionId: session.id,
+        sessionUrl: session.url || '',
+        amount,
+        currency,
+        mode: getPaymentStatus().mode,
+      },
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+// @desc    Progress of one live smoke test: charge → webhook → refund
+// @route   GET /api/payments/smoke-test/:id
+// @access  Private (Admin, SETTINGS_EDIT)
+const getSmokeTestStatus = async (req, res) => {
+  try {
+    let payment = await Payment.findById(req.params.id);
+    if (!payment || !payment.smokeTest) {
+      return res.status(404).json({ success: false, message: 'Smoke test not found.' });
+    }
+
+    // A webhook can be seconds late — or lost entirely, which is one of the
+    // things this test exists to reveal. Ask Stripe directly, through the same
+    // guarded reconciliation the public success screen uses.
+    if (payment.status === 'Pending' && payment.checkoutSessionId && isStripeConfigured()) {
+      await reconcilePendingPayment(payment, req).catch((error) =>
+        console.warn(`[Smoke Test] Reconcile skipped: ${error.message}`),
+      );
+      payment = await Payment.findById(payment._id);
+    }
+
+    const deliveries = await WebhookEvent.find({ payment: payment._id })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
+    // Which path settled the charge? A real Stripe event id is proof the signed
+    // webhook was delivered; `reconcile:` means we had to recover the order
+    // ourselves, so the webhook endpoint needs a look.
+    const settledByWebhook = (payment.webhookEventIds || []).some(
+      (id) => !String(id).startsWith('reconcile:'),
+    );
+
+    const steps = [
+      { id: 'session', label: 'Stripe Checkout page created', done: Boolean(payment.checkoutSessionId) },
+      { id: 'charge', label: 'Card charged on the account', done: Boolean(payment.paidAt) },
+      { id: 'webhook', label: 'Signed webhook settled the charge', done: settledByWebhook },
+      { id: 'refund', label: 'Charge refunded', done: Boolean(payment.refundId) },
+    ];
+
+    return res.status(200).json({
+      success: true,
+      smokeTest: {
+        id: payment._id,
+        invoiceNumber: payment.invoiceNumber,
+        status: payment.status,
+        currency: payment.currency,
+        amount: payment.amount,
+        mode: getPaymentStatus().mode,
+        sessionId: payment.checkoutSessionId,
+        sessionUrl: payment.checkoutSessionUrl,
+        paymentIntentId: payment.stripePaymentIntentId,
+        chargedAt: payment.paidAt || null,
+        refundId: payment.refundId || '',
+        refundAmount: payment.refundAmount ?? null,
+        refundedAt: payment.refundedAt || null,
+        needsRefund: payment.status === 'Paid' && !payment.refundId,
+        failureReason: payment.failureReason || '',
+        startedAt: payment.createdAt,
+        settledByWebhook,
+        webhookDeliveries: deliveries.map((row) => ({
+          status: row.status,
+          type: row.type,
+          eventId: row.eventId,
+          message: row.message,
+          at: row.createdAt,
+        })),
+        steps,
+      },
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+// @desc    Issue (or retry) the smoke test's refund
+// @route   POST /api/payments/smoke-test/:id/refund
+// @access  Private (Admin, SETTINGS_EDIT)
+const refundSmokeTest = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+    if (!payment || !payment.smokeTest) {
+      return res.status(404).json({ success: false, message: 'Smoke test not found.' });
+    }
+    if (!payment.paidAt || !payment.stripePaymentIntentId) {
+      return res.status(400).json({
+        success: false,
+        code: 'NOT_CHARGED',
+        message: 'This smoke test has no settled charge, so there is nothing to refund.',
+      });
+    }
+
+    const outcome = await refundSmokeTestPayment(payment, {
+      actorName: `${req.user?.name || 'Admin'} (${req.user?.email || 'admin'})`,
+    });
+    const fresh = await Payment.findById(payment._id);
+
+    if (outcome.reason === 'already-refunded') {
+      return res.status(200).json({
+        success: true,
+        refunded: true,
+        alreadyRefunded: true,
+        message: `Invoice #${fresh.invoiceNumber} was already refunded (refund ${fresh.refundId}).`,
+        smokeTestId: fresh._id,
+      });
+    }
+
+    if (!outcome.refunded) {
+      return res.status(502).json({
+        success: false,
+        code: 'REFUND_FAILED',
+        message: `Stripe could not refund this charge yet (${outcome.error || outcome.reason}). The money is still on the card — try again in a moment.`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      refunded: true,
+      message: `Refund issued — ${fresh.currency} ${fresh.refundAmount} is on its way back to the card (refund ${fresh.refundId}).`,
+      smokeTestId: fresh._id,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
 // @desc    Get all payments (Admin)
 // @route   GET /api/payments
 // @access  Private (Admin)
@@ -857,6 +1320,10 @@ const getAllPayments = async (req, res) => {
   try {
     const { status, search } = req.query;
     const query = {};
+    // Smoke tests are real charges but not sales: they stay out of the ledger
+    // and the revenue total unless an admin explicitly asks for them.
+    const includeSmokeTests = req.query.includeSmokeTests === 'true';
+    if (!includeSmokeTests) query.smokeTest = { $ne: true };
     if (status && status !== 'All') query.status = status;
     if (search) {
       query.$or = [
@@ -874,7 +1341,7 @@ const getAllPayments = async (req, res) => {
       .populate('student', 'name email phone studentDetails.enrollmentNumber')
       .sort({ createdAt: -1 });
     const totalRevenue = payments.reduce(
-      (acc, curr) => (curr.status === 'Paid' ? acc + curr.amount : acc),
+      (acc, curr) => (curr.status === 'Paid' && !curr.smokeTest ? acc + curr.amount : acc),
       0,
     );
 
@@ -948,5 +1415,18 @@ module.exports = {
   getWebhookHealth,
   reconcilePayment,
   fulfillPaidCheckout,
-  __test__: { recordWebhookEvent, reconcilePendingPayment, WEBHOOK_EVENT_RETENTION },
+  startSmokeTest,
+  getSmokeTestStatus,
+  refundSmokeTest,
+  __test__: {
+    recordWebhookEvent,
+    reconcilePendingPayment,
+    refundSmokeTestPayment,
+    WEBHOOK_EVENT_RETENTION,
+    SMOKE_TEST_AMOUNT_MINOR,
+    SMOKE_TEST_CONFIRMATION,
+    SMOKE_TEST_COOLDOWN_MS,
+    SMOKE_TEST_DAILY_LIMIT,
+    SMOKE_TEST_CHECKOUT_WINDOW_MS,
+  },
 };

@@ -1,4 +1,5 @@
 const Payment = require('../models/Payment');
+const WebhookEvent = require('../models/WebhookEvent');
 const Course = require('../models/Course');
 const Batch = require('../models/Batch');
 const User = require('../models/User');
@@ -246,6 +247,75 @@ const createCheckoutSession = async (req, res) => {
 // Webhook fulfilment
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Webhook delivery log
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Keep the log an operational aid, not an archive. */
+const WEBHOOK_EVENT_RETENTION = 500;
+
+/**
+ * Rejected deliveries are written by an UNAUTHENTICATED endpoint, so a stranger
+ * posting garbage all day could otherwise turn the health log into a write
+ * amplifier. Beyond this many rejections in the window we stop persisting them
+ * (they are still logged to the console) — a real misconfigured endpoint sends a
+ * handful, an attack sends thousands.
+ */
+const REJECTION_WRITE_WINDOW_MS = 10 * 60 * 1000;
+const MAX_REJECTIONS_PER_WINDOW = 25;
+let rejectionWriteTimes = [];
+
+const rejectionWritesAllowed = () => {
+  const now = Date.now();
+  rejectionWriteTimes = rejectionWriteTimes.filter((at) => now - at < REJECTION_WRITE_WINDOW_MS);
+  if (rejectionWriteTimes.length >= MAX_REJECTIONS_PER_WINDOW) return false;
+  rejectionWriteTimes.push(now);
+  return true;
+};
+
+/**
+ * Record one delivery. Never throws: a logging failure must never cost a student
+ * their enrollment, so every call site uses this fire-and-forget style.
+ */
+const recordWebhookEvent = (entry) => {
+  if (entry?.status === 'rejected' && !rejectionWritesAllowed()) return Promise.resolve(null);
+
+  const job = WebhookEvent.create({
+    eventId: entry?.eventId || '',
+    type: entry?.type || '',
+    status: entry?.status || 'ignored',
+    httpStatus: entry?.httpStatus ?? 200,
+    signatureValid: entry?.signatureValid !== false,
+    message: String(entry?.message || '').slice(0, 300),
+    payment: entry?.payment?._id || entry?.payment || null,
+    invoiceNumber: entry?.payment?.invoiceNumber || '',
+    paymentEmail: entry?.payment?.email || '',
+    sessionId: entry?.sessionId || '',
+    amount: entry?.amount ?? null,
+    durationMs: entry?.durationMs ?? 0,
+  }).catch((error) => {
+    console.warn(`[Stripe Webhook] Could not record delivery: ${error.message}`);
+    return null;
+  });
+
+  // Trim occasionally rather than on every write, so the log stays bounded
+  // without paying for a count on the settlement path.
+  if (Math.random() < 0.05) {
+    WebhookEvent.find()
+      .sort({ createdAt: -1 })
+      .skip(WEBHOOK_EVENT_RETENTION)
+      .select('_id')
+      .lean()
+      .then((stale) => {
+        if (!stale.length) return null;
+        return WebhookEvent.deleteMany({ _id: { $in: stale.map((row) => row._id) } });
+      })
+      .catch(() => {});
+  }
+
+  return job;
+};
+
 const dataOf = (session) => ({
   paymentIntentId:
     typeof session.payment_intent === 'string'
@@ -423,6 +493,10 @@ const markPaymentFailed = async (payment, reason, status = 'Failed') => {
 // @route   POST /api/payments/webhook
 // @access  Public (verified by signature)
 const handleStripeWebhook = async (req, res) => {
+  const startedAt = Date.now();
+  const record = (entry) =>
+    recordWebhookEvent({ ...entry, durationMs: Date.now() - startedAt }).catch(() => {});
+
   if (!isStripeConfigured() || !isWebhookConfigured()) {
     return res.status(503).json({ success: false, message: 'Payment gateway is not configured.' });
   }
@@ -432,6 +506,15 @@ const handleStripeWebhook = async (req, res) => {
     event = gateway.verifyWebhookSignature(req.rawBody, req.headers['stripe-signature']);
   } catch (error) {
     console.warn(`[Stripe Webhook] Rejected: ${error.message}`);
+    // Recorded as `rejected`: this is how a wrong signing secret or a stranger
+    // poking the endpoint shows up in the admin's webhook health panel.
+    await record({
+      status: 'rejected',
+      httpStatus: 400,
+      signatureValid: false,
+      message: `Signature verification failed: ${error.message}`,
+      type: '(unverified request)',
+    });
     return res.status(400).json({ success: false, message: `Webhook signature verification failed: ${error.message}` });
   }
 
@@ -441,40 +524,64 @@ const handleStripeWebhook = async (req, res) => {
     const session = event.data?.object || {};
     const paymentId = session.metadata?.paymentId || session.client_reference_id;
     const payment = paymentId ? await Payment.findById(paymentId) : null;
+    const base = {
+      eventId: event.id,
+      type: event.type,
+      sessionId: session.id || '',
+      payment,
+      amount: session.amount_total != null ? session.amount_total / 100 : null,
+    };
 
     switch (event.type) {
       case 'checkout.session.completed':
       case 'checkout.session.async_payment_succeeded': {
         if (!payment) {
           console.warn(`[Stripe Webhook] No payment matched session ${session.id}`);
+          await record({ ...base, status: 'unmatched', message: 'No payment record matched this session id.' });
           break;
         }
         // Card payments are settled instantly; anything not actually paid waits.
         if (session.payment_status && session.payment_status !== 'paid') {
           console.log(`[Stripe Webhook] ${session.id} not paid yet (${session.payment_status}) — awaiting settlement.`);
+          await record({ ...base, status: 'pending', message: `Stripe reported payment_status=${session.payment_status}.` });
           break;
         }
         if (payment.status === 'Paid') {
           console.log(`[Stripe Webhook] Payment ${payment._id} already settled — skipping.`);
+          await record({ ...base, status: 'duplicate', message: 'Payment was already settled; nothing changed.' });
           break;
         }
         const claimed = await claimEvent(payment._id, event.id);
         if (!claimed) {
           console.log(`[Stripe Webhook] Event ${event.id} already processed — skipping.`);
+          await record({ ...base, status: 'duplicate', message: `Event ${event.id} was already processed.` });
           break;
         }
         const result = await fulfillPaidCheckout({ payment: claimed, session, clientUrl });
         console.log(
           `[Stripe Webhook] ✅ Enrollment confirmed for ${result.payment.email} — invoice ${result.payment.invoiceNumber}, ${result.payment.currency} ${result.payment.amount}`,
         );
+        await record({
+          ...base,
+          payment: result.payment,
+          status: 'processed',
+          message: `Enrollment confirmed for ${result.payment.email} (invoice ${result.payment.invoiceNumber}).`,
+        });
         break;
       }
 
       case 'checkout.session.async_payment_failed':
       case 'checkout.session.expired':
       case 'payment_intent.payment_failed': {
-        if (!payment) break;
-        if (payment.status === 'Paid') break; // never downgrade a settled payment
+        if (!payment) {
+          await record({ ...base, status: 'unmatched', message: 'No payment record matched this session id.' });
+          break;
+        }
+        if (payment.status === 'Paid') {
+          // never downgrade a settled payment
+          await record({ ...base, status: 'ignored', message: 'Payment is already settled — not downgraded.' });
+          break;
+        }
         const reason =
           event.type === 'checkout.session.expired'
             ? 'Checkout session expired before payment was completed'
@@ -485,11 +592,13 @@ const handleStripeWebhook = async (req, res) => {
           event.type === 'checkout.session.expired' ? 'Expired' : 'Failed',
         );
         console.log(`[Stripe Webhook] Payment ${payment._id} marked ${payment.status}: ${reason}`);
+        await record({ ...base, status: 'processed', message: `Payment marked ${payment.status}: ${reason}` });
         break;
       }
 
       default:
         // Unhandled but still acknowledged, so Stripe stops retrying.
+        await record({ ...base, status: 'ignored', message: 'Event type is not used by this platform.' });
         break;
     }
 
@@ -498,8 +607,50 @@ const handleStripeWebhook = async (req, res) => {
   } catch (error) {
     // 500 tells Stripe to retry — the claim guard keeps that safe.
     console.error(`[Stripe Webhook] Handler error: ${error.message}`);
+    await record({
+      eventId: event.id,
+      type: event.type,
+      status: 'failed',
+      httpStatus: 500,
+      message: `Handler error: ${error.message}`,
+      sessionId: event.data?.object?.id || '',
+    });
     return res.status(500).json({ success: false, message: 'Webhook processing failed.' });
   }
+};
+
+/**
+ * Ask Stripe what really happened to one Pending order and settle it if the money
+ * is there.
+ *
+ * Two callers need exactly this: the public success screen (a webhook can be
+ * seconds late) and the admin's "re-check" button in the webhook health panel
+ * (when a delivery was lost). Both must take the same idempotency guard, which is
+ * why the logic lives here instead of in either controller.
+ */
+const reconcilePendingPayment = async (payment, req) => {
+  if (!payment) return { settled: false, reason: 'no-payment' };
+  if (payment.status === 'Paid') return { settled: false, reason: 'already-paid' };
+  if (!isStripeConfigured()) return { settled: false, reason: 'gateway-off' };
+  if (!payment.checkoutSessionId) return { settled: false, reason: 'no-session' };
+
+  const session = await gateway.retrieveCheckoutSession(payment.checkoutSessionId);
+  const stripeStatus = session?.payment_status || session?.status || 'unknown';
+
+  if (!session || stripeStatus !== 'paid') {
+    return { settled: false, reason: 'not-paid', stripeStatus };
+  }
+
+  // `pending→paid` paths share the claim guard with the webhook, so a late webhook
+  // arriving after an admin re-check can never enroll the student twice.
+  const claimed = (await claimEvent(payment._id, `reconcile:${session.id}`)) || payment;
+  const result = await fulfillPaidCheckout({
+    payment: claimed,
+    session,
+    clientUrl: gateway.resolveClientUrl(req),
+  });
+
+  return { settled: true, stripeStatus, result };
 };
 
 // @desc    Poll the result of a checkout session (used by the success screen)
@@ -516,19 +667,9 @@ const getCheckoutStatus = async (req, res) => {
     // If Stripe already took the money but the webhook is still in flight,
     // reconcile from Stripe directly so the customer is never left hanging.
     if (payment.status === 'Pending' && isStripeConfigured()) {
-      try {
-        const session = await gateway.retrieveCheckoutSession(sessionId);
-        if (session && session.payment_status === 'paid' && payment.status !== 'Paid') {
-          const claimed = (await claimEvent(payment._id, `reconcile:${session.id}`)) || payment;
-          await fulfillPaidCheckout({
-            payment: claimed,
-            session,
-            clientUrl: gateway.resolveClientUrl(req),
-          });
-        }
-      } catch (error) {
-        console.warn(`[Checkout Status] Reconcile skipped: ${error.message}`);
-      }
+      await reconcilePendingPayment(payment, req).catch((error) =>
+        console.warn(`[Checkout Status] Reconcile skipped: ${error.message}`),
+      );
     }
 
     const fresh = await Payment.findById(payment._id);
@@ -548,6 +689,161 @@ const getCheckoutStatus = async (req, res) => {
         paymentDate: fresh.paidAt || fresh.paymentDate,
       },
       credentialsEmailSentTo: fresh.status === 'Paid' ? fresh.email : null,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+// @desc    Webhook delivery health — did Stripe call us, and what did we do?
+// @route   GET /api/payments/webhook-events
+// @access  Private (Admin, SETTINGS_VIEW)
+const getWebhookHealth = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+    const { status } = req.query;
+    const query = status && status !== 'All' ? { status } : {};
+
+    const [events, countsByStatus, lastProcessed, lastFailure] = await Promise.all([
+      WebhookEvent.find(query).sort({ createdAt: -1 }).limit(limit).lean(),
+      WebhookEvent.aggregate([{ $group: { _id: '$status', n: { $sum: 1 } } }]),
+      WebhookEvent.findOne({ status: 'processed' }).sort({ createdAt: -1 }).lean(),
+      WebhookEvent.findOne({ status: { $in: ['failed', 'rejected'] } }).sort({ createdAt: -1 }).lean(),
+    ]);
+
+    const counts = countsByStatus.reduce((acc, row) => ({ ...acc, [row._id]: row.n }), {});
+
+    // Orders the panel can act on: still Pending long after checkout started, so
+    // a lost webhook delivery is likely rather than an abandoned cart.
+    const staleCutoff = new Date(Date.now() - 30 * 60 * 1000);
+    const stuck = await Payment.find({
+      status: 'Pending',
+      checkoutSessionId: { $ne: '' },
+      createdAt: { $lt: staleCutoff },
+    })
+      .populate('student', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      events,
+      summary: {
+        counts,
+        total: countsByStatus.reduce((sum, row) => sum + row.n, 0),
+        lastEventAt: events[0]?.createdAt || null,
+        lastProcessedAt: lastProcessed?.createdAt || null,
+        lastFailure: lastFailure
+          ? { status: lastFailure.status, at: lastFailure.createdAt, message: lastFailure.message || '' }
+          : null,
+        rejectedAttempts: counts.rejected || 0,
+        failedDeliveries: counts.failed || 0,
+      },
+      stuck,
+      gateway: getPaymentStatus(),
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+// @desc    Re-check one Pending order against Stripe and settle it if it was paid
+// @route   POST /api/payments/:id/reconcile
+// @access  Private (Admin, SETTINGS_EDIT)
+const reconcilePayment = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Payment not found.' });
+    }
+    if (payment.status === 'Paid') {
+      return res.status(200).json({
+        success: true,
+        settled: false,
+        alreadySettled: true,
+        message: `Invoice #${payment.invoiceNumber} is already settled — nothing to re-check.`,
+        payment,
+      });
+    }
+    if (!isStripeConfigured()) {
+      return res.status(503).json({
+        success: false,
+        code: 'PAYMENTS_NOT_CONFIGURED',
+        message: 'Stripe is not configured, so there is nothing to re-check against.',
+      });
+    }
+    if (!payment.checkoutSessionId) {
+      return res.status(400).json({
+        success: false,
+        code: 'NO_SESSION',
+        message: 'This record has no Stripe checkout session (manual or legacy entry), so it cannot be re-checked.',
+        payment,
+      });
+    }
+
+    let outcome;
+    try {
+      outcome = await reconcilePendingPayment(payment, req);
+    } catch (error) {
+      await recordWebhookEvent({
+        status: 'failed',
+        httpStatus: 502,
+        message: `Manual re-check failed: ${error.message}`,
+        payment,
+        type: '(admin re-check)',
+        sessionId: payment.checkoutSessionId,
+      }).catch(() => {});
+      return res.status(502).json({
+        success: false,
+        message: 'Stripe could not be reached for this order. Please try again in a moment.',
+      });
+    }
+
+    const fresh = await Payment.findById(payment._id);
+
+    if (outcome.settled) {
+      await recordWebhookEvent({
+        status: 'processed',
+        httpStatus: 200,
+        message: `Settled by admin re-check (Stripe reported ${outcome.stripeStatus}).`,
+        payment: fresh,
+        type: '(admin re-check)',
+        sessionId: payment.checkoutSessionId,
+      }).catch(() => {});
+      await AuditLog.create({
+        actor: req.user?._id,
+        actorName: req.user?.name || 'Admin',
+        actorRole: req.user?.role || 'ADMIN',
+        action: 'PAYMENT_RECONCILED_BY_ADMIN',
+        entity: 'Payment',
+        entityId: fresh._id.toString(),
+        details: `Invoice #${fresh.invoiceNumber} settled from a manual Stripe re-check by ${req.user?.email || 'admin'} (${fresh.currency} ${fresh.amount}).`,
+      }).catch(() => {});
+      return res.status(200).json({
+        success: true,
+        settled: true,
+        message: `Payment confirmed by Stripe — invoice #${fresh.invoiceNumber} is now Paid and the student's access is active.`,
+        payment: fresh,
+      });
+    }
+
+    const reasons = {
+      'already-paid': 'This order is already settled.',
+      'gateway-off': 'Stripe is not configured.',
+      'no-session': 'No Stripe checkout session is attached to this record.',
+      'no-payment': 'Payment not found.',
+    };
+    const message = outcome.reason === 'not-paid'
+      ? `Stripe has not received the money for this order yet (status: ${outcome.stripeStatus}). Nothing was changed.`
+      : reasons[outcome.reason] || 'Nothing to re-check.';
+
+    return res.status(200).json({
+      success: true,
+      settled: false,
+      stripeStatus: outcome.stripeStatus || null,
+      message,
+      payment: fresh,
     });
   } catch (error) {
     return sendError(res, error);
@@ -649,5 +945,8 @@ module.exports = {
   getAllPayments,
   getMyPayments,
   getInvoiceDetails,
+  getWebhookHealth,
+  reconcilePayment,
   fulfillPaidCheckout,
+  __test__: { recordWebhookEvent, reconcilePendingPayment, WEBHOOK_EVENT_RETENTION },
 };

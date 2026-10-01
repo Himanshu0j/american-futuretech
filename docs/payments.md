@@ -12,6 +12,42 @@ Real card payments with **webhook-only settlement**. No browser request can ever
 | 4 | `POST /api/payments/webhook` | Signature-verified event settles the payment: status → `Paid`, student account (random temp password), enrollment, progress, cohort seat, audit log, receipt + credentials emails. The receipt is linked to the new student account, so it appears in Student → Payments and in the admin ledger. |
 | 5 | `GET /api/payments/checkout-status/:sessionId` | Success screen polls this. If Stripe has the money but the webhook is late, the server reconciles directly with Stripe. |
 
+## Webhook health & recovery
+
+Every delivery to `/api/payments/webhook` is logged in the `webhookevents`
+collection (last 500, trimmed automatically on ~5% of writes) so "did Stripe call
+us, and what did we do with it?" has an answer that Stripe's own dashboard cannot
+give:
+
+| status | meaning |
+|---|---|
+| `processed` | settled a paid order, or recorded a failure/expiry |
+| `pending` | verified, but Stripe reported the money had not settled yet |
+| `duplicate` | a Stripe retry of an event already handled (nothing changed) |
+| `unmatched` | no payment record matched the session |
+| `failed` | our handler threw — Stripe will retry |
+| `rejected` | signature verification failed (wrong secret, or a probe) |
+| `ignored` | verified, but an event type this platform does not act on |
+
+Only routing facts are stored (event id, type, matched payment, decision,
+duration) — never a payload, card or customer detail. `rejected` writes are
+throttled in-process (25 per 10 minutes) because that endpoint is public: a real
+misconfiguration sends a handful, an attacker sends thousands.
+
+Two endpoints back the admin panel:
+
+- `GET /api/payments/webhook-events` (`SETTINGS_VIEW`) — recent deliveries, a
+  summary (last event, last settled, failed/rejected counts) and `stuck`: Pending
+  orders older than 30 minutes that still have a Stripe session.
+- `POST /api/payments/:id/reconcile` (`SETTINGS_EDIT`) — asks Stripe about one
+  order and settles it if the money is really there. It shares the idempotency
+  guard with the webhook, so a late webhook arriving after a manual re-check can
+  never enroll the student twice. Every successful re-check is written to the
+  audit log as `PAYMENT_RECONCILED_BY_ADMIN`.
+
+Admin → **Settings → Payment Gateway → Webhook health** renders both, and the
+Tuition & Billing Ledger shows a **Re-check** button on Pending rows.
+
 **Guarantees**
 
 - Amounts are computed server-side only — a tampered browser request cannot change what is charged.
@@ -86,12 +122,14 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 45 checks: pricing/voucher math, temp-password strength, webhook signature
+Runs 73 checks: pricing/voucher math, temp-password strength, webhook signature
 enforcement (missing, forged, tampered payloads), a full end-to-end settlement
 against a throwaway local MongoDB (settlement, receipt-to-account linking,
-idempotent replays, failed/expired handling, forged-webhook rejection), and the
-admin setup contract (key/mode auto-alignment, webhook URL + event checklist).
-It forces dummy test keys, so it can never touch live money.
+idempotent replays, failed/expired handling, forged-webhook rejection), the
+delivery log (processed/duplicate/unmatched/rejected rows, the health summary and
+its stuck-order list), the re-check guards, and the admin setup contract
+(key/mode auto-alignment, webhook URL + event checklist). It forces dummy test
+keys, so it can never touch live money.
 
 The live suite (`npm run verify:live`) is safe to run with real keys saved: it
 verifies checkout input validation and status shape, and deliberately never

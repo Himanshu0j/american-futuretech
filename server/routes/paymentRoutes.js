@@ -10,6 +10,8 @@ const {
   getAllPayments,
   getMyPayments,
   getInvoiceDetails,
+  getWebhookHealth,
+  reconcilePayment,
 } = require('../controllers/paymentController');
 const { protect, authorizeScoped } = require('../middleware/auth');
 
@@ -50,9 +52,27 @@ router.get('/invoice/:invoiceNumber', protect, getInvoiceDetails);
 // Student receipts
 router.get('/my-payments', protect, getMyPayments);
 
+// Webhook delivery health. Reading is a *VIEW* action like the ledger itself.
+router.get(
+  '/webhook-events',
+  protect,
+  authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_VIEW']),
+  getWebhookHealth,
+);
+
 // Admin payments management — the panel gates the "Tuition & Billing Ledger"
 // module with SETTINGS_VIEW, so the API requires the same permission. A role
 // alone is no longer enough: a courses-only admin used to read every invoice.
 router.get('/', protect, authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_VIEW']), getAllPayments);
+
+// Re-check a stuck Pending order against Stripe and settle it if it was paid.
+// This can grant a student access, so it needs the WRITE permission (and it is
+// the same path the webhook would have taken).
+router.post(
+  '/:id/reconcile',
+  protect,
+  authorizeScoped(['SUPERADMIN', 'ADMIN'], ['SETTINGS_EDIT']),
+  reconcilePayment,
+);
 
 module.exports = router;

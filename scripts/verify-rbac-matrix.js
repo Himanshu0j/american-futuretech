@@ -319,6 +319,8 @@ const run = async () => {
       // so a SETTINGS_VIEW-only auditor must never reach it.
       ['POST', '/api/settings/payment-gateway/test', {}],
       ['PUT', '/api/settings/payment-gateway', { enabled: true }],
+      // Settling a stuck order grants a student access, so it is a write.
+      ['POST', '/api/payments/000000000000000000000000/reconcile', {}],
     ];
     for (const [method, url, body] of roWrites) {
       const res = await request(method, url, { token: ro.token, body });
@@ -329,6 +331,7 @@ const run = async () => {
     // This is the "did the fix remove legitimate access?" side of the change.
     const roReads = [
       ['GET', '/api/payments', 'SETTINGS_VIEW'],
+      ['GET', '/api/payments/webhook-events', 'SETTINGS_VIEW'],
       ['GET', '/api/analytics/dashboard', 'DASHBOARD_VIEW'],
       ['GET', '/api/leads', 'LEADS_VIEW'],
       ['GET', '/api/support/admin/tickets', 'STUDENTS_VIEW'],
@@ -395,6 +398,7 @@ const run = async () => {
       ['PUT', '/api/settings', { footer: {} }],
       ['POST', '/api/settings/payment-gateway/test', {}],
       ['PUT', '/api/settings/payment-gateway', { enabled: true }],
+      ['POST', '/api/payments/000000000000000000000000/reconcile', {}],
       ['GET', '/api/auth/users'],
       ['POST', '/api/auth/users', { name: 'Lim Staff', email: `lim.staff.${stamp}@example.com`, role: 'COUNSELOR', password: 'Matrix-Pass-LimStaff-00!' }],
       ['POST', '/api/coupons', { code: `LIM${stamp}`.slice(0, 12), discountType: 'percent', discountValue: 5 }],
@@ -468,6 +472,13 @@ const run = async () => {
     const fullGatewayTest = await request('POST', '/api/settings/payment-gateway/test', { token: full.token, body: {} });
     check('Full admin reaches the gateway connection test (SETTINGS_EDIT)',
       fullGatewayTest.status === 400 && fullGatewayTest.json?.code === 'NO_KEY', describe(fullGatewayTest));
+
+    const fullWebhookHealth = await request('GET', '/api/payments/webhook-events', { token: full.token });
+    check('Full admin can read webhook health (SETTINGS_VIEW)',
+      fullWebhookHealth.status === 200 && Array.isArray(fullWebhookHealth.json?.events), describe(fullWebhookHealth));
+    const fullReconcile = await request('POST', '/api/payments/000000000000000000000000/reconcile', { token: full.token, body: {} });
+    check('Full admin reaches the stuck-payment re-check (SETTINGS_EDIT)',
+      fullReconcile.status === 404, describe(fullReconcile));
 
     const fullCoupon = await request('POST', '/api/coupons', {
       token: full.token,

@@ -154,6 +154,7 @@ const run = async () => {
 
   const Course = require(path.join(__dirname, '..', 'server', 'models', 'Course'));
   const Payment = require(path.join(__dirname, '..', 'server', 'models', 'Payment'));
+  const WebhookEvent = require(path.join(__dirname, '..', 'server', 'models', 'WebhookEvent'));
   const User = require(path.join(__dirname, '..', 'server', 'models', 'User'));
   const Enrollment = require(path.join(__dirname, '..', 'server', 'models', 'Enrollment'));
   const Progress = require(path.join(__dirname, '..', 'server', 'models', 'Progress'));
@@ -196,6 +197,17 @@ const run = async () => {
     };
     const req = { rawBody: Buffer.from(raw), headers: { 'stripe-signature': signature, origin: 'http://localhost:5173' } };
     await controller.handleStripeWebhook(req, res);
+    return captured;
+  };
+
+  /** Call an admin controller directly and capture what it answered. */
+  const callController = async (fn, { params = {}, body = {}, user = { _id: 'aaaaaaaaaaaaaaaaaaaaaaaa', role: 'ADMIN', name: 'Verify Admin', email: 'verify-admin@example.com' } } = {}) => {
+    const captured = { statusCode: 200, body: null };
+    const res = {
+      status(code) { captured.statusCode = code; return this; },
+      json(body) { captured.body = body; return this; },
+    };
+    await fn({ params, body, user, query: {}, headers: {} }, res);
     return captured;
   };
 
@@ -282,6 +294,48 @@ const run = async () => {
   const failedUser = await User.findOne({ email: failedPending.email });
   check('Failed payment grants no student account', failedUser === null);
 
+  // ── Webhook delivery log (the admin's webhook health panel reads this) ───
+  await new Promise((resolve) => setTimeout(resolve, 150)); // writes are fire-and-forget
+
+  const settledLog = await WebhookEvent.findOne({ status: 'processed', payment: pending._id }).lean();
+  check('A settled delivery is logged against the payment',
+    Boolean(settledLog) && settledLog.invoiceNumber === settled.invoiceNumber,
+    settledLog ? `invoice ${settledLog.invoiceNumber}` : 'no processed row');
+  check('The delivery log keeps the event id and type',
+    Boolean(settledLog?.eventId) && settledLog?.type === 'checkout.session.completed',
+    `${settledLog?.type} / ${settledLog?.eventId}`);
+  check('The delivery log records how long the handler took',
+    typeof settledLog?.durationMs === 'number' && settledLog.durationMs >= 0,
+    `${settledLog?.durationMs}ms`);
+
+  const duplicateLog = await WebhookEvent.countDocuments({ status: 'duplicate' });
+  check('Stripe retries are logged as duplicates, not as second payments', duplicateLog >= 1, `${duplicateLog} duplicate row(s)`);
+
+  const failedLog = await WebhookEvent.findOne({ status: 'processed', invoiceNumber: failedPending.invoiceNumber }).lean();
+  check('A declined payment is logged with its reason',
+    Boolean(failedLog?.message) && /declined/i.test(failedLog.message), failedLog?.message);
+
+  // ── Admin re-check ("this student paid but has no access") ──────────────
+  const reconcileGuards = [];
+  const freshPending = await makePendingPayment({ checkoutSessionId: '' });
+  const noSession = await callController(controller.reconcilePayment, { params: { id: String(freshPending._id) } });
+  reconcileGuards.push(['no Stripe session → 400 NO_SESSION', noSession.statusCode === 400 && noSession.body?.code === 'NO_SESSION']);
+
+  const alreadyPaid = await callController(controller.reconcilePayment, { params: { id: String(pending._id) } });
+  reconcileGuards.push(['an already settled order reports it instead of re-running',
+    alreadyPaid.statusCode === 200 && alreadyPaid.body?.alreadySettled === true]);
+
+  const missing = await callController(controller.reconcilePayment, { params: { id: '000000000000000000000000' } });
+  reconcileGuards.push(['an unknown payment id is a clean 404', missing.statusCode === 404]);
+
+  for (const [name, passed] of reconcileGuards) check(`Re-check guard: ${name}`, passed);
+  check('A re-check never grants access without a paid Stripe session',
+    (await Payment.findById(freshPending._id)).status === 'Pending');
+  check('The reconciliation helper is shared with the public success screen',
+    typeof controller.__test__?.reconcilePendingPayment === 'function');
+  check('The delivery log is bounded by a retention limit',
+    controller.__test__?.WEBHOOK_EVENT_RETENTION === 500, String(controller.__test__?.WEBHOOK_EVENT_RETENTION));
+
   // Forged signature must never settle anything
   const untouched = await makePendingPayment();
   const forgedDelivery = await deliverWebhook(
@@ -303,6 +357,60 @@ const run = async () => {
   const untouchedAfter = await Payment.findById(untouched._id);
   check('Forged webhook is rejected with 400', forgedDelivery.statusCode === 400);
   check('Forged webhook leaves the payment Pending', untouchedAfter.status === 'Pending');
+
+  // ── What the admin's webhook health panel will actually show ────────────
+  await new Promise((resolve) => setTimeout(resolve, 200)); // writes are fire-and-forget
+  const rejectedLog = await WebhookEvent.findOne({ status: 'rejected', signatureValid: false }).lean();
+  check('A forged signature is logged as a rejected attempt', Boolean(rejectedLog), rejectedLog?.message?.slice(0, 60));
+  check('...and it is recorded as HTTP 400 with no payment attached',
+    rejectedLog?.httpStatus === 400 && !rejectedLog?.payment, `http=${rejectedLog?.httpStatus}`);
+  check('A rejected row never stores the raw payload',
+    !/whsec_|sk_(test|live)_/.test(JSON.stringify(rejectedLog || {})), 'only routing facts are kept');
+
+  // A verifiable event for a session we never created
+  await deliverWebhook({
+    id: `evt_unmatched_${Date.now()}`,
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        id: 'cs_test_never_created',
+        payment_status: 'paid',
+        payment_intent: 'pi_ghost',
+        amount_total: 500,
+        metadata: { paymentId: '000000000000000000000000' },
+      },
+    },
+  });
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  const unmatchedLog = await WebhookEvent.findOne({ status: 'unmatched' }).lean();
+  check('An event that matches no order is logged as unmatched', Boolean(unmatchedLog), unmatchedLog?.message);
+
+  const health = await callController(controller.getWebhookHealth, { params: {}, query: {} });
+  check('Admin webhook health answers with the delivery log',
+    health.statusCode === 200 && Array.isArray(health.body?.events) && health.body.events.length > 0,
+    `${health.body?.events?.length} event(s)`);
+  check('...with a summary the panel can render',
+    typeof health.body?.summary?.counts === 'object' && health.body.summary.lastEventAt != null,
+    JSON.stringify(health.body?.summary?.counts || {}));
+  check('...and it surfaces failed/rejected deliveries for follow-up',
+    health.body?.summary?.failedDeliveries === 0 && health.body?.summary?.rejectedAttempts >= 1,
+    `failed=${health.body?.summary?.failedDeliveries} rejected=${health.body?.summary?.rejectedAttempts}`);
+  check('The health payload carries no secret material',
+    !/sk_(test|live)_|whsec_[A-Za-z0-9]{6,}/.test(JSON.stringify(health.body)), 'routing facts only');
+  // A Pending order older than the window must surface as "stuck" — that list is
+  // the admin's recovery path, so it cannot silently stay empty. `createdAt` is
+  // immutable through Mongoose, so backdate it on the raw collection.
+  const stuckFixture = await makePendingPayment();
+  await Payment.collection.updateOne(
+    { _id: stuckFixture._id },
+    { $set: { createdAt: new Date(Date.now() - 45 * 60 * 1000) } },
+  );
+  const healthWithStuck = await callController(controller.getWebhookHealth, { params: {}, query: {} });
+  const stuckIds = (healthWithStuck.body?.stuck || []).map((row) => String(row._id));
+  check('An old Pending order shows up as stuck for the admin to re-check',
+    stuckIds.includes(String(stuckFixture._id)), `${stuckIds.length} stale pending order(s)`);
+  check('A freshly created Pending order is NOT flagged as stuck',
+    !stuckIds.includes(String(freshPending._id)), 'only orders older than 30 minutes');
 
   await mongoose.connection.dropDatabase();
   await mongoose.disconnect();

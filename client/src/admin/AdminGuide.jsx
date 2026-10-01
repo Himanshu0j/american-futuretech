@@ -67,6 +67,9 @@ const SECTIONS = [
       'Pehle TEST mode mein try karo: card 4242 4242 4242 4242, koi bhi future expiry, koi bhi CVC. Sab theek chale to LIVE key paste karo.',
       'Dono cheezein zaroori hain — secret key aur webhook secret. Sirf key rakhne par paisa kat jayega par student ko access turant nahi milega (confirmation webhook se aati hai).',
       'Enable/disable switch off karne par checkout apne aap "secure payment link" wale admissions form par chala jaata hai — website kabhi crash ya fake-paid nahi dikhati.',
+      'WEBHOOK HEALTH: usi page par neeche ek health box hai jo batata hai Stripe ne aakhri baar kab message bheja, kitne settle hue, aur koi delivery fail/reject hui to kyun. Isse pata chalta hai ki problem Stripe side hai ya humari side.',
+      'STUDENT PAID BUT NO ACCESS? Usi health box mein "Pending orders older than 30 minutes" list aati hai — us row par "Re-check with Stripe" dabayein. Stripe se seedha confirm hota hai: paisa aaya to order Paid ho kar student ka access turant on ho jata hai, warna kuch nahi badalta. Yahi button Tuition & Billing Ledger mein bhi (Pending row par) milta hai.',
+      'Samne wala bhale hi "main ne Stripe se paisa bheja hai" kahe — access sirf tab milega jab Stripe ka signed message aaye ya Re-check se confirm ho. Isliye kisi ko manually Paid mark karne ki zarurat nahi padti.',
     ],
   },
   {

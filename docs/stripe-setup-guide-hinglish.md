@@ -83,6 +83,23 @@ downgrade nahi hoti.
 
 ---
 
+## Webhook health (paisa aaya par access nahi mila?)
+
+Usi **Payment Gateway** page par neeche ek **Webhook health** box hai. Ye batata hai:
+
+- Stripe ne aakhri baar message **kab** bheja, aur usme kya hua (processed / pending / duplicate / unmatched / failed / rejected)
+- kitni deliveries **fail** ya **reject** hui (reject = signature match nahi hua, matlab signing secret galat ya koi bahar se endpoint probe kar raha hai)
+- **Pending orders older than 30 minutes** — yaani wo orders jinka paisa aaya par humein message nahi mila (delivery lost)
+
+Us list mein row ke saamne **Re-check with Stripe** dabayein:
+
+- Paisa actually aaya tha → order **Paid** ho jata hai, student ka account + enrollment turant active ho jate hain, aur ledger mein bhi Paid dikhta hai.
+- Paisa nahi aaya → kuch nahi badalta (koi fake access nahi milta).
+
+Yahi button **Tuition & Billing Ledger** mein bhi Pending row par milta hai. Isliye kisi ko manually Paid mark karne ki zarurat nahi.
+
+> Log sirf routing ki jaankari rakhta hai (event id, kis order ka tha, kya hua) — card ya customer data kabhi store nahi hota.
+
 ## Zaroori baatein (yaad rakhein)
 
 1. **Dono secrets zaroori hain.** Sirf secret key se checkout to shuru hoga par
@@ -108,7 +125,9 @@ downgrade nahi hoti.
 | Test connection: *No Stripe webhook points at …* | webhook endpoint bana hi nahi, ya URL galat hai | Step 2 dobara — URL exactly copy-paste karein |
 | Test connection: *missing N event(s)* | webhook bana hai par events adhoore hain | Stripe → Webhooks → endpoint → Edit → sabhi 5 events tick karke save karein |
 | Test connection: *Stripe list skipped (restricted key…)* | key restricted hai, list permission nahi | koi dikkat nahi — charging chalti rahegi; webhook URL Stripe mein manually check kar lein |
-| Paisa kat gaya par student ko access nahi mila | webhook secret galat hai / endpoint band hai | Stripe → Webhooks mein last delivery ka **response** dekhein (200 hona chahiye), phir signing secret dobara paste karein |
+| Paisa kat gaya par student ko access nahi mila | webhook secret galat hai / endpoint band hai | Payment Gateway → **Webhook health** dekhein (aakhir mein event aaya bhi ya nahi), phir Pending row par **Re-check with Stripe** dabayein, aur Stripe → Webhooks mein last delivery ka **response** 200 hai ya nahi wo check karein |
+| Webhook health mein `rejected` row aa rahi hai | signature match nahi hua — signing secret galat paste hua hai (ya koi endpoint probe kar raha hai) | Stripe → Webhooks → endpoint → Signing secret dobara copy karke panel mein paste karein |
+| Delivery `failed` dikh rahi hai | humari taraf handler error hua; Stripe khud retry karega | message column padhein; baar-baar aaye to screenshot ke saath developer ko bhejein |
 
 ---
 

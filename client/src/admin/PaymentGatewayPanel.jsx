@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import WebhookHealthPanel from './WebhookHealthPanel';
 import {
   CreditCard,
   ShieldCheck,
@@ -598,6 +599,9 @@ export default function PaymentGatewayPanel() {
           </span>
         </div>
       </StepCard>
+
+      {/* Did Stripe actually call us, and what did we do with it? */}
+      <WebhookHealthPanel />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-[11px] text-slate-400">

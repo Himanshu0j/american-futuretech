@@ -15,6 +15,8 @@ import {
   X,
   RefreshCw,
   Settings,
+  RotateCcw,
+  Info,
 } from 'lucide-react';
 
 const STATUS_STYLES = {
@@ -37,6 +39,8 @@ export default function PaymentsManager() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [gateway, setGateway] = useState(null);
+  const [recheckingId, setRecheckingId] = useState('');
+  const [recheckMessage, setRecheckMessage] = useState({ type: '', message: '' });
 
   useEffect(() => {
     fetchPayments();
@@ -58,6 +62,36 @@ export default function PaymentsManager() {
       console.error('Failed to fetch payments:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * Ask Stripe directly about one Pending order. This is the recovery path when a
+   * webhook delivery was lost: if the money is there the order settles (and the
+   * student gets access), otherwise nothing changes.
+   */
+  const recheckWithStripe = async (payment) => {
+    setRecheckingId(payment._id);
+    setRecheckMessage({ type: '', message: '' });
+    try {
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
+      const res = await axios.post(
+        `/api/payments/${payment._id}/reconcile`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setRecheckMessage({
+        type: res.data?.settled ? 'success' : 'info',
+        message: res.data?.message || 'Re-checked with Stripe.',
+      });
+      await fetchPayments();
+    } catch (err) {
+      setRecheckMessage({
+        type: 'error',
+        message: err.response?.data?.message || 'The re-check request failed.',
+      });
+    } finally {
+      setRecheckingId('');
     }
   };
 
@@ -260,6 +294,25 @@ export default function PaymentsManager() {
         </div>
       </div>
 
+      {recheckMessage.message && (
+        <div
+          className={`flex items-start gap-2 px-4 py-3 rounded-xl border text-xs ${
+            recheckMessage.type === 'error'
+              ? 'bg-red-500/10 border-red-500/30 text-red-200'
+              : recheckMessage.type === 'success'
+                ? 'bg-blue-500/10 border-blue-500/30 text-blue-200'
+                : 'bg-slate-800/60 border-slate-700 text-slate-200'
+          }`}
+        >
+          {recheckMessage.type === 'error' ? (
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          ) : (
+            <Info className="w-4 h-4 shrink-0 mt-0.5" />
+          )}
+          <span>{recheckMessage.message}</span>
+        </div>
+      )}
+
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:w-96">
@@ -378,13 +431,26 @@ export default function PaymentsManager() {
                       </span>
                     </td>
                     <td className="py-3.5 px-5 text-right font-sans">
-                      <button
-                        onClick={() => setSelectedInvoice(p)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
-                      >
-                        <Receipt className="w-3.5 h-3.5 text-blue-400" />
-                        Invoice
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        {p.status === 'Pending' && p.checkoutSessionId && (
+                          <button
+                            onClick={() => recheckWithStripe(p)}
+                            disabled={recheckingId === p._id}
+                            title="Ask Stripe whether this order was actually paid"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-200 text-xs font-semibold transition-colors disabled:opacity-50"
+                          >
+                            <RotateCcw className={`w-3.5 h-3.5 ${recheckingId === p._id ? 'animate-spin' : ''}`} />
+                            {recheckingId === p._id ? 'Checking…' : 'Re-check'}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setSelectedInvoice(p)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                        >
+                          <Receipt className="w-3.5 h-3.5 text-blue-400" />
+                          Invoice
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

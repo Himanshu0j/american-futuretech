@@ -255,13 +255,18 @@ const getAuditLogs = async (req, res) => {
 // Inline site editor — per-route text & image overrides
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Ceilings for the inline editor. They exist to stop abuse, not to refuse real
+// work: this site edits dozens of pages by hand, and a page whose wording is
+// largely CMS-driven holds many single-sentence overrides. Hitting a ceiling
+// made Publish fail with a 400 ("the admin's edit does not save"), so the limits
+// are set well above anything a hand-edited site realistically produces.
 const EDITOR_LIMITS = {
   routeLength: 120,
-  keyLength: 90,
-  textLength: 600,
+  keyLength: 140,
+  textLength: 2000,
   imageUrlLength: 1000,
-  entriesPerRoute: 400,
-  routes: 60,
+  entriesPerRoute: 1500,
+  routes: 400,
 };
 
 const normalizeRoute = (route) => {
@@ -721,4 +726,8 @@ module.exports = {
   resetSiteEditorRoute,
   // Exposed for the CMS schema/field contract test.
   __test__: { findUnstorablePaths, sanitizeSettingsPayload },
+  // The inline editor's ceilings are exported so the regression test asserts
+  // against the SHIPPED numbers: it previously hard-coded the old 90-char key
+  // limit, so raising the ceilings made a healthy server look broken.
+  EDITOR_LIMITS,
 };

@@ -76,6 +76,15 @@ export default function FooterManager() {
         description: incoming.description || '',
         badgeText: incoming.badgeText || '',
         copyrightText: incoming.copyrightText || '',
+        logoPlate: incoming.logoPlate !== false,
+        contactEmails: Array.isArray(incoming.contactEmails) && incoming.contactEmails.length > 0
+          ? incoming.contactEmails
+          : ['info@americantechgloballlc.com', 'support@americantechgloballlc.com'],
+        localTime: {
+          enabled: incoming.localTime?.enabled !== false,
+          timeZone: incoming.localTime?.timeZone || 'America/Denver',
+          label: incoming.localTime?.label || 'Sheridan, Wyoming — Local Time',
+        },
         hiringStrip: {
           enabled: incoming.hiringStrip?.enabled !== false,
           text: incoming.hiringStrip?.text || '',
@@ -109,6 +118,9 @@ export default function FooterManager() {
           enabled: footer.enabled,
           logo: footer.logo,
           logoWidth: Number(footer.logoWidth) || 160,
+          logoPlate: footer.logoPlate !== false,
+          contactEmails: (footer.contactEmails || []).map((email) => String(email || '').trim()).filter(Boolean),
+          localTime: footer.localTime,
           description: footer.description,
           badgeText: footer.badgeText,
           copyrightText: footer.copyrightText,
@@ -172,7 +184,7 @@ export default function FooterManager() {
     }));
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-indigo-500';
+  const inputClass = 'w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500';
   const labelClass = 'block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1';
 
   if (loading || !footer) {
@@ -186,7 +198,7 @@ export default function FooterManager() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-mono uppercase tracking-widest mb-2">
             <PanelBottom className="w-3.5 h-3.5" />
             Footer CMS
           </div>
@@ -200,7 +212,7 @@ export default function FooterManager() {
         <button
           onClick={save}
           disabled={saving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving…' : 'Save Footer'}
@@ -210,8 +222,8 @@ export default function FooterManager() {
       {feedback.message && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-xs ${
           feedback.type === 'error'
-            ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
-            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+            ? 'bg-red-500/10 border-red-500/30 text-red-200'
+            : 'bg-blue-500/10 border-blue-500/30 text-blue-200'
         }`}>
           {feedback.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
           <span>{feedback.message}</span>
@@ -227,7 +239,7 @@ export default function FooterManager() {
               type="checkbox"
               checked={footer.enabled}
               onChange={(e) => patch({ enabled: e.target.checked })}
-              className="accent-indigo-500"
+              className="accent-blue-500"
             />
             Footer visible on the website
           </label>
@@ -259,18 +271,41 @@ export default function FooterManager() {
                 max="320"
                 value={footer.logoWidth}
                 onChange={(e) => patch({ logoWidth: Number(e.target.value) })}
-                className="w-full mt-2 accent-indigo-500"
+                className="w-full mt-2 accent-blue-500"
               />
               <p className="text-[10px] text-slate-400 mt-1 font-sans">Height scales automatically — the logo never stretches.</p>
             </div>
+            <label className="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={footer.logoPlate !== false}
+                onChange={(e) => patch({ logoPlate: e.target.checked })}
+                className="accent-blue-500"
+              />
+              White oval plate behind the logo
+            </label>
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[64px]">
               {footer.logo ? (
-                <img
-                  src={footer.logo}
-                  alt="Footer logo preview"
-                  style={{ width: `${footer.logoWidth}px`, height: 'auto' }}
-                  className="max-w-full object-contain"
-                />
+                footer.logoPlate !== false ? (
+                  <span className="inline-flex items-center justify-center rounded-full bg-white px-5 py-3">
+                    <img
+                      /* Same swap the live footer makes: the white lockup is
+                         invisible on a white plate, so the coloured master is
+                         previewed instead. */
+                      src={['/images/logo-horizontal-white.webp', '/images/logo-horizontal-white.png'].includes(footer.logo) ? '/images/logo-horizontal.png' : footer.logo}
+                      alt="Footer logo preview"
+                      style={{ width: `${footer.logoWidth}px`, height: 'auto' }}
+                      className="max-w-full object-contain"
+                    />
+                  </span>
+                ) : (
+                  <img
+                    src={footer.logo}
+                    alt="Footer logo preview"
+                    style={{ width: `${footer.logoWidth}px`, height: 'auto' }}
+                    className="max-w-full object-contain"
+                  />
+                )
               ) : (
                 <span className="text-[11px] text-slate-400">No logo selected</span>
               )}
@@ -308,6 +343,76 @@ export default function FooterManager() {
           </div>
         </div>
 
+        {/* Contact row: two published emails + live local-time clock */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+          <div className="space-y-3">
+            <label className={labelClass}>Contact emails shown in the footer</label>
+            {(footer.contactEmails || []).map((email, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  value={email}
+                  onChange={(e) => {
+                    const next = [...footer.contactEmails];
+                    next[index] = e.target.value;
+                    patch({ contactEmails: next });
+                  }}
+                  placeholder="admissions@example.com"
+                  aria-label={`Footer contact email ${index + 1}`}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  onClick={() => patch({ contactEmails: footer.contactEmails.filter((_, i) => i !== index) })}
+                  className="p-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-slate-950 cursor-pointer shrink-0"
+                  aria-label={`Remove email ${index + 1}`}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => patch({ contactEmails: [...(footer.contactEmails || []), ''] })}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300 hover:text-white cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add email
+            </button>
+            <p className="text-[10px] text-slate-400">Do ya zyada email add kar sakte ho — footer me sab dikhte hain.</p>
+          </div>
+
+          <div className="space-y-3">
+            <label className={labelClass}>Live local time (Wyoming)</label>
+            <label className="inline-flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={footer.localTime?.enabled !== false}
+                onChange={(e) => patch({ localTime: { ...footer.localTime, enabled: e.target.checked } })}
+                className="accent-blue-500"
+              />
+              Show the live clock in the footer
+            </label>
+            <div>
+              <label className={labelClass}>Timezone (IANA)</label>
+              <input
+                value={footer.localTime?.timeZone || ''}
+                onChange={(e) => patch({ localTime: { ...footer.localTime, timeZone: e.target.value } })}
+                placeholder="America/Denver"
+                className={inputClass}
+              />
+              <p className="text-[10px] text-slate-400 mt-1">Wyoming = America/Denver. Clock seconds me tick karta hai.</p>
+            </div>
+            <div>
+              <label className={labelClass}>Clock label</label>
+              <input
+                value={footer.localTime?.label || ''}
+                onChange={(e) => patch({ localTime: { ...footer.localTime, label: e.target.value } })}
+                placeholder="Sheridan, Wyoming — Local Time"
+                className={inputClass}
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-2 border-t border-slate-800">
           <div className="lg:col-span-2">
             <label className={labelClass}>Hiring strip text</label>
@@ -323,7 +428,7 @@ export default function FooterManager() {
                 type="checkbox"
                 checked={footer.hiringStrip.enabled}
                 onChange={(e) => patch({ hiringStrip: { ...footer.hiringStrip, enabled: e.target.checked } })}
-                className="accent-indigo-500"
+                className="accent-blue-500"
               />
               Show partner-logo strip
             </label>
@@ -354,7 +459,7 @@ export default function FooterManager() {
                 type="checkbox"
                 checked={footer.cta.enabled}
                 onChange={(e) => patch({ cta: { ...footer.cta, enabled: e.target.checked } })}
-                className="accent-indigo-500"
+                className="accent-blue-500"
               />
               Show CTA button
             </label>
@@ -379,7 +484,7 @@ export default function FooterManager() {
               });
               setExpanded((prev) => ({ ...prev, [key]: true }));
             }}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 text-xs font-bold hover:bg-indigo-500/25 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-200 text-xs font-bold hover:bg-blue-500/25 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             Add column
@@ -398,7 +503,7 @@ export default function FooterManager() {
                     aria-label={`Footer column ${index + 1} title`}
                     value={column.title}
                     onChange={(e) => updateColumn(column._key, { title: e.target.value })}
-                    className="flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-bold focus:outline-none focus:border-indigo-500"
+                    className="flex-1 min-w-[160px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs font-bold focus:outline-none focus:border-blue-500"
                   />
                   <span className="text-[10px] font-mono text-slate-400">{links.length} link(s)</span>
                   <div className="flex items-center gap-1">
@@ -422,7 +527,7 @@ export default function FooterManager() {
                       onClick={() => updateColumn(column._key, { active: !column.active })}
                       title={column.active ? 'Hide column' : 'Show column'}
                       className={`p-1.5 rounded-lg cursor-pointer ${
-                        column.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'
+                        column.active ? 'bg-blue-500/15 text-blue-300' : 'bg-slate-800 text-slate-400'
                       }`}
                     >
                       {column.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -436,7 +541,7 @@ export default function FooterManager() {
                     <button
                       onClick={() => patch({ columns: footer.columns.filter((c) => c._key !== column._key) })}
                       title="Delete column"
-                      className="p-1.5 rounded-lg bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 cursor-pointer"
+                      className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -454,13 +559,13 @@ export default function FooterManager() {
                           value={link.label}
                           onChange={(e) => updateLink(column._key, link._key, { label: e.target.value })}
                           placeholder="Link label"
-                          className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+                          className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
                         />
                         <input
                           value={link.url}
                           onChange={(e) => updateLink(column._key, link._key, { url: e.target.value })}
                           placeholder="/courses or https://…"
-                          className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono focus:outline-none focus:border-indigo-500"
+                          className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono focus:outline-none focus:border-blue-500"
                         />
                         <div className="flex items-center gap-1">
                           <button
@@ -482,7 +587,7 @@ export default function FooterManager() {
                           <button
                             onClick={() => updateLink(column._key, link._key, { active: !link.active })}
                             className={`p-1.5 rounded-lg cursor-pointer ${
-                              link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'
+                              link.active ? 'bg-blue-500/15 text-blue-300' : 'bg-slate-800 text-slate-400'
                             }`}
                             title={link.active ? 'Hide link' : 'Show link'}
                           >
@@ -492,7 +597,7 @@ export default function FooterManager() {
                             onClick={() => updateColumn(column._key, {
                               links: column.links.filter((l) => l._key !== link._key),
                             })}
-                            className="p-1.5 rounded-lg bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 cursor-pointer"
+                            className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer"
                             title="Delete link"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -528,7 +633,7 @@ export default function FooterManager() {
             onClick={() => patch({
               legalLinks: [...footer.legalLinks, normalizeLink({ label: 'New link', url: '/' })],
             })}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-200 text-xs font-bold hover:bg-indigo-500/25 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-200 text-xs font-bold hover:bg-blue-500/25 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             Add link
@@ -545,7 +650,7 @@ export default function FooterManager() {
                   ...prev,
                   legalLinks: prev.legalLinks.map((l) => (l._key === link._key ? { ...l, label: e.target.value } : l)),
                 }))}
-                className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500"
+                className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500"
               />
               <input
                 aria-label={`Legal link ${index + 1} URL`}
@@ -554,14 +659,14 @@ export default function FooterManager() {
                   ...prev,
                   legalLinks: prev.legalLinks.map((l) => (l._key === link._key ? { ...l, url: e.target.value } : l)),
                 }))}
-                className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono focus:outline-none focus:border-indigo-500"
+                className="flex-1 min-w-[140px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono focus:outline-none focus:border-blue-500"
               />
               <button
                 onClick={() => setFooter((prev) => ({
                   ...prev,
                   legalLinks: prev.legalLinks.map((l) => (l._key === link._key ? { ...l, active: !l.active } : l)),
                 }))}
-                className={`p-1.5 rounded-lg cursor-pointer ${link.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'}`}
+                className={`p-1.5 rounded-lg cursor-pointer ${link.active ? 'bg-blue-500/15 text-blue-300' : 'bg-slate-800 text-slate-400'}`}
                 title={link.active ? 'Hide' : 'Show'}
               >
                 {link.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -572,7 +677,7 @@ export default function FooterManager() {
                   ...prev,
                   legalLinks: prev.legalLinks.filter((l) => l._key !== link._key),
                 }))}
-                className="p-1.5 rounded-lg bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 cursor-pointer"
+                className="p-1.5 rounded-lg bg-red-500/10 text-red-300 hover:bg-red-500/20 cursor-pointer"
                 title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -586,7 +691,7 @@ export default function FooterManager() {
         <button
           onClick={save}
           disabled={saving}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/20 disabled:opacity-50 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving…' : 'Save Footer'}

@@ -65,6 +65,11 @@ export function getHeroCredential(course, certImages = {}) {
     title: course?.credentialTitle || fallbackTitle,
     subtitle: course?.credentialSubtitle || fallbackSubtitle,
     certificateImage,
+    // Optional second credential artwork (e.g. the US Fellowship diploma next to
+    // the Microsoft certificate, or the AIGP seal next to the GRC certificate).
+    // Only what the admin uploaded — never inherited from a fallback, so the
+    // band shows one certificate unless a second one was deliberately added.
+    certificateImage2: course?.certificateImage2 || '',
     // Badge-shaped artwork ships on its own light plate, so the dark hero needs
     // a white tile behind it. Only true when we fell back to the AIGP badge.
     logoOnLightTile: logo === AIGP_LOGO,

@@ -24,6 +24,24 @@ import ImageUploadInput from './components/ImageUploadInput';
 import { getDetailedCourseData } from '../data/courseContentData';
 
 /**
+ * Badge gradients offered for the "What Can You Become?" role pills.
+ * These strings are Tailwind utility classes (not free text) so the stored value
+ * can never render an unstyled badge — the same palette the coded lists use.
+ */
+const CAREER_ROLE_COLORS = [
+  { label: 'Emerald', value: 'from-blue-500 to-blue-500' },
+  { label: 'Blue', value: 'from-blue-500 to-blue-500' },
+  { label: 'Violet', value: 'from-blue-500 to-blue-500' },
+  { label: 'Amber', value: 'from-red-500 to-yellow-500' },
+  { label: 'Rose', value: 'from-red-500 to-red-500' },
+  { label: 'Teal', value: 'from-blue-500 to-blue-500' },
+  { label: 'Indigo', value: 'from-blue-500 to-blue-500' },
+  { label: 'Orange', value: 'from-red-500 to-red-500' },
+  { label: 'Fuchsia', value: 'from-blue-500 to-blue-500' },
+  { label: 'Red', value: 'from-red-500 to-red-500' },
+];
+
+/**
  * Split the composer's bulk "topics" text into lesson titles.
  *
  * The separator is a FULL STOP (a comma appears inside far too many real
@@ -108,6 +126,13 @@ export default function CoursesCMS() {
   const [credentialTitle, setCredentialTitle] = useState('');
   const [credentialSubtitle, setCredentialSubtitle] = useState('');
   const [certificateImage, setCertificateImage] = useState('');
+  // Optional second credential artwork (Microsoft + US Fellowship, GRC AIGP +
+  // its own certificate). Blank keeps the single-certificate layout.
+  const [certificateImage2, setCertificateImage2] = useState('');
+  // "What Can You Become?" career-role pills + that block's heading/subtitle.
+  const [careerRolesHeading, setCareerRolesHeading] = useState('');
+  const [careerRolesSubtitle, setCareerRolesSubtitle] = useState('');
+  const [careerRoles, setCareerRoles] = useState([]);
   const [saveFeedback, setSaveFeedback] = useState(null);
 
   const fetchCourses = async () => {
@@ -185,6 +210,17 @@ export default function CoursesCMS() {
     setCredentialTitle(course.credentialTitle || '');
     setCredentialSubtitle(course.credentialSubtitle || '');
     setCertificateImage(course.certificateImage || '');
+    setCertificateImage2(course.certificateImage2 || '');
+    setCareerRolesHeading(course.careerRolesHeading || '');
+    setCareerRolesSubtitle(course.careerRolesSubtitle || '');
+    setCareerRoles(
+      (Array.isArray(course.careerRoles) ? course.careerRoles : []).map((role, idx) => ({
+        name: role?.name || '',
+        color: role?.color || 'from-blue-500 to-blue-500',
+        order: Number(role?.order) || idx + 1,
+        active: role?.active !== false,
+      })),
+    );
     setToolsTitle(course.toolsTitle || '');
     setToolsSubtitle(course.toolsSubtitle || '');
     setTools(Array.isArray(course.tools) ? course.tools : []);
@@ -312,7 +348,7 @@ export default function CoursesCMS() {
   const addCapstone = () => {
     setCapstoneProjects((prev) => [
       ...prev,
-      { tag: 'Machine Learning', title: 'New Capstone Project', desc: 'Describe what students will build.', stack: ['Python'], color: 'from-indigo-500 to-blue-500' },
+      { tag: 'Machine Learning', title: 'New Capstone Project', desc: 'Describe what students will build.', stack: ['Python'], color: 'from-blue-500 to-blue-500' },
     ]);
   };
 
@@ -387,6 +423,17 @@ export default function CoursesCMS() {
       credentialTitle: String(credentialTitle || '').trim(),
       credentialSubtitle: String(credentialSubtitle || '').trim(),
       certificateImage: String(certificateImage || '').trim(),
+      certificateImage2: String(certificateImage2 || '').trim(),
+      careerRolesHeading: String(careerRolesHeading || '').trim(),
+      careerRolesSubtitle: String(careerRolesSubtitle || '').trim(),
+      careerRoles: careerRoles
+        .map((role, idx) => ({
+          name: String(role.name || '').trim(),
+          color: role.color || 'from-blue-500 to-blue-500',
+          order: Number(role.order) || idx + 1,
+          active: role.active !== false,
+        }))
+        .filter((role) => role.name),
       toolsTitle,
       toolsSubtitle,
       tools: tools
@@ -398,7 +445,7 @@ export default function CoursesCMS() {
           title: String(proj.title || '').trim(),
           desc: proj.desc || '',
           stack: Array.isArray(proj.stack) ? proj.stack : [],
-          color: proj.color || 'from-indigo-500 to-blue-500',
+          color: proj.color || 'from-blue-500 to-blue-500',
           order: idx + 1,
           active: proj.active !== false,
         }))
@@ -550,8 +597,8 @@ export default function CoursesCMS() {
         <div
           className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs font-semibold ${
             saveFeedback.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+              ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
+              : 'bg-red-500/10 border-red-500/30 text-red-200'
           }`}
         >
           <span>{saveFeedback.message}</span>
@@ -574,7 +621,7 @@ export default function CoursesCMS() {
 
         <button
           onClick={openCreateModal}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all"
         >
           <Plus className="w-4 h-4" />
           <span>Create New Program</span>
@@ -582,9 +629,9 @@ export default function CoursesCMS() {
       </div>
 
       {/* Course Catalog Table */}
-      <div className="rounded-2xl bg-[#0B1220]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#070C17] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+          <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
             <tr>
               <th className="px-6 py-4 font-bold">Course Title & Category</th>
               <th className="px-6 py-4 font-bold">Theme & Badge</th>
@@ -623,7 +670,7 @@ export default function CoursesCMS() {
                     aria-label={`Badge for ${course.title}`}
                     value={course.badge || ''}
                     onChange={(e) => handleQuickBadgeChange(course, e.target.value)}
-                    className="p-1.5 rounded-lg bg-slate-900 border border-white/10 text-[11px] text-indigo-300 font-bold focus:outline-none"
+                    className="p-1.5 rounded-lg bg-slate-900 border border-white/10 text-[11px] text-blue-300 font-bold focus:outline-none"
                   >
                     <option value="">No Badge</option>
                     <option value="Most Popular">Most Popular</option>
@@ -648,7 +695,7 @@ export default function CoursesCMS() {
 
                 {/* Curriculum summary */}
                 <td className="px-6 py-4 text-slate-300">
-                  <span className="font-semibold text-indigo-400">
+                  <span className="font-semibold text-blue-400">
                     {course.moduleCount ?? course.curriculum?.length ?? 0} Modules
                   </span>
                 </td>
@@ -660,7 +707,7 @@ export default function CoursesCMS() {
                     onClick={() => handleTogglePublish(course)}
                     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                       course.isPublished
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30'
                         : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
                     }`}
                     title={
@@ -690,7 +737,7 @@ export default function CoursesCMS() {
                         <button
                           onClick={() => handleDeleteCourse(course)}
                           disabled={deleting}
-                          className="px-2.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold hover:bg-rose-500/30 disabled:opacity-60 cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-lg bg-red-500/20 text-red-300 border border-red-500/40 text-[11px] font-bold hover:bg-red-500/30 disabled:opacity-60 cursor-pointer"
                           title="Delete this course and its curriculum permanently"
                         >
                           {deleting ? 'Deleting…' : 'Confirm delete'}
@@ -705,7 +752,7 @@ export default function CoursesCMS() {
                     ) : (
                       <button
                         onClick={() => setPendingDelete(course._id)}
-                        className="p-2 rounded-lg bg-slate-800 text-rose-400 hover:text-rose-300 hover:bg-slate-700 transition-colors cursor-pointer"
+                        className="p-2 rounded-lg bg-slate-800 text-red-400 hover:text-red-300 hover:bg-slate-700 transition-colors cursor-pointer"
                         title="Delete course — or use the status button to hide it instead"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -722,10 +769,10 @@ export default function CoursesCMS() {
       {/* Course & Curriculum Visual Composer Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[#0B1220] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
+          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
             
             {/* Modal Header */}
-            <div className="p-6 bg-[#070C17] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-6 bg-[#001845] border-b border-white/[0.08] flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold text-white">
                   {editingCourse ? `Edit Course: ${editingCourse.title}` : 'Create New Certification Track'}
@@ -755,7 +802,7 @@ export default function CoursesCMS() {
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-400"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-blue-400"
                   />
                 </div>
 
@@ -766,7 +813,7 @@ export default function CoursesCMS() {
                     placeholder="auto-generated-if-blank"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-400"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-blue-400"
                   />
                 </div>
               </div>
@@ -855,7 +902,7 @@ export default function CoursesCMS() {
                 <div className="pt-2 border-t border-white/[0.08] space-y-3">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-emerald-400" />
+                      <ImageIcon className="w-4 h-4 text-blue-400" />
                       <span>Advantage Card Images</span>
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
@@ -889,7 +936,7 @@ export default function CoursesCMS() {
                 <div className="pt-3 border-t border-white/[0.08] space-y-3">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                      <Award className="w-4 h-4 text-emerald-400" />
+                      <Award className="w-4 h-4 text-blue-400" />
                       <span>Hero Credential Block</span>
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
@@ -936,12 +983,133 @@ export default function CoursesCMS() {
                     placeholder="GRC / Microsoft certificate image — URL ya upload"
                     previewSize="w-28 h-16"
                   />
+
+                  {/* Second credential — the client hands out two certificates on
+                      several tracks (Microsoft + US Fellowship diploma, and the
+                      GRC's AIGP mark beside its own certificate). Khaali chhodo to
+                      hero band pehle jaisa, ek hi certificate. */}
+                  <ImageUploadInput
+                    label="Second Certificate Artwork (optional)"
+                    value={certificateImage2}
+                    onChange={setCertificateImage2}
+                    placeholder="Doosra certificate (e.g. GRC / Fellowship diploma) — URL ya upload"
+                    previewSize="w-28 h-16"
+                  />
+                </div>
+
+                {/* "What Can You Become?" career-role pills — editable per course
+                    so the admin can change the wording and the badge colour of
+                    each role without a code change. */}
+                <div className="pt-3 border-t border-white/[0.08] space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-blue-400" />
+                        <span>Career Roles ("What Can You Become?")</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Course page par target-role pills. List khaali chhodne par is program ki default roles dikhti rehti
+                        hain — yahan add karte hi aapki list live ho jaati hai.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCareerRoles((prev) => [
+                        ...prev,
+                        { name: 'New Role', color: 'from-blue-500 to-blue-500', order: prev.length + 1, active: true },
+                      ])}
+                      className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 shrink-0 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Role</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">Block Heading</label>
+                      <input
+                        type="text"
+                        value={careerRolesHeading}
+                        onChange={(e) => setCareerRolesHeading(e.target.value)}
+                        placeholder="Unlock Your Potential — What Can You Become?"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">Block Subtitle</label>
+                      <input
+                        type="text"
+                        value={careerRolesSubtitle}
+                        onChange={(e) => setCareerRolesSubtitle(e.target.value)}
+                        placeholder="Khaali chhodo to course ka default line dikhega"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {careerRoles.length === 0 ? (
+                    <p className="text-[11px] text-slate-500 font-mono">
+                      Abhi is course ki default roles dikh rahi hain. Add Role dabao to apni list bana sakte ho.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {careerRoles.map((role, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-xl bg-slate-950/70 border border-white/10 flex flex-col sm:flex-row sm:items-center gap-2"
+                        >
+                          <input
+                            type="text"
+                            value={role.name}
+                            onChange={(e) => setCareerRoles((prev) => prev.map((r, i) => (
+                              i === idx ? { ...r, name: e.target.value } : r
+                            )))}
+                            placeholder="Role name"
+                            aria-label={`Career role ${idx + 1} name`}
+                            className="flex-1 p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                          />
+                          <select
+                            value={role.color}
+                            onChange={(e) => setCareerRoles((prev) => prev.map((r, i) => (
+                              i === idx ? { ...r, color: e.target.value } : r
+                            )))}
+                            aria-label={`Career role ${idx + 1} badge colour`}
+                            className="p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                          >
+                            {CAREER_ROLE_COLORS.map((color) => (
+                              <option key={color.value} value={color.value}>{color.label}</option>
+                            ))}
+                          </select>
+                          <label className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono cursor-pointer whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={role.active !== false}
+                              onChange={(e) => setCareerRoles((prev) => prev.map((r, i) => (
+                                i === idx ? { ...r, active: e.target.checked } : r
+                              )))}
+                              className="rounded bg-slate-900 border-white/20 text-blue-500"
+                            />
+                            Show
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setCareerRoles((prev) => prev.filter((_, i) => i !== idx))}
+                            className="p-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-slate-900 cursor-pointer shrink-0"
+                            aria-label={`Remove career role ${idx + 1}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between gap-3 pt-2">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-emerald-400" />
+                      <Layers className="w-4 h-4 text-blue-400" />
                       <span>Tools Covered (this course only)</span>
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
@@ -952,7 +1120,7 @@ export default function CoursesCMS() {
                   <button
                     type="button"
                     onClick={addTool}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-emerald-500/30 shrink-0 cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 shrink-0 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Tool</span>
@@ -1009,7 +1177,7 @@ export default function CoursesCMS() {
                         <button
                           type="button"
                           onClick={() => removeTool(idx)}
-                          className="sm:col-span-1 justify-self-end text-rose-400 hover:text-rose-300 p-2 cursor-pointer"
+                          className="sm:col-span-1 justify-self-end text-red-400 hover:text-red-300 p-2 cursor-pointer"
                           title="Remove this tool"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1035,7 +1203,7 @@ export default function CoursesCMS() {
               <div className="space-y-4 pt-4 border-t border-white/[0.08]">
                 <div>
                   <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-indigo-400" />
+                    <Layers className="w-4 h-4 text-blue-400" />
                     Learning Options On This Course Page
                   </h4>
                   <p className="text-[11px] text-slate-400 mt-1">
@@ -1053,7 +1221,7 @@ export default function CoursesCMS() {
                       type="checkbox"
                       checked={viewOptions.groupBatch}
                       onChange={(e) => setViewOptions((v) => ({ ...v, groupBatch: e.target.checked }))}
-                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-indigo-500 focus:ring-0"
+                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-blue-500 focus:ring-0"
                     />
                   </label>
 
@@ -1066,7 +1234,7 @@ export default function CoursesCMS() {
                       type="checkbox"
                       checked={viewOptions.personalizedMentor}
                       onChange={(e) => setViewOptions((v) => ({ ...v, personalizedMentor: e.target.checked }))}
-                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-indigo-500 focus:ring-0"
+                      className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-blue-500 focus:ring-0"
                     />
                   </label>
                 </div>
@@ -1153,7 +1321,7 @@ export default function CoursesCMS() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                      <Briefcase className="w-4 h-4 text-teal-400" />
+                      <Briefcase className="w-4 h-4 text-blue-400" />
                       <span>Capstone Projects (Showcase Cards)</span>
                     </h4>
                     <p className="text-[11px] text-slate-400 mt-0.5">
@@ -1164,7 +1332,7 @@ export default function CoursesCMS() {
                   <button
                     type="button"
                     onClick={addCapstone}
-                    className="px-3 py-1.5 rounded-lg bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-teal-500/30"
+                    className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Project</span>
@@ -1181,11 +1349,11 @@ export default function CoursesCMS() {
                   {capstoneProjects.map((proj, idx) => (
                     <div key={idx} className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-teal-400 text-xs">Project {idx + 1}</span>
+                        <span className="font-bold text-blue-400 text-xs">Project {idx + 1}</span>
                         <button
                           type="button"
                           onClick={() => removeCapstone(idx)}
-                          className="text-rose-400 hover:text-rose-300 p-1"
+                          className="text-red-400 hover:text-red-300 p-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1226,7 +1394,7 @@ export default function CoursesCMS() {
                         />
                         <input
                           type="text"
-                          placeholder="Gradient (e.g. from-blue-500 to-indigo-500)"
+                          placeholder="Gradient (e.g. from-blue-500 to-blue-500)"
                           value={proj.color || ''}
                           onChange={(e) => updateCapstone(idx, 'color', e.target.value)}
                           className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs font-mono"
@@ -1241,14 +1409,14 @@ export default function CoursesCMS() {
               <div className="space-y-4 pt-4 border-t border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-indigo-400" />
+                    <Layers className="w-4 h-4 text-blue-400" />
                     <span>Curriculum Module Composer</span>
                   </h4>
 
                   <button
                     type="button"
                     onClick={addModuleField}
-                    className="px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-indigo-500/30"
+                    className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Module</span>
@@ -1259,11 +1427,11 @@ export default function CoursesCMS() {
                   {modules.map((mod, index) => (
                     <div key={index} className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
                       <div className="flex items-center justify-between gap-3">
-                        <span className="font-bold text-indigo-400">Module {index + 1}</span>
+                        <span className="font-bold text-blue-400">Module {index + 1}</span>
                         <button
                           type="button"
                           onClick={() => removeModuleField(index)}
-                          className="text-rose-400 hover:text-rose-300 p-1"
+                          className="text-red-400 hover:text-red-300 p-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1318,7 +1486,7 @@ export default function CoursesCMS() {
                           <button
                             type="button"
                             onClick={() => addLessonRow(index)}
-                            className="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold hover:bg-indigo-500/30 cursor-pointer shrink-0"
+                            className="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] font-semibold hover:bg-blue-500/30 cursor-pointer shrink-0"
                           >
                             + Add lesson
                           </button>
@@ -1334,19 +1502,19 @@ export default function CoursesCMS() {
                                 placeholder={`Lesson ${lessonIndex + 1}`}
                                 className="flex-1 p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-200 text-xs"
                               />
-                              <label className="flex items-center gap-1.5 text-[10px] font-mono text-amber-300 whitespace-nowrap cursor-pointer">
+                              <label className="flex items-center gap-1.5 text-[10px] font-mono text-red-300 whitespace-nowrap cursor-pointer">
                                 <input
                                   type="checkbox"
                                   checked={Boolean(lesson.isPreview)}
                                   onChange={(e) => toggleLessonPreview(index, lessonIndex, e.target.checked)}
-                                  className="w-3.5 h-3.5 rounded bg-slate-950 border-slate-700 text-amber-400 focus:ring-0"
+                                  className="w-3.5 h-3.5 rounded bg-slate-950 border-slate-700 text-red-400 focus:ring-0"
                                 />
                                 Free Preview
                               </label>
                               <button
                                 type="button"
                                 onClick={() => removeLessonRow(index, lessonIndex)}
-                                className="text-rose-400 hover:text-rose-300 p-1.5 cursor-pointer"
+                                className="text-red-400 hover:text-red-300 p-1.5 cursor-pointer"
                                 title="Remove this lesson"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -1371,7 +1539,7 @@ export default function CoursesCMS() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 text-white font-bold flex items-center gap-2 shadow-lg"
+                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 text-white font-bold flex items-center gap-2 shadow-lg"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Course</span>

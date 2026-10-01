@@ -23,18 +23,65 @@ import lmsDashboardSvg from '../assets/illustrations/lms/lms-dashboard.svg';
 import lmsCodeReviewSvg from '../assets/illustrations/lms/lms-code-review.svg';
 import lmsProgressDataSvg from '../assets/illustrations/lms/lms-progress-data.svg';
 import lmsCertificateSvg from '../assets/illustrations/lms/lms-certificate.svg';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+
+// Admin → Settings → Credentials Showcase. Every string below has a coded
+// default, so the block renders correctly before the team saves anything.
+const SHOWCASE_FALLBACK = {
+  eyebrow: '03 — Verifiable US Credentials',
+  heading: 'Demonstrate your achievements with cryptographically verified credentials',
+  description:
+    'Every certificate issued by American FutureTech includes an immutable verification ID registered in our public ledger. Prospective employers can inspect your syllabus completion, capstone defense, and academic honors in one click.',
+  ctaLabel: 'Inspect Verified Certificate',
+  ctaUrl: '/certificate/AFT-CERT-AI9821',
+  sealImage: '/images/gold-seal-medal.webp',
+};
+
+const CERTIFICATE_FALLBACK = {
+  badge: 'VERIFIED AUTHENTIC',
+  institute: 'The American Institute of Applied Emerging Technology',
+  certifyLine: 'This certifies that',
+  holderName: 'Ethan Hunt',
+  programLine: 'has successfully completed the 6-Month Intensive Fellowship in',
+  program: 'Data Science with AI Integration',
+  credentialIdLabel: 'CREDENTIAL ID',
+  credentialId: 'AFT-CERT-AI9821',
+  statusLabel: 'STATUS',
+  status: 'Graduated with Honors',
+};
+
+const SUCCESS_STORY_FALLBACK = {
+  badge: 'GRADUATE SUCCESS STORY',
+  name: 'Ananya Sharma',
+  role: 'Machine Learning Engineer',
+  company: 'Fortune 500 Technology Partner',
+  program: 'Data Science with AI Integration',
+  outcome: 'Offer secured before graduation',
+  quote:
+    'The live labs and 1-on-1 defense panels are what got me through the interview loop. My mentor reviewed every line of my capstone before I walked into the hiring panel.',
+  credentialId: 'AFT-CERT-AI9821',
+  status: 'Graduated with Honors',
+};
 
 export default function WhyChooseUs() {
+  const { settings } = useSiteSettings() || {};
+  const savedShowcase = settings?.credentialShowcase || {};
+  const showcase = { ...SHOWCASE_FALLBACK, ...savedShowcase };
+  const certificate = { ...CERTIFICATE_FALLBACK, ...(savedShowcase.certificate || {}) };
+  const story = { ...SUCCESS_STORY_FALLBACK, ...(savedShowcase.successStory || {}) };
+  // 'success' (default, client's pick for the live site) or 'certificate'.
+  const showcaseMode = savedShowcase.mode === 'certificate' ? 'certificate' : 'success';
+
   return (
     <section id="why-us" className="py-12 sm:py-16 bg-[#F7F7F5] text-[#1b1b1b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-14">
         
         {/* Intro Section Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold font-heading uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FCE7E7] text-[#002060] text-xs font-bold font-heading uppercase tracking-wider">
             <span>Product & Learning Architecture</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-[#0B1220] tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-[#002060] tracking-tight leading-tight">
             Turbocharge your engineering capabilities in record time
           </h2>
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
@@ -46,10 +93,10 @@ export default function WhyChooseUs() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#1D4ED8] uppercase font-heading">
               01 — The Dedicated Academy Portal
             </span>
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#002060] font-heading leading-tight">
               A unified student portal tailored to your engineering fellowship
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -58,29 +105,29 @@ export default function WhyChooseUs() {
 
             <ul className="space-y-4 pt-2">
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Live & Recorded Masterclasses</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Live & Recorded Masterclasses</strong>
                   <span className="text-sm text-gray-600">Every weekend lab is recorded in 1080p and indexed with chapter timestamps.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Real-Time Progress Tracking</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Real-Time Progress Tracking</strong>
                   <span className="text-sm text-gray-600">Visual progress bars and milestone checklists that keep your momentum consistent.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Location & Step Awareness</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Location & Step Awareness</strong>
                   <span className="text-sm text-gray-600">Never get lost. Always know: Where am I? What am I doing? What is next?</span>
                 </div>
               </li>
@@ -99,13 +146,13 @@ export default function WhyChooseUs() {
             <div className="rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden text-left p-6 space-y-4">
               
               {/* Contextual Academy Banner with Sourced Vector LMS Dashboard Illustration */}
-              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#0B1220] via-[#152a17] to-[#4338CA] p-4">
+              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#002060] via-[#002060] to-[#1D4ED8] p-4">
                 <div className="flex-1 space-y-1 text-white z-10">
-                  <span className="px-2 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] text-[9px] font-mono font-bold uppercase">
+                  <span className="px-2 py-0.5 rounded-full bg-[#C81E1E] text-white text-[9px] font-mono font-bold uppercase">
                     Dedicated Student Cockpit
                   </span>
                   <div className="text-sm font-bold font-heading">American FutureTech Academy Space</div>
-                  <div className="text-[#EFE6D6] text-[10px]">Real-time lesson synchronization & cloud notebooks</div>
+                  <div className="text-[#FFD9D9] text-[10px]">Real-time lesson synchronization & cloud notebooks</div>
                 </div>
                 <div className="w-14 h-14 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
                   <img src={lmsDashboardSvg} alt="Dedicated Academy Portal" className="w-full h-full object-contain" />
@@ -114,32 +161,32 @@ export default function WhyChooseUs() {
 
               <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#0B1220] text-[#F7F7F5] flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#002060] text-[#F7F7F5] flex items-center justify-center font-bold text-xs">
                     EH
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#0B1220]">Ethan Hunt</div>
+                    <div className="text-xs font-bold text-[#002060]">Ethan Hunt</div>
                     <div className="text-[10px] text-gray-500 font-mono">Fellow ID: AFT-2026-8819</div>
                   </div>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold">
+                <span className="text-xs px-2.5 py-1 rounded-full bg-[#FCE7E7] text-[#002060] font-bold">
                   Active Term
                 </span>
               </div>
 
               {/* Active Program Card */}
-              <div className="p-4 rounded-xl bg-[#F7F7F5] border border-[#4338CA]/20 space-y-3">
+              <div className="p-4 rounded-xl bg-[#F7F7F5] border border-[#1D4ED8]/20 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[11px] font-bold text-[#047857] uppercase tracking-wide font-heading">Primary Track</span>
-                  <span className="text-[11px] font-mono text-[#0B1220] font-bold">68% Complete</span>
+                  <span className="text-[11px] font-bold text-[#1D4ED8] uppercase tracking-wide font-heading">Primary Track</span>
+                  <span className="text-[11px] font-mono text-[#002060] font-bold">68% Complete</span>
                 </div>
-                <div className="text-base font-bold text-[#0B1220]">Data Science with AI Integration</div>
+                <div className="text-base font-bold text-[#002060]">Data Science with AI Integration</div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#10B981] rounded-full w-[68%]" />
+                  <div className="h-full bg-[#2563EB] rounded-full w-[68%]" />
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-600 pt-1">
                   <span>Current: Module 4 (Agentic RAG)</span>
-                  <span className="text-[#4338CA] font-bold flex items-center gap-1">
+                  <span className="text-[#1D4ED8] font-bold flex items-center gap-1">
                     Resume Lesson <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
@@ -149,13 +196,13 @@ export default function WhyChooseUs() {
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <div className="text-[10px] uppercase font-bold text-gray-700">Next Live Lab</div>
-                  <div className="font-bold text-[#0B1220] mt-1">Saturday, 10:00 AM EST</div>
+                  <div className="font-bold text-[#002060] mt-1">Saturday, 10:00 AM EST</div>
                   <div className="text-[11px] text-gray-500">LangGraph Multi-Agent</div>
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                   <div className="text-[10px] uppercase font-bold text-gray-600">Office Hours</div>
-                  <div className="font-bold text-[#0B1220] mt-1">1-on-1 Mentor Session</div>
-                  <div className="text-[11px] text-[#4338CA] font-semibold">Booked for Thursday</div>
+                  <div className="font-bold text-[#002060] mt-1">1-on-1 Mentor Session</div>
+                  <div className="text-[11px] text-[#1D4ED8] font-semibold">Booked for Thursday</div>
                 </div>
               </div>
 
@@ -178,48 +225,48 @@ export default function WhyChooseUs() {
               />
             </div>
 
-            <div className="rounded-2xl bg-[#0f1b11] border border-[#4338CA] shadow-xl overflow-hidden text-left text-white relative z-10">
+            <div className="rounded-2xl bg-[#0f1b11] border border-[#1D4ED8] shadow-xl overflow-hidden text-left text-white relative z-10">
               
-              <div className="px-4 py-3 bg-[#132315] border-b border-[#4338CA]/60 flex items-center justify-between">
+              <div className="px-4 py-3 bg-[#132315] border-b border-[#1D4ED8]/60 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-[11px] font-mono text-[#EFE6D6]/80 ml-2">Classroom // PyTorch & LangChain</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  <span className="text-[11px] font-mono text-[#FFD9D9]/80 ml-2">Classroom // PyTorch & LangChain</span>
                 </div>
-                <span className="text-[10px] bg-[#4338CA] px-2 py-0.5 rounded text-white font-bold">HD Live</span>
+                <span className="text-[10px] bg-[#1D4ED8] px-2 py-0.5 rounded text-white font-bold">HD Live</span>
               </div>
 
               <div className="p-4 space-y-3">
                 {/* Sourced Vector SVG: Code Review Engine */}
-                <div className="flex items-center gap-3.5 p-3 rounded-xl bg-[#142617] border border-[#4338CA]/50">
-                  <div className="w-12 h-12 shrink-0 p-1 bg-black/40 rounded-lg border border-[#4338CA]/40">
+                <div className="flex items-center gap-3.5 p-3 rounded-xl bg-[#142617] border border-[#1D4ED8]/50">
+                  <div className="w-12 h-12 shrink-0 p-1 bg-black/40 rounded-lg border border-[#1D4ED8]/40">
                     <img src={lmsCodeReviewSvg} alt="Code Review Engine" className="w-full h-full object-contain" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-xs font-bold text-[#E5C275]">Automated Code Review Engine</div>
+                    <div className="text-xs font-bold text-[#FF6B6B]">Automated Code Review Engine</div>
                     <div className="text-[10px] text-gray-300">Live linting, containerized tests, and instant faculty annotations.</div>
                   </div>
                 </div>
 
                 {/* Terminal / Code Editor Mockup */}
-                <div className="p-3.5 rounded-xl bg-black/60 border border-[#4338CA]/50 font-mono text-xs space-y-1.5 text-[#EFE6D6]">
+                <div className="p-3.5 rounded-xl bg-black/60 border border-[#1D4ED8]/50 font-mono text-xs space-y-1.5 text-[#FFD9D9]">
                   <div className="text-[10px] text-gray-400">// production_agent.py</div>
-                  <div className="text-[#E5C275]">$ python -m pytest tests/test_rag_pipeline.py</div>
+                  <div className="text-[#FF6B6B]">$ python -m pytest tests/test_rag_pipeline.py</div>
                   <div className="text-gray-300">================ test session starts ================</div>
-                  <div className="text-emerald-400">PASSED tests/test_rag_pipeline.py::test_vector_similarity</div>
-                  <div className="text-emerald-400">PASSED tests/test_rag_pipeline.py::test_langchain_agent_tools</div>
-                  <div className="text-emerald-400">PASSED tests/test_rag_pipeline.py::test_pinecone_index_sync</div>
+                  <div className="text-blue-400">PASSED tests/test_rag_pipeline.py::test_vector_similarity</div>
+                  <div className="text-blue-400">PASSED tests/test_rag_pipeline.py::test_langchain_agent_tools</div>
+                  <div className="text-blue-400">PASSED tests/test_rag_pipeline.py::test_pinecone_index_sync</div>
                   <div className="text-white font-bold pt-1">3 passed, 0 failed in 1.42s</div>
                 </div>
 
                 {/* Micro Lesson Progress Tracker */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#142617] border border-[#4338CA]/50 text-xs">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[#142617] border border-[#1D4ED8]/50 text-xs">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#E5C275]" />
-                    <span className="text-[#EFE6D6] font-semibold">Unit 4: LangGraph Tool Invocations</span>
+                    <CheckCircle2 className="w-4 h-4 text-[#FF6B6B]" />
+                    <span className="text-[#FFD9D9] font-semibold">Unit 4: LangGraph Tool Invocations</span>
                   </div>
-                  <button className="text-[11px] bg-[#4338CA] hover:bg-[#0B1220] text-white px-2.5 py-1 rounded-full font-bold transition-colors">
+                  <button className="text-[11px] bg-[#1D4ED8] hover:bg-[#002060] text-white px-2.5 py-1 rounded-full font-bold transition-colors">
                     Mark Unit Complete
                   </button>
                 </div>
@@ -230,10 +277,10 @@ export default function WhyChooseUs() {
 
           {/* Text Content */}
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#1D4ED8] uppercase font-heading">
               02 — Distraction-Free Classroom
             </span>
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#002060] font-heading leading-tight">
               Create high-impact learning outcomes with zero clutter
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -242,29 +289,29 @@ export default function WhyChooseUs() {
 
             <ul className="space-y-4 pt-2">
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Real Code, Not Syntax Puzzles</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Real Code, Not Syntax Puzzles</strong>
                   <span className="text-sm text-gray-600">Work directly on GitHub repositories with Docker containers and vector databases.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Synchronized Notes & Lab Artifacts</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Synchronized Notes & Lab Artifacts</strong>
                   <span className="text-sm text-gray-600">Instant access to architectural slides, sample code, and downloadable notebooks.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">One-Click Progress Synchronization</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">One-Click Progress Synchronization</strong>
                   <span className="text-sm text-gray-600">Mark complete with instant progress recalculation and animated celebration feedback.</span>
                 </div>
               </li>
@@ -280,115 +327,192 @@ export default function WhyChooseUs() {
 
         </div>
 
-        {/* Feature Story 3: Verifiable US Digital Credentials (TEXT Left | PRODUCT UI Right) */}
+        {/* Feature Story 3: Verified credentials & graduate success story.
+            The headline, CTA and the card itself are admin-managed (Settings →
+            Credentials Showcase); `mode` switches the card between the success
+            story and the certificate artwork. */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center text-left">
           
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
-              03 — Verifiable US Credentials
+            <span className="text-xs font-bold tracking-widest text-[#1D4ED8] uppercase font-heading">
+              {showcase.eyebrow}
             </span>
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
-              Demonstrate your achievements with cryptographically verified credentials
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#002060] font-heading leading-tight">
+              {showcase.heading}
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
-              Every certificate issued by American FutureTech includes an immutable verification ID registered in our public ledger. Prospective employers can inspect your syllabus completion, capstone defense, and academic honors in one click.
+              {showcase.description}
             </p>
 
             <ul className="space-y-4 pt-2">
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Public Verification Registry</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Public Verification Registry</strong>
                   <span className="text-sm text-gray-600">Live URL (/certificate/:id) with authentic double-bordered diploma presentation.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">LinkedIn & Resume Ready</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">LinkedIn & Resume Ready</strong>
                   <span className="text-sm text-gray-600">One-click export to LinkedIn credentials and PDF diploma download.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Wyoming Registered Charter</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Wyoming Registered Charter</strong>
                   <span className="text-sm text-gray-600">Accredited institutional governance ensuring long-term credential validity.</span>
                 </div>
               </li>
             </ul>
 
             <div className="pt-2">
-              <Link to="/certificate/AFT-CERT-AI9821" className="elms-btn-primary">
-                <span>Inspect Verified Certificate</span>
+              <Link to={showcase.ctaUrl} className="elms-btn-primary">
+                <span>{showcase.ctaLabel}</span>
                 <ExternalLink className="w-4 h-4" />
               </Link>
             </div>
           </div>
 
-          {/* Product UI Mockup: Diploma Card */}
+          {/* Product UI Mockup: success-story card, or the certificate artwork */}
           <div className="lg:col-span-6 relative">
             {/* Floating Official Gold Seal Asset */}
             <div className="hidden sm:block absolute -top-6 -right-4 z-20 w-14 h-14 animate-float-delayed pointer-events-none">
               <img
-                src="/images/gold-seal-medal.webp"
+                src={showcase.sealImage}
                 alt="Official Gold Accreditation Seal"
                 className="w-full h-full object-contain filter drop-shadow-xl"
               />
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border-2 border-[#0B1220]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active">
-              <div className="border border-amber-400/40 p-6 rounded-xl space-y-3 bg-[#fffdfa]">
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#0B1220] text-[#F7F7F5] flex items-center justify-center font-bold text-xs font-heading">
-                      AF
+            {showcaseMode === 'certificate' ? (
+              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active">
+                {certificate.image ? (
+                  <img
+                    src={certificate.image}
+                    alt={`${certificate.holderName} certificate`}
+                    className="w-full rounded-xl object-contain"
+                  />
+                ) : (
+                  <div className="border border-red-400/40 p-6 rounded-xl space-y-3 bg-[#fffdfa]">
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[#002060] text-[#F7F7F5] flex items-center justify-center font-bold text-xs font-heading">
+                          AF
+                        </div>
+                        <div className="w-9 h-9 hidden sm:block">
+                          <img src={lmsCertificateSvg} alt="Verified Certificate" className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCE7E7] text-[#002060] font-bold">
+                        {certificate.badge}
+                      </span>
                     </div>
-                    <div className="w-9 h-9 hidden sm:block">
-                      <img src={lmsCertificateSvg} alt="Verified Certificate" className="w-full h-full object-contain" />
+
+                    <div className="text-center pt-2">
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-gray-500 font-bold">
+                        {certificate.institute}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">{certificate.certifyLine}</div>
+                      <div className="text-xl sm:text-2xl font-bold font-heading text-[#002060] mt-1">
+                        {certificate.holderName}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        {certificate.programLine}
+                      </div>
+                      <div className="text-base font-bold text-[#1D4ED8] mt-1">
+                        {certificate.program}
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EFE6D6] text-[#0B1220] font-bold">
-                    VERIFIED AUTHENTIC
-                  </span>
-                </div>
 
-                <div className="text-center pt-2">
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-gray-500 font-bold">
-                    The American Institute of Applied Emerging Technology
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">This certifies that</div>
-                  <div className="text-xl sm:text-2xl font-bold font-heading text-[#0B1220] mt-1">
-                    Ethan Hunt
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    has successfully completed the 6-Month Intensive Fellowship in
-                  </div>
-                  <div className="text-base font-bold text-[#4338CA] mt-1">
-                    Data Science with AI Integration
-                  </div>
-                </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 text-[11px] text-gray-500">
+                      <div>
+                        <div className="font-mono text-[10px] text-gray-400">{certificate.credentialIdLabel}</div>
+                        <div className="font-mono font-bold text-[#002060]">{certificate.credentialId}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-mono text-[10px] text-gray-400">{certificate.statusLabel}</div>
+                        <div className="font-bold text-[#1D4ED8]">{certificate.status}</div>
+                      </div>
+                    </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 text-[11px] text-gray-500">
-                  <div>
-                    <div className="font-mono text-[10px] text-gray-400">CREDENTIAL ID</div>
-                    <div className="font-mono font-bold text-[#0B1220]">AFT-CERT-AI9821</div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-mono text-[10px] text-gray-400">STATUS</div>
-                    <div className="font-bold text-[#047857]">Graduated with Honors</div>
-                  </div>
-                </div>
-
+                )}
               </div>
-            </div>
+            ) : (
+              /* Success-story face — replaces the plain diploma mock on the
+                 live site, still backed by the graduate's credential ID. */
+              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active">
+                <div className="border border-red-400/40 p-6 rounded-xl space-y-5 bg-[#fffdfa]">
+
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#002060] text-[#F7F7F5] uppercase tracking-wider">
+                      {story.badge}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCE7E7] text-[#002060] font-bold">
+                      VERIFIED AUTHENTIC
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center text-center gap-3">
+                    {story.photo ? (
+                      <img
+                        src={story.photo}
+                        alt={story.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-[#F00000]"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-[#002060] text-[#FF6B6B] flex items-center justify-center font-heading font-bold text-lg">
+                        {(story.name || 'AF').split(' ').map((part) => part[0]).slice(0, 2).join('')}
+                      </div>
+                    )}
+                    <div>
+                      <div className="text-xl sm:text-2xl font-bold font-heading text-[#002060]">
+                        {story.name}
+                      </div>
+                      <div className="text-xs font-semibold text-gray-600 mt-0.5">
+                        {story.role}{story.company ? ` · ${story.company}` : ''}
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-700 italic leading-relaxed text-center">
+                    “{story.quote}”
+                  </p>
+
+                  <div className="text-center text-xs text-gray-600">
+                    Completed the 6-Month Intensive Fellowship in{' '}
+                    <span className="font-bold text-[#1D4ED8]">{story.program}</span>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 text-[11px] font-bold text-[#1D4ED8]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{story.outcome}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200 text-[11px] text-gray-500">
+                    <div>
+                      <div className="font-mono text-[10px] text-gray-400">CREDENTIAL ID</div>
+                      <div className="font-mono font-bold text-[#002060]">{story.credentialId}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono text-[10px] text-gray-400">STATUS</div>
+                      <div className="font-bold text-[#1D4ED8]">{story.status}</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
@@ -409,13 +533,13 @@ export default function WhyChooseUs() {
 
             <div className="p-6 rounded-2xl bg-white border border-gray-200 shadow-xl space-y-4 text-left relative z-10">
               {/* Contextual Mentorship Banner with Sourced Vector LMS Progress Illustration */}
-              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#0B1220] via-[#152a17] to-[#4338CA] p-4">
+              <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#002060] via-[#002060] to-[#1D4ED8] p-4">
                 <div className="flex-1 space-y-1 text-white z-10">
-                  <span className="px-2 py-0.5 rounded-full bg-[#E5C275] text-[#0B1220] text-[9px] font-mono font-bold uppercase">
+                  <span className="px-2 py-0.5 rounded-full bg-[#C81E1E] text-white text-[9px] font-mono font-bold uppercase">
                     Dedicated Advisory Desk
                   </span>
                   <div className="text-sm font-bold font-heading">1-on-1 Faculty Interview Defense</div>
-                  <div className="text-[#EFE6D6] text-[10px]">Mock panels, whiteboarding & direct partner referrals</div>
+                  <div className="text-[#FFD9D9] text-[10px]">Mock panels, whiteboarding & direct partner referrals</div>
                 </div>
                 <div className="w-14 h-14 shrink-0 ml-3 z-10 group-hover:scale-105 transition-transform">
                   <img src={lmsProgressDataSvg} alt="Career Acceleration Pipeline" className="w-full h-full object-contain" />
@@ -423,10 +547,10 @@ export default function WhyChooseUs() {
               </div>
 
               <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <span className="text-xs font-bold text-[#0B1220] font-heading uppercase">
+                <span className="text-xs font-bold text-[#002060] font-heading uppercase">
                   Career Acceleration Pipeline
                 </span>
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#FCE7E7] text-[#002060] font-bold">
                   Phase 4 Active
                 </span>
               </div>
@@ -435,26 +559,26 @@ export default function WhyChooseUs() {
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#047857]" />
-                    <span className="font-bold text-[#0B1220]">ATS Technical Resume Engineering</span>
+                    <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
+                    <span className="font-bold text-[#002060]">ATS Technical Resume Engineering</span>
                   </div>
-                  <span className="font-mono font-bold text-[#047857]">Score: 98/100</span>
+                  <span className="font-mono font-bold text-[#1D4ED8]">Score: 98/100</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#047857]" />
-                    <span className="font-bold text-[#0B1220]">Executive LinkedIn & GitHub Audit</span>
+                    <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
+                    <span className="font-bold text-[#002060]">Executive LinkedIn & GitHub Audit</span>
                   </div>
                   <span className="text-gray-500 font-semibold">Approved</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#F7F7F5] border border-[#4338CA]/20 flex items-center justify-between">
+                <div className="p-3 rounded-xl bg-[#F7F7F5] border border-[#1D4ED8]/20 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-[#4338CA]" />
-                    <span className="font-bold text-[#0B1220]">Mock System Design & Code Panel</span>
+                    <Users className="w-4 h-4 text-[#1D4ED8]" />
+                    <span className="font-bold text-[#002060]">Mock System Design & Code Panel</span>
                   </div>
-                  <span className="text-xs px-2 py-0.5 rounded bg-[#4338CA] text-white font-bold">
+                  <span className="text-xs px-2 py-0.5 rounded bg-[#1D4ED8] text-white font-bold">
                     Scheduled
                   </span>
                 </div>
@@ -476,10 +600,10 @@ export default function WhyChooseUs() {
 
           {/* Text Content */}
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
-            <span className="text-xs font-bold tracking-widest text-[#047857] uppercase font-heading">
+            <span className="text-xs font-bold tracking-widest text-[#1D4ED8] uppercase font-heading">
               04 — Career Placement Acceleration
             </span>
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0B1220] font-heading leading-tight">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#002060] font-heading leading-tight">
               Dedicated Career Accelerator to Help You Land Your Next High-Impact Role
             </h3>
             <p className="text-base text-gray-600 leading-relaxed">
@@ -488,29 +612,29 @@ export default function WhyChooseUs() {
 
             <ul className="space-y-4 pt-2">
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Dedicated Career Advisor</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Dedicated Career Advisor</strong>
                   <span className="text-sm text-gray-600">Weekly 1-on-1 strategy sessions focused on interview prep and salary negotiation.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">200+ Employer Hiring Network</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">200+ Employer Hiring Network</strong>
                   <span className="text-sm text-gray-600">Direct referrals bypassing applicant tracking system black holes.</span>
                 </div>
               </li>
               <li className="flex items-start gap-3.5">
-                <div className="w-6 h-6 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <div className="w-6 h-6 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center shrink-0 mt-0.5 font-bold">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <strong className="block text-sm font-bold text-[#0B1220]">Portfolio Code Audits</strong>
+                  <strong className="block text-sm font-bold text-[#002060]">Portfolio Code Audits</strong>
                   <span className="text-sm text-gray-600">Ensure your GitHub profile demonstrates clean CI/CD, unit tests, and production code.</span>
                 </div>
               </li>

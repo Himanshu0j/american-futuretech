@@ -34,12 +34,12 @@ const toolMonogram = (name) =>
  * card has no image" rather than "nobody has added one".
  */
 const CARD_ART_GRADIENTS = [
-  'from-[#0B1220] via-[#1E2A4A] to-[#4338CA]',
-  'from-[#0B1220] via-[#123B3A] to-[#047857]',
+  'from-[#002060] via-[#1E2A4A] to-[#1D4ED8]',
+  'from-[#002060] via-[#123B3A] to-[#1D4ED8]',
   'from-[#1B0B2A] via-[#3B1063] to-[#7C3AED]',
   'from-[#2A0B1B] via-[#7F1D3A] to-[#BE123C]',
-  'from-[#0B1220] via-[#1F2A44] to-[#0891B2]',
-  'from-[#2A200B] via-[#78350F] to-[#D97706]',
+  'from-[#002060] via-[#1F2A44] to-[#0891B2]',
+  'from-[#2A200B] via-[#78350F] to-[#C81E1E]',
 ];
 
 function ToolLogo({ name, logo }) {
@@ -130,7 +130,7 @@ export default function CoursesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#001C57] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-28 pb-10 relative z-10">
@@ -138,8 +138,8 @@ export default function CoursesPage() {
 
         {/* Header Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 text-center max-w-5xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold font-heading uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold font-heading uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span>6-Month Career Training & US Accredited Fellowships</span>
           </div>
 
@@ -160,7 +160,7 @@ export default function CoursesPage() {
                 placeholder="Search by track, tool (PyTorch, Kali, Kubernetes)..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 transition-colors text-xs"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors text-xs"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ export default function CoursesPage() {
                 aria-label="Sort programs by"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:border-indigo-500 transition-colors"
+                className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:border-blue-500 transition-colors"
               >
                 <option value="popular">Most Popular</option>
                 <option value="rating">Highest Rated</option>
@@ -186,7 +186,7 @@ export default function CoursesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                 }`}
               >
@@ -251,17 +251,20 @@ export default function CoursesPage() {
                 return (
                 <div
                   key={course._id}
-                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-indigo-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
+                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-blue-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
                   {/* Course image panel — beside the details on desktop, a wide
-                      banner on phones. The picture is cropped to fill the panel
-                      (never stretched), so it stays sharp at every width. */}
-                  <div className="relative w-full lg:w-[42%] shrink-0 h-52 sm:h-60 lg:h-auto lg:min-h-[300px] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                      banner on phones. The panel is sized BY the picture (the
+                      image is never stretched), so the whole artwork shows:
+                      cropping a designed banner to fill a fixed box cut its
+                      baked-in headline in half. A very tall upload is capped and
+                      centred instead of stretching the card. */}
+                  <div className="relative w-full lg:w-[42%] shrink-0 bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
                     {cardImage ? (
                       <img
                         src={cardImage}
                         alt={course.title}
-                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                        className="relative w-full h-auto max-h-[380px] object-contain object-center group-hover:scale-[1.03] transition-transform duration-700"
                         loading="lazy"
                         decoding="async"
                       />
@@ -274,16 +277,16 @@ export default function CoursesPage() {
                     )}
 
                     {/* Readability veil so a badge or track label never sits on a busy photo */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/75 via-transparent to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#002060]/75 via-transparent to-transparent" />
 
                     {course.badge && (
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#0B1220]/85 text-[#E5C275] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#002060]/85 text-[#FF6B6B] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
                         {course.badge}
                       </span>
                     )}
 
                     <span className="absolute bottom-3 left-3 text-white text-[11px] font-bold flex items-center gap-1.5 drop-shadow">
-                      <Clock className="w-3.5 h-3.5 text-[#E5C275]" />
+                      <Clock className="w-3.5 h-3.5 text-[#FF6B6B]" />
                       {course.duration || '6 Months'} · Mentor-led
                     </span>
                   </div>
@@ -291,16 +294,16 @@ export default function CoursesPage() {
                   <div className="p-5 sm:p-6 flex-1 min-w-0 flex flex-col justify-between">
                   <div className="min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="text-[11px] font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full font-bold truncate min-w-0 max-w-[70%] border border-indigo-200/50 dark:border-indigo-800/50">
+                      <span className="text-[11px] font-mono text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full font-bold truncate min-w-0 max-w-[70%] border border-blue-200/50 dark:border-blue-800/50">
                         {course.category}
                       </span>
-                      <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full whitespace-nowrap border border-emerald-200 dark:border-emerald-800">
+                      <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full whitespace-nowrap border border-blue-200 dark:border-blue-800">
                         6-Month Track
                       </span>
                     </div>
 
                     <Link to={`/courses/${course.slug}`}>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
                         {course.title}
                       </h3>
                     </Link>
@@ -312,11 +315,11 @@ export default function CoursesPage() {
                     {/* Meta details */}
                     <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400 mt-4 mb-3 py-2 border-y border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         <span>{course.duration || '6 Months (24 Wks)'}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                        <Star className="w-3.5 h-3.5 text-red-500 fill-red-500" />
                         <span className="font-bold text-slate-900 dark:text-white">{course.rating || '4.9'}</span>
                         <span className="text-slate-400">({course.reviewsCount || '320'})</span>
                       </div>
@@ -326,7 +329,7 @@ export default function CoursesPage() {
                     <div className="space-y-1.5 mb-5">
                       {(course.highlights || ['Live Weekend Interactive Labs', '1-on-1 Faculty Mentorship', 'Accredited US Digital Credential']).slice(0, 3).map((h, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
                           <span>{h}</span>
                         </div>
                       ))}
@@ -340,7 +343,7 @@ export default function CoursesPage() {
                         <span className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">${course.pricing?.discountedPrice || 499}</span>
                         <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
+                      <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
                         Reserve with $99
                       </span>
                     </div>
@@ -372,7 +375,7 @@ export default function CoursesPage() {
         <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 py-12 mt-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
             <div className="text-center max-w-3xl mx-auto mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-4">
                 <Wrench className="w-3.5 h-3.5" />
                 <span>Tools &amp; Tech Stack</span>
               </div>
@@ -386,10 +389,12 @@ export default function CoursesPage() {
 
             <div className="space-y-8">
               {DEFAULT_TOOL_CATEGORIES.map((cat) => {
-                // Every discipline runs left → right as a looping strip. The six
-                // tools are repeated four times so one pass is always wider than
-                // the widest screen, then that strip is duplicated: the animation
-                // travels from -50% back to 0, so the loop never shows a gap.
+                // Every discipline runs right → left as a looping strip (the
+                // client wanted the logos travelling right to left, like the
+                // company marquee). The tools are repeated four times so one pass
+                // is always wider than the widest screen, then that strip is
+                // duplicated: the animation travels 0 → -50%, so the loop never
+                // shows a gap.
                 const strip = [];
                 for (let i = 0; i < 4; i += 1) strip.push(...cat.tools);
                 const track = [...strip, ...strip];
@@ -399,7 +404,7 @@ export default function CoursesPage() {
                     {/* Track name: the client wanted it visibly bigger and bold
                         so each discipline reads as a heading, not a caption. */}
                     <div className="flex items-center gap-3 mb-4">
-                      <span aria-hidden="true" className="w-1.5 h-6 rounded-full bg-indigo-600 shrink-0" />
+                      <span aria-hidden="true" className="w-1.5 h-6 rounded-full bg-blue-600 shrink-0" />
                       <span className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white font-heading">
                         {cat.label}
                       </span>
@@ -407,14 +412,14 @@ export default function CoursesPage() {
                     </div>
 
                     <div className="relative overflow-hidden marquee-mask">
-                      <div className="animate-infinite-marquee-ltr items-stretch gap-2.5 py-1">
+                      <div className="animate-infinite-marquee items-stretch gap-2.5 py-1">
                         {track.map((tool, idx) => (
                           <div
                             key={`${tool.name}-${idx}`}
                             // Only the first pass is announced to screen readers;
                             // the repeats exist purely to make the loop seamless.
                             aria-hidden={idx >= cat.tools.length ? 'true' : undefined}
-                            className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-indigo-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
+                            className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-blue-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
                           >
                             <ToolLogo name={tool.name} logo={tool.logo} />
                             <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">

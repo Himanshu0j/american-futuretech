@@ -102,6 +102,41 @@ export default function SiteEditor() {
 
   const originalsRef = useRef(new Map());
   const routeRef = useRef('/');
+  /**
+   * When the last message was shown.
+   *
+   * The "restored N unsaved drafts" announcement fires on every store tick, so
+   * it used to overwrite the sharper "Draft updated — press Publish …" message
+   * a moment after the admin staged a change, and the admin was left reading a
+   * note about drafts they had just made with no sign that their click had
+   * registered. A fresh message now outranks the standing announcement.
+   */
+  const statusAtRef = useRef(0);
+
+  const notify = useCallback((next) => {
+    statusAtRef.current = Date.now();
+    setStatus(next);
+  }, []);
+
+  const clearStatus = useCallback(() => {
+    statusAtRef.current = 0;
+    setStatus(null);
+  }, []);
+
+  /**
+   * Flag "the inline editor is on" on <body>.
+   *
+   * Clicking an editable image must open the editor's image field — but page
+   * code with its own click handler (the certificate cards open a 4K inspect
+   * modal on click) ran on top of it, so in edit mode the admin could not reach
+   * the image field they were aiming for. Components consult this flag and stay
+   * out of the way while the editor is open.
+   */
+  useEffect(() => {
+    if (!active) return undefined;
+    document.body.dataset.siteEditorActive = 'true';
+    return () => { delete document.body.dataset.siteEditorActive; };
+  }, [active]);
 
   const token = typeof window !== 'undefined'
     ? (localStorage.getItem('token') || localStorage.getItem('aft_admin_token'))
@@ -146,7 +181,9 @@ export default function SiteEditor() {
        * published edit was compared against text that no longer existed on the
        * page and never appeared for a visitor.
        */
-      const original = entry?.original || value;
+      // Only a node that is showing the published value should keep the stored
+      // original; otherwise the wording on screen is the real "original".
+      const original = entry && entry.value === value ? (entry.original || value) : value;
       originalsRef.current.set(`t:${key}`, original);
       texts.push({
         key,
@@ -165,7 +202,7 @@ export default function SiteEditor() {
       const entry = current.images[key];
       const src = img.getAttribute('src') || '';
       // Same rule as text: never let a stale first snapshot win over the DOM.
-      const original = entry?.original || src;
+      const original = entry && entry.value === src ? (entry.original || src) : src;
       originalsRef.current.set(`i:${key}`, original);
       images.push({
         key,
@@ -213,7 +250,7 @@ export default function SiteEditor() {
       const nextRoute = window.location.pathname || '/';
       if (nextRoute !== routeRef.current) {
         routeRef.current = nextRoute;
-        setStatus(null);
+        clearStatus();
         snapshot();
       }
     };
@@ -247,7 +284,10 @@ export default function SiteEditor() {
     }
     if (arrivalRef.current.path === route && arrivalRef.current.announced) return;
     arrivalRef.current = { path: route, announced: true };
-    setStatus({
+    // A message the admin just triggered (stage / publish / revert) is more
+    // specific than this standing note — do not talk over it.
+    if (Date.now() - statusAtRef.current < 4000) return;
+    notify({
       type: 'info',
       message: `Restored ${count} unsaved draft change(s) on ${route}. They are staged only — press Publish to make them live.`,
     });
@@ -278,13 +318,27 @@ export default function SiteEditor() {
       const key = textNode ? pathKey(textNode) : null;
       if (!key) return;
       const entry = merged().text[key];
+      /*
+       * "Original" must describe the element as it is on screen right now.
+       *
+       * A previously published edit keeps its own original, and reusing that
+       * blindly is how a re-edit stopped appearing: if the coded wording drifted
+       * afterwards (or the same sentence exists elsewhere on the page), the new
+       * value was compared against text that no longer sits here and the saved
+       * change was skipped in silence. So the stored original is only trusted
+       * while the node is actually showing the published value; otherwise the
+       * wording on screen wins.
+       */
+      const domText = textNode ? textNode.nodeValue.trim() : '';
+      const showsPublishedValue = Boolean(entry) && domText === entry.value;
+      const original = showsPublishedValue
+        ? (entry.original || domText)
+        : (domText || entry?.original || originalsRef.current.get(`t:${key}`) || '');
       setOpenEditor({
         kind: 'text',
         key,
-        // What the admin is looking at is the truth, not a cached first snapshot.
-        original: entry?.original || (textNode ? textNode.nodeValue.trim() : '')
-          || originalsRef.current.get(`t:${key}`) || '',
-        value: entry?.value || (textNode ? textNode.nodeValue.trim() : ''),
+        original,
+        value: entry?.value || domText,
       });
     };
     document.addEventListener('click', onClick, true);
@@ -295,12 +349,44 @@ export default function SiteEditor() {
     stageInStore(kind, key, { original, value });
     applyCurrent();
     snapshot();
+    // Staging only writes a local draft. Without saying so, "Stage change"
+    // looked identical to "saved" and the edit was reported as never saving.
+    notify({
+      type: 'info',
+      message: 'Draft updated — press Publish to save it for every visitor.',
+    });
+  };
+
+  /**
+   * Re-anchor staged text edits to the wording that is on the page right now.
+   *
+   * The stored `original` is what the apply engine compares against; when the
+   * coded wording changes (or the sentence also exists elsewhere on the page)
+   * a stale original makes a perfectly good edit skip itself. Refreshing it at
+   * publish time keeps every new save anchored to reality.
+   */
+  const reanchorStagedText = (stagedText) => {
+    const onScreen = new Map();
+    collectTextNodes().forEach((node) => {
+      const key = pathKey(node);
+      if (key) onScreen.set(key, (node.nodeValue || '').trim());
+    });
+
+    const next = { ...stagedText };
+    Object.entries(next).forEach(([key, entry]) => {
+      const domText = onScreen.get(key);
+      if (!domText) return;
+      if (domText === entry.value) return;            // already showing the new value
+      if (entry.original && domText === entry.original) return; // still anchored
+      next[key] = { ...entry, original: domText };
+    });
+    return next;
   };
 
   const publish = async () => {
     if (saving) return;
     const state = getState();
-    const stagedText = { ...state.staged.text };
+    const stagedText = reanchorStagedText({ ...state.staged.text });
     const stagedImages = { ...state.staged.images };
     const stagedKeys = [
       ...Object.keys(stagedText).map((key) => ({ kind: 'text', key })),
@@ -310,7 +396,7 @@ export default function SiteEditor() {
     // Publish must always answer. A disabled button used to hide a lost draft
     // behind a dead click, so it now reports the (empty) outcome instead.
     if (stagedKeys.length === 0) {
-      setStatus({
+      notify({
         type: 'info',
         message: `Nothing is staged on ${route} yet — click a text or an image on the page, change it, then press Publish.`,
       });
@@ -318,7 +404,7 @@ export default function SiteEditor() {
     }
 
     setSaving(true);
-    setStatus(null);
+    clearStatus();
     try {
       const res = await api.put('/settings/site-editor', {
         route: state.route,
@@ -327,7 +413,7 @@ export default function SiteEditor() {
       });
 
       if (!res.data?.success) {
-        setStatus({
+        notify({
           type: 'error',
           message: res.data?.message || 'The server did not save your changes — nothing was published.',
         });
@@ -344,9 +430,9 @@ export default function SiteEditor() {
       unstageMany(stagedKeys.filter((entry) => !refused.has(`${entry.kind}:${entry.key}`)));
       applyCurrent();
       snapshot();
-      setStatus(buildPublishStatus(res.data, rejections, state.route));
+      notify(buildPublishStatus(res.data, rejections, state.route));
     } catch (err) {
-      setStatus({
+      notify({
         type: 'error',
         message: `${err.response?.data?.message || 'Could not reach the server, so nothing was published.'} Your draft is still here — press Publish again.`,
       });
@@ -360,7 +446,7 @@ export default function SiteEditor() {
     clearStaged();
     applyCurrent();
     snapshot();
-    setStatus({
+    notify({
       type: 'success',
       message: `${count} draft change(s) discarded on ${route}. Nothing was published.`,
     });
@@ -376,9 +462,9 @@ export default function SiteEditor() {
       originalsRef.current = new Map();
       applyCurrent();
       snapshot();
-      setStatus({ type: 'success', message: `${route} restored to the original content — drafts cleared too.` });
+      notify({ type: 'success', message: `${route} restored to the original content — drafts cleared too.` });
     } catch (err) {
-      setStatus({ type: 'error', message: err.response?.data?.message || 'Reset failed.' });
+      notify({ type: 'error', message: err.response?.data?.message || 'Reset failed.' });
     } finally {
       setSaving(false);
     }
@@ -432,7 +518,7 @@ export default function SiteEditor() {
         .se-editable { outline: 1px dashed rgba(99,102,241,0.55); outline-offset: 2px; cursor: text; transition: outline-color .15s ease; }
         .se-editable:hover { outline: 2px solid rgba(99,102,241,0.95); background: rgba(99,102,241,0.08); }
         img.se-editable { cursor: crosshair; }
-        .se-flash { outline: 3px solid #E5C275 !important; }
+        .se-flash { outline: 3px solid #F00000 !important; }
       `}</style>
 
       <div
@@ -440,10 +526,10 @@ export default function SiteEditor() {
         className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2 font-sans"
       >
         {openEditor && (
-          <div className="w-[min(92vw,420px)] rounded-2xl border border-indigo-500/30 bg-[#0B1220] p-4 shadow-2xl">
+          <div className="w-[min(92vw,420px)] rounded-2xl border border-blue-500/30 bg-[#002060] p-4 shadow-2xl">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
-                {openEditor.kind === 'text' ? <Pencil className="w-3.5 h-3.5 text-indigo-400" /> : <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />}
+                {openEditor.kind === 'text' ? <Pencil className="w-3.5 h-3.5 text-blue-400" /> : <ImageIcon className="w-3.5 h-3.5 text-blue-400" />}
                 {openEditor.kind === 'text' ? 'Edit text' : 'Replace image'}
               </div>
               <button type="button" onClick={() => setOpenEditor(null)} className="text-slate-400 hover:text-white">
@@ -457,7 +543,7 @@ export default function SiteEditor() {
                 rows={3}
                 value={openEditor.value}
                 onChange={(e) => setOpenEditor((prev) => ({ ...prev, value: e.target.value }))}
-                className="w-full p-2.5 rounded-xl bg-[#070C17] border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
               />
             ) : (
               <ImageUploadInput
@@ -481,7 +567,7 @@ export default function SiteEditor() {
                   stageDraft(openEditor.kind, openEditor.key, openEditor.value, openEditor.original);
                   setOpenEditor(null);
                 }}
-                className="flex-1 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-600 text-white text-xs font-bold flex items-center justify-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" /> Stage change
               </button>
@@ -498,10 +584,10 @@ export default function SiteEditor() {
         )}
 
         {panelOpen && (
-          <div className="w-[min(92vw,420px)] max-h-[70vh] rounded-2xl border border-white/10 bg-[#0B1220]/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="w-[min(92vw,420px)] max-h-[70vh] rounded-2xl border border-white/10 bg-[#002060]/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-400" />
+                <Layers className="w-4 h-4 text-blue-400" />
                 <span className="text-sm font-bold text-white">Website Editor</span>
               </div>
               <div className="flex items-center gap-2">
@@ -518,7 +604,7 @@ export default function SiteEditor() {
                 <select
                   value={PUBLIC_PAGES.some((p) => p.path === route) ? route : ''}
                   onChange={(e) => { if (e.target.value) window.location.href = editorUrlFor(e.target.value); }}
-                  className="mt-1 w-full px-2.5 py-2 rounded-xl bg-[#070C17] border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
+                  className="mt-1 w-full px-2.5 py-2 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                 >
                   {!PUBLIC_PAGES.some((p) => p.path === route) && (
                     <option value="">{route || 'This page'}</option>
@@ -535,17 +621,17 @@ export default function SiteEditor() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={`Search ${discovered.texts.length} texts on this page…`}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#070C17] border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
+                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
               <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300">
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/25 text-blue-300">
                   {discovered.texts.length} texts
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300">
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/25 text-blue-300">
                   {discovered.images.length} images
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-300">
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/25 text-blue-300">
                   {savedCount} live · {pendingCount} draft
                 </span>
               </div>
@@ -561,17 +647,17 @@ export default function SiteEditor() {
                     <button
                       type="button"
                       onClick={() => jumpTo(item)}
-                      className="text-[10px] font-mono text-indigo-300 hover:text-indigo-200 truncate flex items-center gap-1"
+                      className="text-[10px] font-mono text-blue-300 hover:text-blue-200 truncate flex items-center gap-1"
                       title="Scroll to this text on the page"
                     >
                       <Eye className="w-3 h-3" /> {item.key.slice(0, 34)}
                     </button>
                     {item.key.length > EDITOR_LIMITS.keyLength ? (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 shrink-0" title={`This element's key is ${item.key.length} characters; the editor can only store ${EDITOR_LIMITS.keyLength}, so this one cannot be saved.`}>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 shrink-0" title={`This element's key is ${item.key.length} characters; the editor can only store ${EDITOR_LIMITS.keyLength}, so this one cannot be saved.`}>
                         TOO LONG TO SAVE
                       </span>
                     ) : (item.overridden || item.staged) && (
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${item.staged ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${item.staged ? 'bg-red-500/20 text-red-300' : 'bg-blue-500/20 text-blue-300'}`}>
                         {item.staged ? 'DRAFT' : 'LIVE'}
                       </span>
                     )}
@@ -582,7 +668,7 @@ export default function SiteEditor() {
                     onClick={() => jumpTo(item)}
                     onChange={(e) => stageInStore('text', item.key, { original: item.original, value: e.target.value })}
                     onBlur={snapshot}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#070C17] border border-white/10 text-white text-xs focus:outline-none focus:border-indigo-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                   />
                 </div>
               ))}
@@ -590,7 +676,7 @@ export default function SiteEditor() {
               {discovered.images.length > 0 && (
                 <div className="p-3 bg-white/[0.02]">
                   <div className="text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="w-3 h-3 text-indigo-400" /> Images on this page
+                    <ImageIcon className="w-3 h-3 text-blue-400" /> Images on this page
                   </div>
                   <div className="space-y-2">
                     {discovered.images.map((item) => (
@@ -601,7 +687,7 @@ export default function SiteEditor() {
                           value={item.current}
                           onChange={(e) => stageInStore('image', item.key, { original: item.original, value: e.target.value })}
                           onBlur={snapshot}
-                          className="flex-1 px-2 py-1.5 rounded-lg bg-[#070C17] border border-white/10 text-white text-[10px] font-mono focus:outline-none focus:border-indigo-500"
+                          className="flex-1 px-2 py-1.5 rounded-lg bg-[#001845] border border-white/10 text-white text-[10px] font-mono focus:outline-none focus:border-blue-500"
                         />
                         <button
                           type="button"
@@ -619,7 +705,7 @@ export default function SiteEditor() {
             </div>
 
             {pendingCount > 0 && preflight.length > 0 && (
-              <div className="px-4 py-2.5 text-[11px] flex items-start gap-2 border-t border-white/10 bg-rose-500/10 text-rose-200">
+              <div className="px-4 py-2.5 text-[11px] flex items-start gap-2 border-t border-white/10 bg-red-500/10 text-red-200">
                 <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
                 <span>
                   {preflight.length} staged change(s) cannot be stored and will be refused on Publish:{' '}
@@ -631,10 +717,10 @@ export default function SiteEditor() {
             {status && (
               <div
                 className={`px-4 py-2.5 text-[11px] flex items-start gap-2 border-t border-white/10 ${
-                  status.type === 'error' ? 'bg-rose-500/10 text-rose-200'
-                    : status.type === 'warn' ? 'bg-amber-500/10 text-amber-200'
-                      : status.type === 'info' ? 'bg-indigo-500/10 text-indigo-200'
-                        : 'bg-emerald-500/10 text-emerald-200'
+                  status.type === 'error' ? 'bg-red-500/10 text-red-200'
+                    : status.type === 'warn' ? 'bg-red-500/10 text-red-200'
+                      : status.type === 'info' ? 'bg-blue-500/10 text-blue-200'
+                        : 'bg-blue-500/10 text-blue-200'
                 }`}
               >
                 {status.type === 'success' ? <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />}
@@ -648,7 +734,7 @@ export default function SiteEditor() {
                 onClick={publish}
                 disabled={saving}
                 title="Publish every staged change on this page"
-                className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-600 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-1.5"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 Publish {pendingCount > 0 ? `(${pendingCount})` : ''}
@@ -664,7 +750,7 @@ export default function SiteEditor() {
               <button
                 type="button"
                 onClick={resetPage}
-                className="py-2.5 px-3 rounded-xl border border-rose-500/30 text-rose-300 hover:bg-rose-500/10 text-xs flex items-center gap-1.5"
+                className="py-2.5 px-3 rounded-xl border border-red-500/30 text-red-300 hover:bg-red-500/10 text-xs flex items-center gap-1.5"
                 title="Restore this page to its original content"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -676,7 +762,7 @@ export default function SiteEditor() {
               kept per page — you can leave this page and come back without losing them. Press Publish and every
               visitor sees them.
               {otherDraftPages.length > 0 && (
-                <span className="block mt-1 text-amber-400/80">
+                <span className="block mt-1 text-red-400/80">
                   Unpublished drafts are also waiting on: {otherDraftPages.join(', ')}
                 </span>
               )}
@@ -688,7 +774,7 @@ export default function SiteEditor() {
           <button
             type="button"
             onClick={() => { setPanelOpen(true); snapshot(); decorate(); }}
-            className="px-4 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-2xl flex items-center gap-2"
+            className="px-4 py-3 rounded-full bg-blue-600 hover:bg-blue-600 text-white text-xs font-bold shadow-2xl flex items-center gap-2"
           >
             <Pencil className="w-3.5 h-3.5" /> Edit website text & images
           </button>

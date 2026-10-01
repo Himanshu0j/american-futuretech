@@ -4,10 +4,9 @@ import {
   Award,
   TrendingUp,
   CheckCircle2,
-  Calendar,
-  Building2,
+  Briefcase,
   Users2,
-  ShieldCheck,
+  Video,
   Sparkles,
   ArrowUpRight
 } from 'lucide-react';
@@ -18,8 +17,8 @@ export default function MetricsStrip() {
       label: 'LEARN',
       tag: '24 Cohort Weeks',
       icon: BookOpen,
-      iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-      accentBorder: 'hover:border-emerald-500/40',
+      iconBg: 'bg-blue-50 text-blue-700 border-blue-200/80',
+      accentBorder: 'hover:border-blue-500/40',
       title: 'Build practical skills through structured programs.',
       description: 'Engage in instructor-led weekend labs, production codebases on GitHub, and asynchronous LMS coursework engineered to Silicon Valley standards.',
       bullets: ['Instructor-Led Labs', 'Production Repositories', 'Silicon Valley Standards'],
@@ -28,8 +27,8 @@ export default function MetricsStrip() {
       label: 'CERTIFY',
       tag: 'Accredited Credential',
       icon: Award,
-      iconBg: 'bg-amber-50 text-amber-700 border-amber-200/80',
-      accentBorder: 'hover:border-amber-500/40',
+      iconBg: 'bg-red-50 text-red-700 border-red-200/80',
+      accentBorder: 'hover:border-red-500/40',
       title: 'Demonstrate verifiable engineering achievement.',
       description: 'Graduate with accredited US credentials and cryptographic registry IDs that prove your applied competence to hiring managers.',
       bullets: ['Verifiable US Credential', 'Cryptographic Registry ID', 'Official Employer Verification'],
@@ -38,47 +37,40 @@ export default function MetricsStrip() {
       label: 'ADVANCE',
       tag: 'Career Acceleration',
       icon: TrendingUp,
-      iconBg: 'bg-purple-50 text-[#4338CA] border-purple-200/80',
-      accentBorder: 'hover:border-purple-500/40',
+      iconBg: 'bg-blue-50 text-[#1D4ED8] border-blue-200/80',
+      accentBorder: 'hover:border-blue-500/40',
       title: 'Build toward accelerated tech opportunities.',
       description: 'Access dedicated 1-on-1 mentorship, technical interview defense panels, and direct referral pathways into our 200+ employer network.',
       bullets: ['1-on-1 Technical Mentorship', 'Interview Defense Panels', 'Direct Partner Referrals'],
     },
   ];
 
+  // Three cards only — the client asked for the fourth ($99 seat-deposit
+  // guarantee) card to be removed and for the remaining three to carry these
+  // exact titles: Live Expert Mentorship · Live Interactive Class ·
+  // Job Placement Assistant. The middle card is deliberately a touch bigger.
   const metrics = [
     {
-      stat: '6 Months',
-      label: 'Comprehensive Fellowship',
-      subtext: 'Intensive weekend labs & production capstones',
-      image: '/images/classroom-lab.jpg',
-      icon: Calendar,
-      badge: 'Curriculum Depth',
-    },
-    {
-      stat: '200+',
-      label: 'Corporate Hiring Partners',
-      subtext: 'Exclusive placement drives & direct interviews',
-      image: '/images/fellows-collaborating.jpg',
-      icon: Building2,
-      badge: 'Partner Network',
-    },
-    {
-      stat: '1-on-1',
-      label: 'Faculty Office Hours',
-      subtext: 'Personalized code reviews & career defense',
+      title: 'Live Expert Mentorship',
+      subtext: 'Weekly 1-on-1 reviews with serving Principal Engineers & tech leads',
       image: '/images/mentorship-session.jpg',
       icon: Users2,
       badge: 'Direct Mentorship',
     },
     {
-      stat: '$99',
-      label: 'Seat Deposit Guarantee',
-      subtext: '100% Risk-free reservation & refund protection',
-      image: '/images/gold-seal-medal.webp',
-      isSeal: true,
-      icon: ShieldCheck,
-      badge: 'Risk-Free Terms',
+      title: 'Live Interactive Class',
+      subtext: 'Instructor-led weekend labs, live debugging & real production codebases',
+      image: '/images/classroom-lab.jpg',
+      icon: Video,
+      badge: 'Instructor-Led',
+      emphasise: true,
+    },
+    {
+      title: 'Job Placement Assistant',
+      subtext: 'ATS resume engineering, mock hiring panels & direct partner referrals',
+      image: '/images/fellows-collaborating.jpg',
+      icon: Briefcase,
+      badge: 'Placement Support',
     },
   ];
 
@@ -98,7 +90,7 @@ export default function MetricsStrip() {
                 className={`p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 ${item.accentBorder} shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden`}
               >
                 {/* Subtle card top glowing ambient accent */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#4338CA]/20 to-transparent group-hover:via-[#4338CA]/60 transition-all" />
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#1D4ED8]/20 to-transparent group-hover:via-[#1D4ED8]/60 transition-all" />
 
                 <div className="space-y-4">
                   {/* Top Bar: Icon + Category Badge + Tag */}
@@ -107,18 +99,18 @@ export default function MetricsStrip() {
                       <div className={`w-11 h-11 rounded-2xl ${item.iconBg} border flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-xs font-bold tracking-widest text-[#0B1220] font-heading uppercase">
+                      <span className="text-xs font-bold tracking-widest text-[#002060] font-heading uppercase">
                         {item.label}
                       </span>
                     </div>
 
-                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#EFE6D6] text-[#0B1220] font-bold border border-[#E5C275]/40 shadow-2xs">
+                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#FCE7E7] text-[#002060] font-bold border border-[#F00000]/40 shadow-2xs">
                       {item.tag}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-[#0B1220] font-heading leading-snug pt-1">
+                  <h3 className="text-xl font-bold text-[#002060] font-heading leading-snug pt-1">
                     {item.title}
                   </h3>
 
@@ -131,7 +123,7 @@ export default function MetricsStrip() {
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     {item.bullets.map((b, bIdx) => (
                       <div key={bIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#047857] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
                         <span>{b}</span>
                       </div>
                     ))}
@@ -139,12 +131,12 @@ export default function MetricsStrip() {
                 </div>
 
                 {/* Footer Tag */}
-                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#4338CA]">
+                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#1D4ED8]">
                   <span className="inline-flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
                     Included in All Cohorts
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#0B1220] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#002060] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
               </div>
             );
@@ -156,8 +148,8 @@ export default function MetricsStrip() {
             ============================================================ */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[#0B1220] shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[#002060] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
               <span>FELLOWSHIP STANDARDS & BENCHMARKS</span>
             </div>
             <div className="text-xs text-slate-600 font-mono hidden sm:block">
@@ -165,49 +157,43 @@ export default function MetricsStrip() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {metrics.map((m, idx) => {
               const Icon = m.icon;
               return (
                 <div
                   key={idx}
-                  className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-[#0B1220]/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
+                  className={`rounded-3xl bg-white border border-slate-200/90 hover:border-[#002060]/40 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden ${
+                    m.emphasise ? 'p-6 sm:p-7 sm:scale-[1.02] shadow-md' : 'p-5 sm:p-6 shadow-xs'
+                  }`}
                 >
                   {/* Top Thumbnail Image Header */}
-                  <div className="relative h-28 w-full rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50">
+                  <div className={`relative w-full rounded-2xl overflow-hidden mb-4 border border-slate-100 bg-slate-50 ${m.emphasise ? 'h-32' : 'h-28'}`}>
                     <img
                       src={m.image}
-                      alt={m.label}
-                      className={`w-full h-full ${
-                        m.isSeal ? 'object-contain p-2 group-hover:scale-110' : 'object-cover group-hover:scale-105'
-                      } transition-transform duration-500`}
+                      alt={m.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
                         e.target.style.display = 'none';
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                    
+
                     {/* Floating Pill Badge */}
-                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[#0B1220] shadow-2xs flex items-center gap-1.5">
-                      <Icon className="w-3 h-3 text-[#4338CA]" />
+                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[#002060] shadow-2xs flex items-center gap-1.5">
+                      <Icon className="w-3 h-3 text-[#1D4ED8]" />
                       <span>{m.badge}</span>
                     </div>
                   </div>
 
-                  {/* Main Metric Stat & Title */}
-                  <div className="space-y-1">
-                    <div className="text-3xl sm:text-4xl font-black text-[#0B1220] font-heading tracking-tight flex items-baseline gap-1">
-                      <span>{m.stat}</span>
-                      {m.stat === '$99' && (
-                        <span className="text-xs font-mono font-bold text-[#4338CA] bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200/60">
-                          Refundable
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm font-bold text-slate-900 leading-snug">
-                      {m.label}
-                    </div>
-                    <div className="text-xs text-slate-500 leading-relaxed pt-1">
+                  {/* Title words — centred + bold, per the client's request */}
+                  <div className="space-y-2 text-center">
+                    <h3
+                      className={`font-black text-[#002060] font-heading tracking-tight leading-tight ${m.emphasise ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'}`}
+                    >
+                      {m.title}
+                    </h3>
+                    <div className="text-xs text-slate-500 leading-relaxed">
                       {m.subtext}
                     </div>
                   </div>

@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
   ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2,
-  MessageSquareWarning, Images
+  MessageSquareWarning, Images, PanelBottom, Award
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -96,14 +96,49 @@ const SECTIONS = [
     title: '11. Site CMS & Settings (Sabse Powerful)',
     path: '/admin/settings',
     what: 'Poori website ka text, images, logos, banners, prices — bina code ke.',
-    how: 'Tabs use karo: General (phone/email/address + top announcement banner), Homepage Sections (kisi bhi section ko Hide/Show), Homepage Hero (headline, subheadline, CTA buttons), Company Logos (marquee mein kaunsi companies dikhein — upload ya URL), Career Programs (section ka badge/headline), Personalized (apna alag price/duration), Capstone & Tools (tools grid + capstone project cards), Roadmap Steps, About & Mission, Global CTAs ($99 reserve buttons, urgency text). Har change ke baad neeche "Publish Changes" dabana zaroori hai.',
+    how: 'Tabs use karo: General (phone/email/address + top announcement banner), Homepage Sections (kisi bhi section ko Hide/Show), Homepage Hero (headline, subheadline, CTA buttons), Company Logos (marquee mein kaunsi companies dikhein — upload ya URL), Career Programs (section ka badge/headline), Personalized (apna alag price/duration), Capstone & Tools (tools grid + capstone project cards + "Capstone Engineering Benchmark Banner" — home page wale white banner ka badge/heading/line), Credentials Showcase (home page ka "03 — Verifiable US Credentials" card — heading, CTA, aur card Success Story ya Certificate), Legal & Policies (Privacy / Refund / Cookie / Terms ke poore text + pointer bullets), Checkout & Tuition (/checkout ke teen tuition blocks ka title + chhota text, aur Step 04 ka payment note — field khaali chhodo to website par kuch bhi nahi dikhega), Roadmap Steps, About & Mission, Global CTAs ($99 reserve buttons, urgency text). Har change ke baad neeche "Publish Changes" dabana zaroori hai.',
+  },
+  {
+    icon: FileText,
+    title: '11b. Legal Pages (Privacy / Refund / Cookie / Terms)',
+    path: '/admin/settings',
+    what: 'Chaaron policy pages ka poora text — badge, page title, "Last Updated" line, section headings, paragraphs aur pointer bullets.',
+    how: 'Admin → Settings → "Legal & Policies" tab → upar se page chuno (Privacy / Refund / Cookie / Terms). Har section ka heading, paragraph aur bullets wahan se badalte hain; bullet me **bold** likhne par wo hissa bold dikhta hai. Naya section "Add Section" se, hataana dustbin se, order badalna up/down arrows se. Checkbox "Contact card dikhao" tick karo to privacy page par address + dono email + phone wala highlighted box (General & Identity tab se) aa jata hai. "Publish Changes" dabana mat bhoolna.',
+  },
+  {
+    icon: Award,
+    title: '11c. Credentials Showcase (Home Page Certificate Card)',
+    path: '/admin/settings',
+    what: 'Home page par "03 — Verifiable US Credentials" section ka heading, CTA aur card.',
+    how: 'Admin → Settings → "Credentials Showcase" tab. Card ke do roop hain: "Success Story" (student ka naam, photo, role, company, quote, credential ID, status) aur "Certificate" (holder name, program, credential ID, status — ya apna certificate scan upload). Top buttons se jo dikhana hai wo chuno — default Success Story hai. Floating gold seal image bhi wahin badal sakte ho.',
+  },
+  {
+    icon: PanelBottom,
+    title: '11d. Footer (Logo, Do Email, Wyoming Time)',
+    path: '/admin/footer',
+    what: 'Footer ka logo + white oval plate, do (ya zyada) contact email, aur live Wyoming clock.',
+    how: '"White oval plate behind the logo" checkbox se logo ke peeche white oval on/off hota hai (logo artwork waise hi rehta hai). "Contact emails shown in the footer" me do email add rakho — dono footer me dikhte hain ("Add email" se teesra bhi). "Live local time (Wyoming)" me clock on/off, timezone (America/Denver) aur label editable hai — clock har second update hota hai.',
+  },
+  {
+    icon: Award,
+    title: '11e. Course Page — Career Roles + Second Certificate',
+    path: '/admin/courses',
+    what: 'Kisi bhi course page ka "Unlock Your Potential — What Can You Become?" section (heading, subtitle aur role pills) aur certificate artwork.',
+    how: 'Admin → Courses → (course ke saamne) Edit. Modal me "Career Roles" block hai: pehle "Section Heading" aur "Section Subtitle" likho, phir "Add Role" se jitne role pills chahiye utne add karo (naam + badge ka colour + "Show" checkbox); dustbin se hataao, up/down se order badlo. Jo pill "Show" se off hai wo public page par nahi dikhta — kuch role add na karo to purani default list hi dikhti hai. Usi modal me "Second Certificate Artwork (optional)" field hai: yahan doosra certificate scan (JPG/PNG ya URL) daal do — course page ke credential band me dono certificates saath dikhte hain (GRC / Microsoft jaisa do-credential track). Khali chhod do to sirf pehla certificate dikhta hai. Save karne par turant live.',
+  },
+  {
+    icon: Users,
+    title: '11f. Team / Leadership Profiles Ko Hataana',
+    path: '/admin/settings',
+    what: 'About page ka "Led by Industry Practitioners" section — kisi bhi member ka naam, role, experience, bio aur skills.',
+    how: 'Admin → Settings → "Team & Alliances" tab. Ek member ko hatana ho to uske saamne wala "Active" checkbox off karo (data delete nahi hota, baad me wapas on kar sakte ho). Poori team ek saath hatani ho to "Deactivate All" dabao → neeche "Publish Changes" — public About page se Leadership & Faculty section pura gayab ho jayega. Wapas laane ke liye "Activate All". Bio (about paragraph) khaali chhod do to us card par about text nahi dikhega. Poora section band karna ho to About & Mission tab se "Leadership team" visibility off kar do.',
   },
   {
     icon: Layers,
     title: '12. Website Editor (Har Text Aur Image)',
     path: '/admin/website-editor',
     what: 'Website ka koi bhi lafz ya image — jo Settings aur Course CMS mein nahi hai (headings, buttons, labels, footer, banners) — wo yahan se badalta hai. Bilkul wahi page jaisa customer dekhta hai, usi par click karke.',
-    how: 'Ispage par page ki list dikhti hai + kis page par kitne change hue hain. Jis page ko badalna hai uske saamne "Edit on site" dabao → naya tab khulega. Wahan jo bhi text ya image editable hai wo halki indigo line se outline ho jayegi — us par click karo, naya text likho (ya image upload karo) → "Stage change" → phir neeche panel mein "Publish". Change turant sabhi visitors ko dikhne lagta hai. Galti ho gaya to us element par "Revert", ya poore page par "Reset" dabao. Panel ke top par dropdown se kisi bhi page par seedha jump kar sakte ho.',
+    how: 'Ispage par page ki list dikhti hai + kis page par kitne change hue hain. Jis page ko badalna hai uske saamne "Edit on site" dabao → naya tab khulega. Wahan jo bhi text ya image editable hai wo halki indigo line se outline ho jayegi — us par click karo, naya text likho (ya image upload karo) → "Stage change" → phir neeche panel mein "Publish". Change turant sabhi visitors ko dikhne lagta hai. Galti ho gaya to us element par "Revert", ya poore page par "Reset" dabao. Dhyan rakho: "Stage change" ke baad upar "Draft updated — press Publish to save it for every visitor" likha aata hai — us waqt tak change sirf draft hai, jab tak Publish na dabao koi visitor use nahi dekh sakta. Panel ke top par dropdown se kisi bhi page par seedha jump kar sakte ho.',
   },
   {
     icon: ImageIcon,
@@ -149,7 +184,7 @@ export default function AdminGuide() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono uppercase tracking-widest mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono uppercase tracking-widest mb-2">
             <HelpCircle className="w-3.5 h-3.5" />
             Admin Handbook
           </div>
@@ -175,7 +210,7 @@ export default function AdminGuide() {
           const Icon = tip.icon;
           return (
             <div key={i} className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-3">
-              <Icon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <Icon className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-300 leading-relaxed">{tip.text}</p>
             </div>
           );
@@ -189,18 +224,18 @@ export default function AdminGuide() {
           return (
             <div
               key={sec.title}
-              className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/30 transition-colors flex flex-col gap-3"
+              className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-blue-500/30 transition-colors flex flex-col gap-3"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-emerald-400" />
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-blue-400" />
                   </div>
                   <h3 className="text-sm font-bold text-white">{sec.title}</h3>
                 </div>
                 <Link
                   to={sec.path}
-                  className="text-[11px] font-mono text-emerald-400 hover:text-emerald-300 whitespace-nowrap"
+                  className="text-[11px] font-mono text-blue-400 hover:text-blue-300 whitespace-nowrap"
                 >
                   Open →
                 </Link>
@@ -219,8 +254,8 @@ export default function AdminGuide() {
               {sec.notes && (
                 <ul className="space-y-1.5 border-t border-slate-800 pt-3">
                   {sec.notes.map((note) => (
-                    <li key={note} className="flex items-start gap-2 text-[11px] text-amber-200/80 leading-relaxed">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                    <li key={note} className="flex items-start gap-2 text-[11px] text-red-200/80 leading-relaxed">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
                       <span>{note}</span>
                     </li>
                   ))}
@@ -232,8 +267,8 @@ export default function AdminGuide() {
       </div>
 
       {/* Pricing note about separate Career Program vs Personalized Learning */}
-      <div className="p-5 rounded-2xl bg-slate-900/60 border border-amber-500/30 space-y-2">
-        <div className="flex items-center gap-2 text-sm font-bold text-amber-300">
+      <div className="p-5 rounded-2xl bg-slate-900/60 border border-red-500/30 space-y-2">
+        <div className="flex items-center gap-2 text-sm font-bold text-red-300">
           <DollarSign className="w-4 h-4" />
           Career Program vs Personalized Learning — Pricing Separately
         </div>
@@ -242,11 +277,11 @@ export default function AdminGuide() {
           <strong className="text-white">Personalized Learning</strong> ka alag price, deposit aur duration <em>Admin → Settings → Personalized tab</em> se edit hota hai. Dono independent hain — ek change karne se dusra affect nahi hota.
         </p>
         <p className="text-xs text-slate-400 leading-relaxed">
-          <BookOpen className="w-3.5 h-3.5 inline text-amber-400 mr-1" />
+          <BookOpen className="w-3.5 h-3.5 inline text-red-400 mr-1" />
           <strong className="text-white">Curriculum</strong> ka poora control ab <em>Courses → Edit</em> ke "Curriculum Module Composer" se hai: module ka naam, topics (lessons), aur hours. Jitne topics comma se likhoge, utne lessons us module mein ban jayenge, aur course page par wahi dikhenge. Kisi topic ko hata diya to uska lesson bhi hat jayega.
         </p>
         <p className="text-xs text-slate-400 leading-relaxed">
-          <Layers className="w-3.5 h-3.5 inline text-amber-400 mr-1" />
+          <Layers className="w-3.5 h-3.5 inline text-red-400 mr-1" />
           Capstone projects bhi do jagah se control hote hain: <em>Settings → Capstone & Tools → Capstone Project Showcase Cards</em> (saare course pages override) aur <em>Courses → Edit Course → Capstone</em> (course-specific).
         </p>
       </div>

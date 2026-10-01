@@ -63,6 +63,15 @@ const CourseCapstoneSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: false });
 
+// Target-role pill in the "What Can You Become?" block. `color` is the Tailwind
+// gradient of the badge, so the admin can recolour a role without a deploy.
+const CareerRoleSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  color: { type: String, default: 'from-emerald-500 to-teal-500' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: true });
+
 const CourseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -128,6 +137,14 @@ const CourseSchema = new mongoose.Schema({
     default: '',
   },
   certificateImage: {
+    type: String,
+    default: '',
+  },
+  // Some tracks hand out two credentials (Microsoft + the US Fellowship diploma,
+  // or the GRC's AIGP seal beside its own certificate). The second artwork is
+  // uploaded per course and rendered next to the first one. Left blank, the band
+  // looks exactly as it did with a single certificate.
+  certificateImage2: {
     type: String,
     default: '',
   },
@@ -233,6 +250,22 @@ const CourseSchema = new mongoose.Schema({
   capstoneProjects: {
     type: [CourseCapstoneSchema],
     default: [],
+  },
+
+  // ── "What Can You Become?" career-roles block ──
+  // Each track advertises its own target roles; the client wanted to edit the
+  // pills (wording + colour badge) from the admin instead of a code change.
+  careerRoles: {
+    type: [CareerRoleSchema],
+    default: [],
+  },
+  careerRolesHeading: {
+    type: String,
+    default: '',
+  },
+  careerRolesSubtitle: {
+    type: String,
+    default: '',
   },
 
   // ── "Who Can Apply for this Course?" block ──

@@ -223,13 +223,13 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
 
   return (
-    <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[#0B132B] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
+    <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[#001C57] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-10 gap-6 text-left">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
-              <Award className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
+              <Award className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>6-Month Career Training Programs · Dual US & Microsoft Credentials</span>
             </div>
 
@@ -252,8 +252,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   onClick={() => setActiveFilter(cat)}
                   className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-white dark:hover:bg-slate-700'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-white dark:hover:bg-slate-700'
                   }`}
                 >
                   {cat}
@@ -271,7 +271,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
         {filteredCourses.map((flagship) => (
           <div
             key={flagship._id || flagship.slug}
-            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group"
+            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-blue-500/20 dark:border-blue-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
@@ -290,7 +290,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                 {/* Floating Top Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-10">
-                  <span className="px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider border border-indigo-400/30 shadow-md">
+                  <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider border border-blue-400/30 shadow-md">
                     6-Month Career Training
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono font-medium">
@@ -300,7 +300,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                 {/* Bottom Left Overlay Info */}
                 <div className="absolute bottom-4 left-4 right-4 z-10 text-white space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-indigo-300 font-mono font-semibold">
+                  <div className="flex items-center gap-1.5 text-xs text-blue-300 font-mono font-semibold">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{flagship.cohort || 'Next Cohort: Oct 15, 2026'}</span>
                   </div>
@@ -318,16 +318,16 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                 </div>
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-2 pr-0 sm:pr-24">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                       {flagship.category || 'Executive Engineering Track'}
                     </span>
-                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
                       Admissions Open · Capped at 30 Fellows
                     </span>
                   </div>
 
                   <Link to={`/courses/${flagship.slug}`}>
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                       {flagship.title}
                     </h3>
                   </Link>
@@ -343,7 +343,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                     </div>
                     {getHighlightBullets(flagship).map((highlight, hIdx) => (
                       <div key={hIdx} className="flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-                        <div className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                        <div className="w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
                           <Check className="w-3 h-3 stroke-[2.5]" />
                         </div>
                         <span className="font-medium leading-normal">{highlight}</span>
@@ -382,7 +382,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       </span>
                       <Link
                         to={`/checkout?tier=deposit&courseId=${flagship._id}`}
-                        className="text-xs font-bold text-indigo-700 dark:text-indigo-300 font-mono bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded hover:underline"
+                        className="text-xs font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded hover:underline"
                       >
                         Reserve with $99
                       </Link>
@@ -409,11 +409,11 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
 
         {/* Official Microsoft Partner Credential Showcase */}
-        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[#0B132B] to-[#1E1B4B] text-white border border-indigo-500/30 shadow-2xl text-left">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-indigo-500/20">
+        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[#001C57] to-[#001C57] text-white border border-blue-500/30 shadow-2xl text-left">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-blue-500/20">
             <div className="space-y-2 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-mono font-bold uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-mono font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                 <span>Dual Credential Framework &bull; US Institute + Microsoft Certified</span>
               </div>
               <h3 className="text-xl sm:text-2xl font-black font-heading tracking-tight text-white">
@@ -432,19 +432,21 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                 <span>Verify Sample Credential</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
+              {/* Deposit price removed from this credential panel at the
+                  client's request — the CTA now reads "Reserve Seat" only. */}
               <Link
                 to="/checkout?tier=deposit"
-                className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors text-center shadow-md"
+                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors text-center shadow-md"
               >
-                Reserve Seat — $99
+                Reserve Seat
               </Link>
             </div>
           </div>
 
           {/* Certificate Selector Pills */}
           <div className="pt-6">
-            <div className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-300 mb-3 flex items-center gap-2">
-              <Award className="w-4 h-4 text-indigo-400" />
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300 mb-3 flex items-center gap-2">
+              <Award className="w-4 h-4 text-blue-400" />
               <span>Select Microsoft Certification to Inspect:</span>
             </div>
 
@@ -455,7 +457,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   onClick={() => setActiveCertIdx(idx)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
                     activeCertIdx === idx
-                      ? 'bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/40'
+                      ? 'bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-600/30 ring-2 ring-blue-400/40'
                       : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white border-slate-700'
                   }`}
                 >
@@ -470,12 +472,12 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
           {/* Active Certificate Spotlight Card */}
           {MICROSOFT_CERTIFICATES[activeCertIdx] && (
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-950/60 p-6 sm:p-6 rounded-2xl border border-indigo-500/20">
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-950/60 p-6 sm:p-6 rounded-2xl border border-blue-500/20">
               {/* Certificate Image with Zoom Lightbox Trigger */}
               <div className="lg:col-span-5 flex flex-col items-center">
                 <div
                   onClick={() => setSelectedModalCert(MICROSOFT_CERTIFICATES[activeCertIdx])}
-                  className="group relative cursor-pointer rounded-xl overflow-hidden border-2 border-indigo-400/40 shadow-2xl bg-white w-full max-w-md transition-all duration-300 hover:scale-[1.02] hover:border-indigo-400"
+                  className="group relative cursor-pointer rounded-xl overflow-hidden border-2 border-blue-400/40 shadow-2xl bg-white w-full max-w-md transition-all duration-300 hover:scale-[1.02] hover:border-blue-400"
                 >
                   <img
                     src={MICROSOFT_CERTIFICATES[activeCertIdx].image}
@@ -484,14 +486,14 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   />
                   <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
                     <span className="px-3.5 py-1.5 rounded-full bg-white/90 text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-lg">
-                      <ZoomIn className="w-4 h-4 text-indigo-600" />
+                      <ZoomIn className="w-4 h-4 text-blue-600" />
                       <span>Inspect High-Res Certificate</span>
                     </span>
                   </div>
-                  <div className="p-2.5 bg-slate-900/95 border-t border-slate-800 text-center flex items-center justify-between text-[11px] font-mono text-indigo-300 px-3">
+                  <div className="p-2.5 bg-slate-900/95 border-t border-slate-800 text-center flex items-center justify-between text-[11px] font-mono text-blue-300 px-3">
                     <span className="font-bold text-white">{MICROSOFT_CERTIFICATES[activeCertIdx].code}</span>
                     <span className="text-slate-400 flex items-center gap-1">
-                      <Eye className="w-3 h-3 text-indigo-400" /> Click to Enlarge
+                      <Eye className="w-3 h-3 text-blue-400" /> Click to Enlarge
                     </span>
                   </div>
                 </div>
@@ -500,10 +502,10 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               {/* Certificate Details */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-mono font-bold uppercase border border-indigo-400/30">
+                  <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold uppercase border border-blue-400/30">
                     {MICROSOFT_CERTIFICATES[activeCertIdx].badge}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono font-bold uppercase border border-emerald-400/30">
+                  <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-mono font-bold uppercase border border-blue-400/30">
                     {MICROSOFT_CERTIFICATES[activeCertIdx].category}
                   </span>
                 </div>
@@ -527,7 +529,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                         key={sIdx}
                         className="px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5"
                       >
-                        <Check className="w-3 h-3 text-emerald-400" />
+                        <Check className="w-3 h-3 text-blue-400" />
                         <span>{skill}</span>
                       </span>
                     ))}
@@ -536,11 +538,11 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                 <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-400 border-t border-slate-800">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-blue-400" />
                     Wyoming Institutional Registry Backed
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Check className="w-4 h-4 text-indigo-400" />
+                    <Check className="w-4 h-4 text-blue-400" />
                     Direct Verification Endpoint
                   </span>
                 </div>

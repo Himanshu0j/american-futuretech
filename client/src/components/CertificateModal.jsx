@@ -27,17 +27,20 @@ export default function CertificateModal({ isOpen, onClose, certificate }) {
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
               <Award className="w-5 h-5" />
             </div>
             <div className="truncate">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-300 border border-blue-700/50">
                   {certificate.code || 'AUTHENTIC CREDENTIAL'}
                 </span>
                 <span className="text-xs text-slate-400 hidden sm:inline">&bull;</span>
-                <span className="text-xs text-emerald-400 font-mono hidden sm:inline flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 inline" /> Verified Microsoft Partner Credential
+                {/* The issuer is whatever the clicked card says it is — the GRC / AIGP
+                    track earns its own credential, so a hard-coded "Microsoft"
+                    line here labelled the wrong document. */}
+                <span className="text-xs text-blue-400 font-mono hidden sm:inline flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 inline" /> Verified credential · {certificate.issuer || 'Partner'}
                 </span>
               </div>
               <h3 className="text-base sm:text-lg font-bold text-white truncate font-heading mt-0.5">
@@ -49,7 +52,7 @@ export default function CertificateModal({ isOpen, onClose, certificate }) {
           <div className="flex items-center gap-2 shrink-0">
             <a
               href={certificate.image}
-              download={`${certificate.code || 'microsoft-certificate'}.png`}
+              download={`${certificate.code || 'certificate'}.png`}
               className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-700"
               title="Download high-resolution certificate"
             >
@@ -82,10 +85,12 @@ export default function CertificateModal({ isOpen, onClose, certificate }) {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-300">{certificate.category || 'Specialized Track'}</span>
             <span>&bull;</span>
-            <span className="text-indigo-400 font-mono">{certificate.level || 'Official Certification'}</span>
+            <span className="text-blue-400 font-mono">{certificate.level || 'Official Certification'}</span>
           </div>
           <div className="text-[11px] font-mono text-slate-500 text-center sm:text-right">
-            Conferred upon completion of American FutureTech Fellowship Benchmarks
+            {/american futuretech|fellowship/i.test(certificate.issuer || '')
+              ? 'Conferred upon completion of American FutureTech Fellowship Benchmarks'
+              : `Issued by ${certificate.issuer || 'the credentialing partner'} alongside your American FutureTech fellowship`}
           </div>
         </div>
       </div>

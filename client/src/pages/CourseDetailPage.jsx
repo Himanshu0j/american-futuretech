@@ -80,17 +80,17 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-[#0B1220] font-sans text-sm">
-        <div className="w-10 h-10 border-4 border-[#0B1220]/20 border-t-[#0B1220] rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-[#002060] font-sans text-sm">
+        <div className="w-10 h-10 border-4 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin mb-4" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] text-[#0B1220] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F7F7F5] text-[#002060] flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-display font-bold mb-4">Program Not Found</h2>
-        <Link to="/courses" className="px-6 py-2.5 bg-[#4338CA] text-white rounded-full font-semibold hover:bg-[#3730A3] transition-colors">
+        <Link to="/courses" className="px-6 py-2.5 bg-[#1D4ED8] text-white rounded-full font-semibold hover:bg-[#1E40AF] transition-colors">
           Browse All Programs
         </Link>
       </div>
@@ -100,6 +100,35 @@ export default function CourseDetailPage() {
   // Retrieve comprehensive data
   const detailedData = getDetailedCourseData(course);
   const alignedMsCert = getAlignedMicrosoftCert(course.slug || course.category || course.title);
+
+  /**
+   * Open the "inspect in 4K" view for one certificate card.
+   *
+   * The card's LIVE DOM is the source of truth, not the React props. The client
+   * swapped a certificate artwork with the inline Website Editor; the card then
+   * showed the new document while the inspect view kept opening the coded
+   * Microsoft scan, because React still held the original `src`. Reading the
+   * rendered <img>/<h3> inside the clicked card means each card always opens the
+   * credential the visitor is actually looking at — for every card on the page.
+   */
+  const openCertificatePreview = (event, fallback) => {
+    // While the inline Website Editor is open the click belongs to the editor —
+    // it has to open the image field — so the inspect modal stays shut.
+    if (typeof document !== 'undefined' && document.body.dataset.siteEditorActive === 'true') return;
+    const card = event.currentTarget.closest('[data-certificate-card]')
+      || event.currentTarget.parentElement;
+    const liveImage = card?.querySelector('img')?.getAttribute('src');
+    const liveTitle = card?.querySelector('h3')?.textContent?.trim();
+    const liveIssuer = card?.querySelector('[data-certificate-issuer]')?.textContent?.trim();
+    const liveCode = card?.querySelector('[data-certificate-code]')?.textContent?.trim();
+    setSelectedModalCert({
+      ...fallback,
+      title: liveTitle || fallback.title,
+      image: liveImage || fallback.image,
+      issuer: liveIssuer || fallback.issuer,
+      code: liveCode || fallback.code,
+    });
+  };
 
   // Tools are per course: whatever the admin saved on this course wins, and the
   // shared static grid is only a fallback for a course nobody has edited yet.
@@ -155,7 +184,15 @@ export default function CourseDetailPage() {
   // Optional per-card artwork for the "Why Get … Certification" advantage cards,
   // edited per course in the CMS (Doubt Clearing, Industry Relevant Projects…).
   const advantageImages = Array.isArray(course?.advantageImages) ? course.advantageImages : [];
-  const careerRoles = detailedData.careerRoles || [];
+  // Target-role pills are per course once the admin edits them (Courses CMS →
+  // "Career Roles"); the coded list stays as the fallback for untouched tracks.
+  const courseCareerRoles = (course?.careerRoles || [])
+    .filter((role) => role && role.active !== false && role.name)
+    .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+  const careerRoles = courseCareerRoles.length > 0 ? courseCareerRoles : (detailedData.careerRoles || []);
+  const careerRolesHeading = course?.careerRolesHeading || 'Unlock Your Potential — What Can You Become?';
+  const careerRolesSubtitle = course?.careerRolesSubtitle
+    || `Master ${course.title} to qualify for high-impact, high-growth technology roles in top tier companies.`;
   const certImages = detailedData.certificates || {};
 
   // Partner mark + certificate artwork shown in the hero (Microsoft logo /
@@ -178,10 +215,10 @@ export default function CourseDetailPage() {
     ? eligibility.audiences
     : audiencePills.map((p) => p.tag);
   const audienceColors = [
-    'from-[#4338CA] to-[#6366F1]',
-    'from-emerald-600 to-teal-500',
-    'from-rose-500 to-pink-500',
-    'from-violet-600 to-fuchsia-500',
+    'from-[#1D4ED8] to-[#3B82F6]',
+    'from-blue-600 to-blue-500',
+    'from-red-500 to-red-500',
+    'from-blue-600 to-blue-500',
   ];
 
   // "Choose your learning experience" — the admin ticks decide which cards show.
@@ -217,46 +254,46 @@ export default function CourseDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased relative selection:bg-[#E5C275] selection:text-[#0B1220]">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased relative selection:bg-[#F00000] selection:text-[#002060]">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-24 pb-10">
         {/* Breadcrumb strip */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6">
           <nav className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-            <Link to="/" className="hover:text-[#0B1220] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[#002060] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/courses" className="hover:text-[#0B1220] transition-colors">Academy Programs</Link>
+            <Link to="/courses" className="hover:text-[#002060] transition-colors">Academy Programs</Link>
             <span>/</span>
-            <span className="text-[#0B1220] font-semibold truncate">{course.title}</span>
+            <span className="text-[#002060] font-semibold truncate">{course.title}</span>
           </nav>
         </div>
 
         {/* 1. Course Hero Banner Container */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="rounded-3xl bg-[#0B1220] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#4338CA] relative overflow-hidden">
+          <div className="rounded-3xl bg-[#002060] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#1D4ED8] relative overflow-hidden">
             {/* Background ambient glow */}
-            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#E5C275]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#4338CA]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#F00000]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#1D4ED8]/20 rounded-full blur-3xl pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start relative z-10">
               {/* Left Column: Course Header Info */}
               <div className="lg:col-span-8">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#0B1220] bg-[#EFE6D6] px-3.5 py-1.5 rounded-full shadow-xs">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#002060] bg-[#FCE7E7] px-3.5 py-1.5 rounded-full shadow-xs">
                     {course.category || 'Career Program'}
                   </span>
-                  <span className="text-xs font-semibold text-[#E5C275] bg-[#E5C275]/15 px-3.5 py-1.5 rounded-full border border-[#E5C275]/40">
+                  <span className="text-xs font-semibold text-[#FF6B6B] bg-[#F00000]/15 px-3.5 py-1.5 rounded-full border border-[#F00000]/40">
                     Dual US & Microsoft Accredited
                   </span>
-                  <span className="text-xs font-medium text-emerald-200 bg-emerald-900/50 px-3 py-1 rounded-full border border-emerald-500/30">
+                  <span className="text-xs font-medium text-blue-200 bg-blue-900/50 px-3 py-1 rounded-full border border-blue-500/30">
                     Live Mentor-Led Cohort
                   </span>
                 </div>
 
                 {/* Course image — a rectangle above the title, admin editable per course */}
                 {course.heroImage && (
-                  <div className="mb-5 overflow-hidden rounded-2xl border border-[#4338CA]/70 shadow-lg bg-[#0B1220]">
+                  <div className="mb-5 overflow-hidden rounded-2xl border border-[#1D4ED8]/70 shadow-lg bg-[#002060]">
                     <img
                       src={course.heroImage}
                       alt={`${courseTitleText} course`}
@@ -270,37 +307,37 @@ export default function CourseDetailPage() {
                   {course.title}
                 </h1>
 
-                <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mb-8 max-w-3xl">
+                <p className="text-base sm:text-lg text-blue-100/90 leading-relaxed mb-8 max-w-3xl">
                   {course.description || 'Master enterprise Data Science and Artificial Intelligence from core predictive algorithms to real-time LLM agent orchestration, mentored live by active Silicon Valley architects.'}
                 </p>
 
                 {/* Key Metrics / Highlights Strip */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#0B1220]/90 border border-[#4338CA] text-center sm:text-left backdrop-blur-xs mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#002060]/90 border border-[#1D4ED8] text-center sm:text-left backdrop-blur-xs mb-8">
                   <div>
-                    <div className="text-xs text-emerald-300/80 font-medium">Duration</div>
+                    <div className="text-xs text-blue-300/80 font-medium">Duration</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Clock className="w-4 h-4 text-[#E5C275]" />
+                      <Clock className="w-4 h-4 text-[#FF6B6B]" />
                       {course.duration || '24 Weeks'}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-emerald-300/80 font-medium">Student Rating</div>
+                    <div className="text-xs text-blue-300/80 font-medium">Student Rating</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Star className="w-4 h-4 text-amber-300 fill-amber-300" />
+                      <Star className="w-4 h-4 text-red-300 fill-red-300" />
                       {course.rating || '4.9'} / 5.0
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-emerald-300/80 font-medium">Learning Format</div>
+                    <div className="text-xs text-blue-300/80 font-medium">Learning Format</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Zap className="w-4 h-4 text-[#E5C275]" />
+                      <Zap className="w-4 h-4 text-[#FF6B6B]" />
                       Live Interactive Lab
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-emerald-300/80 font-medium">Placement Support</div>
+                    <div className="text-xs text-blue-300/80 font-medium">Placement Support</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Briefcase className="w-4 h-4 text-[#E5C275]" />
+                      <Briefcase className="w-4 h-4 text-[#FF6B6B]" />
                       100% Career Assistance
                     </div>
                   </div>
@@ -308,10 +345,10 @@ export default function CourseDetailPage() {
 
                 {/* Key Skills Tags */}
                 <div>
-                  <div className="text-xs font-bold text-emerald-300/90 uppercase tracking-wider mb-3">Skills You Will Master:</div>
+                  <div className="text-xs font-bold text-blue-300/90 uppercase tracking-wider mb-3">Skills You Will Master:</div>
                   <div className="flex flex-wrap gap-2">
                     {(course.skills || ['Machine Learning', 'Deep Learning', 'PyTorch', 'Vector Databases', 'RAG Pipelines', 'Computer Vision', 'LLM Fine-Tuning', 'MLOps']).map((skill, i) => (
-                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[#0B1220] text-emerald-100 text-xs font-semibold border border-[#4338CA] shadow-xs">
+                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[#002060] text-blue-100 text-xs font-semibold border border-[#1D4ED8] shadow-xs">
                         {skill}
                       </span>
                     ))}
@@ -324,14 +361,16 @@ export default function CourseDetailPage() {
                     program's own credential, so this band is never empty. */}
                 {(heroCredential.logo || heroCredential.title || heroCredential.certificateImage) && (
                   <div className="mt-8 grid grid-cols-1 sm:grid-cols-5 gap-4">
-                    <div className="sm:col-span-2 rounded-2xl border border-[#4338CA]/60 bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col justify-between gap-5">
-                      <div className="min-h-11 flex items-center">
+                    {/* Credential card — the client asked for the wording to sit
+                        centred under the partner mark. */}
+                    <div className="sm:col-span-2 rounded-2xl border border-[#1D4ED8]/60 bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col items-center justify-between gap-5 text-center">
+                      <div className="min-h-20 flex items-center justify-center">
                         {heroCredential.logo && !credentialLogoBroken ? (
                           heroCredential.logoOnLightTile ? (
                             /* Badge artwork (the AIGP mark) carries its own light
                                plate, so it sits on a white tile rather than
                                showing as a pale square on the dark card. */
-                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-white p-1.5 ring-1 ring-white/25 shadow-sm">
+                            <span className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-2 ring-1 ring-white/25 shadow-sm">
                               <img
                                 src={heroCredential.logo}
                                 alt={heroCredential.title}
@@ -344,49 +383,62 @@ export default function CourseDetailPage() {
                             <img
                               src={heroCredential.logo}
                               alt={heroCredential.title}
-                              className="max-h-11 w-auto max-w-[170px] object-contain"
+                              className="max-h-12 w-auto max-w-[200px] object-contain"
                               loading="lazy"
                               onError={() => setCredentialLogoBroken(true)}
                             />
                           )
                         ) : (
-                          <Award className="w-9 h-9 text-[#E5C275]" />
+                          <Award className="w-9 h-9 text-[#FF6B6B]" />
                         )}
                       </div>
                       <div>
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/90">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-blue-300/90">
                           Credential you earn
                         </div>
                         <h3 className="text-lg font-display font-bold text-white leading-snug mt-1">
                           {heroCredential.title}
                         </h3>
                         {heroCredential.subtitle && (
-                          <p className="text-[11px] text-emerald-100/80 leading-relaxed mt-1.5">
+                          <p className="text-[11px] text-blue-100/80 leading-relaxed mt-1.5">
                             {heroCredential.subtitle}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="sm:col-span-3 rounded-2xl border border-[#4338CA]/60 bg-[#0B1220]/70 overflow-hidden min-h-[170px] flex items-center justify-center">
-                      {heroCredential.certificateImage ? (
-                        <img
-                          src={heroCredential.certificateImage}
-                          alt={`${course.title} certificate`}
-                          /* A certificate is a document, not a photo: cropping it to
-                             fill a fixed box sliced the IAPP seal and the top of
-                             the wording. `object-contain` keeps every line and
-                             the seal visible inside the same card height. */
-                          className="w-full h-44 sm:h-52 object-contain p-2"
-                          loading="lazy"
-                        />
+                    <div className="sm:col-span-3 rounded-2xl border border-[#1D4ED8]/60 bg-[#002060]/70 overflow-hidden min-h-[170px] flex items-center justify-center">
+                      {heroCredential.certificateImage || heroCredential.certificateImage2 ? (
+                        /* One or two credentials — whichever artwork the admin
+                           uploaded in the course CMS. A certificate is a
+                           document, not a photo: `object-contain` keeps every
+                           line and the seal visible instead of cropping them. */
+                        <div
+                          className={`w-full p-2 ${
+                            heroCredential.certificateImage && heroCredential.certificateImage2
+                              ? 'grid grid-cols-1 sm:grid-cols-2 gap-2'
+                              : ''
+                          }`}
+                        >
+                          {[heroCredential.certificateImage, heroCredential.certificateImage2]
+                            .filter(Boolean)
+                            .map((art, index) => (
+                              <img
+                                key={index}
+                                src={art}
+                                alt={`${course.title} certificate ${index + 1}`}
+                                className="w-full h-40 sm:h-48 object-contain"
+                                loading="lazy"
+                              />
+                            ))}
+                        </div>
                       ) : (
                         <div className="text-center px-6 py-8">
-                          <Award className="w-10 h-10 text-[#E5C275] mx-auto mb-3" />
+                          <Award className="w-10 h-10 text-[#FF6B6B] mx-auto mb-3" />
                           <div className="text-sm font-bold text-white">
                             {isMicrosoftCredential ? 'Microsoft Certificate' : heroCredential.title}
                           </div>
-                          <p className="text-[11px] text-emerald-100/70 mt-1 max-w-xs mx-auto leading-relaxed">
+                          <p className="text-[11px] text-blue-100/70 mt-1 max-w-xs mx-auto leading-relaxed">
                             Issued on completion and verifiable on the American FutureTech public credential registry.
                           </p>
                         </div>
@@ -404,23 +456,23 @@ export default function CourseDetailPage() {
                       Career Program — Register Now
                     </div>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-3xl font-display font-black text-[#0B1220]">${course.pricing?.discountedPrice || 499}</span>
+                      <span className="text-3xl font-display font-black text-[#002060]">${course.pricing?.discountedPrice || 499}</span>
                       <span className="text-sm text-slate-500 line-through">${course.pricing?.basePrice || 1299}</span>
                     </div>
                     <div className="text-[11px] text-slate-600 font-semibold mt-1">
                       Group batch · per person · {course.duration || '6 Months'}
                     </div>
-                    <div className="text-xs text-[#4338CA] font-bold flex items-center gap-1.5 mt-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#047857]" />
+                    <div className="text-xs text-[#1D4ED8] font-bold flex items-center gap-1.5 mt-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
                       Save ${Math.max((course.pricing?.basePrice || 1299) - (course.pricing?.discountedPrice || 499), 0)} with institutional scholarship
                     </div>
                     {showPersonalizedMentor && (
-                      <div className="mt-3 p-3 rounded-xl bg-[#F5F7FF] border border-[#4338CA]/20">
+                      <div className="mt-3 p-3 rounded-xl bg-[#F2F6FF] border border-[#1D4ED8]/20">
                         <div className="flex items-baseline justify-between">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#4338CA]">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1D4ED8]">
                             Personalized 1-on-1
                           </span>
-                          <span className="text-xl font-display font-black text-[#0B1220]">
+                          <span className="text-xl font-display font-black text-[#002060]">
                             ${personalizedPrice.toLocaleString()}
                           </span>
                         </div>
@@ -432,30 +484,33 @@ export default function CourseDetailPage() {
                   </div>
 
                   {/* Flexible Deposit Box */}
-                  <div className="p-4 rounded-2xl bg-[#F5F7FF] border border-[#E5C275]/60 mb-4 shadow-xs">
+                  <div className="p-4 rounded-2xl bg-[#F2F6FF] border border-[#F00000]/60 mb-4 shadow-xs">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#0B1220]">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#002060]">
                         Flexible Seat Deposit
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-[10px] font-black uppercase tracking-wider">
+                      <span className="px-2 py-0.5 rounded-full bg-[#FCE7E7] text-[#002060] text-[10px] font-black uppercase tracking-wider">
                         Most Popular
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 mb-3.5 leading-relaxed">
-                      Reserve your seat in the upcoming cohort today with <strong>$99</strong> or <strong>$499</strong>. Remainder payable prior to start.
-                    </p>
+                    {/* The explanatory sentence ("Reserve your seat in the upcoming
+                        cohort today with … Remainder payable prior to start.") was
+                        removed at the client's request — it appeared on every
+                        course page and the stale inline-editor override on it had
+                        mangled the amounts. Two plain reservation amounts are all
+                        that is left. */}
                     {/* Exactly two reservation amounts — nothing else */}
                     <div className="space-y-2.5">
                       <Link
                         to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
-                        className="w-full py-3 px-4 rounded-full bg-[#4338CA] hover:bg-[#3730A3] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 px-4 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                       >
                         Reserve Seat for $99
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link
                         to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
-                        className="w-full py-2.5 px-4 rounded-full border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
+                        className="w-full py-2.5 px-4 rounded-full border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
                       >
                         Reserve Seat for $499
                         <ArrowRight className="w-4 h-4" />
@@ -465,7 +520,7 @@ export default function CourseDetailPage() {
 
                   <Link
                     to={`/checkout?courseId=${course._id}&tier=full`}
-                    className="w-full py-2.5 px-4 rounded-full border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                    className="w-full py-2.5 px-4 rounded-full border-2 border-[#002060] hover:bg-[#002060] hover:text-white text-[#002060] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                   >
                     Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                   </Link>
@@ -473,7 +528,7 @@ export default function CourseDetailPage() {
                   {showPersonalizedMentor && (
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
-                      className="w-full py-2.5 px-4 rounded-full border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                      className="w-full py-2.5 px-4 rounded-full border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                     >
                       Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
@@ -481,15 +536,15 @@ export default function CourseDetailPage() {
 
                   <button
                     onClick={() => setIsLeadModalOpen(true)}
-                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[#0B1220] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
+                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[#002060] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
                   >
-                    <PhoneCall className="w-3.5 h-3.5 text-[#047857]" />
+                    <PhoneCall className="w-3.5 h-3.5 text-[#1D4ED8]" />
                     Talk to Admissions Counselor
                   </button>
 
                   {/* Seat Urgency Badge */}
-                  <div className="text-center py-2.5 px-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  <div className="text-center py-2.5 px-3 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs font-semibold flex items-center justify-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                     {course.seatsUrgencyText || 'Only 3 seats remaining for this cohort'}
                   </div>
                 </div>
@@ -502,11 +557,11 @@ export default function CourseDetailPage() {
         {(showGroupBatch || showPersonalizedMentor) && (
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
             <div className="text-center max-w-3xl mx-auto mb-8">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-900 text-xs font-bold uppercase tracking-wider mb-3">
-                <GraduationCap className="w-3.5 h-3.5 text-indigo-700" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3">
+                <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
                 Choose Your Learning Experience
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
                 One curriculum. Two ways to learn.
               </h2>
               <p className="text-slate-600 text-base mt-3 leading-relaxed">
@@ -520,15 +575,25 @@ export default function CourseDetailPage() {
               }`}
             >
               {showGroupBatch && (
-                <div className="rounded-3xl bg-white border border-slate-200 shadow-xs hover:shadow-md transition-shadow flex flex-col">
-                  <div className="p-6 sm:p-7 flex flex-col flex-1">
-                    <h3 className="text-2xl font-bold font-display text-[#0B1220]">Group Classes</h3>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mt-1">
+                /* Colourful cohort card — the client asked for this block to
+                   carry colour instead of sitting plain white next to the dark
+                   Personalized mentor card. */
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-white to-blue-50 border-2 border-blue-200/70 shadow-md hover:shadow-xl transition-shadow flex flex-col">
+                  <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-blue-500 to-blue-500" />
+                  <div className="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full bg-blue-200/30 blur-3xl" />
+                  <div className="relative p-6 sm:p-7 flex flex-col flex-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-2xl font-bold font-display text-[#002060]">Group Classes</h3>
+                      <span className="px-3 py-1 rounded-full bg-blue-100 border border-blue-300 text-blue-800 text-[10px] font-black uppercase tracking-wider">
+                        Cohort Track
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-blue-700 mt-1">
                       Full Immersive Journey
                     </div>
 
                     <div className="mt-5 flex items-baseline gap-2">
-                      <span className="text-4xl font-black font-display text-[#0B1220]">${groupPrice.toLocaleString()}</span>
+                      <span className="text-4xl font-black font-display text-blue-700">${groupPrice.toLocaleString()}</span>
                       {groupOriginal > groupPrice && (
                         <span className="text-sm text-slate-500 line-through">${groupOriginal.toLocaleString()}</span>
                       )}
@@ -537,7 +602,7 @@ export default function CourseDetailPage() {
                     <ul className="mt-6 space-y-3 text-sm text-slate-700 flex-1">
                       {groupFeatures.map((feature, i) => (
                         <li key={i} className="flex items-start gap-2.5">
-                          <Check className="w-4 h-4 text-[#4338CA] shrink-0 mt-0.5" />
+                          <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -545,7 +610,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?tier=full&courseId=${course._id}`}
-                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white border-2 border-[#0B1220] text-[#0B1220] hover:bg-[#0B1220] hover:text-white text-sm font-bold transition-colors"
+                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-600 text-white shadow-md hover:from-blue-500 hover:to-blue-500 text-sm font-bold transition-colors"
                     >
                       Enroll in group classes <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -554,14 +619,14 @@ export default function CourseDetailPage() {
               )}
 
               {showPersonalizedMentor && (
-                <div className="relative rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#1B2740] to-[#0B1220] text-white shadow-2xl border border-[#4338CA]/40 flex flex-col overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-52 h-52 bg-[#E5C275]/20 rounded-full blur-3xl pointer-events-none" />
-                  <span className="absolute top-5 right-5 px-3 py-1 rounded-full bg-[#E5C275] text-[#0B1220] text-[10px] font-black uppercase tracking-wider">
+                <div className="relative rounded-3xl bg-gradient-to-br from-[#002060] via-[#0A2A63] to-[#002060] text-white shadow-2xl border border-[#1D4ED8]/40 flex flex-col overflow-hidden">
+                  <div className="absolute -top-10 -right-10 w-52 h-52 bg-[#F00000]/20 rounded-full blur-3xl pointer-events-none" />
+                  <span className="absolute top-5 right-5 px-3 py-1 rounded-full bg-[#C81E1E] text-white text-[10px] font-black uppercase tracking-wider">
                     Most Popular
                   </span>
                   <div className="p-6 sm:p-7 flex flex-col flex-1 relative">
                     <h3 className="text-2xl font-bold font-display text-white">Personalized Services</h3>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#E5C275] mt-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B6B] mt-1">
                       Top Industry Mentor Track
                     </div>
 
@@ -575,7 +640,7 @@ export default function CourseDetailPage() {
                     <ul className="mt-6 space-y-3 text-sm text-slate-200 flex-1">
                       {personalizedFeatures.map((feature, i) => (
                         <li key={i} className="flex items-start gap-2.5">
-                          <Check className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
+                          <Check className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -583,7 +648,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?tier=personalized&courseId=${course._id}`}
-                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#E5C275] text-[#0B1220] hover:bg-white text-sm font-bold transition-colors"
+                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#C81E1E] text-white hover:bg-[#C81E1E] text-sm font-bold transition-colors"
                     >
                       Enroll in personalized classes <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -600,11 +665,11 @@ export default function CourseDetailPage() {
             before the support features. */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkle className="w-3.5 h-3.5 text-[#4338CA]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
+              <Sparkle className="w-3.5 h-3.5 text-[#1D4ED8]" />
               Hands-On Industry Toolkit
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#002060] tracking-tight">
               {toolsHeading} Tools Covered
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -612,11 +677,11 @@ export default function CourseDetailPage() {
             </p>
           </div>
 
-          {/* Tools run left → right as a looping strip, matching the grouped
+          {/* Tools run right → left as a looping strip, matching the grouped
               catalogue on /courses. Only the first pass is announced to screen
               readers; the repeats exist purely to make the loop seamless. */}
           <div className="relative overflow-hidden marquee-mask">
-            <div className="animate-infinite-marquee-ltr items-stretch gap-2.5 sm:gap-3 py-1">
+            <div className="animate-infinite-marquee items-stretch gap-2.5 sm:gap-3 py-1">
               {toolTrack.map((tool, idx) => {
                 const toolName = tool.name || tool;
                 // A tool the admin added may have no logo anywhere — fall back to
@@ -644,13 +709,13 @@ export default function CourseDetailPage() {
                           loading="lazy"
                         />
                       ) : (
-                        <span className="text-[11px] font-black text-[#0B1220] font-display tracking-tight">
+                        <span className="text-[11px] font-black text-[#002060] font-display tracking-tight">
                           {initials}
                         </span>
                       )}
                     </div>
 
-                    <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#0B1220] tracking-tight leading-tight truncate w-full group-hover:text-[#4338CA] transition-colors">
+                    <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#002060] tracking-tight leading-tight truncate w-full group-hover:text-[#1D4ED8] transition-colors">
                       {toolName}
                     </h3>
                   </div>
@@ -667,11 +732,11 @@ export default function CourseDetailPage() {
         <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EFE6D6] text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-3">
-                <Award className="w-3.5 h-3.5 text-[#4338CA]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FCE7E7] text-[#002060] text-xs font-bold uppercase tracking-wider mb-3">
+                <Award className="w-3.5 h-3.5 text-[#1D4ED8]" />
                 The American FutureTech Advantage
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight max-w-3xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight max-w-3xl mx-auto">
                 Why Get {course.title} Certification From American FutureTech
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -721,8 +786,8 @@ export default function CourseDetailPage() {
                       </p>
 
                       <div className="mt-auto pt-5">
-                        <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#4338CA]">
-                          <CheckCircle2 className="w-4 h-4 text-[#047857]" />
+                        <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#1D4ED8]">
+                          <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
                           <span>Guaranteed Standard</span>
                         </div>
                       </div>
@@ -739,11 +804,11 @@ export default function CourseDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center">
             {/* Left: Numbered Criteria */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-100 text-violet-900 text-xs font-bold uppercase tracking-wider mb-3">
-                <Users className="w-3.5 h-3.5 text-violet-700" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3">
+                <Users className="w-3.5 h-3.5 text-blue-700" />
                 {eligibility.eyebrow || 'Eligibility & Candidate Profile'}
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight mb-4">
                 {eligibility.title || 'Who Can Apply for this Course?'}
               </h2>
               <p className="text-slate-600 text-base mb-8 leading-relaxed">
@@ -754,9 +819,9 @@ export default function CourseDetailPage() {
                 {eligibilityPoints.map((point, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[#0B1220]/40 transition-colors"
+                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[#002060]/40 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-[#0B1220] text-[#E5C275] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="w-8 h-8 rounded-xl bg-[#002060] text-[#FF6B6B] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
                       {idx + 1}
                     </div>
                     <p className="text-sm text-slate-700 leading-relaxed font-medium pt-0.5">
@@ -769,22 +834,22 @@ export default function CourseDetailPage() {
 
             {/* Right: Globally Recognised Certification Card + Audience Pills */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#1f4223] to-[#0B1220] text-white p-6 sm:p-6 shadow-2xl border border-[#4338CA] relative overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#E5C275]/20 rounded-full blur-2xl pointer-events-none" />
-                <div className="w-12 h-12 rounded-2xl bg-[#E5C275]/20 border border-[#E5C275]/40 text-[#E5C275] flex items-center justify-center mb-5">
+              <div className="rounded-3xl bg-gradient-to-br from-[#002060] via-[#1f4223] to-[#002060] text-white p-6 sm:p-6 shadow-2xl border border-[#1D4ED8] relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#F00000]/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="w-12 h-12 rounded-2xl bg-[#F00000]/20 border border-[#F00000]/40 text-[#FF6B6B] flex items-center justify-center mb-5">
                   <Award className="w-7 h-7" />
                 </div>
                 <h3 className="text-2xl font-bold font-display text-white mb-3">
                   {eligibility.certificationTitle || 'Globally Recognised Certification'}
                 </h3>
-                <p className="text-sm text-emerald-100/90 leading-relaxed mb-6">
+                <p className="text-sm text-blue-100/90 leading-relaxed mb-6">
                   {eligibility.certificationText || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.'}
                 </p>
 
-                <div className="space-y-2.5 text-xs text-emerald-200 font-medium pt-2 border-t border-[#4338CA]">
+                <div className="space-y-2.5 text-xs text-blue-200 font-medium pt-2 border-t border-[#1D4ED8]">
                   {certificationPoints.map((point, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-[#E5C275] shrink-0" />
+                      <Check className="w-4 h-4 text-[#FF6B6B] shrink-0" />
                       <span>{point}</span>
                     </div>
                   ))}
@@ -818,11 +883,11 @@ export default function CourseDetailPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Centered like every other section heading on this page */}
             <div className="flex flex-col items-center text-center gap-1 mb-10 pb-6 border-b border-slate-200">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#0B1220] text-xs font-bold uppercase tracking-wider mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
                 <BookOpen className="w-3.5 h-3.5" />
                 Structured Syllabus
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220]">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060]">
                 {course.title} Course Curriculum
               </h2>
               <p className="text-slate-600 text-sm mt-1">
@@ -837,18 +902,18 @@ export default function CourseDetailPage() {
                 return (
                   <div
                     key={mod._id || index}
-                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[#0B1220]/40"
+                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[#002060]/40"
                   >
                     <button
                       onClick={() => setOpenModuleIndex(isOpen ? -1 : index)}
                       className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="w-11 h-11 rounded-xl bg-[#EFE6D6] text-[#0B1220] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        <span className="w-11 h-11 rounded-xl bg-[#FCE7E7] text-[#002060] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
                           {index + 1 < 10 ? `0${index + 1}` : index + 1}
                         </span>
                         <div className="min-w-0">
-                          <h3 className="text-base sm:text-lg font-bold text-[#0B1220] truncate leading-tight">
+                          <h3 className="text-base sm:text-lg font-bold text-[#002060] truncate leading-tight">
                             {mod.title}
                           </h3>
                           <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
@@ -856,7 +921,7 @@ export default function CourseDetailPage() {
                             {mod.quiz && (
                               <>
                                 <span>•</span>
-                                <span className="text-[#4338CA] font-semibold">1 Assessment</span>
+                                <span className="text-[#1D4ED8] font-semibold">1 Assessment</span>
                               </>
                             )}
                           </div>
@@ -879,13 +944,13 @@ export default function CourseDetailPage() {
                               className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <Play className="w-3.5 h-3.5 text-[#047857] shrink-0" />
+                                <Play className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
                                 <span className="truncate font-medium">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0 text-slate-500">
                                 <span>{lesson.videoDuration || '45m'}</span>
                                 {lesson.isPreview && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EFE6D6] text-[#0B1220]">
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FCE7E7] text-[#002060]">
                                     Free Preview
                                   </span>
                                 )}
@@ -905,11 +970,11 @@ export default function CourseDetailPage() {
         {/* 5. Capstone Projects: compact cards, 3 per row */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-4">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-100 text-teal-900 text-xs font-bold uppercase tracking-wider mb-2">
-              <Layers className="w-3.5 h-3.5 text-teal-700" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-2">
+              <Layers className="w-3.5 h-3.5 text-blue-700" />
               Build &amp; Showcase
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#0B1220] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#002060] tracking-tight">
               Capstone Projects
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -924,14 +989,14 @@ export default function CourseDetailPage() {
                 className="rounded-xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col group"
               >
                 {/* Colored Top Accent Banner */}
-                <div className={`h-0.5 w-full bg-gradient-to-r ${proj.color || 'from-indigo-500 to-blue-500'}`} />
+                <div className={`h-0.5 w-full bg-gradient-to-r ${proj.color || 'from-blue-500 to-blue-500'}`} />
 
                 <div className="p-3.5 flex-1">
-                  <span className={`inline-block px-2 py-0.5 rounded-full bg-gradient-to-r ${proj.color || 'from-indigo-500 to-blue-500'} text-white text-[9px] font-bold uppercase tracking-wider mb-1.5 shadow-xs`}>
+                  <span className={`inline-block px-2 py-0.5 rounded-full bg-gradient-to-r ${proj.color || 'from-blue-500 to-blue-500'} text-white text-[9px] font-bold uppercase tracking-wider mb-1.5 shadow-xs`}>
                     {proj.tag}
                   </span>
 
-                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[#0B1220] transition-colors font-display leading-snug line-clamp-1">
+                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[#002060] transition-colors font-display leading-snug line-clamp-1">
                     {proj.title}
                   </h3>
 
@@ -962,15 +1027,15 @@ export default function CourseDetailPage() {
         <section className="bg-gradient-to-b from-white via-slate-50 to-white border-y border-slate-200/80 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100 text-rose-900 text-xs font-bold uppercase tracking-wider mb-3">
-                <Briefcase className="w-3.5 h-3.5 text-rose-700" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 text-red-900 text-xs font-bold uppercase tracking-wider mb-3">
+                <Briefcase className="w-3.5 h-3.5 text-red-700" />
                 Career Opportunities
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
-                Unlock Your Potential — What Can You Become?
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
+                {careerRolesHeading}
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                Master {course.title} to qualify for high-impact, high-growth technology roles in top tier companies.
+                {careerRolesSubtitle}
               </p>
             </div>
 
@@ -978,12 +1043,12 @@ export default function CourseDetailPage() {
               {careerRoles.map((role, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#0B1220]/40 transition-all flex items-center gap-3.5 group"
+                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#002060]/40 transition-all flex items-center gap-3.5 group"
                 >
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${role.color || 'from-emerald-500 to-teal-500'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
+                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${role.color || 'from-blue-500 to-blue-500'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#0B1220] transition-colors">
+                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#002060] transition-colors">
                     {role.name}
                   </span>
                 </div>
@@ -995,11 +1060,11 @@ export default function CourseDetailPage() {
         {/* 7. American FutureTech Certificate & Microsoft Certification Showcase */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-900 text-xs font-bold uppercase tracking-wider mb-3">
-              <Award className="w-3.5 h-3.5 text-indigo-700" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3">
+              <Award className="w-3.5 h-3.5 text-blue-700" />
               Dual Industry Recognition
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#0B1220] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
               American FutureTech & Microsoft Credentials
             </h2>
             <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -1009,11 +1074,11 @@ export default function CourseDetailPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 max-w-5xl mx-auto">
             {/* Card 1: American FutureTech Certificate */}
-            <div className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
+            <div data-certificate-card className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
               <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+                  <span data-certificate-issuer className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
                     Accredited US Fellowship
                   </span>
                 </div>
@@ -1022,10 +1087,11 @@ export default function CourseDetailPage() {
 
               {/* Certificate Image Preview with zoom */}
               <div
-                onClick={() => setSelectedModalCert({
+                onClick={(event) => openCertificatePreview(event, {
                   title: certImages.completionTitle || 'American FutureTech Certificate of Completion',
                   image: certImages.completionImage || '/static/images/dsai.jpeg',
                   code: 'AFT-FELLOWSHIP-DIPLOMA',
+                  issuer: certImages.completionIssuer || 'American FutureTech',
                 })}
                 className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
                 title="Click to inspect certificate in 4K"
@@ -1035,9 +1101,13 @@ export default function CourseDetailPage() {
                   alt="American FutureTech Certificate"
                   className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
                 />
-                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
+                {/* pointer-events-none: this overlay sits on top of the artwork with
+                    no pointer-events-none it swallowed the click, so the inline
+                    Website Editor never received it and the certificate image
+                    could not be replaced from Admin → Edit Website Content. */}
+                <div className="pointer-events-none absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
                   <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
-                    <ZoomIn className="w-4 h-4 text-[#0B1220]" /> Inspect in 4K
+                    <ZoomIn className="w-4 h-4 text-[#002060]" /> Inspect in 4K
                   </span>
                 </div>
               </div>
@@ -1053,13 +1123,13 @@ export default function CourseDetailPage() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span className="text-blue-700 font-bold flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-blue-600" />
                     Public Verification Registry
                   </span>
                   <Link
                     to="/certificate/AFT-CERT-AI9821"
-                    className="text-[#0B1220] font-semibold hover:underline flex items-center gap-1"
+                    className="text-[#002060] font-semibold hover:underline flex items-center gap-1"
                   >
                     Sample <ExternalLink className="w-3 h-3" />
                   </Link>
@@ -1067,8 +1137,9 @@ export default function CourseDetailPage() {
               </div>
             </div>
 
-            {/* Card 2: Microsoft Official Certification */}
-            <div className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
+            {/* Card 2: the partner certification track (Microsoft, or the course's
+                own AIGP / GRC credential when the artwork says so). */}
+            <div data-certificate-card className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
               <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="grid grid-cols-2 gap-[2px]">
@@ -1077,29 +1148,30 @@ export default function CourseDetailPage() {
                     <span className="w-1.5 h-1.5 bg-[#00a4ef]" />
                     <span className="w-1.5 h-1.5 bg-[#ffb900]" />
                   </div>
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
+                  <span data-certificate-issuer className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
                     Microsoft Official Exam
                   </span>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-300">{certImages.microsoftCode || alignedMsCert.code}</span>
+                <span data-certificate-code className="text-[11px] font-semibold text-slate-300">{certImages.microsoftCode || alignedMsCert.code}</span>
               </div>
 
               {/* Certificate Image Preview with zoom */}
               <div
-                onClick={() => setSelectedModalCert({
+                onClick={(event) => openCertificatePreview(event, {
                   title: certImages.microsoftTitle || alignedMsCert.title,
                   image: certImages.microsoftImage || alignedMsCert.image,
                   code: certImages.microsoftCode || alignedMsCert.code,
+                  issuer: certImages.microsoftIssuer || 'Microsoft',
                 })}
                 className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
-                title="Click to inspect Microsoft Certificate in 4K"
+                title="Click to inspect this certificate in 4K"
               >
                 <img
                   src={certImages.microsoftImage || alignedMsCert.image}
                   alt="Microsoft Certificate"
                   className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
                 />
-                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
+                <div className="pointer-events-none absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
                   <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
                     <ZoomIn className="w-4 h-4 text-blue-600" /> Inspect in 4K
                   </span>
@@ -1130,16 +1202,16 @@ export default function CourseDetailPage() {
 
         {/* 8. Register Now Bottom Cockpit (Matching user request: Register now ka niche option) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1220] via-[#0B1220] to-[#0d1c0e] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#4338CA]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002060] via-[#002060] to-[#001C57] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#1D4ED8]">
             {/* Ambient background orbs */}
-            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#E5C275]/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#4338CA]/25 blur-3xl" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#F00000]/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#1D4ED8]/25 blur-3xl" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center relative z-10">
               {/* Left Column: Register Now Details & Checklist */}
               <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 text-[#E5C275] text-xs font-bold uppercase tracking-wider mb-5">
-                  <span className="w-2 h-2 rounded-full bg-[#E5C275] animate-ping" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 text-[#FF6B6B] text-xs font-bold uppercase tracking-wider mb-5">
+                  <span className="w-2 h-2 rounded-full bg-[#F00000] animate-ping" />
                   Limited Seats Available for Next Cohort
                 </div>
 
@@ -1147,35 +1219,35 @@ export default function CourseDetailPage() {
                   Register Now
                 </h2>
 
-                <p className="text-base sm:text-lg text-emerald-100/90 leading-relaxed mb-8 max-w-xl">
+                <p className="text-base sm:text-lg text-blue-100/90 leading-relaxed mb-8 max-w-xl">
                   Secure your place in the upcoming cohort, learn from seasoned Silicon Valley mentors, and graduate with industry-recognized credentials.
                 </p>
 
                 {/* 3 Checklist Items */}
                 <div className="space-y-3.5 mb-8">
-                  <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#E5C275]" />
+                  <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
+                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#FF6B6B]" />
                     </span>
                     <span>Complete the course successfully with 1-on-1 mentor guidance</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#E5C275]" />
+                  <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
+                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#FF6B6B]" />
                     </span>
                     <span>Receive your accredited American FutureTech completion diploma</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-emerald-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#E5C275]/20 border border-[#E5C275]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#E5C275]" />
+                  <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
+                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[#FF6B6B]" />
                     </span>
                     <span>Eligible learners receive official Microsoft certification alignment</span>
                   </div>
                 </div>
 
                 {/* Post-Registration Guarantee Note */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-start gap-3 text-xs text-emerald-200/90 max-w-xl">
-                  <Mail className="w-4 h-4 text-[#E5C275] shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-start gap-3 text-xs text-blue-200/90 max-w-xl">
+                  <Mail className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-white">After registration:</strong> You will immediately receive a welcome orientation email, syllabus kit, and direct invite to the private cohort Slack & virtual lab.
                   </p>
@@ -1187,7 +1259,7 @@ export default function CourseDetailPage() {
                 <div className="rounded-3xl bg-white text-slate-800 p-5 sm:p-6 shadow-2xl border border-white/20">
                   <div className="text-center mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Career Program · Register Now</span>
-                    <div className="text-3xl font-display font-black text-[#0B1220] mt-1">
+                    <div className="text-3xl font-display font-black text-[#002060] mt-1">
                       ${course.pricing?.discountedPrice || 499}
                       <span className="text-sm font-bold text-slate-500"> / person</span>
                     </div>
@@ -1199,7 +1271,7 @@ export default function CourseDetailPage() {
                   <div className="space-y-3.5">
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
-                      className="w-full py-4 px-6 rounded-2xl bg-[#4338CA] hover:bg-[#3730A3] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 px-6 rounded-2xl bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     >
                       Reserve Seat — $99
                       <ArrowRight className="w-5 h-5" />
@@ -1207,7 +1279,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Reserve Seat — $499
                       <ArrowRight className="w-4 h-4" />
@@ -1215,14 +1287,14 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=full`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#0B1220] hover:bg-[#0B1220] hover:text-white text-[#0B1220] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#002060] hover:bg-[#002060] hover:text-white text-[#002060] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                     </Link>
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#4338CA] text-[#4338CA] hover:bg-[#4338CA] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
@@ -1231,13 +1303,13 @@ export default function CourseDetailPage() {
                       onClick={() => setIsLeadModalOpen(true)}
                       className="w-full py-3 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs text-center transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <PhoneCall className="w-4 h-4 text-[#4338CA]" />
+                      <PhoneCall className="w-4 h-4 text-[#1D4ED8]" />
                       Talk to an Admissions Advisor
                     </button>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    <Shield className="w-3.5 h-3.5 text-[#4338CA]" />
+                    <Shield className="w-3.5 h-3.5 text-[#1D4ED8]" />
                     <span>256-Bit SSL Encrypted & Money-Back Guaranteed</span>
                   </div>
                 </div>

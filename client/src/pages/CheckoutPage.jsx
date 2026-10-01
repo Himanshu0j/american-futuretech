@@ -52,7 +52,7 @@ const BILLING_COUNTRIES = [
 
 // Shared styling so every billing field matches the three contact fields above.
 const FIELD_CLASS =
-  'w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400';
+  'w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all placeholder:text-slate-400';
 const LABEL_CLASS = 'block text-xs font-semibold text-slate-700 mb-1.5';
 
 export default function CheckoutPage() {
@@ -67,9 +67,18 @@ export default function CheckoutPage() {
 
   // Personalized 1-on-1 track pricing (admin editable via Settings → Personalized)
   const personalizedPrice = settings?.personalizedLearning?.price || 5499;
-  const personalizedOriginal = settings?.personalizedLearning?.originalPrice || 6999;
-  const personalizedDuration = settings?.personalizedLearning?.duration || 'Custom / 3 to 6 Months';
   const depositPrice = settings?.depositPriceUSD || 99;
+
+  /**
+   * Wording for the three tuition-schedule blocks and the payment-method note.
+   *
+   * Every field is admin-editable (Settings → "Checkout & Tuition") and every
+   * description defaults to EMPTY, which is how the client's request — "remove
+   * the small text from these blocks, keep the rest" — is implemented: blank
+   * renders nothing, and typing a sentence in the admin brings one back without
+   * a code change.
+   */
+  const checkoutCopy = settings?.checkout || {};
   // Seat reservation offers the four amounts in RESERVE_OPTIONS. Settings picks
   // which deposit is selected by default; a link may ask for another with
   // ?deposit=99|499|2499|4499.
@@ -332,7 +341,7 @@ export default function CheckoutPage() {
   const finalAmount = quote?.amount ?? baseAmount;
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#E5C275] selection:text-[#0B1220] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
 
       <main className="pt-28 sm:pt-32 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
@@ -343,18 +352,18 @@ export default function CheckoutPage() {
           <div
             className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold mb-3 ${
               gatewayConfigured
-                ? 'bg-[#EFE6D6] border-[#E5C275]/40 text-[#0B1220]'
-                : 'bg-amber-50 border-amber-300 text-amber-900'
+                ? 'bg-[#FCE7E7] border-[#F00000]/40 text-[#002060]'
+                : 'bg-red-50 border-red-300 text-red-900'
             }`}
           >
-            <Lock className={`w-3.5 h-3.5 ${gatewayConfigured ? 'text-[#4338CA]' : 'text-amber-700'}`} />
+            <Lock className={`w-3.5 h-3.5 ${gatewayConfigured ? 'text-[#1D4ED8]' : 'text-red-700'}`} />
             <span>
               {gatewayConfigured
                 ? 'Payments secured by Stripe · PCI-DSS Level 1'
                 : 'Secure request · No card charged on this page'}
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-[#0B1220] mb-3">
+          <h1 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-[#002060] mb-3">
             Secure Enrollment & <span className="highlight">Seat Reservation</span>
           </h1>
           <p className="text-sm text-slate-600 leading-relaxed">
@@ -368,8 +377,8 @@ export default function CheckoutPage() {
         {/* ── Verifying (returned from Stripe before the webhook settled) ── */}
         {phase === 'verifying' && (
           <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl">
-            <Loader2 className="w-10 h-10 text-[#4338CA] animate-spin mx-auto mb-5" />
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#0B1220] mb-2">
+            <Loader2 className="w-10 h-10 text-[#1D4ED8] animate-spin mx-auto mb-5" />
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#002060] mb-2">
               Verifying your payment with Stripe…
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
@@ -382,21 +391,21 @@ export default function CheckoutPage() {
         {/* ── Payment confirmed ── */}
         {phase === 'paid' && receipt && (
           <div className="max-w-2xl mx-auto p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 text-center shadow-xl relative overflow-hidden">
-            <div className="w-12 h-12 rounded-full bg-[#EFE6D6] text-[#0B1220] flex items-center justify-center mx-auto mb-6 border border-[#E5C275]">
-              <CheckCircle2 className="w-9 h-9 text-[#4338CA]" />
+            <div className="w-12 h-12 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center mx-auto mb-6 border border-[#F00000]">
+              <CheckCircle2 className="w-9 h-9 text-[#1D4ED8]" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#0B1220] mb-2">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#002060] mb-2">
               {receipt.tier === 'deposit' ? 'Cohort Seat Reserved Successfully' : 'Tuition & Enrollment Confirmed'}
             </h2>
             <p className="text-slate-600 text-sm mb-6 leading-relaxed">
               Welcome, <strong className="text-slate-900">{receipt.studentName}</strong>. Your registration for{' '}
-              <strong className="text-[#4338CA]">{receipt.courseTitle}</strong> is active.
+              <strong className="text-[#1D4ED8]">{receipt.courseTitle}</strong> is active.
             </p>
 
             <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2.5 mb-6 text-xs font-mono">
               <div className="flex justify-between text-slate-600">
                 <span>Official Invoice:</span>
-                <span className="font-bold text-[#0B1220]">{receipt.invoiceNumber}</span>
+                <span className="font-bold text-[#002060]">{receipt.invoiceNumber}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Transaction Ref:</span>
@@ -404,13 +413,13 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Total Settled:</span>
-                <span className="font-bold text-[#4338CA]">${receipt.amount} {receipt.currency}</span>
+                <span className="font-bold text-[#1D4ED8]">${receipt.amount} {receipt.currency}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F5F7FF] border border-emerald-200 text-left mb-7">
+            <div className="p-4 rounded-2xl bg-[#F2F6FF] border border-blue-200 text-left mb-7">
               <div className="flex items-start gap-2.5">
-                <Mail className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
+                <Mail className="w-4 h-4 text-blue-700 mt-0.5 shrink-0" />
                 <p className="text-xs text-slate-700 leading-relaxed">
                   Your tax invoice and student portal login credentials have been emailed to{' '}
                   <strong className="text-slate-900">{receipt.email}</strong>. For your security the temporary
@@ -423,7 +432,7 @@ export default function CheckoutPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 to="/student/login"
-                className="py-3 px-6 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2"
+                className="py-3 px-6 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2"
               >
                 Access Student LMS Dashboard
                 <ArrowRight className="w-4 h-4" />
@@ -441,8 +450,8 @@ export default function CheckoutPage() {
         {/* ── Payment failed / still settling ── */}
         {phase === 'failed' && (
           <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl">
-            <XCircle className="w-10 h-10 text-rose-500 mx-auto mb-5" />
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#0B1220] mb-2">
+            <XCircle className="w-10 h-10 text-red-500 mx-auto mb-5" />
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#002060] mb-2">
               Payment not completed
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mb-6">{failureMessage}</p>
@@ -450,7 +459,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => { setPhase('form'); setReceipt(null); }}
-                className="py-3 px-6 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-sm transition-all"
+                className="py-3 px-6 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-sm transition-all"
               >
                 Try payment again
               </button>
@@ -468,8 +477,8 @@ export default function CheckoutPage() {
         {/* ── Cancelled at Stripe ── */}
         {phase === 'cancelled' && (
           <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl">
-            <AlertCircle className="w-10 h-10 text-amber-500 mx-auto mb-5" />
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#0B1220] mb-2">
+            <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-5" />
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#002060] mb-2">
               Checkout cancelled — nothing was charged
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mb-6">
@@ -478,7 +487,7 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={() => setPhase('form')}
-              className="py-3 px-6 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-sm transition-all"
+              className="py-3 px-6 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-sm transition-all"
             >
               Return to enrollment form
             </button>
@@ -488,15 +497,15 @@ export default function CheckoutPage() {
         {/* ── Manual enquiry (gateway not activated yet) ── */}
         {phase === 'manual' && manualInfo && (
           <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center shadow-xl">
-            <div className="w-12 h-12 rounded-full bg-[#EFE6D6] flex items-center justify-center mx-auto mb-5 border border-[#E5C275]">
-              <PhoneCall className="w-6 h-6 text-[#4338CA]" />
+            <div className="w-12 h-12 rounded-full bg-[#FCE7E7] flex items-center justify-center mx-auto mb-5 border border-[#F00000]">
+              <PhoneCall className="w-6 h-6 text-[#1D4ED8]" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#0B1220] mb-2">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-[#002060] mb-2">
               Request received — no card was charged
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed mb-4">
               Thanks, <strong className="text-slate-900">{manualInfo.name}</strong>. Our admissions team will email a
-              secure payment link for <strong className="text-[#4338CA]">{manualInfo.courseTitle}</strong> (${manualInfo.amount}{' '}
+              secure payment link for <strong className="text-[#1D4ED8]">{manualInfo.courseTitle}</strong> (${manualInfo.amount}{' '}
               USD) to <strong className="text-slate-900">{manualInfo.email}</strong> within 24 hours.
             </p>
             <p className="text-xs text-slate-500 mb-6">
@@ -505,7 +514,7 @@ export default function CheckoutPage() {
             </p>
             <Link
               to="/courses"
-              className="inline-flex py-3 px-6 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-sm transition-all"
+              className="inline-flex py-3 px-6 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-sm transition-all"
             >
               Explore other programs
             </Link>
@@ -520,10 +529,10 @@ export default function CheckoutPage() {
               {/* 1. Program Selection */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <span className="w-7 h-7 rounded-lg bg-[#EFE6D6] text-[#0B1220] text-xs font-display font-bold flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#FCE7E7] text-[#002060] text-xs font-display font-bold flex items-center justify-center">
                     01
                   </span>
-                  <h3 className="text-sm font-display font-bold text-[#0B1220] uppercase tracking-wider">
+                  <h3 className="text-sm font-display font-bold text-[#002060] uppercase tracking-wider">
                     Select Tech Specialization
                   </h3>
                 </div>
@@ -531,7 +540,7 @@ export default function CheckoutPage() {
                   aria-label="Select tech specialization"
                   value={selectedCourseId}
                   onChange={(e) => { setSelectedCourseId(e.target.value); resetCoupon(); }}
-                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all cursor-pointer"
+                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all cursor-pointer"
                 >
                   {courses.map((c) => (
                     <option key={c._id} value={c._id}>
@@ -544,11 +553,11 @@ export default function CheckoutPage() {
               {/* 2. Enrollment Tier Selection */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <span className="w-7 h-7 rounded-lg bg-[#EFE6D6] text-[#0B1220] text-xs font-display font-bold flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#FCE7E7] text-[#002060] text-xs font-display font-bold flex items-center justify-center">
                     02
                   </span>
-                  <h3 className="text-sm font-display font-bold text-[#0B1220] uppercase tracking-wider">
-                    Choose Tuition Schedule
+                  <h3 className="text-sm font-display font-bold text-[#002060] uppercase tracking-wider">
+                    {checkoutCopy.scheduleHeading || 'Choose Tuition Schedule'}
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -557,19 +566,19 @@ export default function CheckoutPage() {
                     onClick={() => { setTier('deposit'); resetCoupon(); }}
                     className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
                       tier === 'deposit'
-                        ? 'bg-[#F5F7FF] border-[#0B1220] shadow-xs'
+                        ? 'bg-[#F2F6FF] border-[#002060] shadow-xs'
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold text-[#0B1220] uppercase tracking-wider">Seat Reservation</span>
-                      <span className="text-2xl font-display font-black text-[#0B1220]">${depositAmount}</span>
+                      <span className="text-xs font-bold text-[#002060] uppercase tracking-wider">{checkoutCopy.seatTitle || 'Seat Reservation'}</span>
+                      <span className="text-2xl font-display font-black text-[#002060]">${depositAmount}</span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                      Lock your seat in the next live cohort now, or settle the Career Program tuition
-                      (${RESERVE_OPTIONS[2]}) / Personalized 1-on-1 track (${RESERVE_OPTIONS[3]}) in full. Remainder is
-                      settled before live sessions commence.
-                    </p>
+                    {checkoutCopy.seatDescription && (
+                      <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                        {checkoutCopy.seatDescription}
+                      </p>
+                    )}
                     {/* All four amounts — tap to switch */}
                     <div className="flex flex-wrap items-center gap-2">
                       {RESERVE_OPTIONS.map((option) => (
@@ -585,7 +594,7 @@ export default function CheckoutPage() {
                           aria-pressed={tier === 'deposit' && depositAmount === option}
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
                             tier === 'deposit' && depositAmount === option
-                              ? 'bg-[#0B1220] text-white border-[#0B1220]'
+                              ? 'bg-[#002060] text-white border-[#002060]'
                               : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
                           }`}
                         >
@@ -600,21 +609,23 @@ export default function CheckoutPage() {
                     onClick={() => { setTier('full'); resetCoupon(); }}
                     className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
                       tier === 'full'
-                        ? 'bg-[#F5F7FF] border-[#0B1220] shadow-xs'
+                        ? 'bg-[#F2F6FF] border-[#002060] shadow-xs'
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold text-[#4338CA] uppercase tracking-wider">
-                        Register Now — Career Program
+                      <span className="text-xs font-bold text-[#1D4ED8] uppercase tracking-wider">
+                        {checkoutCopy.careerTitle || 'Register Now — Career Program'}
                       </span>
-                      <span className="text-2xl font-display font-black text-[#0B1220]">
+                      <span className="text-2xl font-display font-black text-[#002060]">
                         ${selectedCourse?.pricing?.discountedPrice || 499}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Group batch, per person. Complete payment unlocks instant access to labs, the course repository and your cohort advisor.
-                    </p>
+                    {checkoutCopy.careerDescription && (
+                      <p className="text-xs text-slate-600 leading-relaxed">
+                        {checkoutCopy.careerDescription}
+                      </p>
+                    )}
                   </div>
 
                   {/* Personalized 1-on-1 Option */}
@@ -622,25 +633,29 @@ export default function CheckoutPage() {
                     onClick={() => { setTier('personalized'); resetCoupon(); }}
                     className={`p-5 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden ${
                       tier === 'personalized'
-                        ? 'bg-[#fffdf7] border-amber-500 shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-amber-300'
+                        ? 'bg-[#fffdf7] border-red-500 shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-red-300'
                     }`}
                   >
-                    <span className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
+                    <span className="absolute top-0 right-0 bg-gradient-to-l from-red-500 to-red-500 text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
                       Independent
                     </span>
                     <div className="flex justify-between items-start mb-2 pr-14">
-                      <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">Personalized 1-on-1</span>
-                      <span className="text-2xl font-display font-black text-[#0B1220]">
+                      <span className="text-xs font-bold text-red-700 uppercase tracking-wider">{checkoutCopy.personalizedTitle || 'Personalized 1-on-1'}</span>
+                      <span className="text-2xl font-display font-black text-[#002060]">
                         ${personalizedPrice.toLocaleString()}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed mb-2">
-                      Weekly private mentorship, personalized interview preparation, and salary negotiation coaching.
-                    </p>
-                    <div className="text-[10px] font-mono text-slate-500">
-                      Duration: {personalizedDuration} • <span className="line-through">${personalizedOriginal.toLocaleString()}</span> list price
-                    </div>
+                    {checkoutCopy.personalizedDescription && (
+                      <p className="text-xs text-slate-600 leading-relaxed mb-2">
+                        {checkoutCopy.personalizedDescription}
+                      </p>
+                    )}
+                    {checkoutCopy.personalizedMeta && (
+                      <div className="text-[10px] font-mono text-slate-500">
+                        {checkoutCopy.personalizedMeta}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -648,10 +663,10 @@ export default function CheckoutPage() {
               {/* 3. Personal Contact Information */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
                 <div className="flex items-center gap-2.5 mb-1">
-                  <span className="w-7 h-7 rounded-lg bg-[#EFE6D6] text-[#0B1220] text-xs font-display font-bold flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#FCE7E7] text-[#002060] text-xs font-display font-bold flex items-center justify-center">
                     03
                   </span>
-                  <h3 className="text-sm font-display font-bold text-[#0B1220] uppercase tracking-wider">
+                  <h3 className="text-sm font-display font-bold text-[#002060] uppercase tracking-wider">
                     Student Details
                   </h3>
                 </div>
@@ -664,7 +679,7 @@ export default function CheckoutPage() {
                       placeholder="e.g. Alex Morgan"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400"
+                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all placeholder:text-slate-400"
                     />
                   </div>
                   <div>
@@ -675,7 +690,7 @@ export default function CheckoutPage() {
                       placeholder="alex.morgan@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400"
+                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -687,7 +702,7 @@ export default function CheckoutPage() {
                     placeholder="+1 (555) 019-2834"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#0B1220] focus:ring-1 focus:ring-[#0B1220] transition-all placeholder:text-slate-400"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all placeholder:text-slate-400"
                   />
                 </div>
 
@@ -696,7 +711,7 @@ export default function CheckoutPage() {
                     order: name → company → country → street → town → state/zip
                     → phone/email → order notes. */}
                 <div className="pt-5 mt-2 border-t border-slate-200">
-                  <h4 className="text-sm font-display font-bold text-[#0B1220]">Billing details</h4>
+                  <h4 className="text-sm font-display font-bold text-[#002060]">Billing details</h4>
                   <p className="text-[11px] text-slate-500 mt-1 mb-4">Fields marked with * are required.</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -854,7 +869,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="pt-5 mt-5 border-t border-slate-200">
-                    <h4 className="text-sm font-display font-bold text-[#0B1220] mb-1">Additional information</h4>
+                    <h4 className="text-sm font-display font-bold text-[#002060] mb-1">Additional information</h4>
                     <label htmlFor="order-notes" className={LABEL_CLASS}>Order notes (optional)</label>
                     <textarea
                       id="order-notes"
@@ -871,31 +886,39 @@ export default function CheckoutPage() {
               {/* 4. Payment Method — hosted Stripe checkout */}
               <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-[#EFE6D6] text-[#0B1220] text-xs font-display font-bold flex items-center justify-center">
+                  <span className="w-7 h-7 rounded-lg bg-[#FCE7E7] text-[#002060] text-xs font-display font-bold flex items-center justify-center">
                     04
                   </span>
-                  <h3 className="text-sm font-display font-bold text-[#0B1220] uppercase tracking-wider">
+                  <h3 className="text-sm font-display font-bold text-[#002060] uppercase tracking-wider">
                     Payment Method
                   </h3>
                 </div>
-                <div className="flex items-start gap-3 p-4 rounded-xl border-2 border-[#0B1220] bg-slate-50">
-                  <CreditCard className="w-5 h-5 text-[#4338CA] mt-0.5 shrink-0" />
-                  <div>
-                    <div className="text-sm font-bold text-[#0B1220]">
-                      {gatewayConfigured ? 'Card · Apple Pay · Google Pay' : 'Secure Stripe payment link'}
+                {/* The "Secure Stripe payment link" tile was crossed out by the
+                    client. It is now behind the Settings → Checkout & Tuition
+                    switch (off by default) so it can come back the moment they
+                    want card copy on the page again. */}
+                {checkoutCopy.showPaymentMethodNote && (
+                  <div className="flex items-start gap-3 p-4 rounded-xl border-2 border-[#002060] bg-slate-50">
+                    <CreditCard className="w-5 h-5 text-[#1D4ED8] mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-sm font-bold text-[#002060]">
+                        {checkoutCopy.paymentMethodTitle
+                          || (gatewayConfigured ? 'Card · Apple Pay · Google Pay' : 'Secure Stripe payment link')}
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed mt-1">
+                        {checkoutCopy.paymentMethodBody
+                          || (gatewayConfigured
+                            ? "You will be redirected to Stripe's secure hosted page to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech."
+                            : 'We email you an encrypted Stripe payment link to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech.')}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed mt-1">
-                      {gatewayConfigured
-                        ? "You will be redirected to Stripe's secure hosted page to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech."
-                        : 'We email you an encrypted Stripe payment link to complete the payment. Your card details are entered on Stripe and are never seen or stored by American FutureTech.'}
-                    </p>
                   </div>
-                </div>
+                )}
                 {/* The amber "card payments are being activated" box was removed
                     on the client's request (they crossed it out) and replaced
                     with this confirmation note. */}
                 <div className="pt-3 border-t border-slate-200">
-                  <h4 className="text-sm font-display font-bold text-[#0B1220] mb-1.5">
+                  <h4 className="text-sm font-display font-bold text-[#002060] mb-1.5">
                     Secure Payment &amp; Confirmation
                   </h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
@@ -908,20 +931,20 @@ export default function CheckoutPage() {
 
             {/* Right Column: Order Summary */}
             <div className="lg:col-span-5 lg:sticky lg:top-28 text-left">
-              <div className="p-6 sm:p-5 rounded-2xl bg-white border-2 border-[#0B1220]/15 shadow-xl space-y-4">
+              <div className="p-6 sm:p-5 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl space-y-4">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-                  <h3 className="text-base font-display font-bold text-[#0B1220]">Summary of Enrollment</h3>
-                  <span className="text-[11px] font-bold text-[#0B1220] bg-[#EFE6D6] px-2.5 py-0.5 rounded-full">
+                  <h3 className="text-base font-display font-bold text-[#002060]">Summary of Enrollment</h3>
+                  <span className="text-[11px] font-bold text-[#002060] bg-[#FCE7E7] px-2.5 py-0.5 rounded-full">
                     Live Cohort
                   </span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="text-sm font-bold text-[#0B1220]">{quote?.courseTitle || selectedCourse?.title}</div>
+                  <div className="text-sm font-bold text-[#002060]">{quote?.courseTitle || selectedCourse?.title}</div>
                   <div className="text-xs text-slate-500 flex items-center gap-2">
                     <span>{quote?.courseDuration || selectedCourse?.duration || '6 Months'}</span>
                     <span>•</span>
-                    <span className="capitalize font-semibold text-[#4338CA]">{tier} Track</span>
+                    <span className="capitalize font-semibold text-[#1D4ED8]">{tier} Track</span>
                   </div>
                 </div>
 
@@ -934,25 +957,25 @@ export default function CheckoutPage() {
                       placeholder="e.g. FUTURETECH10"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="flex-1 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs uppercase focus:outline-none focus:border-[#0B1220] font-mono placeholder:text-slate-400"
+                      className="flex-1 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs uppercase focus:outline-none focus:border-[#002060] font-mono placeholder:text-slate-400"
                     />
                     <button
                       type="button"
                       onClick={handleApplyCoupon}
                       disabled={quoteLoading}
-                      className="px-5 py-2.5 rounded-full border border-[#0B1220] hover:bg-slate-100 text-[#0B1220] text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+                      className="px-5 py-2.5 rounded-full border border-[#002060] hover:bg-slate-100 text-[#002060] text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
                     >
                       Apply
                     </button>
                   </div>
                   {appliedCoupon && (
-                    <div className="text-xs text-[#4338CA] font-semibold mt-2 flex items-center gap-1.5">
+                    <div className="text-xs text-[#1D4ED8] font-semibold mt-2 flex items-center gap-1.5">
                       <Tag className="w-3.5 h-3.5" />
                       Promo '{appliedCoupon}' applied (-${discountAmount} USD)
                     </div>
                   )}
                   {couponError && (
-                    <div className="text-xs text-rose-600 mt-2 flex items-center gap-1.5">
+                    <div className="text-xs text-red-600 mt-2 flex items-center gap-1.5">
                       <AlertCircle className="w-3.5 h-3.5" />
                       {couponError}
                     </div>
@@ -966,14 +989,14 @@ export default function CheckoutPage() {
                     <span className="font-semibold text-slate-900">${baseAmount} USD</span>
                   </div>
                   {discountAmount > 0 && (
-                    <div className="flex justify-between text-[#4338CA] font-semibold">
+                    <div className="flex justify-between text-[#1D4ED8] font-semibold">
                       <span>Voucher Discount</span>
                       <span>-${discountAmount} USD</span>
                     </div>
                   )}
                   <div className="flex justify-between items-baseline text-sm font-bold text-slate-900 pt-3 border-t border-slate-200">
                     <span>Total Due Now</span>
-                    <span className="text-3xl font-display font-black text-[#0B1220]">
+                    <span className="text-3xl font-display font-black text-[#002060]">
                       ${finalAmount} <span className="text-xs font-sans text-slate-500 font-normal">USD</span>
                     </span>
                   </div>
@@ -988,7 +1011,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting || quoteLoading}
-                  className="w-full py-3.5 px-4 rounded-full bg-[#0B1220] hover:bg-[#4338CA] text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 px-4 rounded-full bg-[#002060] hover:bg-[#1D4ED8] text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
@@ -1005,7 +1028,7 @@ export default function CheckoutPage() {
 
                 <div className="pt-2 space-y-2 text-[11px] text-slate-500 leading-relaxed">
                   <div className="flex items-start gap-2">
-                    <Shield className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <Shield className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
                     <span>
                       {gatewayConfigured
                         ? 'Payment is processed by Stripe with 256-bit TLS and 3-D Secure. Your enrollment is confirmed automatically once the payment is verified.'
@@ -1013,7 +1036,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Award className="w-4 h-4 text-[#4338CA] shrink-0 mt-0.5" />
+                    <Award className="w-4 h-4 text-[#1D4ED8] shrink-0 mt-0.5" />
                     <span>Backed by 14-day 100% money-back academic guarantee. No questions asked.</span>
                   </div>
                 </div>

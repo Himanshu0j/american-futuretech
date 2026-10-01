@@ -15,6 +15,10 @@ const { spawn } = require('child_process');
 module.paths.push(path.join(__dirname, '..', 'server', 'node_modules'));
 const mongoose = require('mongoose');
 
+// The editor's ceilings, straight from the controller, so this suite tracks the
+// shipped numbers instead of a copy that drifts out of date.
+const { EDITOR_LIMITS } = require(path.join(__dirname, '..', 'server', 'controllers', 'settingsController'));
+
 const SERVER_DIR = path.join(__dirname, '..', 'server');
 const PORT = 5196;
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -153,7 +157,10 @@ const run = async () => {
 
     const longText = await request('PUT', '/api/settings/site-editor', {
       token,
-      body: { route: ROUTE, text: { 'main0>h9#t0': { original: '', value: 'x'.repeat(900) } } },
+      body: {
+        route: ROUTE,
+        text: { 'main0>h9#t0': { original: '', value: 'x'.repeat(EDITOR_LIMITS.textLength + 50) } },
+      },
     });
     check('An over-long text value is rejected',
       longText.status === 200 && (longText.json?.rejected || []).includes('text.main0>h9#t0'),
@@ -173,23 +180,28 @@ const run = async () => {
     /*
      * Regression — a refusal must name the entry AND say why.
      *
-     * The editor used to report only "N were rejected". A key over the 90-char
-     * limit was therefore dropped with no way to tell which element on the page
-     * was the problem, which is exactly the kind of silent loss that makes an
-     * admin think the editor is broken.
+     * The editor used to report only "N were rejected". A key over the
+     * key-length ceiling was therefore dropped with no way to tell which element
+     * on the page was the problem, which is exactly the kind of silent loss that
+     * makes an admin think the editor is broken.
+     *
+     * The ceiling comes from the controller, not from a number typed here: the
+     * test used to hard-code 90 characters, so raising the limit (the client's
+     * "my edits don't save" report) turned a healthy server red.
      */
     const TIDY_ROUTE = '/faq';
-    const LONG_KEY = `div0>${'a'.repeat(95)}>span1#t0`;
+    const LONG_KEY = `div0>${'a'.repeat(EDITOR_LIMITS.keyLength + 5)}>span1#t0`;
     const longKeyRes = await request('PUT', '/api/settings/site-editor', {
       token,
       body: { route: TIDY_ROUTE, text: { [LONG_KEY]: { original: 'Old heading', value: 'New heading' } } },
     });
-    check('A key past the 90-character limit is rejected by name',
+    check(`A key past the ${EDITOR_LIMITS.keyLength}-character limit is rejected by name`,
       longKeyRes.status === 200 && (longKeyRes.json?.rejected || []).includes(`text.${LONG_KEY}`),
       `${LONG_KEY.length} chars, rejected ${JSON.stringify(longKeyRes.json?.rejected)}`);
     const longKeyReason = (longKeyRes.json?.rejections || []).find((r) => r.key === LONG_KEY);
     check('The rejection explains that the key is too long',
-      longKeyReason?.kind === 'text' && /90/.test(longKeyReason?.reason || ''),
+      longKeyReason?.kind === 'text'
+        && (longKeyReason?.reason || '').includes(`over the ${EDITOR_LIMITS.keyLength}-character limit`),
       JSON.stringify(longKeyReason));
 
     const GOOD_KEY = 'main0>section1>h2#t0';

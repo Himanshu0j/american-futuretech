@@ -58,6 +58,25 @@ const FooterSchema = new mongoose.Schema({
   enabled: { type: Boolean, default: true },
   logo: { type: String, default: '/images/logo-horizontal-white.webp' },
   logoWidth: { type: Number, default: 160 },
+  // The white "oval" plate the client asked for behind the footer wordmark:
+  // the artwork itself stays untouched, it just sits on a rounded white pill so
+  // the crest reads on the dark navy footer.
+  logoPlate: { type: Boolean, default: true },
+  // Footer shows BOTH addresses (admissions + support) — the client asked for a
+  // second email slot, and the privacy policy already publishes both.
+  contactEmails: {
+    type: [String],
+    default: [
+      'info@americantechgloballlc.com',
+      'support@americantechgloballlc.com',
+    ],
+  },
+  // Live "Wyoming current time" clock in the footer contact row.
+  localTime: {
+    enabled: { type: Boolean, default: true },
+    timeZone: { type: String, default: 'America/Denver' },
+    label: { type: String, default: 'Sheridan, Wyoming — Local Time' },
+  },
   description: {
     type: String,
     default:
@@ -196,6 +215,109 @@ const CareerSupportSchema = new mongoose.Schema({
   },
 }, { _id: false });
 
+// ── Credential / success-story showcase (home page "03 — Verifiable US
+// Credentials" card) ───────────────────────────────────────────────────────
+// The client asked for two things on this card: an admin surface to change the
+// certificate, and — for the live site — a graduate success story in its place.
+// `mode` decides which face renders; BOTH faces stay editable so nothing the
+// team wrote is lost when they flip the switch.
+const CredentialCertificateSchema = new mongoose.Schema({
+  badge: { type: String, default: 'VERIFIED AUTHENTIC' },
+  institute: { type: String, default: 'The American Institute of Applied Emerging Technology' },
+  certifyLine: { type: String, default: 'This certifies that' },
+  holderName: { type: String, default: 'Ethan Hunt' },
+  programLine: { type: String, default: 'has successfully completed the 6-Month Intensive Fellowship in' },
+  program: { type: String, default: 'Data Science with AI Integration' },
+  credentialIdLabel: { type: String, default: 'CREDENTIAL ID' },
+  credentialId: { type: String, default: 'AFT-CERT-AI9821' },
+  statusLabel: { type: String, default: 'STATUS' },
+  status: { type: String, default: 'Graduated with Honors' },
+  // Upload a real scan/PDF render here and the card shows it instead of the
+  // built-in diploma mock.
+  image: { type: String, default: '' },
+}, { _id: false });
+
+const SuccessStorySchema = new mongoose.Schema({
+  badge: { type: String, default: 'GRADUATE SUCCESS STORY' },
+  name: { type: String, default: 'Ananya Sharma' },
+  role: { type: String, default: 'Machine Learning Engineer' },
+  company: { type: String, default: 'Fortune 500 Technology Partner' },
+  program: { type: String, default: 'Data Science with AI Integration' },
+  outcome: { type: String, default: 'Offer secured before graduation' },
+  quote: {
+    type: String,
+    default:
+      'The live labs and 1-on-1 defense panels are what got me through the interview loop. My mentor reviewed every line of my capstone before I walked into the hiring panel.',
+  },
+  credentialId: { type: String, default: 'AFT-CERT-AI9821' },
+  status: { type: String, default: 'Graduated with Honors' },
+  photo: { type: String, default: '' },
+}, { _id: false });
+
+const CredentialShowcaseSchema = new mongoose.Schema({
+  eyebrow: { type: String, default: '03 — Verifiable US Credentials' },
+  heading: { type: String, default: 'Demonstrate your achievements with cryptographically verified credentials' },
+  description: {
+    type: String,
+    default:
+      'Every certificate issued by American FutureTech includes an immutable verification ID registered in our public ledger. Prospective employers can inspect your syllabus completion, capstone defense, and academic honors in one click.',
+  },
+  ctaLabel: { type: String, default: 'Inspect Verified Certificate' },
+  ctaUrl: { type: String, default: '/certificate/AFT-CERT-AI9821' },
+  sealImage: { type: String, default: '/images/gold-seal-medal.webp' },
+  // 'success' = graduate success story card (the client's choice for the live
+  // site), 'certificate' = the diploma mock / uploaded certificate artwork.
+  mode: { type: String, enum: ['success', 'certificate'], default: 'success' },
+  certificate: { type: CredentialCertificateSchema, default: () => ({}) },
+  successStory: { type: SuccessStorySchema, default: () => ({}) },
+}, { _id: false });
+
+// ── Legal / policy pages CMS ────────────────────────────────────────────────
+// Privacy, Refund, Cookie and Terms pages are whole-page editable from
+// Admin → Settings → Legal & Policies. Each section holds a heading, optional
+// paragraph and a list of pointers (bullets), so the team can keep the same
+// design while changing every word.
+const PolicySectionSchema = new mongoose.Schema({
+  heading: { type: String, default: '' },
+  body: { type: String, default: '' },
+  bullets: { type: [String], default: [] },
+  // Renders the highlighted contact card (address/emails/phone) taken from
+  // General & Identity instead of a plain paragraph.
+  contactBlock: { type: Boolean, default: false },
+}, { _id: false });
+
+const PolicySchema = new mongoose.Schema({
+  badge: { type: String, default: '' },
+  title: { type: String, default: '' },
+  lastUpdated: { type: String, default: '' },
+  intro: { type: String, default: '' },
+  sections: { type: [PolicySectionSchema], default: [] },
+}, { _id: false });
+
+// ── Checkout / tuition-schedule copy CMS ────────────────────────────────────
+// Admin → Settings → "Checkout & Tuition".
+//
+// The three tuition-schedule blocks on /checkout used to carry hard-coded
+// explanatory sentences. The client crossed them out and asked for the block
+// wording to be theirs, so every field here defaults to EMPTY: an empty string
+// renders nothing at all, and typing a sentence in the admin brings it back.
+// That keeps "remove this small text" and "let me edit it" the same control.
+const CheckoutCopySchema = new mongoose.Schema({
+  scheduleHeading: { type: String, default: '' },
+  seatTitle: { type: String, default: '' },
+  seatDescription: { type: String, default: '' },
+  careerTitle: { type: String, default: '' },
+  careerDescription: { type: String, default: '' },
+  personalizedTitle: { type: String, default: '' },
+  personalizedDescription: { type: String, default: '' },
+  personalizedMeta: { type: String, default: '' },
+  // The "Secure Stripe payment link" tile was removed on the client's request;
+  // the switch keeps it in the codebase but off the page until asked for.
+  showPaymentMethodNote: { type: Boolean, default: false },
+  paymentMethodTitle: { type: String, default: '' },
+  paymentMethodBody: { type: String, default: '' },
+}, { _id: false });
+
 const SiteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
@@ -276,6 +398,12 @@ const SiteSettingsSchema = new mongoose.Schema({
   isMaintenanceMode: {
     type: Boolean,
     default: false,
+  },
+
+  // 🌟 CHECKOUT COPY — Admin → Settings → "Checkout & Tuition".
+  checkout: {
+    type: CheckoutCopySchema,
+    default: () => ({}),
   },
 
   // 🌟 PAYMENT GATEWAY (Stripe) — configured from Admin → Payment Gateway.
@@ -443,6 +571,17 @@ const SiteSettingsSchema = new mongoose.Schema({
     },
     ctaText: { type: String, default: 'Reserve Capstone Seat — $99' },
     ctaLink: { type: String, default: '/checkout' },
+    // The "Capstone Engineering Benchmark" banner inside the tools section.
+    // Editable from Admin → Settings → Capstone & Tools ("Benchmark Banner").
+    benchmark: {
+      badge: { type: String, default: 'Capstone Engineering Benchmark' },
+      title: { type: String, default: 'What You Build & Defend in Capstone Defense' },
+      description: {
+        type: String,
+        default:
+          'Our capstone defenses are conducted live before invited engineering directors. You graduate with immutable digital verification backing your defense.',
+      },
+    },
   },
 
   // 🌟 PLACEMENT ROADMAP CMS
@@ -606,6 +745,20 @@ const SiteSettingsSchema = new mongoose.Schema({
     reserveSeatUrl: { type: String, default: '/checkout' },
     reserveSeatPrice: { type: Number, default: 99 },
     urgencyBannerText: { type: String, default: '' },
+  },
+
+  // 🌟 CREDENTIAL / SUCCESS-STORY SHOWCASE CMS
+  credentialShowcase: {
+    type: CredentialShowcaseSchema,
+    default: () => ({}),
+  },
+
+  // 🌟 LEGAL & POLICY PAGES CMS (privacy / refund / cookies / terms)
+  policies: {
+    privacy: { type: PolicySchema, default: () => ({}) },
+    refund: { type: PolicySchema, default: () => ({}) },
+    cookies: { type: PolicySchema, default: () => ({}) },
+    terms: { type: PolicySchema, default: () => ({}) },
   },
 
   // 🌟 BRAND & COMPANY LOGOS CMS

@@ -151,23 +151,31 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 inside the column's stacking context.
                 ============================================================ */}
             <div
-              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[100vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[118vw] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
               aria-hidden="true"
             >
-              {/* Fully transparent over the faces and caps (the top ~30%), then
-                  a fast ramp: ~35% white at the badge's shoulder and ~85% by the
-                  headline, so the copy is never asked to fight the gowns. The
-                  band is white from 76% down, which is where the section's own
-                  wash takes over, so the two meet without a seam. */}
-              {/* The stops are arbitrary values on purpose: Tailwind's named
-                  stop scale only ships multiples of 5 (30%, 35%, 40%...), so a
-                  `to-76%` class compiles to nothing at all. */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent from-[30%] via-white/35 via-[52%] to-white to-[76%]" />
+              {/* The band is deliberately taller than it is wide, and taller than
+                  the copy's own block, so the photograph is still there under the
+                  badge and the first lines of the headline instead of ending in a
+                  white strip above them. Square crop + `bg-cover` means the extra
+                  height scales the frame up and clips a sliver off each side;
+                  ~9% a side at this ratio keeps every face intact.
+
+                  The veil stays clear over the caps and faces, holds the middle
+                  of the frame visible (~46% white where the badge and the first
+                  headline lines sit) so the copy is read against the photograph,
+                  and only reaches full white at the band's very bottom, where the
+                  section's own wash takes over and the seam disappears. */}
+              {/* Written as one arbitrary gradient on purpose: the tuned curve
+                  needs five stops, and Tailwind's `from`/`via`/`to` utilities
+                  carry only three. The named stop scale is also a trap here — it
+                  ships multiples of 5 only, so `to-76%` compiles to nothing. */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.20)_45%,rgba(255,255,255,0.46)_62%,rgba(255,255,255,0.70)_84%,#ffffff_100%)]" />
             </div>
 
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">
-              <div className="section-eyebrow shadow-xs">
+              <div className="section-eyebrow section-eyebrow-on-photo shadow-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 pulse-mint-dot" />
                 <span>
                   {heroData.eyebrowBadgeText || heroData.eyebrow || 'AMERICAN FUTURETECH · 6-MONTH CAREER TRAINING & FELLOWSHIPS'}

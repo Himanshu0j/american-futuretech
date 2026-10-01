@@ -666,6 +666,21 @@
   border-radius: 999px;
 }
 
+/* The phone hero lays its copy across the graduation photograph (see the phone
+   band in components/Hero.jsx), so the translucent pill above has no white page
+   behind it any more: at the badge's row the gowns sit under a mid-strength veil
+   and the blue label measured ~1.2:1 against them. Phones therefore give the
+   chip its own surface. Wider screens keep the pill — there the copy sits on the
+   white scrim, and `max-width: 639px` matches Tailwind's `sm` boundary. The chip
+   is near-opaque because 11px blue on white is only 5.2:1 to begin with, so
+   anything more see-through drops the label under 4.5:1. */
+@media (max-width: 639px) {
+  .section-eyebrow-on-photo {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(29, 78, 216, 0.3);
+  }
+}
+
 .section-eyebrow-dark {
   color: var(--brand-red-500);
   background: rgba(240, 0, 0, 0.1);

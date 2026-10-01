@@ -88,7 +88,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     { name: 'LIVE JOBS', path: '/jobs' },
     { name: 'CAREER PROGRAMS', path: '/courses', hasDropdown: true },
 
-    { name: 'CERTIFICATIONS', path: '/certificate/AFT-CERT-AI9821' },
+    // Client request: the CERTIFICATIONS slot in the top bar is now Success
+    // Stories. Credential verification still has its own home — the top strip's
+    // "Verify Credential" link and /certificate/:id — so nothing is lost.
+    { name: 'SUCCESS STORIES', path: '/success-stories' },
     { name: 'ABOUT US', path: '/about' },
   ];
 
@@ -99,7 +102,6 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     { name: 'Refund & Return Policy', path: '/refund-policy' },
     { name: 'Cookie Policy', path: '/cookie-policy' },
     { name: 'Terms & Conditions', path: '/terms' },
-    { name: 'Success Stories', path: '/success-stories' },
     { name: 'Insights & Blog', path: '/blog' },
     { name: 'Admissions FAQ', path: '/faq' },
   ];
@@ -221,7 +223,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             />
           </Link>
 
-          {/* Desktop Navigation Links: HOME, LIVE JOBS, CAREER PROGRAMS ▼, PERSONALIZED LEARNING, CERTIFICATIONS, ABOUT US, MORE ▼ */}
+          {/* Desktop Navigation Links: HOME, LIVE JOBS, CAREER PROGRAMS ▼, SUCCESS STORIES, ABOUT US, MORE ▼ */}
           <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 min-w-0">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path || (link.path === '/jobs' && location.pathname === '/careers');

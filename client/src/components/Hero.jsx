@@ -24,7 +24,11 @@ import { motion } from 'framer-motion';
 import { Lottie } from 'lottie-react';
 import heroOnlineLearningSvg from '../assets/illustrations/hero/hero-online-learning.svg';
 import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json';
-import heroDeskImg from '../assets/hero-desk.png';
+// Remote working professionals on the job — served from /public so the photo is
+// not bundled into the JS chunk, and cropped to this card's own aspect ratio (see
+// scratch/build-hero-image.py) so `object-cover` never eats the subject.
+const HERO_WORKSPACE_IMG = '/images/hero-innovator.jpg';
+const HERO_WORKSPACE_IMG_TALL = '/images/hero-innovator-tall.jpg';
 
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
@@ -343,14 +347,33 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 {/* VIEW 0: FLAGSHIP WORKSPACE & STUDIO */}
                 {activeTab === 'workspace' && (
                   <div className="space-y-4 animate-in fade-in duration-200 text-left">
-                    <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-md group bg-slate-950">
-                      <img
-                        src={heroDeskImg}
-                        alt="American FutureTech Flagship Tech Workspace"
-                        className="w-full h-56 sm:h-60 object-cover object-center group-hover:scale-102 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex flex-col justify-end p-4">
-                        <div className="flex items-center gap-2 mb-1">
+                    {/* This photo is the first thing a visitor looks at, so it is
+                        deliberately the largest element in the cockpit: a tall,
+                        full-bleed frame instead of the old 240px strip. */}
+                    <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-xl group bg-slate-950">
+                      {/* Below `lg` the frame is taller than it is wide, so the
+                          portrait crop is used; from `lg` the card is wider and
+                          the 1.16:1 crop fits without cropping the subject. */}
+                      <picture>
+                        <source media="(min-width: 1024px)" srcSet={HERO_WORKSPACE_IMG} />
+                        <img
+                          src={HERO_WORKSPACE_IMG_TALL}
+                          alt="A professional working on a laptop — American FutureTech fellows train for exactly this work"
+                          width="1300"
+                          height="1721"
+                          loading="eager"
+                          // Lowercase on purpose: React 18.3 does not map
+                          // `fetchPriority` and warns about the camelCase prop.
+                          fetchpriority="high"
+                          decoding="async"
+                          className="w-full h-[22rem] sm:h-[26rem] lg:h-[30rem] object-cover object-[50%_46%] group-hover:scale-[1.03] transition-transform duration-700"
+                        />
+                      </picture>
+                      {/* Soft, bottom-anchored scrim: the photo carries the section,
+                          so the gradient only exists to keep the caption legible. */}
+                      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent" />
+                      <div className="absolute inset-0 flex flex-col justify-end p-5">
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
                           <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
                             Live Silicon Valley Ecosystem
                           </span>
@@ -359,10 +382,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                             Active Cohort
                           </span>
                         </div>
-                        <h3 className="text-white font-bold text-base sm:text-lg font-heading">
+                        <h3 className="text-white font-bold text-xl sm:text-2xl font-heading drop-shadow-lg">
                           American FutureTech Innovation Lab
                         </h3>
-                        <p className="text-slate-300 text-xs mt-0.5">
+                        <p className="text-slate-200 text-xs sm:text-sm mt-1 max-w-md">
                           Enterprise cloud environments, dedicated workstations, and live 1-on-1 faculty coaching.
                         </p>
                       </div>

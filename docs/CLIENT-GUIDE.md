@@ -309,6 +309,7 @@ Iske alawa:
 | **`docs/CLIENT-GUIDE.md`** | **Yehi document** — poora platform guide |
 | `credentials.local.md` | **Sealed login sheet** (sirf aapke paas / client ko secure tarike se bhejein) |
 | `docs/lms-admin-handbook.md` | LMS ke saare pages ka Hinglish step-by-step handbook |
+| `docs/admin-release-guide-855878a.md` | Latest release ke naye changes ka admin guide — markdown lesson notes, module numbering, naye contact emails |
 | `/admin/guide` (website ke andar) | Admin console ka in-app manual |
 | `docs/website-editor.md` | Website Editor ka detailed manual |
 | `docs/security.md` | Roles + permissions + security decisions |

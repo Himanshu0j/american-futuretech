@@ -84,11 +84,24 @@ const SECTIONS = [
     how: 'Sidebar mein "Academy / LMS" group kholo. Har page ka kaam alag hai: LMS Overview (numbers), Curriculum Builder (course ke modules + lessons), Assessments (quiz + scores), Enrollments (student ko course/batch dena), Progress (kitna poora hua), Certificates (issue/revoke), Communications (announcement + support), LMS Settings (defaults).',
     notes: [
       'VIDEO KAISE DAALEIN (Curriculum Builder): course chuno → module ke saamne "Add lesson" → "Video link" field mein YouTube ya Vimeo ka normal link paste kar do (jaise youtube.com/watch?v=… ya vimeo.com/123) — system khud usko embed form mein badal deta hai aur neeche turant preview dikh jata hai. Sirf https:// link chalta hai; koi aur website ka link chale to sirf tab jab wo iframe allow kare.',
-      'Wahi lesson form mein: Lesson notes (student video ke saath padhta hai), Reading/PDF link, aur Lab Resources (title + URL + file type + size) — student ke page par download button ban jata hai. Resources khaali chhod do to student ko saaf-saaf "no resources" dikhega, dummy files nahi.',
+      'Wahi lesson form mein: Lesson notes (student video ke saath padhta hai — markdown chalta hai: ### heading, **bold**, - bullets; poora cheat sheet agle card 10b mein), Reading/PDF link, aur Lab Resources (title + URL + file type + size) — student ke page par download button ban jata hai. Resources khaali chhod do to student ko saaf-saaf "no resources" dikhega, dummy files nahi.',
       'Lesson ke saamne wale buttons: pencil = edit, eye = publish/unpublish (draft), copy = duplicate, dustbin = delete. Lesson ko drag karke module ke andar ya ek module se doosre mein le ja sakte ho; module up/down arrows se order badalta hai.',
       'QUIZ: module ke card par "Add quiz" → questions likho, options ke saamne circle daba kar sahi jawab mark karo, passing % set karo. Student ko us module ke sidebar mein Test button dikhega.',
       'CERTIFICATE: course ke saare lessons poore karne par certificate khud ban jata hai. Jab kisi ne poora kiya par certificate nahi bana (ya offline cohort hai) to Certificates → "Ready to issue" tab → "Issue certificate". Galat certificate ko Revoke kar sakte ho — uske baad public /certificate/<ID> page par saaf likha aayega ki credential withdraw ho gaya hai.',
       'SAFETY: Courses CMS se course/edit karne par yahan banaye gaye lesson ka video ya resources delete nahi honge — sirf admin khud delete karega tab hi hatenge.',
+    ],
+  },
+  {
+    icon: BookOpen,
+    title: '10b. Lesson Notes Format (Markdown) + Module Numbering',
+    path: '/admin/lms/curriculum',
+    what: 'Student ke lesson player mein notes ab formatted dikhte hain (headings, bold, bullets) aur module numbers hamesha Module 01, 02, 03… lagataar rehte hain — is page se poora control, koi bahar ki file dekhne ki zaroorat nahi.',
+    how: 'Curriculum Builder → course chuno → module → lesson → "Lesson notes" field. Wahan ye likho: ### Heading, **bold**, *italic*, `code`, - bullet, 1. numbered list, > quote, --- divider, [text](https://link). Rules: ### ke baad space zaroor ho; blank line se naya paragraph banta hai (ek hi line ke andar Enter se sirf wrap hota hai). Save karte hi student ko aise hi dikhega.',
+    notes: [
+      'KAUN KAHAN DEKHTA HAI: yeh format sirf student ke lesson player (Lesson Overview & Notes tab) mein lagta hai. Aapke lesson editor mein raw text hi dikhta hai — jaisa aap type karte ho.',
+      'PURANE NOTES SAFE HAIN: jo ### aapne pehle type kar diya tha wo ab heading ban ke dikhega — student ko hash marks nahi dikhte, kuch dobara likhne ki zaroorat nahi.',
+      'MODULE NUMBERING: student ke sidebar mein module number uski ORDER POSITION se aata hai — pehla module Module 01, phir 02, 03… bilkul lagataar. Module add/delete karne ya up/down arrows se order badalne par numbering khud adjust ho jati hai; koi number manually set nahi karna.',
+      'PEHLE KA PROBLEM: pehle stored number print hota tha, isliye curriculum edit ke baad student ko "Module 02, 03, 05" jaise gaps dikh sakte the — ab aisa nahi hoga.',
     ],
   },
   {

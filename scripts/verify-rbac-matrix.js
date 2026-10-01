@@ -315,6 +315,10 @@ const run = async () => {
       ['POST', '/api/students/admin', { name: 'RO Student', email: `ro.student.${stamp}@example.com` }],
       ['POST', '/api/jobs', { title: 'RO job', company: 'X', location: 'Remote' }],
       ['POST', '/api/content/blogs', { title: 'RO blog', content: 'nope' }],
+      // The gateway test endpoint accepts a pasted secret key and calls Stripe,
+      // so a SETTINGS_VIEW-only auditor must never reach it.
+      ['POST', '/api/settings/payment-gateway/test', {}],
+      ['PUT', '/api/settings/payment-gateway', { enabled: true }],
     ];
     for (const [method, url, body] of roWrites) {
       const res = await request(method, url, { token: ro.token, body });
@@ -335,6 +339,17 @@ const run = async () => {
       const res = await request(method, url, { token: ro.token });
       check(`Read-only admin keeps ${method} ${url} (holds ${permission})`, res.status === 200, describe(res));
     }
+
+    // Reading the gateway status is a *VIEW* action and must stay available to an
+    // auditor, while the secrets block it returns is still stripped down to
+    // booleans and masked hints.
+    const roGatewayStatus = await request('GET', '/api/settings/payment-gateway', { token: ro.token });
+    check('Read-only admin can read the gateway status (SETTINGS_VIEW)',
+      roGatewayStatus.status === 200, describe(roGatewayStatus));
+    const roGatewayBody = JSON.stringify(roGatewayStatus.json || {});
+    check('...and that status carries no secret material',
+      !roGatewayBody.includes('secretKeyEncrypted') && !roGatewayBody.includes('webhookSecretEncrypted'),
+      'booleans and masked hints only');
 
     // The write side of the same modules: a *_VIEW grant must not authorise a
     // write, and curriculum authoring needs COURSES_CREATE/DELETE.
@@ -378,6 +393,8 @@ const run = async () => {
 
     const limOutside = [
       ['PUT', '/api/settings', { footer: {} }],
+      ['POST', '/api/settings/payment-gateway/test', {}],
+      ['PUT', '/api/settings/payment-gateway', { enabled: true }],
       ['GET', '/api/auth/users'],
       ['POST', '/api/auth/users', { name: 'Lim Staff', email: `lim.staff.${stamp}@example.com`, role: 'COUNSELOR', password: 'Matrix-Pass-LimStaff-00!' }],
       ['POST', '/api/coupons', { code: `LIM${stamp}`.slice(0, 12), discountType: 'percent', discountValue: 5 }],
@@ -443,6 +460,14 @@ const run = async () => {
       body: { footer: settingsDoc.footer },
     });
     check('Full admin can save settings (SETTINGS_EDIT)', fullSettingsSave.status === 200, describe(fullSettingsSave));
+
+    // The gateway setup must be fully usable by whoever holds SETTINGS_EDIT:
+    // reachable (not 403) and honest about the missing key before one is saved.
+    const fullGatewayStatus = await request('GET', '/api/settings/payment-gateway', { token: full.token });
+    check('Full admin can open the gateway setup (SETTINGS_EDIT)', fullGatewayStatus.status === 200, describe(fullGatewayStatus));
+    const fullGatewayTest = await request('POST', '/api/settings/payment-gateway/test', { token: full.token, body: {} });
+    check('Full admin reaches the gateway connection test (SETTINGS_EDIT)',
+      fullGatewayTest.status === 400 && fullGatewayTest.json?.code === 'NO_KEY', describe(fullGatewayTest));
 
     const fullCoupon = await request('POST', '/api/coupons', {
       token: full.token,

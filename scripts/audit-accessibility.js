@@ -101,6 +101,10 @@ const ADMIN_ROUTES = [
   ['admin-content', '/admin/content'],
   ['admin-support', '/admin/support'],
   ['admin-settings', '/admin/settings'],
+  // The gateway setup is a tab, so the settings route alone never audited the
+  // Stripe panel (keys, webhook checklist, test verdict) that carries the most
+  // fields a non-technical admin has to fill in.
+  ['admin-settings-payments', '/admin/settings?tab=payments'],
   ['admin-website-editor', '/admin/website-editor'],
   ['admin-issues', '/admin/issues'],
   ['admin-media', '/admin/media'],

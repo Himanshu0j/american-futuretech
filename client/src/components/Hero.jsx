@@ -30,6 +30,13 @@ import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json'
 const HERO_WORKSPACE_IMG = '/images/hero-innovator.jpg';
 const HERO_WORKSPACE_IMG_TALL = '/images/hero-innovator-tall.jpg';
 
+// The graduation photograph the client chose for the top of the home page. It
+// is the section's own background now (not a card): a wide crop for desktop and
+// a portrait crop so narrow screens are not squeezed into an unreadable sliver
+// (see scratch/build-hero-banner.py).
+const HERO_BANNER_IMG = '/images/hero-graduation.jpg';
+const HERO_BANNER_IMG_TALL = '/images/hero-graduation-tall.jpg';
+
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function Hero({ onOpenLeadModal, onExploreCourses }) {
@@ -66,6 +73,40 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
   return (
     <section className="relative pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-aurora-light dark:bg-aurora-ink overflow-hidden">
+
+      {/* ============================================================
+          FULL-BLEED BANNER: the client's graduation photograph fills the
+          whole hero and the editorial column reads on top of it.
+          ============================================================ */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {/* Masked below `lg`: on a phone the hero is several screens tall, so
+            the photo would otherwise be cropped to a thin vertical slice and
+            the trust ledger would sit on the gowns in the dark half of the
+            frame. The fade hands everything below the headline back to the
+            section's own wash. */}
+        <picture>
+          <source media="(min-width: 1024px)" srcSet={HERO_BANNER_IMG} />
+          <img
+            src={HERO_BANNER_IMG_TALL}
+            alt=""
+            width="1920"
+            height="1080"
+            fetchpriority="high"
+            decoding="async"
+            className="w-full h-full object-cover object-[50%_28%] [-webkit-mask-image:linear-gradient(to_bottom,#000_0%,#000_10%,transparent_32%)] [mask-image:linear-gradient(to_bottom,#000_0%,#000_10%,transparent_32%)] lg:[-webkit-mask-image:none] lg:[mask-image:none]"
+          />
+        </picture>
+        {/* Scrim: heavier behind the copy, easing off on the right so the
+            photograph still reads as a photograph. Keeps the page's light
+            aesthetic in light mode and its ink aesthetic in dark mode. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/52 dark:from-slate-950/95 dark:via-slate-950/88 dark:to-slate-950/72" />
+        {/* The trust ledger and the intake line sit over the gowns and caps in
+            the lower half of the photograph, where a 55%-white veil is not
+            enough for the smaller type. This taller bottom rise carries them
+            and doubles as the fade into the section's own aurora wash, so the
+            banner has no hard seam against the sections below. */}
+        <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white from-5% via-white/78 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/85" />
+      </div>
 
       {/* Background Architectural Grid Accent */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f108_1px,transparent_1px),linear-gradient(to_bottom,#6366f108_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
@@ -138,7 +179,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   <span>{heroData.statsBadgeText || '1,200+ Fellows Placed'}</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                 </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
+                {/* One notch darker than the plain page styles: over the banner
+                    photograph those small labels have to carry their own
+                    contrast instead of relying on a flat white background. */}
+                <div className="text-[11px] text-slate-600 dark:text-slate-300 font-normal">Hired at Google, Microsoft, AWS & Fortune 500</div>
               </div>
             </div>
 
@@ -168,22 +212,22 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-1">
                     <span>★ 4.9 / 5.0</span>
                   </div>
-                  <div className="text-[11px] text-slate-500 font-medium">Graduate Satisfaction</div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Graduate Satisfaction</div>
                 </div>
 
                 <div>
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading">100% Verifiable</div>
-                  <div className="text-[11px] text-slate-500 font-medium">Accredited US Registry</div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Accredited US Registry</div>
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <div className="text-sm font-bold text-gold-600 dark:text-gold-400 font-heading font-mono">$99 Deposit</div>
-                  <div className="text-[11px] text-slate-500 font-medium">Risk-Free Reservation</div>
+                  <div className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">$99 Deposit</div>
+                  <div className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
                 </div>
               </div>
 
               {/* Cohort Intake Notice */}
-              <div className="mt-3.5 flex items-center gap-2 text-xs font-semibold text-blue-700 dark:text-blue-300">
+              <div className="mt-3.5 flex items-center gap-2 text-xs font-semibold text-blue-800 dark:text-blue-200">
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <span>6-Month Training & 1-on-1 Personalized Mentorship · Admissions Open</span>
               </div>

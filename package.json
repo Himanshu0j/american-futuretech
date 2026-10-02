@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "build": "npm --prefix client run build",
+    "build": "npm run build:hostinger",
     "build:hostinger": "cd server && npm install --ignore-scripts --no-audit --no-fund && cd ../client && npm install --no-audit --no-fund && npm run build",
     "logos": "node scripts/generate-logo-variants.js",
     "verify:logos": "node scripts/verify-logo-variants.js",

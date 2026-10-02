@@ -54,20 +54,55 @@ Deploy settings screen par **exactly ye values** rakho:
 | Framework / Application type | **Other** (ya Express.js) | ye monorepo hai, koi single preset fit nahi baithta |
 | Node.js version | **22** (LTS) | `package.json` ke `engines` se khud 22 aata hai |
 | Root directory | `/` (khaali chhod do) | `package.json` repo root par hai |
-| **Build script** | **`build:hostinger`** | ⬅️ ye `build` nahi. Isi me dono install + frontend build hai (neeche note) |
+| **Build script** | **`build:hostinger`** (ya `build` — ab dono ek hi kaam karte hain) | dono me install + frontend build hai (neeche note) |
 | Output directory | khaali | server app poora root directory deploy karta hai |
 | Entry file | **`server/server.js`** | yei process website + API dono chalata hai |
 | Package manager | **npm** | `package-lock.json` hai |
 
-> **`build:hostinger` kyun, sirf `build` kyun nahi?**
+> **`build:hostinger` kyun, aur `build` ka kya?**
 > Hostinger ke install step me **sirf root** `package.json` ki dependencies install
 > hoti hain. Is repo me `server/` aur `client/` ke apne `package.json` hain, isliye
-> khaali `build` chalane par Vite build hi fail ho jayega ("vite: not found") aur
-> app `Cannot find module 'express'` dega. `build:hostinger` teeno karta hai:
+> khaali client build chalane par Vite build fail ho jata hai ("vite: not found")
+> aur app `Cannot find module 'express'` dega. `build:hostinger` teeno karta hai:
 > `cd server && npm install --ignore-scripts` (memory-Mongo binary skip — Atlas
-> use ho raha hai) → `cd ../client && npm install` → `npm run build`. Panel ka
-> build-command picker ye naam seedha `package.json` ki scripts se dikhata hai —
-> **`build:hostinger`** hi chuno, warna khaali `build` chal jayega.
+> use ho raha hai) → `cd ../client && npm install` → `npm run build`.
+>
+> Ab **`build` bhi wahi karta hai** (`build` → `build:hostinger`), kyunki panel ka
+> build-command picker aksar sirf `npm run build` hi offer karta hai — picker
+> pichhle connected repo ke scripts dikhata hai, is repo ke nahi. Isliye dono
+> naam se build pass hota hai; `build:hostinger` purane panel setups ke liye
+> rakha hua hai.
+
+---
+
+### 1a. App pehle se bani hui hai? ("Git provider is not connected" ka fix)
+
+Agar website pehle se bani hai aur dashboard par **"Git provider is not
+connected"** dikh raha hai, to naya app banane ki zaroorat nahi — wahi app kaam
+karega:
+
+1. website Dashboard → **⋮ menu → Connect to GitHub** → GitHub par **Authorize**.
+   (Agar plan pehle kisi aur GitHub account se juda tha aur connect error de raha
+   hai: profile → Account information → Account integrations se **Disconnect**
+   karo, phir yahin se dobara connect karo.)
+2. Usi **⋮ menu → Change repository** → `Himanshu0j/american-futuretech`, branch
+   **main**. Repo badalte hi naya deployment khud shuru hota hai aur purani files
+   overwrite ho jati hain.
+3. **Ek plan ek hi GitHub account se juda ho sakta hai** — plan ke sab Node apps
+   wahi account use karte hain.
+4. Ek hi page par sab settings milti hain: **⋮ → Settings and redeploy** —
+   Framework preset · Node version · Build command · Output directory · Entry file
+   · Environment variables. **Save** settings ko agle deployment par lagta hai
+   (`Save and redeploy` usi waqt build bhi chala deta hai).
+
+> ⚠️ **Impersonation / collaborator session me ye buttons disabled rehte hain**
+> ("Disabled because you are impersonating user account" — Connect Git provider,
+> Change repository, Redeploy sabhi). Client ke apne login se hi ye steps ho sakte
+> hain. Env variables aur build settings impersonation me bhi save ho jate hain.
+>
+> ⚠️ **Git provider ke bina Redeploy button bhi disabled** rehta hai aur build
+> turant fail hoti hai — isliye pehle Git connect, phir repo select karo, tab
+> deploy hoga.
 
 ---
 
@@ -249,8 +284,8 @@ Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`even
 
 | Log/aisa dikhe | Matlab | Fix |
 |---|---|---|
-| `vite: not found` / `Cannot find module 'vite'` | build script `build` tha, client deps install nahi hui | Build script = `build:hostinger` |
-| `Cannot find module 'express'` (runtime) | server deps install nahi hui | wahi — `build:hostinger`, phir redeploy |
+| `vite: not found` / `Cannot find module 'vite'` | build script me client deps install nahi hue | Build script = `build:hostinger` ya `build` (dono me install hai), phir redeploy |
+| `Cannot find module 'express'` (runtime) | server deps install nahi hui | wahi — `build:hostinger` / `build`, phir redeploy |
 | Root URL par JSON: `API Core is active` | `NODE_ENV` production nahi hai | env me `NODE_ENV=production` set karo (auto redeploy) |
 | `FATAL: MONGODB_URI is set, but the database could not be reached` | Atlas ne connection refuse kiya | Atlas → Network Access me `0.0.0.0/0` allow karo (ya Hostinger ka IP), aur URI me password URL-encoded ho |
 | `[Data Warning]: Production is connected to a loopback MongoDB` | URI galti se localhost par hai | Atlas URI use karo |

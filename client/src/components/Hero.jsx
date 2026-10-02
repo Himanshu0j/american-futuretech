@@ -152,8 +152,15 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
           
           {/* ============================================================
               LEFT COLUMN: Editorial Typography & Strategic Positioning
+
+              `lg:self-start` overrides the grid's `items-center`. The right
+              column (LMS cockpit) is ~350px taller than this copy, so centring
+              used to push the badge ~170px down the page and leave a band of
+              empty white between the navbar and the eyebrow badge on load.
+              The copy now starts on the same line as the cockpit's floating
+              badges, so the headline is above the fold instead of below a gap.
               ============================================================ */}
-          <div className="lg:col-span-6 relative z-10 pt-[58vw] sm:pt-0 space-y-4 text-left">
+          <div className="lg:col-span-6 lg:self-start relative z-10 pt-[58vw] sm:pt-0 space-y-4 text-left">
 
             {/* ============================================================
                 PHONE BAND (< sm): the copy reads ON the photograph.

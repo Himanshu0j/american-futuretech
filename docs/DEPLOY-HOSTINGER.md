@@ -57,15 +57,24 @@ Deploy settings screen par **exactly ye values** rakho:
 | **Build script** | **`build:hostinger`** (ya `build` — ab dono ek hi kaam karte hain) | dono me install + frontend build hai (neeche note) |
 | Output directory | khaali | server app poora root directory deploy karta hai |
 | Entry file | **`server/server.js`** | yei process website + API dono chalata hai |
-| Package manager | **npm** | `package-lock.json` hai |
+| Package manager | **npm** | `package-lock.json` dono (server + client) repo me committed hain |
 
 > **`build:hostinger` kyun, aur `build` ka kya?**
 > Hostinger ke install step me **sirf root** `package.json` ki dependencies install
 > hoti hain. Is repo me `server/` aur `client/` ke apne `package.json` hain, isliye
 > khaali client build chalane par Vite build fail ho jata hai ("vite: not found")
 > aur app `Cannot find module 'express'` dega. `build:hostinger` teeno karta hai:
-> `cd server && npm install --ignore-scripts` (memory-Mongo binary skip — Atlas
-> use ho raha hai) → `cd ../client && npm install` → `npm run build`.
+> `cd server && npm ci --ignore-scripts` (memory-Mongo binary skip — Atlas
+> use ho raha hai) → `cd ../client && npm ci` → `npm run build`.
+>
+> **`npm install` ki jagah `npm ci` kyun?** `npm ci` committed
+> `package-lock.json` se exactly wahi versions install karta hai jo local par test
+> hue — koi silent upgrade nahi. Lockfile aur `package.json` me mismatch ho to
+> `npm ci` **jaldi fail** karta hai (silently galat tree install nahi karta), isliye
+> error aaye to local par `npm install` chala kar lockfile commit karo.
+> `package-lock.json` `.gitignore` me hai, isliye pehli baar `git add -f
+> client/package-lock.json server/package-lock.json` se add kiya gaya tha; ab
+> ye **tracked** hain aur normal `git add` se update ho jate hain.
 >
 > Ab **`build` bhi wahi karta hai** (`build` → `build:hostinger`), kyunki panel ka
 > build-command picker aksar sirf `npm run build` hi offer karta hai — picker
@@ -285,6 +294,7 @@ Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`even
 | Log/aisa dikhe | Matlab | Fix |
 |---|---|---|
 | `vite: not found` / `Cannot find module 'vite'` | build script me client deps install nahi hue | Build script = `build:hostinger` ya `build` (dono me install hai), phir redeploy |
+| `npm ci` error: `can only install packages when your package.json and package-lock.json are in sync` | lockfile purani hai | local par `npm install` chala kar `client/` ya `server/` ka `package-lock.json` commit karo, phir redeploy |
 | `Cannot find module 'express'` (runtime) | server deps install nahi hui | wahi — `build:hostinger` / `build`, phir redeploy |
 | Root URL par JSON: `API Core is active` | `NODE_ENV` production nahi hai | env me `NODE_ENV=production` set karo (auto redeploy) |
 | `FATAL: MONGODB_URI is set, but the database could not be reached` | Atlas ne connection refuse kiya | Atlas → Network Access me `0.0.0.0/0` allow karo (ya Hostinger ka IP), aur URI me password URL-encoded ho |
@@ -306,7 +316,7 @@ par Hostinger khud AI analysis aur "Fix and redeploy" bhi deta hai.
 Framework        : Other (ya Express.js)
 Node version     : 22
 Root directory   : /
-Build script     : build:hostinger
+Build script     : build:hostinger  (npm ci se lockfile-locked install)
 Output directory : (khaali)
 Entry file       : server/server.js
 Package manager  : npm

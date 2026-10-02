@@ -12,7 +12,14 @@ const { buildQuote, resolveOrderAmount } = require('../utils/pricing');
 const { resolveCoupon, redeemCoupon } = require('../utils/couponEngine');
 const { generateSecurePassword } = require('../utils/passwords');
 const gateway = require('../utils/paymentGateway');
-const { isStripeConfigured, isWebhookConfigured, getPaymentStatus, getCurrency } = require('../config/payments');
+const {
+  isStripeConfigured,
+  isWebhookConfigured,
+  getPaymentStatus,
+  getCurrency,
+  eligibleInstallmentMethods,
+  installmentMethodLabel,
+} = require('../config/payments');
 const { searchRegex } = require('../utils/search');
 const { sendError } = require('../utils/apiError');
 const {
@@ -188,6 +195,11 @@ const quoteOrder = async (req, res) => {
     const { course, quote, settings } = context;
     const gatewaySettings = settings?.paymentGateway || {};
 
+    // The instalment methods (Klarna, Afterpay) this exact amount qualifies for,
+    // so the checkout page can advertise them next to the card instead of the
+    // student only discovering them on Stripe's page.
+    const installmentMethods = eligibleInstallmentMethods(quote.amount);
+
     return res.status(200).json({
       success: true,
       quote: {
@@ -195,6 +207,18 @@ const quoteOrder = async (req, res) => {
         courseId: course._id,
         courseTitle: course.title,
         courseDuration: course.duration,
+      },
+      installments: {
+        available: gatewaySettings.enabled !== false && isStripeConfigured(),
+        methods: installmentMethods.map(({ id, label, blurb, maxAmount }) => ({
+          id,
+          label,
+          blurb,
+          maxAmount,
+        })),
+        note: installmentMethods.length
+          ? 'Pay in instalments with Klarna or Afterpay — choose it on the Stripe payment page.'
+          : '',
       },
       checkout: {
         enabled: gatewaySettings.enabled !== false,
@@ -297,9 +321,10 @@ const createCheckoutSession = async (req, res) => {
 
     // 2. Hosted Stripe Checkout Session.
     let session;
+    let installmentMethods = [];
     try {
       const clientUrl = gateway.resolveClientUrl(req);
-      ({ session } = await gateway.createCheckoutSession({
+      ({ session, installmentMethods } = await gateway.createCheckoutSession({
         payment,
         course,
         quote,
@@ -326,7 +351,7 @@ const createCheckoutSession = async (req, res) => {
       action: 'CHECKOUT_SESSION_CREATED',
       entity: 'Payment',
       entityId: payment._id.toString(),
-      details: `Stripe Checkout Session ${session.id} opened for ${course.title} (${quote.tier}) — ${quote.currency} ${quote.amount}`,
+      details: `Stripe Checkout Session ${session.id} opened for ${course.title} (${quote.tier}) — ${quote.currency} ${quote.amount}${installmentMethods.length ? ` · instalments offered: ${installmentMethods.map((method) => method.label).join(', ')}` : ''}`,
     }).catch(() => {});
 
     return res.status(200).json({
@@ -337,6 +362,7 @@ const createCheckoutSession = async (req, res) => {
       paymentId: payment._id,
       invoiceNumber: payment.invoiceNumber,
       quote: { ...quote, courseTitle: course.title },
+      installments: installmentMethods.map(({ id, label, blurb }) => ({ id, label, blurb })),
       message: 'Redirecting you to our secure Stripe payment page…',
     });
   } catch (error) {
@@ -417,14 +443,23 @@ const recordWebhookEvent = (entry) => {
   return job;
 };
 
-const dataOf = (session) => ({
-  paymentIntentId:
-    typeof session.payment_intent === 'string'
-      ? session.payment_intent
-      : session.payment_intent?.id || '',
-  method: (session.payment_method_types || []).join(', ') || 'card',
-  amountTotal: session.amount_total != null ? session.amount_total / 100 : null,
-});
+const dataOf = (session) => {
+  const offered = (session.payment_method_types || []).filter(Boolean);
+  return {
+    paymentIntentId:
+      typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.payment_intent?.id || '',
+    // A session lists every method we OFFERED, so one entry is the only case where
+    // it also names the method that was used. With instalments on offer the list is
+    // "card, klarna, afterpay_clearpay" for every order — the exact method is read
+    // from the payment intent after settlement (resolveSettledMethod, best-effort),
+    // so the fallback here stays honest rather than showing all three as if paid.
+    method: offered.length === 1 ? offered[0] : '',
+    offeredMethods: offered,
+    amountTotal: session.amount_total != null ? session.amount_total / 100 : null,
+  };
+};
 
 /**
  * Idempotency guard: an event id can only be claimed once, so Stripe's retries
@@ -487,12 +522,28 @@ const fulfillPaidCheckout = async ({ payment, session, clientUrl }) => {
   payment.status = 'Paid';
   payment.paidAt = new Date();
   payment.paymentDate = new Date();
-  payment.paymentMethod = `Stripe Checkout (${gatewayData.method})`;
+  payment.paymentMethod = gatewayData.method
+    ? `Stripe Checkout (${installmentMethodLabel(gatewayData.method)})`
+    : 'Stripe Checkout (secure hosted page)';
   payment.stripePaymentIntentId = gatewayData.paymentIntentId;
   payment.transactionId = gatewayData.paymentIntentId || session.id;
   payment.failureReason = '';
   if (gatewayData.amountTotal != null) payment.amount = gatewayData.amountTotal;
   await payment.save();
+
+  // 1a. Name the method the student really paid with — "Klarna" on an instalment
+  //     plan, "Card" on a card. Deliberately fire-and-forget: the enrollment below
+  //     is already safe to grant, so a slow or failed Stripe read must never hold
+  //     up a paying student; the ledger just keeps the plainer label.
+  gateway
+    .resolveSettledMethod(session)
+    .then(async (settledMethod) => {
+      if (!settledMethod) return;
+      const label = `Stripe Checkout (${installmentMethodLabel(settledMethod)})`;
+      if (payment.paymentMethod === label) return;
+      await Payment.updateOne({ _id: payment._id }, { $set: { paymentMethod: label } });
+    })
+    .catch(() => {});
 
   // 1b. Count the redemption once the money is actually settled, so a coupon's
   //     usage limit reflects paid orders only (abandoned checkouts never burn it).
@@ -797,7 +848,10 @@ const reconcilePendingPayment = async (payment, req) => {
   const stripeStatus = session?.payment_status || session?.status || 'unknown';
 
   if (!session || stripeStatus !== 'paid') {
-    return { settled: false, reason: 'not-paid', stripeStatus };
+    // `sessionStatus` is what separates "paid nothing yet" (still `open`) from
+    // "instalment plan approved, money settling" (`complete` but `unpaid`, how
+    // Klarna and Afterpay report until async_payment_succeeded arrives).
+    return { settled: false, reason: 'not-paid', stripeStatus, sessionStatus: session?.status || 'unknown' };
   }
 
   // `pending→paid` paths share the claim guard with the webhook, so a late webhook
@@ -825,17 +879,32 @@ const getCheckoutStatus = async (req, res) => {
 
     // If Stripe already took the money but the webhook is still in flight,
     // reconcile from Stripe directly so the customer is never left hanging.
+    let reconcile = null;
     if (payment.status === 'Pending' && isStripeConfigured()) {
-      await reconcilePendingPayment(payment, req).catch((error) =>
-        console.warn(`[Checkout Status] Reconcile skipped: ${error.message}`),
-      );
+      reconcile = await reconcilePendingPayment(payment, req).catch((error) => {
+        console.warn(`[Checkout Status] Reconcile skipped: ${error.message}`);
+        return null;
+      });
     }
 
     const fresh = await Payment.findById(payment._id);
+
+    // Delayed-notification instalments: the student comes back from Klarna/Afterpay
+    // while the money is still settling, so the screen can say "your instalment plan
+    // is being confirmed" instead of a generic spinner that ends in a vague error.
+    const settlementPending = Boolean(
+      fresh.status === 'Pending'
+        && reconcile?.sessionStatus === 'complete'
+        && reconcile?.stripeStatus
+        && reconcile.stripeStatus !== 'paid',
+    );
+
     return res.status(200).json({
       success: true,
       status: fresh.status,
       paid: fresh.status === 'Paid',
+      settlementPending,
+      paymentMethod: fresh.paymentMethod || '',
       payment: {
         invoiceNumber: fresh.invoiceNumber,
         courseTitle: fresh.courseTitle,

@@ -602,7 +602,7 @@ export default function PaymentGatewayPanel() {
               {!enabled
                 ? 'Payments OFF — checkout shows the admissions enquiry form'
                 : ready
-                  ? `Card payments ACTIVE (${status?.mode} mode)`
+                  ? `Card${setup?.installments?.active ? ' + EMI' : ''} payments ACTIVE (${status?.mode} mode)`
                   : 'Incomplete — secret key or webhook secret missing'}
             </span>
           </div>
@@ -946,6 +946,50 @@ export default function PaymentGatewayPanel() {
           </span>
         </div>
       </StepCard>
+
+      {/* Instalments / pay-later (EMI). Read-only on purpose: the methods are
+          enabled on the Stripe account itself, not in this panel, so there is no
+          switch here to get out of sync with Stripe. */}
+      {setup?.installments?.methods?.length > 0 && (
+        <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3 backdrop-blur-xl">
+          <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+            <CircleDollarSign className="w-4 h-4 text-emerald-300" />
+            EMI / Pay Later — Klarna aur Afterpay
+          </h3>
+          <p className="text-[11px] text-slate-400 leading-relaxed max-w-3xl">
+            Students card ke saath installments mein bhi pay kar sakte hain — Klarna (4 payments ya monthly financing)
+            aur Afterpay (4 payments, har 2 hafte). Dono aapke Stripe account par already ON hain, isliye yahan koi extra
+            switch nahi hai; ye sirf status hai. Har order par sirf wahi method dikhti hai jiska amount limit match karta
+            hai — isliye $4,499 wale plan par Afterpay nahi aayega, Klarna aayega.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {setup.installments.methods.map((method) => (
+              <div key={method.id} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-bold text-white font-heading">{method.label}</span>
+                  <span
+                    className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border ${
+                      setup.installments.active
+                        ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/25'
+                        : 'text-amber-300 bg-amber-500/10 border-amber-500/25'
+                    }`}
+                  >
+                    {setup.installments.active ? 'Live at checkout' : 'Waiting for keys'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">{method.blurb}</p>
+                <p className="text-[10px] font-mono text-slate-500">
+                  Orders up to {setup.installments.currency} {Number(method.maxAmount).toLocaleString('en-US')}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[11px] text-slate-400">
+            Stripe Dashboard → Settings → Payment methods mein ye dono enabled hain. Kabhi koi order par option na dikhe
+            to pehle wahan check karein — approve/decline ka faisla payment provider karta hai, humara system nahi.
+          </p>
+        </div>
+      )}
 
       {/* One real charge, refunded immediately — the owner's end-to-end proof. */}
       <SmokeTestPanel ready={ready} mode={status?.mode} />

@@ -1,6 +1,6 @@
 # Payments — Stripe Checkout
 
-Real card payments with **webhook-only settlement**. No browser request can ever mark an order as paid.
+Real card and instalment payments with **webhook-only settlement**. No browser request can ever mark an order as paid.
 
 ## Lifecycle
 
@@ -11,6 +11,54 @@ Real card payments with **webhook-only settlement**. No browser request can ever
 | 3 | Stripe hosted page | Customer pays. Card data never touches our servers or database. |
 | 4 | `POST /api/payments/webhook` | Signature-verified event settles the payment: status → `Paid`, student account (random temp password), enrollment, progress, cohort seat, audit log, receipt + credentials emails. The receipt is linked to the new student account, so it appears in Student → Payments and in the admin ledger. |
 | 5 | `GET /api/payments/checkout-status/:sessionId` | Success screen polls this. If Stripe has the money but the webhook is late, the server reconciles directly with Stripe. |
+
+## Instalments (EMI — Klarna & Afterpay)
+
+Checkout offers cards **and** the pay-later methods the students asked for. The
+policy lives in `server/config/payments.js` (`INSTALLMENT_METHODS`) and is applied
+by `paymentMethodTypesFor()` in `server/utils/paymentGateway.js`, so the amount the
+quote advertises, the `payment_method_types` sent to Stripe and the badges on
+`/checkout` all come from one window check.
+
+| Method | Id | Offered for |
+|---|---|---|
+| Klarna | `klarna` | every tier ($99 – $4,499) |
+| Afterpay | `afterpay_clearpay` | up to $4,000 — **not** the $4,499 track |
+
+Measured on the live account (`acct_1U3Iec8ivBoJNoGx`, US, USD): a session listing
+both is accepted at $99, $499 and $2,499; at $4,499 Stripe **silently drops**
+Afterpay and keeps Klarna. That silent drop is why the window is enforced here
+instead of being left to Stripe: the page must not advertise what Stripe will hide.
+
+Two details that are easy to get wrong:
+
+- **`adaptive_pricing: { enabled: false }`** on the session. With adaptive pricing
+  on, Stripe localises the amount to the buyer's currency (an Indian visitor saw
+  the $99 price converted to ₹ with a conversion-fee line), and because neither
+  provider supports every local currency the instalment methods vanish from the
+  page — the reported "EMI option nahi aa raha" symptom. Pinning the session to the
+  store currency keeps them: verified live, the $99 page then shows Card → Afterpay
+  → Klarna.
+- **Delayed notification.** Klarna/Afterpay send `checkout.session.completed` with
+  `payment_status: unpaid` and settle later through
+  `checkout.session.async_payment_succeeded` (already in `REQUIRED_WEBHOOK_EVENTS`).
+  The order therefore stays `Pending` while the student is back on the success
+  screen, which is why `checkout-status` reports a `settlementPending` flag (session
+  `complete` but unpaid) and the screen says the plan is being confirmed rather than
+  "failed". Settlement grants the enrollment; `reconcilePendingPayment` covers a
+  late or lost delivery exactly as it does for cards.
+
+Receipts read the method back from the payment intent
+(`resolveSettledMethod`, best-effort): a session's `payment_method_types` is the
+list we **offered** — `card, klarna, afterpay_clearpay` on every order — so it is
+only used as a label when exactly one method was on offer. The admin ledger then
+shows `Stripe Checkout (Klarna)` / `(Afterpay)` / `(Card)`.
+
+The admin's live smoke test stays **card-only** on purpose ($1 refunded
+immediately; an instalment agreement is not something to open and refund on a
+test). Instalment availability is reported read-only in Admin → Payment Gateway
+(`setup.installments`), which needs no switch because the methods are enabled on
+the Stripe account, not in the panel.
 
 ## Webhook health & recovery
 
@@ -204,13 +252,16 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 146 checks: pricing/voucher math, temp-password strength, webhook signature
+Runs 167 checks: pricing/voucher math, temp-password strength, webhook signature
 enforcement (missing, forged, tampered payloads), a full end-to-end settlement
 against a throwaway local MongoDB (settlement, receipt-to-account linking,
 idempotent replays, failed/expired handling, forged-webhook rejection), the
 delivery log (processed/duplicate/unmatched/rejected rows, the health summary and
-its stuck-order list), the re-check guards, and the admin setup contract
-(key/mode auto-alignment, webhook URL + event checklist).
+its stuck-order list), the re-check guards, the instalment policy (per-tier amount windows, the exact
+`payment_method_types` sent to Stripe, adaptive pricing pinned off, the ledger not
+mistaking an offered list for the method that was used, and the admin panel's
+read-only instalment block), and the admin setup contract (key/mode
+auto-alignment, webhook URL + event checklist).
 
 The live smoke test is covered with the Stripe calls **stubbed**: the fixed
 amount (a forged body is ignored), the typed-confirmation gate, the cost rails

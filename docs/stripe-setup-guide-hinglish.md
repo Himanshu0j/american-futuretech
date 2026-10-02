@@ -59,12 +59,52 @@ Webhook ke bina Stripe paisa to le lega, par student ko **turant access nahi mil
    - webhook **isi URL** par laga hai ya nahi, aur saare 5 events selected hain ya nahi
 2. Sab green ho to **Save Gateway Settings** dabayein. **Save karte hi change turant
    live** ho jata hai — server restart ki zarurat nahi.
-3. Page ke top par badge aana chahiye: **Card payments ACTIVE (live mode)**.
+3. Page ke top par badge aana chahiye: **Card + EMI payments ACTIVE (live mode)**.
 4. Phir website ke `/checkout` page par TEST mode mein ek order karein:
    - Card: `4242 4242 4242 4242`
    - Expiry: koi bhi future date · CVC: koi bhi 3 digit
    - Order settle hone par student ka account + enrollment khud ban jayega aur email
      par receipt + login details aa jayengi.
+
+---
+
+## EMI / Pay Later — Klarna aur Afterpay
+
+Students ab sirf card se nahi — **instalments (EMI)** mein bhi pay kar sakte hain.
+Donon methods aapke Stripe account par already ON hain (Settings → Payment methods),
+isliye admin panel mein kuch switch karne ki zarurat nahi — wahan sirf status dikhta hai.
+
+| Method | Student ko kya milta hai | Amount limit |
+|---|---|---|
+| **Klarna** | 4 interest-free payments, ya monthly financing | humare saare plans ($99 se $4,499) |
+| **Afterpay** | 4 payments, har 2 hafte | $4,000 tak (isliye $4,499 plan par nahi aata) |
+
+**Kaise chalta hai**
+
+1. `/checkout` page par amount ke saath hi sahi options dikh jaate hain — $99 seat deposit par
+   dono, $4,499 track par sirf Klarna. Jo option student ko nahi dikh sakta, wo hum pehle hi hata dete
+   hain (Stripe chupke se gayab karta hai, isliye hum khud filter karte hain).
+2. Student Stripe ke page par **Klarna** ya **Afterpay** chunta hai aur wahan apni details bharta hai.
+   Card ki details ki tarah, ye bhi hamare server par kabhi nahi aati.
+3. Approve ya decline **provider ka faisla** hai (student ki eligibility par). Seat tab confirm hoti hai
+   jab payment settle hoti hai.
+4. **Paisa turant nahi aata**: Klarna/Afterpay pehle approve karte hain, settlement kuch minute baad
+   hoti hai. Tab tak student ko "instalment plan approved — confirmation aa rahi hai" message dikhta
+   hai, aur settle hote hi receipt + login email chala jata hai. Aapko kuch karna nahi padta; late
+   webhook bhi automatically recover ho jata hai (Webhook health → Re-check with Stripe).
+5. Ledger (Admin → Tuition & Billing Ledger) mein method saaf likha aata hai:
+   `Stripe Checkout (Klarna)` / `Stripe Checkout (Afterpay)` / `Stripe Checkout (Card)`.
+
+**Real test kaise karein**
+
+- Asli student ki tarah `/checkout` page kholein, $99 select karein aur payment page par jayein —
+  Payment method mein **Card, Afterpay, Klarna** teenon dikhne chahiye.
+- Stripe ka payment page buyer ke currency/desh ke hisaab se methods dikhata hai. Isliye humne session ko
+  **USD par pin** kar diya hai (neeche "Developer reference" mein technical note) — warna Stripe price ko ₹ mein
+  convert kar deta tha aur Klarna/Afterpay page se gayab ho jaate the. Ye exactly wahi bug tha jo
+  "EMI ka option nahi aa raha" ke naam se report hua.
+- Card-only smoke test (Admin → Payment Gateway → Live smoke test) jaan-boojh kar card par hi rehta hai,
+  kyunki $1 ki instalment plan koi cheez nahi hai. EMI ka status usi page par read-only box mein dikhta hai.
 
 ---
 
@@ -140,6 +180,26 @@ Yahi button **Tuition & Billing Ledger** mein bhi Pending row par milta hai. Isl
 | Test connection | `POST /api/settings/payment-gateway/test` (calls Stripe; rate-limited) |
 | Checkout / webhook | `POST /api/payments/checkout`, `POST /api/payments/webhook` |
 | Ledger (admin) | `GET /api/payments` (requires `SETTINGS_VIEW`) |
-| Regression suite | `npm run verify:payments` (45 checks) |
+| Regression suite | `npm run verify:payments` (instalments bhi cover hote hain) |
+| Instalment policy (Klarna/Afterpay + amount windows) | `server/config/payments.js` → `INSTALLMENT_METHODS` |
+| Session banane wali jagah | `server/utils/paymentGateway.js` → `createCheckoutSession` |
+
+Detail — instalments (EMI):
+
+- Session par `payment_method_types` **explicit** list hoti hai (`card` + eligible instalments),
+  `automatic_payment_methods` jaan-boojh kar nahi — warna Stripe dashboard ka koi change bina test
+  site par live ho jata.
+- `adaptive_pricing: { enabled: false }` zaroori hai: isse page store currency (USD) par rehta hai.
+  Adaptive pricing ON hone par Stripe price ko buyer ki currency (₹) mein convert karta hai, aur
+  Klarna/Afterpay (jo har local currency support nahi karte) page se **chupke se** hat jaate hain.
+  Live verify kiya: adaptive pricing OFF hone par $99 page par Card + Afterpay + Klarna dikhte hain.
+- Amount window: `$4,499` par Stripe Afterpay drop kar deta hai (iski ceiling ~$4,000) — isliye window
+  code mein hi hai, taaki page jo promise kare wahi Stripe ko bheja jaye.
+- Delayed settlement: Klarna/Afterpay `checkout.session.completed` ko `payment_status: unpaid` ke saath
+  bhejte hain, paisa `checkout.session.async_payment_succeeded` par settle hota hai (webhook pehle se
+  subscribe hai). Success screen isi liye `settlementPending` flag padhti hai aur "plan approved"
+  message dikhati hai, "failed" nahi.
+- Receipt ka method payment intent se padha jata hai (`resolveSettledMethod`) — session ki
+  `payment_method_types` list offer karti hai, payment nahi.
 
 Detail: [`docs/payments.md`](payments.md)

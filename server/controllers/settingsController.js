@@ -10,6 +10,7 @@ const {
   alignModeWithSecret,
   REQUIRED_WEBHOOK_EVENTS,
   WEBHOOK_PATH,
+  INSTALLMENT_METHODS,
 } = require('../config/payments');
 
 // @desc    Get site settings
@@ -622,6 +623,20 @@ const buildGatewaySetup = ({ gateway = {}, payments, req }) => {
       url: `${publicApiOrigin(req)}${WEBHOOK_PATH}`,
       events: REQUIRED_WEBHOOK_EVENTS,
       configured: webhookSecretConfigured,
+    },
+    // Read-only mirror of the instalment offer checkout builds per order. Printed
+    // so the client can see that Klarna/Afterpay are live without opening a real
+    // checkout — nothing here needs to be switched on in our panel, because the
+    // methods are enabled on the Stripe account itself.
+    installments: {
+      currency: gateway.currency || payments?.currency || 'USD',
+      active: enabled && secretKeyConfigured && webhookSecretConfigured,
+      methods: INSTALLMENT_METHODS.map(({ id, label, blurb, maxAmount }) => ({
+        id,
+        label,
+        blurb,
+        maxAmount,
+      })),
     },
     steps,
     ready: Boolean(payments?.ready),

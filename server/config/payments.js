@@ -92,6 +92,69 @@ const REQUIRED_WEBHOOK_EVENTS = [
 const WEBHOOK_PATH = '/api/payments/webhook';
 
 /**
+ * Instalment / "pay later" methods (EMI) offered next to the card.
+ *
+ * Students sometimes want to pay in instalments instead of one lump sum, so
+ * checkout offers Klarna and Afterpay. Both are Buy-Now-Pay-Later methods with a
+ * delayed notification: Stripe confirms the authorisation, then settles the money
+ * a little later, which is why `checkout.session.async_payment_succeeded` is part
+ * of REQUIRED_WEBHOOK_EVENTS.
+ *
+ * The amount windows below mirror what the live account actually accepts —
+ * verified against acct_1U3Iec8ivBoJNoGx (US, USD) on 2026-10-03:
+ *   · capabilities `klarna_payments` and `afterpay_clearpay_payments` = active
+ *   · a session listing both is accepted at $99, $499 and $2,499
+ *   · at $4,499 Stripe silently drops Afterpay (its per-order ceiling sits
+ *     between $2,499 and $4,499) and keeps Klarna
+ *
+ * That silent drop is worth understanding: listing a method Stripe will not honour
+ * is not an error, it just quietly disappears from the payment page — the exact
+ * shape of "the option is not there" bug reports. Filtering here keeps what we
+ * advertise, what we send to Stripe and what the student sees telling one story.
+ */
+const INSTALLMENT_METHODS = [
+  {
+    id: 'klarna',
+    label: 'Klarna',
+    blurb: 'Pay in 4 interest-free instalments, or monthly financing',
+    minAmount: 1,
+    maxAmount: 10000,
+  },
+  {
+    id: 'afterpay_clearpay',
+    label: 'Afterpay',
+    blurb: '4 interest-free payments, every two weeks',
+    // Every tier this site sells starts at $99, which Stripe accepts for Afterpay;
+    // the ceiling is the one measured above.
+    minAmount: 1,
+    maxAmount: 4000,
+  },
+];
+
+/**
+ * Which instalment methods can be offered for this order amount, in declaration
+ * order so the offer is stable. Amount is in major units (dollars, not cents),
+ * exactly as the quote carries it.
+ */
+const eligibleInstallmentMethods = (amount) => {
+  const value = Number(amount);
+  if (!Number.isFinite(value) || value <= 0) return [];
+  return INSTALLMENT_METHODS.filter(
+    (method) => value >= method.minAmount && value <= method.maxAmount,
+  ).map((method) => ({ ...method }));
+};
+
+const installmentMethodIds = (amount) => eligibleInstallmentMethods(amount).map((method) => method.id);
+
+/** Plain-language name for a method id, for receipts and the admin ledger. */
+const installmentMethodLabel = (id) => {
+  const found = INSTALLMENT_METHODS.find((method) => method.id === id);
+  if (found) return found.label;
+  if (id === 'card') return 'Card';
+  return String(id || '').replace(/_/g, ' ');
+};
+
+/**
  * Lazy singleton — the SDK is only instantiated when a key exists so that the
  * rest of the API keeps working (manual enquiry mode) before go-live.
  */
@@ -145,6 +208,10 @@ module.exports = {
   alignModeWithSecret,
   REQUIRED_WEBHOOK_EVENTS,
   WEBHOOK_PATH,
+  INSTALLMENT_METHODS,
+  eligibleInstallmentMethods,
+  installmentMethodIds,
+  installmentMethodLabel,
   getCurrency,
   getPaymentStatus,
   getSecretKey,

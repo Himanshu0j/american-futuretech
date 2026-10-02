@@ -1038,6 +1038,112 @@ const run = async () => {
       && /watchdogNotifiedAt\) return false;/.test(paymentControllerSource));
 
   // ───────────────────────────────────────────────────────────────────────
+  section('LEVEL 5 · Instalments / pay-later (EMI)');
+  const {
+    INSTALLMENT_METHODS,
+    eligibleInstallmentMethods,
+    installmentMethodIds,
+    installmentMethodLabel,
+  } = require(path.join(__dirname, '..', 'server', 'config', 'payments'));
+  const { paymentMethodTypesFor } = require(path.join(__dirname, '..', 'server', 'utils', 'paymentGateway'));
+
+  // The four amounts the checkout page actually sells.
+  const depositMethods = eligibleInstallmentMethods(99).map((m) => m.id);
+  const careerMethods = eligibleInstallmentMethods(2499).map((m) => m.id);
+  const personalisedMethods = eligibleInstallmentMethods(4499).map((m) => m.id);
+
+  check('A $99 seat deposit can be paid with Klarna and Afterpay',
+    depositMethods.includes('klarna') && depositMethods.includes('afterpay_clearpay'),
+    depositMethods.join(', ') || 'none');
+  check('The $2,499 Career Program keeps both instalment options',
+    careerMethods.length === 2, careerMethods.join(', '));
+  check('The $4,499 track offers Klarna but not Afterpay',
+    personalisedMethods.length === 1 && personalisedMethods[0] === 'klarna',
+    personalisedMethods.join(', '));
+  check('A zero/unknown amount is never offered instalments',
+    eligibleInstallmentMethods(0).length === 0
+      && eligibleInstallmentMethods(undefined).length === 0
+      && eligibleInstallmentMethods('not-a-number').length === 0);
+
+  check('Every offered method maps to a Stripe payment_method_type id',
+    INSTALLMENT_METHODS.every((m) => /^[a-z_]+$/.test(m.id)) && INSTALLMENT_METHODS.length === 2,
+    INSTALLMENT_METHODS.map((m) => m.id).join(', '));
+  check('Every method carries the wording the checkout page shows',
+    INSTALLMENT_METHODS.every((m) => m.label && m.blurb && m.minAmount >= 0 && m.maxAmount > m.minAmount));
+
+  // The session must ask Stripe for exactly what the page promised — card first,
+  // then the eligible instalments, and never a method outside its window.
+  const offered99 = paymentMethodTypesFor(99);
+  const offered4499 = paymentMethodTypesFor(4499);
+  check('The $99 session asks Stripe for card + Klarna + Afterpay',
+    offered99.join('|') === 'card|klarna|afterpay_clearpay', offered99.join(' + '));
+  check('The $4,499 session never asks for Afterpay (Stripe would drop it silently)',
+    offered4499.join('|') === 'card|klarna', offered4499.join(' + '));
+  check('Card is always first, so a buyer without instalments is never blocked',
+    paymentMethodTypesFor(0)[0] === 'card' && paymentMethodTypesFor(99)[0] === 'card');
+  check('The advertised window matches what is sent to Stripe',
+    installmentMethodIds(2499).join('|') === paymentMethodTypesFor(2499).slice(1).join('|'));
+
+  check('Method ids are turned into receipt labels a client can read',
+    installmentMethodLabel('afterpay_clearpay') === 'Afterpay'
+      && installmentMethodLabel('klarna') === 'Klarna'
+      && installmentMethodLabel('card') === 'Card'
+      && installmentMethodLabel('') === '');
+
+  // Reporting: a session lists every method we OFFERED, so it can only be trusted
+  // as the settled method when exactly one was on offer. Paying the receipt label
+  // with all three would put "card, klarna, afterpay_clearpay" in the ledger.
+  check('A multi-method session is not mistaken for the method that was used',
+    /offered\.length === 1 \? offered\[0\] : ''/.test(paymentControllerSource));
+  check('The settled method is read back from the payment intent (best-effort)',
+    paymentControllerSource.includes('resolveSettledMethod(session)')
+      && typeof require(path.join(__dirname, '..', 'server', 'utils', 'paymentGateway'))
+        .resolveSettledMethod === 'function');
+
+  // Delayed notification: Klarna/Afterpay approve first and settle later, so the
+  // success screen must be able to tell "waiting on the provider" from "not paid".
+  check('The status endpoint exposes a delayed-settlement flag',
+    paymentControllerSource.includes('settlementPending') && paymentControllerSource.includes('sessionStatus'));
+
+  const setupWithInstalments = settingsTest.buildGatewaySetup({
+    gateway: { enabled: true, mode: 'live', currency: 'USD', secretKeyEncrypted: 'v1:x', webhookSecretEncrypted: 'v1:y' },
+    payments: { ready: true, currency: 'USD' },
+    req: fakeReq({ host: 'api.example.com' }),
+  });
+  check('The admin panel is told which instalment methods checkout offers',
+    setupWithInstalments.installments?.methods?.length === INSTALLMENT_METHODS.length
+      && setupWithInstalments.installments.active === true,
+    (setupWithInstalments.installments?.methods || []).map((m) => m.label).join(', '));
+  check('The instalment status block carries no secret material',
+    !JSON.stringify(setupWithInstalments.installments).includes('v1:'));
+
+  const checkoutPageSource = fs.readFileSync(
+    path.join(__dirname, '..', 'client', 'src', 'pages', 'CheckoutPage.jsx'),
+    'utf8',
+  );
+  check('The checkout page advertises the instalment methods it was quoted',
+    checkoutPageSource.includes('res.data?.installments?.available')
+      && checkoutPageSource.includes('Pay in instalments (EMI)'));
+  check('The success screen says an instalment plan is settling, not failed',
+    checkoutPageSource.includes('instalment plan is approved'));
+  const gatewaySource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'utils', 'paymentGateway.js'),
+    'utf8',
+  );
+  check('The admin smoke test stays card-only (a $1 instalment plan is not a thing)',
+    /createSmokeTestSession = async[\s\S]{0,1200}?payment_method_types: \['card'\]/.test(gatewaySource));
+
+  // Measured live, and the reason the client's students would never have seen the
+  // options: with adaptive pricing on, Stripe localises the page (e.g. the amount
+  // shown in ₹) and drops Klarna/Afterpay, which do not support every local
+  // currency. The session has to stay in the store currency for them to appear.
+  check('The checkout session is pinned to the store currency (adaptive pricing off)',
+    /createCheckoutSession = async[\s\S]{0,4000}?adaptive_pricing: \{ enabled: false \}/.test(gatewaySource),
+    'otherwise the page localises the price and silently drops the instalment methods');
+  check('The smoke test keeps its own behaviour (a $1 charge is not a sale)',
+    !/createSmokeTestSession = async[\s\S]{0,4000}?adaptive_pricing/.test(gatewaySource));
+
+  // ───────────────────────────────────────────────────────────────────────
   const failedChecks = results.filter((r) => !r.passed);
   console.log(`\n${'─'.repeat(64)}`);
   console.log(`RESULT: ${results.length - failedChecks.length}/${results.length} checks passed`);

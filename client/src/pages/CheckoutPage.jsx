@@ -108,6 +108,11 @@ export default function CheckoutPage() {
   const [gatewayConfigured, setGatewayConfigured] = useState(() => settings?.payments?.configured === true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Instalment methods (Klarna, Afterpay) this amount qualifies for, straight from
+  // the quote endpoint — the server owns the amount windows, so the badges can
+  // never promise a method that Stripe would silently hide at this price.
+  const [installments, setInstallments] = useState([]);
+
   // 'form' | 'verifying' | 'paid' | 'failed' | 'cancelled' | 'manual'
   const [phase, setPhase] = useState('form');
   const [receipt, setReceipt] = useState(null);
@@ -175,6 +180,9 @@ export default function CheckoutPage() {
         email: buyerEmail || undefined,
       });
       if (res.data?.payments) setGatewayConfigured(Boolean(res.data.payments.configured));
+      setInstallments(
+        res.data?.installments?.available ? (res.data.installments.methods || []) : [],
+      );
       setQuote(res.data.quote);
       return res.data.quote;
     } catch (err) {
@@ -219,10 +227,17 @@ export default function CheckoutPage() {
 
   // ── Return leg from Stripe ────────────────────────────────────────────────
   const pollPaymentStatus = useCallback(async (sessionId) => {
+    // Klarna/Afterpay approve the plan first and settle the money a little later,
+    // so the order can legitimately still be Pending when the student lands back
+    // here. Remember that and say so, instead of the generic "taking longer" line.
+    let instalmentSettling = false;
     for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
       try {
         const res = await axios.get(`/api/payments/checkout-status/${sessionId}`);
         const status = res.data?.status;
+        if (res.data?.settlementPending) {
+          instalmentSettling = true;
+        }
         if (res.data?.paid) {
           setReceipt(res.data.payment);
           setPhase('paid');
@@ -242,7 +257,9 @@ export default function CheckoutPage() {
       await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     }
     setFailureMessage(
-      'We have received your payment but confirmation is taking longer than usual. Please refresh this page in a minute — you will also get an email receipt as soon as it settles.',
+      instalmentSettling
+        ? 'Your instalment plan is approved and the payment is being confirmed by the provider — that can take a few minutes. Refresh this page shortly; your seat is reserved and the receipt is emailed the moment it settles.'
+        : 'We have received your payment but confirmation is taking longer than usual. Please refresh this page in a minute — you will also get an email receipt as soon as it settles.',
     );
     setPhase('failed');
   }, []);
@@ -903,7 +920,9 @@ export default function CheckoutPage() {
                     <div>
                       <div className="text-sm font-bold text-[#002060]">
                         {checkoutCopy.paymentMethodTitle
-                          || (gatewayConfigured ? 'Card · Apple Pay · Google Pay' : 'Secure Stripe payment link')}
+                          || (gatewayConfigured
+                            ? ['Card · Apple Pay · Google Pay', ...installments.map((m) => m.label)].join(' · ')
+                            : 'Secure Stripe payment link')}
                       </div>
                       <p className="text-xs text-slate-600 leading-relaxed mt-1">
                         {checkoutCopy.paymentMethodBody
@@ -914,6 +933,34 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 )}
+                {/* Instalments / pay-later (EMI). Students asked to split the fee,
+                    and Klarna + Afterpay are enabled on the Stripe account, so the
+                    options are advertised here — inside the amount window the
+                    server verified for this exact tier. */}
+                {installments.length > 0 && (
+                  <div className="p-4 rounded-xl bg-[#F2F6FF] border border-[#002060]/20 space-y-2">
+                    <div className="text-xs font-bold text-[#002060] flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-[#1D4ED8]" />
+                      Pay in instalments (EMI)
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {installments.map((method) => (
+                        <span
+                          key={method.id}
+                          className="px-3 py-1.5 rounded-full bg-white border border-[#002060]/20 text-[11px] font-semibold text-[#002060]"
+                        >
+                          {method.label}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Choose {installments.map((m) => m.label).join(' or ')} on the Stripe payment page to split this
+                      amount — {installments[0].blurb.toLowerCase()}. Approval is decided by the provider, not by
+                      American FutureTech, and your seat is confirmed as soon as the payment settles.
+                    </p>
+                  </div>
+                )}
+
                 {/* The amber "card payments are being activated" box was removed
                     on the client's request (they crossed it out) and replaced
                     with this confirmation note. */}

@@ -7,7 +7,6 @@ import {
   Menu,
   X,
   ArrowRight,
-  ShieldCheck,
   GraduationCap,
   Award,
   ChevronDown,
@@ -264,14 +263,9 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               <Award className="w-3 h-3 text-[#FF6B6B]" />
               <span>Verify Credential</span>
             </Link>
-            <span className="text-white/20">•</span>
-            <Link
-              to="/admin/login"
-              className="flex items-center gap-1 text-[#FFD9D9]/70 hover:text-white transition-colors"
-            >
-              <ShieldCheck className="w-3 h-3" />
-              <span>Admin Console</span>
-            </Link>
+            {/* No Admin Console link in the public topbar: the institute asked
+                to keep staff entry out of the header (Student LMS and the
+                certificate check stay). Staff reach it at /admin/login. */}
           </div>
         </div>
       </div>

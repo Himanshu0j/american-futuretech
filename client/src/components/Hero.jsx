@@ -118,22 +118,29 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               without veiling the graduates' faces. */}
           <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-[#001845] dark:via-[#001845]/55 lg:hidden" />
 
-          {/* Desktop scrim: heavier behind the copy, easing off on the right so
-              the photograph still reads as a photograph. Keeps the page's light
-              aesthetic in light mode and its ink aesthetic in dark mode.
+          {/* Desktop scrim: it has one job — hold the copy's contrast — so it
+              stays near 0.9 across the editorial column and then falls away to
+              nothing. The earlier version still held 0.55 white at the right
+              edge, and the bottom rise below stacked on top of it, putting
+              ~95% white over the lower right of the frame: that is where the
+              graduates are, so the photograph read as a blank panel.
 
               Every stop is written as an arbitrary opacity — `from-white/92`
               and friends compiled to nothing, because Tailwind's `/n` modifier
               only accepts the values on its own opacity scale (multiples of 5).
               Without them this div was a plain white-to-transparent wash, which
               is why the body copy sat on bare photograph and greyed out. */}
-          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-white/[0.94] via-white/[0.84] to-white/[0.55] dark:from-slate-950/[0.95] dark:via-slate-950/[0.88] dark:to-slate-950/[0.72]" />
-          {/* On desktop the trust ledger and the intake line sit over the gowns
-              and caps, where a 55%-white veil is not enough for the smaller
-              type. This taller bottom rise carries them and doubles as the fade
-              into the section's own aurora wash, so the banner has no hard seam
-              against the sections below. */}
-          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-[5%] via-white/[0.88] via-[45%] to-transparent dark:from-[#001845] dark:via-[#001845]/[0.88]" />
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-white/[0.86] from-0% via-white/[0.76] via-[58%] to-transparent to-[88%] dark:from-slate-950/[0.93] dark:via-slate-950/[0.84] dark:to-slate-950/[0.55]" />
+          {/* The copy's lower half — trust ledger and intake line — sits over
+              the black gowns, where a light veil is not enough for 11px type,
+              so this rise carries those two blocks. It is masked off across the
+              right half of the frame on purpose: that is where the faces are,
+              and a full-width rise is exactly what blanked them. */}
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white from-0% via-white/[0.62] via-[45%] to-transparent [mask-image:linear-gradient(to_right,black_0%,black_52%,transparent_78%)] dark:from-[#001845] dark:via-[#001845]/[0.62]" />
+          {/* A short full-width fade, so the photograph's bottom edge still
+              dissolves into the section's own aurora wash instead of ending on
+              a hard line. Deliberately short: only gowns live down here. */}
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[9%] bg-gradient-to-t from-white to-transparent dark:from-[#001845]" />
         </div>
       </div>
 
@@ -180,8 +187,13 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   Written as one arbitrary gradient on purpose: the tuned curve
                   needs six stops, and Tailwind's `from`/`via`/`to` utilities
                   carry only three. The named stop scale is also a trap here — it
-                  ships multiples of 5 only, so `to-76%` compiles to nothing. */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.10)_40%,rgba(255,255,255,0.42)_54%,rgba(255,255,255,0.55)_75%,rgba(255,255,255,0.68)_94%,#ffffff_100%)]" />
+                  ships multiples of 5 only, so `to-76%` compiles to nothing.
+
+                  It needs a dark variant too: written once in white it ended the
+                  band in `#ffffff` over the ink section, and in dark mode the
+                  last headline line then sat white-on-white. The dark curve ends
+                  on #001845 — the colour the section's own aurora ink starts at. */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.10)_40%,rgba(255,255,255,0.42)_54%,rgba(255,255,255,0.55)_75%,rgba(255,255,255,0.68)_94%,#ffffff_100%)] dark:bg-[linear-gradient(to_bottom,rgba(0,24,69,0)_0%,rgba(0,24,69,0.30)_40%,rgba(0,24,69,0.60)_54%,rgba(0,24,69,0.72)_75%,rgba(0,24,69,0.84)_94%,#001845_100%)]" />
             </div>
 
             {/* Staggered Eyebrow Badge */}
@@ -478,7 +490,13 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                           // `fetchPriority` and warns about the camelCase prop.
                           fetchpriority="high"
                           decoding="async"
-                          className="w-full h-[22rem] sm:h-[26rem] lg:h-[30rem] object-cover object-[50%_46%] group-hover:scale-[1.03] transition-transform duration-700"
+                          // The crop carries the headroom now, so the anchor is
+                          // only here for the frames whose shape differs from the
+                          // crop's: from `sm` up to `lg` the frame is much wider
+                          // than the 0.76 portrait, and `object-cover` can only
+                          // show a horizontal slice of it — the default 46%
+                          // centred on the man's chest and cut his head off.
+                          className="w-full h-[22rem] sm:h-[26rem] lg:h-[30rem] object-cover object-[50%_40%] sm:object-[50%_16%] lg:object-[50%_50%] group-hover:scale-[1.03] transition-transform duration-700"
                         />
                       </picture>
                       {/* Soft, bottom-anchored scrim: the photo carries the section,

@@ -134,12 +134,21 @@ Render ke URL se nahi).
 
 | # | Kaam | Kahan | Note |
 |---|---|---|---|
-| 1 | **Stripe webhook URL update** | Stripe → Developers → Webhooks | naya endpoint: `https://<domain>/api/payments/webhook` (admin → Payment Gateway page wahi URL print karta hai). Purana Render endpoint tab tak rakh sakte ho — handler idempotent hai (`event.id` + payment status guard). Cutover confirm hone ke baad purana delete kar do |
+| 1 | **Stripe webhook URL update** | Stripe → Developers → Webhooks | naya endpoint: `https://<domain>/api/payments/webhook` (admin → Payment Gateway page wahi URL print karta hai) — tarika neeche |
 | 2 | **Keep-alive cron** | hPanel → website → Cron Jobs → Create | `*/5 * * * * curl -s https://<domain>/api/health > /dev/null 2>&1` — Hostinger app ko **idle hone par sleep** karta hai; ye cron use warm rakhta hai (aur smoketest watchdog ke timers chalte rehte hain) |
 | 3 | Admin login check | `https://<domain>/admin/login` | password wahi purana (same DB) |
 | 4 | Test booking/payment (chhota amount) | site → checkout | Stripe LIVE keys DB se hi decrypt hoti hain — sirf `JWT_SECRET` same hona chahiye |
 | 5 | Monitoring | hPanel → Monitoring / Analytics | uptime alert on kar do |
 | 6 | `SEED_ON_BOOT=false` aur `REQUIRE_PERSISTENT_DB=true` confirm | Environment variables | ek baar set, hamesha ke liye |
+
+### Stripe webhook shift karne ke do tarike
+
+| Tarika | Kya karna | `whsec_` | Admin panel me |
+|---|---|---|---|
+| **A (recommended)** | purane endpoint ki **URL edit** karo (Render URL → naya domain) | **same rehta hai** | kuch nahi badalna |
+| B | **naya endpoint** banao | **naya secret** milta hai | naya `whsec_` Admin → Payment Gateway me paste karna **zaroori** — warna paisa to katega par enrollment auto-confirm nahi hoga (`webhookConfigured: false` warning aayegi) |
+
+Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`event.id` + payment status guard), duplicate events safe hain. Cutover confirm hone ke baad Render wala endpoint delete kar do. Deploy ke baad Stripe → Webhooks → **Recent deliveries** me 200 dekho.
 
 ---
 

@@ -26,6 +26,26 @@ const authStatus = assertAuthConfig();
 // HEAD — the only way to distinguish "the deploy shipped" from "the push
 // reached GitHub and the box kept running the previous build".
 // `null` means the host did not expose a revision, not that it is current.
+/**
+ * The revision the built website was stamped with (client/vite.config.js).
+ *
+ * A host that runs the API and the website as one deployment has no
+ * RENDER_GIT_COMMIT to read, and /api/health reporting `null` would make "did
+ * the push actually ship?" unanswerable — the one question this field exists
+ * for. The bundle being served already carries the answer in its
+ * `<meta name="x-aft-commit">`, so read it from there instead of giving up.
+ */
+const readServedStamp = () => {
+  try {
+    const html = fs.readFileSync(path.join(__dirname, '../client/dist/index.html'), 'utf8');
+    const match = html.match(/<meta[^>]*name=["']x-aft-commit["'][^>]*content=["']([^"']+)["']/i);
+    const commit = match ? match[1].trim() : '';
+    return commit && commit !== 'unknown' ? commit : null;
+  } catch (error) {
+    return null;
+  }
+};
+
 const buildInfo = {
   commit:
     (
@@ -34,7 +54,7 @@ const buildInfo = {
       process.env.COMMIT_SHA ||
       process.env.SOURCE_VERSION ||
       ''
-    ).trim() || null,
+    ).trim() || readServedStamp(),
   branch:
     (
       process.env.RENDER_GIT_BRANCH ||
@@ -67,6 +87,19 @@ connectDB().then(async () => {
 });
 
 const app = express();
+
+// Exactly one reverse-proxy hop sits in front of this app (Render's router,
+// Hostinger's nginx / Node app runner, any TLS-terminating proxy). Without
+// this, `req.ip` is the proxy's own address, so the per-IP limiter on
+// /api/leads/apply would throttle every visitor on earth as if they were one
+// person — and express-rate-limit would log a validation error on every
+// request that carries X-Forwarded-For.
+//
+// `1` (one trusted hop) and never `true`: with `true` a caller could forge its
+// own address by sending its own X-Forwarded-For, which is the very thing the
+// limiter is supposed to prevent. One hop means only the header appended by the
+// proxy we actually sit behind is believed.
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet({
@@ -181,6 +214,19 @@ app.use('/api', (req, res) => {
 // card image started 404-ing days after the admin uploaded it.
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/uploads/:filename', uploadRoutes.serveStored);
+
+// A miss stays a miss. express.static finds nothing on disk after a redeploy
+// wiped it, serveStored finds nothing in the database, and its `next()` used to
+// hand the request to the SPA catch-all below — which answered 200 text/html
+// for a missing image. That is only reachable when the API and the website run
+// on the same origin, and it turned every broken asset into a fake success.
+app.use('/uploads', (req, res) => {
+  res.status(404).json({
+    success: false,
+    code: 'ASSET_NOT_FOUND',
+    message: `Upload not found: ${req.originalUrl}`,
+  });
+});
 
 // Serve static assets in production if client build exists
 if (process.env.NODE_ENV === 'production') {

@@ -65,7 +65,16 @@ Deploy settings screen par **exactly ye values** rakho:
 > khaali client build chalane par Vite build fail ho jata hai ("vite: not found")
 > aur app `Cannot find module 'express'` dega. `build:hostinger` teeno karta hai:
 > `cd server && npm ci --ignore-scripts` (memory-Mongo binary skip — Atlas
-> use ho raha hai) → `cd ../client && npm ci` → `npm run build`.
+> use ho raha hai) → `cd ../client && npm ci --include=dev` → `npm run build`.
+>
+> **Client install me `--include=dev` kyun?** Panel ke env vars build step me bhi
+> inject hote hain, aur wahan `NODE_ENV=production` set hai — is haalat me npm
+> **devDependencies install hi nahi karta** (sirf production deps aate hain).
+> `vite` devDependency hai, isliye bina flag ke install ke baad build
+> `vite: command not found` par gir jata hai. `--include=dev` sirf is ek install
+> ke liye dev deps laata hai; build khud phir bhi `NODE_ENV=production` ke saath
+> chalta hai. Server install ko iski zaroorat nahi — `nodemon` sirf dev me lagta
+> hai, runtime ke saare deps `dependencies` me hain.
 >
 > **`npm install` ki jagah `npm ci` kyun?** `npm ci` committed
 > `package-lock.json` se exactly wahi versions install karta hai jo local par test
@@ -293,7 +302,7 @@ Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`even
 
 | Log/aisa dikhe | Matlab | Fix |
 |---|---|---|
-| `vite: not found` / `Cannot find module 'vite'` | build script me client deps install nahi hue | Build script = `build:hostinger` ya `build` (dono me install hai), phir redeploy |
+| `vite: command not found` / `vite: not found` | client deps install hi nahi hue, ya `NODE_ENV=production` ki wajah se devDependencies skip ho gayi (vite devDependency hai) | Build script = `build:hostinger` ya `build`, aur client install `npm ci --include=dev` ho — phir redeploy |
 | `npm ci` error: `can only install packages when your package.json and package-lock.json are in sync` | lockfile purani hai | local par `npm install` chala kar `client/` ya `server/` ka `package-lock.json` commit karo, phir redeploy |
 | `Cannot find module 'express'` (runtime) | server deps install nahi hui | wahi — `build:hostinger` / `build`, phir redeploy |
 | Root URL par JSON: `API Core is active` | `NODE_ENV` production nahi hai | env me `NODE_ENV=production` set karo (auto redeploy) |

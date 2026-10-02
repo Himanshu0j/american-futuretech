@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node server/server.js",
     "build": "npm run build:hostinger",
-    "build:hostinger": "cd server && npm ci --ignore-scripts --no-audit --no-fund && cd ../client && npm ci --no-audit --no-fund && npm run build",
+    "build:hostinger": "cd server && npm ci --ignore-scripts --no-audit --no-fund && cd ../client && npm ci --include=dev --no-audit --no-fund && npm run build",
     "logos": "node scripts/generate-logo-variants.js",
     "verify:logos": "node scripts/verify-logo-variants.js",
     "server": "cd server && npm run dev",

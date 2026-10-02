@@ -459,27 +459,70 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   HERO ENTRANCE — one movement, not two.
+
+   The copy used to arrive on a photograph that was already standing still, so
+   nothing tied the two together. The banner now opens first (see
+   `.anim-hero-banner`) and every block of copy is delayed by a fraction of that
+   same run, so the headline, the paragraph and the proof row rise out of the
+   photo while it is still settling instead of after it.
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes heroBannerIn {
+  from {
+    opacity: 0;
+    transform: scale(1.07);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* A very slow breathe on the photograph under the copy. `alternate` keeps it
+   under the threshold where it reads as movement rather than as a glitch, and
+   the shorthand leaves this one without a fill mode on purpose: the global
+   `prefers-reduced-motion` rule cuts it to a single 0.01ms pass, and a fill
+   mode would then leave the photo stuck at its zoomed end state. */
+@keyframes heroBannerDrift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.055) translate3d(0, -1%, 0);
+  }
+}
+
+.anim-hero-banner {
+  animation:
+    heroBannerIn 1.15s cubic-bezier(0.16, 1, 0.3, 1) both,
+    heroBannerDrift 30s ease-in-out 1.15s infinite alternate;
+  will-change: transform, opacity;
+}
+
 .anim-hero-eyebrow {
-  animation: heroSlideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: heroSlideRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  opacity: 0;
 }
 
 .anim-hero-heading {
-  animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
   opacity: 0;
 }
 
 .anim-hero-body {
-  animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
   opacity: 0;
 }
 
 .anim-hero-cta {
-  animation: heroFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.52s both;
   opacity: 0;
 }
 
 .anim-hero-preview {
-  animation: heroScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.22s forwards;
+  animation: heroScaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
   opacity: 0;
 }
 

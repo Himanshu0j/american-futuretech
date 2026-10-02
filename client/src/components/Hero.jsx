@@ -108,7 +108,10 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             // enough: from `sm` up the band is on screen at load, so it fetches
             // immediately, and below `sm` it has no layout box at all.
             loading="lazy"
-            className="w-full h-full object-cover object-[50%_100%] lg:object-[50%_28%]"
+            // The photo is not a still backdrop: it opens (fade + a 7% settle)
+            // and then breathes on a 30s loop, which is the animation the copy
+            // is timed against below (`.anim-hero-banner`, index.css).
+            className="anim-hero-banner w-full h-full object-cover object-[50%_100%] lg:object-[50%_28%]"
           />
 
           {/* Phone/tablet: a short rise that hides the photo's bottom edge
@@ -117,14 +120,20 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
           {/* Desktop scrim: heavier behind the copy, easing off on the right so
               the photograph still reads as a photograph. Keeps the page's light
-              aesthetic in light mode and its ink aesthetic in dark mode. */}
-          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-white/92 via-white/78 to-white/52 dark:from-slate-950/95 dark:via-slate-950/88 dark:to-slate-950/72" />
+              aesthetic in light mode and its ink aesthetic in dark mode.
+
+              Every stop is written as an arbitrary opacity — `from-white/92`
+              and friends compiled to nothing, because Tailwind's `/n` modifier
+              only accepts the values on its own opacity scale (multiples of 5).
+              Without them this div was a plain white-to-transparent wash, which
+              is why the body copy sat on bare photograph and greyed out. */}
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-white/[0.94] via-white/[0.84] to-white/[0.55] dark:from-slate-950/[0.95] dark:via-slate-950/[0.88] dark:to-slate-950/[0.72]" />
           {/* On desktop the trust ledger and the intake line sit over the gowns
               and caps, where a 55%-white veil is not enough for the smaller
               type. This taller bottom rise carries them and doubles as the fade
               into the section's own aurora wash, so the banner has no hard seam
               against the sections below. */}
-          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-5% via-white/82 via-45% to-transparent dark:from-[#001845] dark:via-[#001845]/88" />
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-white from-[5%] via-white/[0.88] via-[45%] to-transparent dark:from-[#001845] dark:via-[#001845]/[0.88]" />
         </div>
       </div>
 
@@ -151,7 +160,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 inside the column's stacking context.
                 ============================================================ */}
             <div
-              className="sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[calc(58vw_+_272px)] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              className="anim-hero-banner sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[calc(58vw_+_272px)] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
               aria-hidden="true"
             >
               {/* The band's height is tied to the copy rather than to a fixed
@@ -207,7 +216,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             {/* One notch darker than the page's default body grey on phones: the
                 first lines land on the tail of the phone band's photograph, where
                 slate-700 measured 4.41:1 and slate-800 clears it comfortably. */}
-            <p className="anim-hero-body text-base sm:text-lg text-slate-800 sm:text-slate-700 dark:text-slate-200 max-w-xl font-normal leading-relaxed">
+            <p className="anim-hero-body text-base sm:text-lg text-slate-800 dark:text-slate-100 max-w-xl font-normal leading-relaxed">
               {heroData.subheadline || 'Rigorous, mentor-guided 6-month career training and 1-on-1 personalized tracks engineered for real industry impact. Master production-grade AI, cybersecurity, and cloud systems with verifiable US credentials and direct placement support.'}
             </p>
 

@@ -34,10 +34,18 @@ ke liye hai. Iske baad Vercel aur Render ki zaroorat nahi rehti.
 
 ## 1. hPanel me Node.js app banao
 
-**hPanel → Websites → Add Website → Deploy Web App → Import Git Repository**
-(public repo hai to GitHub connect karne ki zaroorat nahi — seedha repo URL
-`https://github.com/Himanshu0j/american-futuretech.git` paste kar sakte ho.
-Auto-deploy on push chahiye to GitHub account connect kar lo.)
+**hPanel → Websites → Add Website → Deploy Web App → Import Git Repository →
+Connect with GitHub.** Repo chuno: `Himanshu0j/american-futuretech`, branch `main`.
+
+> **GitHub connect karna optional nahi hai** — auto-deploy (yaani "push karo,
+> live ho jaye") sirf isi raste se milta hai. Sirf repo URL paste karne se ek
+> baar deploy hota hai, push par kuch nahi hota. Approve karte waqt Hostinger
+> GitHub App ko is repo ka access dena zaroori hai (Settings → Applications me
+> baad me check kar sakte ho).
+>
+> **Pehle ek cheez check karo:** agar ye domain is plan me pehle se kisi website
+> ki tarah add hai (jaise default hosting page), to Node.js app banane se pehle
+> wo website **remove** karni padti hai — Hostinger fresh slot expect karta hai.
 
 Deploy settings screen par **exactly ye values** rakho:
 
@@ -56,8 +64,55 @@ Deploy settings screen par **exactly ye values** rakho:
 > hoti hain. Is repo me `server/` aur `client/` ke apne `package.json` hain, isliye
 > khaali `build` chalane par Vite build hi fail ho jayega ("vite: not found") aur
 > app `Cannot find module 'express'` dega. `build:hostinger` teeno karta hai:
-> `npm --prefix server install --ignore-scripts` (memory-Mongo binary skip — Atlas
-> use ho raha hai) → `npm --prefix client install` → `npm --prefix client run build`.
+> `cd server && npm install --ignore-scripts` (memory-Mongo binary skip — Atlas
+> use ho raha hai) → `cd ../client && npm install` → `npm run build`. Panel ka
+> build-command picker ye naam seedha `package.json` ki scripts se dikhata hai —
+> **`build:hostinger`** hi chuno, warna khaali `build` chal jayega.
+
+---
+
+## 1b. Push = live (auto-deploy) — ek baar set karo, phir hamesha
+
+Hostinger ka Node.js app GitHub se juda hone ke baad **khud hi auto-deploy** karta
+hai. Yaani aage jo bhi change local me karo: `git push origin main` — Hostinger
+naya commit pull karke install + build chala kar live kar dega. Koi zip upload
+nahi, koi manual redeploy nahi. (Hostinger docs: *"push to the connected branch
+and Hostinger triggers a rebuild automatically"*.)
+
+Kya hota hai push par:
+
+1. Tum `git push origin main` karte ho.
+2. GitHub webhook se Hostinger ko signal deta hai — **ye webhook Hostinger khud
+   manage karta hai**, GitHub me manually add karne ki zaroorat nahi.
+3. Hostinger naya commit pull karta hai → install → `build:hostinger`.
+4. Build green hone par naya process live. Website aur API dono wahi commit
+   serve karte hain (`/api/health` ke `build.commit` se confirm hota hai).
+
+Iske liye teen cheezein sahi honi chahiye:
+
+- App **Import Git Repository → Connect with GitHub** se bana ho.
+- **Branch = `main`** (wahi branch jispar push karte ho).
+- Overview tab par **Auto-deployment** chip dikhe. Agar "Repository access
+  missing" ya "different GitHub account" likha ho to wahin se *Manage access* →
+  fix kar do, warna push par deploy trigger nahi hoga.
+
+Roz ka kaam aise hoga:
+
+```bash
+git add <files> && git commit -m "..." && git push origin main
+# 2-4 min baad: hPanel → website → Deployments → last build log
+curl -s https://<domain>/api/health | grep -o '"commit":"[^"]*"'   # naya commit aana chahiye
+```
+
+- **Build fail hua to live purana version hi chalta rehta hai** — isliye bina darr
+  push karo. Fail hone par Deployments me Hostinger khud AI analysis + "Fix and
+  redeploy" deta hai.
+- Iske baad **Vercel/Render ki zaroorat nahi** rahegi; jab tak unhe retire na karo
+  dono chalte rahenge (aur wahi Atlas DB use karenge — kuch tootega nahi).
+- Agar pipeline apni **GitHub Actions** me chahiye (custom checks ke saath) to
+  Hostinger CI/CD endpoints bhi deta hai: *Generate Upload URL* → archive PUT →
+  *Start Node.js build* (API token ke saath). Ye sirf tab chahiye jab panel ka git
+  flow kisi wajah se use na ho sake.
 
 ---
 
@@ -172,6 +227,21 @@ Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`even
 6. **Vercel/Render chalu rakhna hai?** Dono abhi bhi same Atlas DB use karte hain,
    isliye kuch tootega nahi — bas do jagah se data likha ja sakta hai. Cutover
    confirm hone ke baad hi un services/`vercel.json` ko retire karo.
+7. **Files kahan land karti hain:** server app ka build
+   `~/domains/<domain>/hbuilds/current/nodejs` me (`current` ek symlink hai), aur
+   `public_html` me Hostinger apna **`.htaccess`** likhta hai jo requests ko Node
+   process par bhejta hai. Us `.htaccess` ko hand-edit mat karo — redeploy usse
+   dobara likh deta hai.
+8. **Debugging:** Web App dashboard par **Running** badge se process **Restart** ho
+   jata hai, aur **Runtime Logs** me app ka apna output (stdout/stderr) milta hai.
+   Build green tha par site down hai to wahi dekho — 90% cases me env var ya port
+   ka issue hota hai.
+9. **DB connect wizard:** Web App dashboard me **Connect a database → MongoDB
+   Atlas** — connection string paste karo, `MONGODB_URI` khud set hota hai aur app
+   redeploy ho jata hai (Atlas me Hostinger IP allowlist karna bhi guide me likha
+   hota hai). Manual env bhi kaam karta hai; ye sirf shortcut hai. Hostinger npm
+   packages ka **vulnerability scan** bhi karta hai aur fix ke liye auto PR bana
+   deta hai.
 
 ---
 
@@ -187,6 +257,8 @@ Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`even
 | Website khulti hai par API 404/500 | entry file galat | Entry file = `server/server.js` |
 | Images broken, `/uploads/x.png` 404 | disk copy gayi aur DB me nahi hai | file admin se dobara upload karo (ab mirror bana rahega) |
 | Build 15 min me poora nahi hua | pehla build bhari hota hai | dobara Deploy dabao (install cache ho jata hai) |
+| **403 Forbidden** (redeploy ke baad) | `public_html` ka auto-generated `.htaccess` stale ho gaya | hPanel se **Redeploy** karo — file dobara ban jayegi (khud edit nahi karni) |
+| Push karne par deploy trigger nahi hua | Git connection toot gaya / galat branch | Overview tab par auto-deployment status dekho — branch `main` aur repo access sahi karo |
 
 Har build ka poora log **hPanel → Deployments → last build** me milta hai — fail hone
 par Hostinger khud AI analysis aur "Fix and redeploy" bhi deta hai.
@@ -204,6 +276,7 @@ Output directory : (khaali)
 Entry file       : server/server.js
 Package manager  : npm
 Repo             : https://github.com/Himanshu0j/american-futuretech.git  (branch: main)
+                   GitHub se connect karo — isi se push par auto-deploy milta hai
 
 Env (deploy/hostinger.env.example se import):
   NODE_ENV=production

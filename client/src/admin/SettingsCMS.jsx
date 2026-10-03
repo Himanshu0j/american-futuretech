@@ -47,6 +47,43 @@ import RepeatableListInput from './components/RepeatableListInput';
 import ImageUploadInput from './components/ImageUploadInput';
 import PaymentGatewayPanel from './PaymentGatewayPanel';
 
+/**
+ * What this screen actually owns.
+ *
+ * The state object is built by spreading the whole `/api/settings` response, so
+ * it also carries the inline website editor's `textOverrides` / `imageOverrides`
+ * (per-page DOM keys — by far the biggest part of the document), the payment
+ * gateway block, and mongoose's system fields. Posting all of that back on every
+ * publish was not just wasteful:
+ *
+ *   • the overrides are saved by their OWN endpoint (`/settings/site-editor`),
+ *     which the editor calls per page. Re-sending them here re-uploads the
+ *     entire site's edits on every CMS save — tens of kilobytes that made the
+ *     request grow past the API's body limit and return 413 "request entity too
+ *     large", so NO admin tab could save anything.
+ *   • `paymentGateway` is stripped server-side on purpose (the browser only
+ *     holds masked hints; writing it back would wipe the encrypted Stripe
+ *     secrets). Sending it anyway only added weight.
+ *   • system fields are never written back from a request body.
+ *
+ * Anything not listed here is still sent — this removes only what another
+ * endpoint (or the server itself) owns.
+ */
+const stripNonCmsFields = (settings) => {
+  if (!settings || typeof settings !== 'object') return settings;
+  const {
+    textOverrides,
+    imageOverrides,
+    paymentGateway,
+    _id,
+    __v,
+    createdAt,
+    updatedAt,
+    ...cms
+  } = settings;
+  return cms;
+};
+
 export default function SettingsCMS() {
   // `?tab=payments` lets other screens (e.g. the billing ledger's "gateway not
   // ready" banner) deep-link straight to the right tab instead of dropping the
@@ -347,7 +384,10 @@ export default function SettingsCMS() {
     try {
       setSaving(true);
       const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
-      const res = await axios.put('/api/settings', settings, {
+      // Send only the CMS-owned sections: the inline editor's overrides and the
+      // gateway block belong to other endpoints and made this request large
+      // enough to be refused with a 413 (see stripNonCmsFields above).
+      const res = await axios.put('/api/settings', stripNonCmsFields(settings), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.success) {
@@ -359,7 +399,9 @@ export default function SettingsCMS() {
           setFeedback({ type: 'success', message: 'Site CMS configuration saved and live on production!' });
         }
         if (res.data.settings) {
-          setSettings(prev => ({ ...prev, ...res.data.settings }));
+          // Merge only what this screen owns, so a publish can never overwrite
+          // the overrides/gateway state with a response that has none.
+          setSettings(prev => ({ ...prev, ...stripNonCmsFields(res.data.settings) }));
         }
       }
     } catch (err) {

@@ -20,7 +20,10 @@ const { spawn } = require('child_process');
 module.paths.push(path.join(__dirname, '..', 'server', 'node_modules'));
 const mongoose = require('mongoose');
 
-const PORT = 5199;
+// Port 5199 is the Vite dev server's home; the suite must not fight it for the
+// port (a stale dev server made this suite report "server never became
+// reachable" while the API itself was fine). Overridable for local runs.
+const PORT = Number(process.env.VERIFY_PORT) || 5399;
 const BASE = `http://127.0.0.1:${PORT}`;
 const SEED_ADMIN_PASSWORD = 'Vertex-Cohort-2026!z';
 const DB_NAME = `aft_cmstest_${Date.now()}`;
@@ -201,6 +204,66 @@ const run = async () => {
     // 8. Badge: a bogus key must never silently reappear in the stored document.
     const finalRead = await request('GET', '/api/settings');
     check('Unknown fields are not stored', finalRead.json?.settings?.capstone?.notARealField === undefined);
+
+    // 8b. A full CMS publish must fit in the request body.
+    //
+    //     SettingsCMS used to post the WHOLE /api/settings response back —
+    //     including the inline editor's text/image overrides, which are the
+    //     biggest part of the document and are saved by their own endpoint. Once
+    //     the site's overrides grew, the request crossed the API's body limit and
+    //     every admin tab answered 413 "request entity too large": the client
+    //     reported "admin se kuch bhi update nahi ho raha" while the API itself
+    //     was healthy. The CMS now sends only the sections it owns, and the body
+    //     limit is explicit — this check locks both in.
+    const bigOverrides = {};
+    const bigImages = {};
+    for (let i = 0; i < 12; i += 1) {
+      bigOverrides[`/bulk-${i}`] = {};
+      bigImages[`/bulk-${i}`] = {};
+      for (let j = 0; j < 60; j += 1) {
+        bigOverrides[`/bulk-${i}`][`main0>section${j}>h1#t0`] = {
+          original: 'Original wording '.repeat(4),
+          value: 'Edited wording '.repeat(8),
+        };
+        bigImages[`/bulk-${i}`][`main0>img${j}`] = { original: `/a-${j}.png`, value: `/b-${j}.png` };
+      }
+    }
+    let bulkAccepted = 0;
+    for (let i = 0; i < 12; i += 1) {
+      const bulkEditor = await request('PUT', '/api/settings/site-editor', {
+        token,
+        body: { route: `/bulk-${i}`, text: bigOverrides[`/bulk-${i}`], images: bigImages[`/bulk-${i}`] },
+      });
+      if (bulkEditor.status === 200) bulkAccepted += 1;
+    }
+    check('Large editor payloads are accepted page after page', bulkAccepted === 12, `${bulkAccepted}/12 routes`);
+
+    const stored = await request('GET', '/api/settings');
+    const fullDoc = stored.json?.settings || {};
+    const fullDocSize = Buffer.byteLength(JSON.stringify(fullDoc));
+    const cmsOnly = { ...fullDoc };
+    delete cmsOnly.textOverrides;
+    delete cmsOnly.imageOverrides;
+    delete cmsOnly.paymentGateway;
+    delete cmsOnly._id;
+    delete cmsOnly.__v;
+    delete cmsOnly.createdAt;
+    delete cmsOnly.updatedAt;
+    const cmsOnlySize = Buffer.byteLength(JSON.stringify(cmsOnly));
+    check('A realistic settings document is bigger than a CMS save needs to be',
+      fullDocSize > 100 * 1024, `${(fullDocSize / 1024).toFixed(1)} kB total`);
+    const bigSave = await request('PUT', '/api/settings', { token, body: cmsOnly });
+    check('The CMS-shaped save (no overrides/gateway/system fields) is accepted',
+      bigSave.status === 200 && bigSave.json?.success === true,
+      `status ${bigSave.status} (${(cmsOnlySize / 1024).toFixed(1)} kB)`);
+    const afterBig = await request('GET', '/api/settings');
+    check('The bulk editor page survived the CMS save',
+      Object.keys(afterBig.json?.settings?.textOverrides?.['/bulk-0'] || {}).length === 60,
+      `${Object.keys(afterBig.json?.settings?.textOverrides?.['/bulk-0'] || {}).length} entries`);
+
+    for (let i = 0; i < 12; i += 1) {
+      await request('DELETE', `/api/settings/site-editor?route=${encodeURIComponent(`/bulk-${i}`)}`, { token });
+    }
 
     // 9. Per-course blocks must survive CREATE, not just update. The create
     //    handler copies an explicit field list, so the admin's "which ways to

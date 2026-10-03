@@ -122,16 +122,32 @@ const applyLimiter = rateLimit({
 });
 
 // Parsers
+//
+// The size limits are explicit, and deliberately so. Express defaults to 100 kB,
+// which turned out to be SMALLER than the admin's own saved content: the CMS
+// re-sends the stored settings document on every publish, and once the inline
+// editor's text/image overrides grew the document past 100 kB, every single
+// save answered 413 "request entity too large". The client experienced that as
+// "admin se kuch bhi update nahi ho raha" — nothing on the site could be
+// changed, from any tab, while every request still looked like a server fault.
+//
+// The inline editor gets its own, larger ceiling mounted first: its own limits
+// (1500 entries x 2000 characters per page) allow a single-page payload that
+// would otherwise 413 long before the editor's own validation ever ran. The
+// global ceiling stays far below the 2 MB "oversized body" probe the security
+// suite asserts is refused, so the DoS protection is unchanged.
+app.use('/api/settings/site-editor', express.json({ limit: '8mb' }));
 // `verify` keeps the untouched request body around so the Stripe webhook can be
 // validated against its signature (a re-serialized body would break the hash).
 app.use(
   express.json({
+    limit: '1mb',
     verify: (req, res, buf) => {
       req.rawBody = buf;
     },
   }),
 );
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Healthcheck — also reports whether stored content is durable across restarts
 app.get('/api/health', (req, res) => {

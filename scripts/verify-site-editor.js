@@ -20,7 +20,9 @@ const mongoose = require('mongoose');
 const { EDITOR_LIMITS } = require(path.join(__dirname, '..', 'server', 'controllers', 'settingsController'));
 
 const SERVER_DIR = path.join(__dirname, '..', 'server');
-const PORT = 5196;
+// Overridable so the suite can run next to a dev server without fighting for
+// a fixed port.
+const PORT = Number(process.env.VERIFY_PORT) || 5396;
 const BASE = `http://127.0.0.1:${PORT}`;
 const DB_NAME = `aft_editortest_${Date.now()}`;
 const MONGO_URI = `mongodb://127.0.0.1:27018/${DB_NAME}`;
@@ -247,6 +249,28 @@ const run = async () => {
     check('settings.textOverrides is exposed to the public site',
       Boolean(settingsDoc.json?.settings?.textOverrides?.[ROUTE]),
       Object.keys(settingsDoc.json?.settings?.textOverrides || {}).join(', '));
+
+    // A key/value the OLD client-side pre-flight refused must now go through.
+    //
+    //     client/src/lib/siteOverrides.js still carried the old 90/600 ceilings
+    //     after the server had moved to 140/2000, so a page whose DOM key or
+    //     wording crossed the stale client value was blocked by the editor itself
+    //     — the admin was told the change "cannot be stored" while the API would
+    //     have accepted it. Both ceilings are now the shipped ones.
+    const midKey = `div0>${'k'.repeat(100)}>span1#t0`; // >90, <140
+    const midValue = 'M'.repeat(900);                   // >600, <2000
+    const midRes = await request('PUT', '/api/settings/site-editor', {
+      token,
+      body: { route: '/faq', text: { [midKey]: { original: 'Old', value: midValue } } },
+    });
+    check('A key past the OLD 90-char client ceiling is accepted',
+      midRes.status === 200 && midRes.json?.saved === 1,
+      `saved ${midRes.json?.saved}, rejections ${JSON.stringify(midRes.json?.rejections)}`);
+    const midRead = await request('GET', '/api/settings/site-editor?route=%2Ffaq');
+    check('Its 900-character text round-trips too',
+      midRead.json?.text?.[midKey]?.value === midValue,
+      `${midRead.json?.text?.[midKey]?.value?.length} chars stored`);
+    await request('DELETE', '/api/settings/site-editor?route=%2Ffaq', { token });
 
     const partial = await request('PUT', '/api/settings', { token, body: { depositPriceUSD: 99 } });
     check('A normal settings save still reports no ignored paths',

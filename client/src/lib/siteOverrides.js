@@ -621,14 +621,19 @@ export const pendingRoutes = () => {
 };
 
 /* ── Pre-flight validation ──────────────────────────────────────────────────
-   The server refuses an entry whose key is longer than 90 characters or whose
-   text passes 600, and used to report only "N were rejected". The same rules are
-   checked here so the editor can name the offending element and say why BEFORE
-   Publish — and so Publish can explain itself if one still slips through.
+   These ceilings mirror the server's (`EDITOR_LIMITS` in
+   server/controllers/settingsController.js) and must be raised together with
+   it. They used to be the OLD, tighter pair (90 / 600) long after the server
+   had moved to 140 / 2000: a page whose DOM key or wording crossed the stale
+   client value was refused by the editor itself, before Publish ever reached
+   the API — the admin was told their change "cannot be stored" when the server
+   would have accepted it happily. Checked here so the editor can name the
+   offending element and say why BEFORE Publish, and so Publish can explain
+   itself if one still slips through.
 ---------------------------------------------------------------------------*/
 export const EDITOR_LIMITS = {
-  keyLength: 90,
-  textLength: 600,
+  keyLength: 140,
+  textLength: 2000,
   imageUrlLength: 1000,
 };
 

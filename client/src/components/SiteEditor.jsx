@@ -168,7 +168,10 @@ export default function SiteEditor() {
     const texts = [];
     collectTextNodes().forEach((node) => {
       const value = (node.nodeValue || '').trim();
-      if (value.length < 2 || value.length > 600) return;
+      // Snapshot filter only — the real ceiling is EDITOR_LIMITS.textLength,
+      // which the pre-flight check reports by name. Skipping a long node here
+      // would hide the very element the admin needs to be told about.
+      if (value.length < 2 || value.length > EDITOR_LIMITS.textLength) return;
       const key = pathKey(node);
       if (!key) return;
       const entry = current.text[key];

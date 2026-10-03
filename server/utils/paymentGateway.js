@@ -23,6 +23,11 @@ const ALLOWED_FALLBACK_ORIGINS = [
   'https://american-futuretech.vercel.app',
   'https://americanfuturetech.com',
   'https://www.americanfuturetech.com',
+  // The live custom domain: without it, a checkout started from the domain the
+  // client shares fell through to the localhost fallback — the paid redirect
+  // landed on a dead address.
+  'https://americanfuturetechllc.com',
+  'https://www.americanfuturetechllc.com',
 ];
 
 const stripTrailingSlash = (url) => String(url || '').replace(/\/+$/, '');

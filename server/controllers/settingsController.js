@@ -1,7 +1,9 @@
+const crypto = require('crypto');
 const SiteSettings = require('../models/SiteSettings');
 const AuditLog = require('../models/AuditLog');
 const { encryptSecret, decryptSecret, maskSecret } = require('../utils/secretVault');
 const { sendError } = require('../utils/apiError');
+const publicCache = require('../utils/publicCache');
 const {
   getPaymentStatus,
   setRuntimeSecrets,
@@ -13,58 +15,122 @@ const {
   INSTALLMENT_METHODS,
 } = require('../config/payments');
 
+// How long a public settings reply may be reused before the database is asked
+// again. Short enough that a save is visible almost immediately even if an
+// invalidation is ever missed, long enough that a burst of visitors costs one
+// query instead of one each.
+const PUBLIC_SETTINGS_TTL_MS = 30 * 1000;
+
+/**
+ * Public response caching.
+ *
+ * `/api/settings` is fetched by every page of the public site and is the single
+ * largest reply the site downloads (148 kB live). The document is small in
+ * production, but each request also runs the schema-default back-fill queries
+ * above and round-trips to Atlas — 1.3–1.9 s measured live, on every visit.
+ * The reply is now cached in-process for a short window and dropped by every
+ * write path below, so the admin's change still appears immediately while
+ * repeat visitors skip the query entirely.
+ *
+ * The ETag is sent with it: the browser revalidates and gets a bodiless 304
+ * instead of re-downloading the whole document.
+ */
+const sendCachedJson = (res, { payload, req }) => {
+  const body = JSON.stringify(payload);
+  const etag = `W/"${crypto.createHash('sha1').update(body).digest('base64url')}"`;
+
+  res.set('Cache-Control', 'no-cache');
+  res.set('ETag', etag);
+
+  if (req?.headers?.['if-none-match']?.split(',').map((v) => v.trim()).includes(etag)) {
+    return res.status(304).end();
+  }
+
+  res.set('Content-Type', 'application/json; charset=utf-8');
+  return res.send(body);
+};
+
 // @desc    Get site settings
 // @route   GET /api/settings
-// @access  Public
+// @access  Public (richer reply for an authenticated admin)
 const getSiteSettings = async (req, res) => {
   try {
-    let settings = await SiteSettings.findOne();
-    if (!settings) {
-      settings = await SiteSettings.create({});
-    } else {
-      let modified = false;
-      const schemaDefaults = new SiteSettings().toObject();
-      const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies', 'sisterCompany', 'pedagogy', 'careerSupport', 'headerMenu'];
+    const wantsEditorMaps = Boolean(req.user);
+    const cacheKey = wantsEditorMaps
+      ? `${publicCache.CACHE_KEYS.publicSettings}:admin`
+      : publicCache.CACHE_KEYS.publicSettings;
 
-      // Populate the leadership roster for existing databases that predate the team CMS
-      if (!settings.leadership || settings.leadership.length === 0) {
-        settings.leadership = schemaDefaults.leadership;
-        modified = true;
-      }
-      
-      for (const key of keysToCheck) {
-        if (!settings[key] || (typeof settings[key] === 'object' && Object.keys(settings[key].toObject ? settings[key].toObject() : settings[key]).length === 0)) {
-          settings[key] = schemaDefaults[key];
-          modified = true;
-        }
-      }
+    const { body } = await publicCache.read(cacheKey, PUBLIC_SETTINGS_TTL_MS, () =>
+      buildPublicSettingsPayload(wantsEditorMaps));
 
-      // Check specifically if capstone.tools or roadmap.steps or trustedCompanies.companies are empty
-      if (!settings.capstone?.tools || settings.capstone.tools.length === 0) {
-        if (!settings.capstone) settings.capstone = {};
-        settings.capstone.tools = schemaDefaults.capstone.tools;
-        modified = true;
-      }
-      if (!settings.roadmap?.steps || settings.roadmap.steps.length === 0) {
-        if (!settings.roadmap) settings.roadmap = {};
-        settings.roadmap.steps = schemaDefaults.roadmap.steps;
-        modified = true;
-      }
-      if (!settings.trustedCompanies?.companies || settings.trustedCompanies.companies.length === 0) {
-        if (!settings.trustedCompanies) settings.trustedCompanies = {};
-        settings.trustedCompanies.companies = schemaDefaults.trustedCompanies.companies;
-        modified = true;
-      }
-
-      if (modified) {
-        await settings.save();
-      }
-    }
-    // Gateway secrets are write-only: the browser never receives them.
-    return res.status(200).json({ success: true, settings: stripGatewaySecrets(settings) });
+    return sendCachedJson(res, { payload: body, req });
   } catch (error) {
     return sendError(res, error);
   }
+};
+
+/**
+ * The settings document as the public site should receive it.
+ *
+ * Anonymous callers never get `textOverrides` / `imageOverrides`: those maps
+ * are read exclusively by the inline editor (and the admin CMS), and shipping
+ * them to visitors was 94 kB of the 148 kB document — the reply was 148 kB of
+ * each page's weight on every page, 94 kB of it.
+ *
+ * The inline editor never loads them from here anyway: it reads one route at a
+ * time from `GET /api/settings/site-editor?route=…`, so nothing loses data.
+ */
+const buildPublicSettingsPayload = async (includeEditorMaps) => {
+  let settings = await SiteSettings.findOne();
+  if (!settings) {
+    settings = await SiteSettings.create({});
+  } else {
+    let modified = false;
+    const schemaDefaults = new SiteSettings().toObject();
+    const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies', 'sisterCompany', 'pedagogy', 'careerSupport', 'headerMenu'];
+
+    // Populate the leadership roster for existing databases that predate the team CMS
+    if (!settings.leadership || settings.leadership.length === 0) {
+      settings.leadership = schemaDefaults.leadership;
+      modified = true;
+    }
+
+    for (const key of keysToCheck) {
+      if (!settings[key] || (typeof settings[key] === 'object' && Object.keys(settings[key].toObject ? settings[key].toObject() : settings[key]).length === 0)) {
+        settings[key] = schemaDefaults[key];
+        modified = true;
+      }
+    }
+
+    // Check specifically if capstone.tools or roadmap.steps or trustedCompanies.companies are empty
+    if (!settings.capstone?.tools || settings.capstone.tools.length === 0) {
+      if (!settings.capstone) settings.capstone = {};
+      settings.capstone.tools = schemaDefaults.capstone.tools;
+      modified = true;
+    }
+    if (!settings.roadmap?.steps || settings.roadmap.steps.length === 0) {
+      if (!settings.roadmap) settings.roadmap = {};
+      settings.roadmap.steps = schemaDefaults.roadmap.steps;
+      modified = true;
+    }
+    if (!settings.trustedCompanies?.companies || settings.trustedCompanies.companies.length === 0) {
+      if (!settings.trustedCompanies) settings.trustedCompanies = {};
+      settings.trustedCompanies.companies = schemaDefaults.trustedCompanies.companies;
+      modified = true;
+    }
+
+    if (modified) {
+      await settings.save();
+    }
+  }
+
+  // Gateway secrets are write-only: the browser never receives them.
+  const plain = stripGatewaySecrets(settings);
+  if (!includeEditorMaps) {
+    delete plain.textOverrides;
+    delete plain.imageOverrides;
+  }
+  return { success: true, settings: plain };
 };
 
 // Document fields mongoose manages — never written back from a request body.
@@ -220,6 +286,10 @@ const updateSiteSettings = async (req, res) => {
       settings.set(payload);
     }
     await settings.save();
+
+    // The public reply is cached: drop it so the next visitor (and the admin's
+    // own browser, on reload) sees this save instead of the previous document.
+    publicCache.invalidate();
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -426,6 +496,7 @@ const saveSiteEditorOverrides = async (req, res) => {
     settings.markModified('textOverrides');
     settings.markModified('imageOverrides');
     await settings.save();
+    publicCache.invalidate();
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -476,6 +547,7 @@ const resetSiteEditorRoute = async (req, res) => {
     settings.markModified('textOverrides');
     settings.markModified('imageOverrides');
     await settings.save();
+    publicCache.invalidate();
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -771,6 +843,9 @@ const updatePaymentGateway = async (req, res) => {
     gateway.lastUpdatedAt = new Date();
 
     await settings.save();
+    // The public settings reply embeds the gateway's public hints, so the cached
+    // copy is now stale.
+    publicCache.invalidate();
 
     // Apply immediately — no restart needed for the keys to take effect.
     setRuntimeSecrets({ secretKey: secretKeyToApply, webhookSecret: webhookSecretToApply });

@@ -47,7 +47,7 @@ const request = async (method, url, { token, body } = {}) => {
   });
   let json = null;
   try { json = await res.json(); } catch (e) { json = null; }
-  return { status: res.status, json };
+  return { status: res.status, json, headers: res.headers };
 };
 
 const run = async () => {
@@ -244,11 +244,32 @@ const run = async () => {
     });
     check('Writes require authentication', unauthed.status === 401, `status ${unauthed.status}`);
 
-    // The whole settings document must still round-trip with the new fields.
+    /*
+     * The settings document must still round-trip — minus the editor maps for
+     * anonymous callers.
+     *
+     * `textOverrides` / `imageOverrides` are 94 kB of the 148 kB document and
+     * are read exclusively by the editor, which fetches ONE route at a time
+     * from /api/settings/site-editor (asserted above). Shipping the whole map to
+     * every visitor was most of each page's weight and the reason an admin save
+     * used to 413. The public reply must stay lean; an authenticated admin still
+     * gets the full document.
+     */
     const settingsDoc = await request('GET', '/api/settings');
-    check('settings.textOverrides is exposed to the public site',
-      Boolean(settingsDoc.json?.settings?.textOverrides?.[ROUTE]),
-      Object.keys(settingsDoc.json?.settings?.textOverrides || {}).join(', '));
+    check('Anonymous settings reply omits the inline editor override maps',
+      Boolean(settingsDoc.json?.settings)
+      && !('textOverrides' in settingsDoc.json.settings)
+      && !('imageOverrides' in settingsDoc.json.settings),
+      `override keys: ${Object.keys(settingsDoc.json?.settings || {}).filter((k) => /Overrides$/.test(k)).join(', ') || 'none'}`);
+
+    const adminDoc = await request('GET', '/api/settings', { token });
+    check('The admin settings reply still carries them for the CMS',
+      Boolean(adminDoc.json?.settings?.textOverrides?.[ROUTE]),
+      Object.keys(adminDoc.json?.settings?.textOverrides || {}).join(', '));
+
+    check('Public settings replies revalidate instead of re-downloading',
+      settingsDoc.headers?.get('cache-control') === 'no-cache' && Boolean(settingsDoc.headers?.get('etag')),
+      `${settingsDoc.headers?.get('cache-control')} / ${settingsDoc.headers?.get('etag')}`);
 
     // A key/value the OLD client-side pre-flight refused must now go through.
     //
@@ -275,7 +296,16 @@ const run = async () => {
     const partial = await request('PUT', '/api/settings', { token, body: { depositPriceUSD: 99 } });
     check('A normal settings save still reports no ignored paths',
       (partial.json?.ignoredPaths || []).length === 0, JSON.stringify(partial.json?.ignoredPaths));
-    const afterPartial = await request('GET', '/api/settings');
+
+    // A visitor read must show the save on the very next request: the public
+    // reply is cached in-process, and a missed invalidation would be exactly the
+    // "users still see purana data" report this suite exists to prevent.
+    const afterPartialPublic = await request('GET', '/api/settings');
+    check('A save is visible to visitors on the next read (public cache invalidated)',
+      afterPartialPublic.json?.settings?.depositPriceUSD === 99,
+      `depositPriceUSD=${afterPartialPublic.json?.settings?.depositPriceUSD}`);
+
+    const afterPartial = await request('GET', '/api/settings', { token });
     check('A normal settings save does not wipe the editor overrides',
       Object.keys(afterPartial.json?.settings?.textOverrides?.[ROUTE] || {}).length === 3);
 

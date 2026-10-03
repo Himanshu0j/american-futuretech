@@ -10,7 +10,7 @@ Website Editor ka tarika, Academy / LMS, aur saaf-saaf **kya kaam karta hai aur 
 
 ## 0. 60-second quick start
 
-1. **Admin login:** https://american-futuretech.vercel.app/admin/login
+1. **Admin login:** https://americanfuturetechllc.com/admin/login
 2. **Website ka text/image badalna hai** → sidebar → **Website Editor (Text & Images)** → page chuno → **Edit on site**
    → text par click → naya text likho → **Stage change** → **Publish**. Bas, turant sabhi visitors ko dikh jayega.
 3. **Course / video / quiz / student** → sidebar → **Academy / LMS** group.
@@ -23,21 +23,21 @@ Website Editor ka tarika, Academy / LMS, aur saaf-saaf **kya kaam karta hai aur 
 
 | Kya | Link |
 |---|---|
-| **Website (Home)** | https://american-futuretech.vercel.app |
-| All Courses | https://american-futuretech.vercel.app/courses |
-| Careers / Job Board | https://american-futuretech.vercel.app/jobs |
-| Blog | https://american-futuretech.vercel.app/blog |
-| FAQs | https://american-futuretech.vercel.app/faq |
-| Contact | https://american-futuretech.vercel.app/contact |
-| **Student Login** | https://american-futuretech.vercel.app/student/login |
-| Student Register | https://american-futuretech.vercel.app/student/register |
-| **Admin Login** | https://american-futuretech.vercel.app/admin/login |
-| Admin in-app manual | https://american-futuretech.vercel.app/admin/guide |
-| **Certificate Verification (public)** | https://american-futuretech.vercel.app/certificate/&lt;certificate-id&gt; |
-| Server health check | https://american-futuretech-api.onrender.com/api/health |
+| **Website (Home)** | https://americanfuturetechllc.com |
+| All Courses | https://americanfuturetechllc.com/courses |
+| Careers / Job Board | https://americanfuturetechllc.com/jobs |
+| Blog | https://americanfuturetechllc.com/blog |
+| FAQs | https://americanfuturetechllc.com/faq |
+| Contact | https://americanfuturetechllc.com/contact |
+| **Student Login** | https://americanfuturetechllc.com/student/login |
+| Student Register | https://americanfuturetechllc.com/student/register |
+| **Admin Login** | https://americanfuturetechllc.com/admin/login |
+| Admin in-app manual | https://americanfuturetechllc.com/admin/guide |
+| **Certificate Verification (public)** | https://americanfuturetechllc.com/certificate/&lt;certificate-id&gt; |
+| Server health check | https://americanfuturetechllc.com/api/health |
 | Source code (private repo) | https://github.com/Himanshu0j/american-futuretech |
 
-**Certificate demo:** https://american-futuretech.vercel.app/certificate/AFT-CERT-AI9821
+**Certificate demo:** https://americanfuturetechllc.com/certificate/AFT-CERT-AI9821
 (koi bhi certificate number isi page par daal ke verify kar sakta hai — sirf naam aur photo dikhta hai, email nahi.)
 
 > **Version:** Website + Admin Console + Academy/LMS live hain. Website Editor ke do bade fixes is handover wali

@@ -13,7 +13,7 @@ const {
   updatePaymentGateway,
   testPaymentGatewayConnection,
 } = require('../controllers/settingsController');
-const { protect, checkPermission } = require('../middleware/auth');
+const { protect, identifyUser, checkPermission } = require('../middleware/auth');
 
 // Public read of one page's text/image overrides (used by the public overlay).
 const editorReadLimiter = rateLimit({
@@ -51,7 +51,11 @@ const gatewayTestLimiter = rateLimit({
 router.post('/payment-gateway/test', protect, checkPermission('SETTINGS_EDIT'), gatewayTestLimiter, testPaymentGatewayConnection);
 
 // ── Whole-site settings document ─────────────────────────────────────────────
-router.get('/', getSiteSettings);
+// `identifyUser` is not authorization — the route stays public. It only lets the
+// reply tell an admin apart from a visitor: the inline editor's override maps
+// (94 kB of the document) are omitted for anonymous callers, which is most of
+// the weight every visitor used to download on every page view.
+router.get('/', identifyUser, getSiteSettings);
 router.put('/', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), updateSiteSettings);
 router.get('/audit-logs', protect, checkPermission('AUDIT_LOG_VIEW', 'SETTINGS_VIEW'), getAuditLogs);
 

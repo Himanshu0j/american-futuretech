@@ -26,6 +26,12 @@ const PRODUCTION_ORIGINS = [
   'https://american-futuretech.vercel.app',
   'https://americanfuturetech.com',
   'https://www.americanfuturetech.com',
+  // The custom domain the client actually shares. It was missing here, so a
+  // visitor arriving on it got no CORS headers: any admin call made from that
+  // origin was blocked by the site's own API (and `paymentGateway`'s redirect
+  // allowlist did not recognise it either).
+  'https://americanfuturetechllc.com',
+  'https://www.americanfuturetechllc.com',
 ];
 
 // The local dev servers this project uses by default. Development is not

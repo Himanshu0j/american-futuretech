@@ -177,5 +177,38 @@ const authorizeScoped = (roles, permissions) => {
   };
 };
 
-module.exports = { protect, authorize, checkPermission, authorizeScoped };
+/**
+ * Identify the caller when they happen to send a token, but never refuse.
+ *
+ * Public read endpoints (GET /api/settings) answer everyone, yet the admin
+ * panel needs a slightly richer reply than a visitor does — the inline editor's
+ * per-page override maps are admin-only payload, and shipping 94 kB of them to
+ * every anonymous visitor was most of the page's weight. This middleware is the
+ * switch: a valid Bearer token fills `req.user`, anything else (no token, an
+ * expired one, a forged one) is simply anonymous. It must never 401 — the route
+ * is public, and a stale token in a visitor's localStorage would otherwise
+ * blank the whole website.
+ */
+const identifyUser = async (req, res, next) => {
+  const header = req.headers.authorization || '';
+  if (!header.startsWith('Bearer')) return next();
+
+  try {
+    const decoded = jwt.verify(header.split(' ')[1], getJwtSecret());
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user || !user.isActive) return next();
+
+    if (user.passwordChangedAt && decoded.iat) {
+      const changedAtSeconds = Math.floor(user.passwordChangedAt.getTime() / 1000);
+      if (changedAtSeconds > decoded.iat) return next();
+    }
+
+    req.user = user;
+  } catch (err) {
+    /* anonymous — not an error on a public route */
+  }
+  return next();
+};
+
+module.exports = { protect, identifyUser, authorize, checkPermission, authorizeScoped };
 

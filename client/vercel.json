@@ -4,11 +4,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://american-futuretech-api.onrender.com/api/:path*"
+      "destination": "https://americanfuturetechllc.com/api/:path*"
     },
     {
       "source": "/uploads/:path*",
-      "destination": "https://american-futuretech-api.onrender.com/uploads/:path*"
+      "destination": "https://americanfuturetechllc.com/uploads/:path*"
     },
     {
       "source": "/(.*)",

@@ -248,7 +248,19 @@ app.use('/uploads', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   const clientDist = path.join(__dirname, '../client/dist');
   if (fs.existsSync(clientDist)) {
-    app.use(express.static(clientDist));
+    // Vite fingerprints every built asset (`index-CGFa7Rpa.js`), so a given
+    // filename can never change contents: it is safe to cache for a year and a
+    // new build simply references a new name. Without this the browser
+    // revalidated ~50 MB of assets on every visit, which on a slow connection is
+    // most of the "website bhut slow hai" wait. `index.html` deliberately keeps
+    // the default `max-age=0` so a deploy is picked up immediately.
+    app.use(express.static(clientDist, {
+      setHeaders: (res, filePath) => {
+        if (/[/\\]assets[/\\]/.test(filePath)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      },
+    }));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api')) return next();
       res.sendFile(path.join(clientDist, 'index.html'));

@@ -452,9 +452,20 @@ const writeCache = (route, text, images) => {
   }
 };
 
+/*
+ * The warm start is bounded in time for the same reason the settings cache is:
+ * it exists to avoid a flash of the coded text, not to outlive the server's
+ * answer. If the network call fails, an unbounded cache kept painting an edit
+ * that had since been changed or deleted — the visitor saw old wording with no
+ * way to clear it, which is exactly the "users see purana data" report. Past
+ * the window the page waits for the API instead.
+ */
+const CACHE_TTL_MS = 30 * 60 * 1000;
+
 const readCachedRoute = (route) => {
   const entry = readCache()[route];
   if (!entry || typeof entry !== 'object') return null;
+  if (Date.now() - (Number(entry.at) || 0) > CACHE_TTL_MS) return null;
   const text = entry.text && typeof entry.text === 'object' ? entry.text : {};
   const images = entry.images && typeof entry.images === 'object' ? entry.images : {};
   if (Object.keys(text).length === 0 && Object.keys(images).length === 0) return null;

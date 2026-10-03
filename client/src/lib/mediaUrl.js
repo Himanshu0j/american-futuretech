@@ -13,11 +13,15 @@
  *
  * The API host is only guessed when nothing is configured: `VITE_API_URL` wins
  * when set, a local page resolves against its own origin (the dev server proxies
- * /uploads), and otherwise the known Render origin is used — the same host the
- * deployment's own rewrites point at.
+ * /uploads), and otherwise the live site's own domain is used — the same host
+ * the deployment's rewrites point at.
+ *
+ * That fallback used to be the old Render API, which serves a DIFFERENT database
+ * than the live site: a copied brief pointed at it showed content the client had
+ * since changed. One site, one API.
  */
 
-const FALLBACK_API_ORIGIN = 'https://american-futuretech-api.onrender.com';
+const FALLBACK_API_ORIGIN = 'https://americanfuturetechllc.com';
 
 const LOCAL_HOSTS = /^(localhost|127\.0\.0\.1|\[::1\])$/i;
 

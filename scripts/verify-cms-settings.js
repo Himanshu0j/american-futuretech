@@ -238,7 +238,9 @@ const run = async () => {
     }
     check('Large editor payloads are accepted page after page', bulkAccepted === 12, `${bulkAccepted}/12 routes`);
 
-    const stored = await request('GET', '/api/settings');
+    // Read as the admin: the anonymous reply deliberately omits the editor maps
+    // that make the full document big, and this check is about the stored size.
+    const stored = await request('GET', '/api/settings', { token });
     const fullDoc = stored.json?.settings || {};
     const fullDocSize = Buffer.byteLength(JSON.stringify(fullDoc));
     const cmsOnly = { ...fullDoc };
@@ -256,10 +258,27 @@ const run = async () => {
     check('The CMS-shaped save (no overrides/gateway/system fields) is accepted',
       bigSave.status === 200 && bigSave.json?.success === true,
       `status ${bigSave.status} (${(cmsOnlySize / 1024).toFixed(1)} kB)`);
-    const afterBig = await request('GET', '/api/settings');
+    const afterBig = await request('GET', '/api/settings', { token });
     check('The bulk editor page survived the CMS save',
       Object.keys(afterBig.json?.settings?.textOverrides?.['/bulk-0'] || {}).length === 60,
       `${Object.keys(afterBig.json?.settings?.textOverrides?.['/bulk-0'] || {}).length} entries`);
+
+    /*
+     * 8c. What a VISITOR downloads must stay lean.
+     *
+     * The stored document is ~150 kB with the editor maps; the anonymous reply
+     * omits them, because no public page reads them (the overlay fetches one
+     * route at a time). This is what made every page view heavy — and a payload
+     * that big was also what used to overflow the request limit on save.
+     */
+    const anonDoc = await request('GET', '/api/settings');
+    const anonSettings = anonDoc.json?.settings || {};
+    const anonSize = Buffer.byteLength(JSON.stringify(anonSettings));
+    check('Anonymous settings reply omits the editor override maps',
+      !('textOverrides' in anonSettings) && !('imageOverrides' in anonSettings));
+    check('Anonymous settings reply stays well under the stored document size',
+      anonSize < 80 * 1024 && anonSize < fullDocSize - 60 * 1024,
+      `${(anonSize / 1024).toFixed(1)} kB vs ${(fullDocSize / 1024).toFixed(1)} kB stored`);
 
     for (let i = 0; i < 12; i += 1) {
       await request('DELETE', `/api/settings/site-editor?route=${encodeURIComponent(`/bulk-${i}`)}`, { token });
@@ -423,7 +442,9 @@ const run = async () => {
       teamSave.status === 200 && teamIgnored.length === 0,
       `ignoredPaths: ${JSON.stringify(teamIgnored)}`);
 
-    const teamAfter = await request('GET', '/api/settings');
+    // Read as the admin: this block asserts the override maps were persisted,
+    // and those are deliberately absent from the anonymous reply.
+    const teamAfter = await request('GET', '/api/settings', { token });
     const savedSettings = teamAfter.json?.settings || {};
     check('Leadership roster persists and is served to the About page',
       savedSettings.leadership?.[0]?.name === 'Contract Test Leader',

@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const Course = require('../models/Course');
 const AuditLog = require('../models/AuditLog');
 const Module = require('../models/Module');
@@ -6,18 +7,30 @@ const Quiz = require('../models/Quiz');
 const Enrollment = require('../models/Enrollment');
 const { syncCourseCurriculum, normalizeCurriculumForEmbed } = require('../utils/curriculumSync');
 const { sendError } = require('../utils/apiError');
+const publicCache = require('../utils/publicCache');
+
+// How long a public course list may be reused before MongoDB is asked again.
+// The navbar fetches /api/courses on EVERY page of the site (73 kB live, ~1.3 s
+// from Atlas), so a visitor used to pay a database round trip for the menu on
+// top of the settings document. Admin writes drop the cache below, so a new or
+// edited course is visible immediately.
+const PUBLISHED_COURSES_TTL_MS = 30 * 1000;
 
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
 // @access  Public
 const getPublishedCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ isPublished: true }).sort({ createdAt: 1 });
-    return res.status(200).json({
-      success: true,
-      count: courses.length,
-      courses,
+    const { body } = await publicCache.read(publicCache.CACHE_KEYS.publishedCourses, PUBLISHED_COURSES_TTL_MS, async () => {
+      const courses = await Course.find({ isPublished: true }).sort({ createdAt: 1 });
+      return { success: true, count: courses.length, courses };
     });
+
+    // `no-cache` means "store it, but revalidate before reuse": the browser's
+    // own copy then costs a bodiless 304 instead of another 73 kB download.
+    res.set('Cache-Control', 'no-cache');
+    res.set('ETag', `W/"${crypto.createHash('sha1').update(JSON.stringify(body)).digest('base64url')}"`);
+    return res.status(200).json(body);
   } catch (error) {
     return sendError(res, error);
   }
@@ -145,6 +158,8 @@ const createCourse = async (req, res) => {
       details: `Created course: ${course.title} (${course.slug})`,
     });
 
+    publicCache.invalidate(publicCache.CACHE_KEYS.publishedCourses);
+
     return res.status(201).json({
       success: true,
       course,
@@ -197,6 +212,8 @@ const updateCourse = async (req, res) => {
       details: `Updated course: ${course.title}`,
     });
 
+    publicCache.invalidate(publicCache.CACHE_KEYS.publishedCourses);
+
     return res.status(200).json({
       success: true,
       course,
@@ -225,6 +242,7 @@ const toggleBadge = async (req, res) => {
     if (isPublished !== undefined) course.isPublished = isPublished;
 
     await course.save();
+    publicCache.invalidate(publicCache.CACHE_KEYS.publishedCourses);
 
     return res.status(200).json({
       success: true,
@@ -268,6 +286,7 @@ const deleteCourse = async (req, res) => {
     await Quiz.deleteMany({ course: course._id });
     await Module.deleteMany({ course: course._id });
     await course.deleteOne();
+    publicCache.invalidate(publicCache.CACHE_KEYS.publishedCourses);
 
     await AuditLog.create({
       actor: req.user?._id,

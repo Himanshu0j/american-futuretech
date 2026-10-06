@@ -319,7 +319,9 @@ export default function CheckoutPage() {
       return;
     }
 
-    const amount = quote?.amount ?? 0;
+    // A quote for a tier the customer has since moved away from must never
+    // decide the amount admissions is asked to invoice.
+    const amount = (quote?.tier === tier && quote?.amount) || 0;
 
     try {
       setIsSubmitting(true);
@@ -360,11 +362,22 @@ export default function CheckoutPage() {
   };
 
   // ── Amounts for display ───────────────────────────────────────────────────
-  const baseAmount = quote?.originalPrice ?? (
+  /**
+   * Only a quote that belongs to the tier on screen may set these figures.
+   *
+   * `quote` arrives from an async request, so for a moment after a tier switch it
+   * still describes the previous one. The name below updates the instant the
+   * customer picks an option, and a name that disagrees with its own number is
+   * exactly the confusion this section exists to avoid — so the previous tier's
+   * figures are dropped in favour of this selection's own (the same amounts its
+   * fee card shows) until the server answers for this tier.
+   */
+  const quoteForTier = quote?.tier === tier ? quote : null;
+  const baseAmount = quoteForTier?.originalPrice ?? (
     tier === 'deposit' ? depositAmount : tier === 'personalized' ? personalizedPrice : (selectedCourse?.pricing?.discountedPrice || 1899)
   );
-  const discountAmount = quote?.discountAmount ?? 0;
-  const finalAmount = quote?.amount ?? baseAmount;
+  const discountAmount = quoteForTier?.discountAmount ?? 0;
+  const finalAmount = quoteForTier?.amount ?? baseAmount;
 
   /**
    * What the breakdown row calls the charge.

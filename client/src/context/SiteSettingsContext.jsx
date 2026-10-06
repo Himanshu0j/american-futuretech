@@ -31,17 +31,30 @@ const CACHE_TTL_MS = 30 * 60 * 1000;
 /**
  * The snapshot the server embedded in the HTML we are already running in.
  *
- * This is the only source that can be on screen at the FIRST paint — it is
- * parsed before React renders — and it is also the freshest one, because the
- * HTML response is `no-store` and the serving instance built the snapshot from
- * its own settings cache. That is what stops a reload from showing the previous
+ * This is the only source that can be on screen at the FIRST paint — it is read
+ * before React renders — and it is also the freshest one, because the HTML
+ * response is `no-store` and the serving instance built the snapshot from its
+ * own settings cache. That is what stops a reload from showing the previous
  * wording and then swapping: whatever the API would answer is already in the
  * page.
+ *
+ * It arrives as a `type="application/json"` data block rather than an inline
+ * script: helmet's `script-src 'self'` refuses inline JS, so a
+ * `window.__AFT_SETTINGS__=…` script never runs and the app would fall back to
+ * the coded defaults the snapshot exists to replace.
  */
 const readInjectedSettings = () => {
-  if (typeof window === 'undefined') return null;
-  const settings = window.__AFT_SETTINGS__?.settings;
-  return settings && typeof settings === 'object' ? settings : null;
+  if (typeof document === 'undefined' || typeof document.getElementById !== 'function') return null;
+  const tag = document.getElementById('aft-settings-bootstrap');
+  if (!tag) return null;
+  try {
+    const parsed = JSON.parse(tag.textContent || '');
+    const settings = parsed?.settings;
+    return settings && typeof settings === 'object' ? settings : null;
+  } catch (error) {
+    /* a truncated or rewritten block is simply ignored */
+    return null;
+  }
 };
 
 const readCachedSettings = () => {

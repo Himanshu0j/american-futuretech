@@ -103,6 +103,36 @@ const getBootstrapSettings = async () => {
   return body?.settings || null;
 };
 
+/**
+ * The published inline-editor overrides for ONE route, for the first paint.
+ *
+ * The public applier could only warm-start from its own browser cache, so text
+ * the client edited in the inline editor ("Edit this page") went back to the
+ * coded wording until /api/settings/site-editor answered — the same
+ * old-then-new swap the embedded settings snapshot removes, for the half of the
+ * page that the inline editor owns.
+ *
+ * Returned for EVERY route, including the ones with nothing saved: an empty
+ * answer is itself information, because it stops a stale browser copy of a
+ * deleted edit from being painted first.
+ */
+const getBootstrapOverrides = async (route) => {
+  const normalized = normalizeRoute(route);
+  if (!normalized) return null;
+  const { body } = await publicCache.read(
+    `${publicCache.CACHE_KEYS.publicSettings}:overrides:${normalized}`,
+    PUBLIC_SETTINGS_TTL_MS,
+    async () => {
+      const settings = await SiteSettings.findOne().lean();
+      return {
+        text: (settings?.textOverrides?.[normalized]) || {},
+        images: (settings?.imageOverrides?.[normalized]) || {},
+      };
+    },
+  );
+  return { route: normalized, ...(body || { text: {}, images: {} }) };
+};
+
 const buildPublicSettingsPayload = async (includeEditorMaps) => {
   let settings = await SiteSettings.findOne();
   if (!settings) {
@@ -1125,6 +1155,7 @@ const loadPaymentGatewaySecrets = async () => {
 module.exports = {
   getSiteSettings,
   getBootstrapSettings,
+  getBootstrapOverrides,
   updateSiteSettings,
   stripGatewaySecrets,
   getPaymentGatewayStatus,

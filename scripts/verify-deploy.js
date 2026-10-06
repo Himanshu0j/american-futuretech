@@ -481,15 +481,22 @@ const run = async () => {
    */
   try {
     const fresh = await request(`${SITE}/`);
-    const bootstrapTag = (fresh.text.match(/<script id="aft-settings-bootstrap">([\s\S]*?)<\/script>/) || [])[1] || '';
+    const bootstrapTag = (fresh.text.match(/<script id="aft-settings-bootstrap"[^>]*>([\s\S]*?)<\/script>/) || [])[1] || '';
     let snapshot = null;
     try {
-      snapshot = JSON.parse(bootstrapTag.replace(/^\s*window\.__AFT_SETTINGS__\s*=\s*/, '').replace(/;?\s*$/, ''));
+      snapshot = JSON.parse(bootstrapTag);
     } catch (error) {
       snapshot = null;
     }
     check('Served HTML ships the first-paint settings snapshot', Boolean(snapshot?.settings),
-      snapshot?.settings ? '' : 'no window.__AFT_SETTINGS__ in the served HTML');
+      snapshot?.settings ? '' : 'no settings snapshot in the served HTML — a reload will paint the old text first');
+
+    // The inline editor's edits for this route ride in their own data block; a
+    // missing one means "Edit this page" changes go back to painting the previous
+    // value first.
+    const hasOverrideBlock = /<script id="aft-overrides-bootstrap"[^>]*>/.test(fresh.text);
+    check('Served HTML ships the route override snapshot', hasOverrideBlock,
+      hasOverrideBlock ? '' : 'no route override snapshot in the served HTML');
 
     if (snapshot?.settings) {
       const settingsRes = await request(`${API}/api/settings`);

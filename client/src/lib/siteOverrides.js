@@ -462,6 +462,49 @@ const writeCache = (route, text, images) => {
  */
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
+/**
+ * The overrides the SERVER embedded in the HTML we are already running in.
+ *
+ * Same reasoning as the settings snapshot: the browser cache above is by
+ * definition the PREVIOUS state, so an admin who edits a heading in the inline
+ * editor and reloads saw the old wording paint first and the new one swap in a
+ * moment later. The HTML is served `no-store` and carries this route's saved
+ * edits, so the first frame is already the current page — including the empty
+ * answer for a route whose edits were all deleted, which is what stops a stale
+ * cached edit from being painted first.
+ *
+ * It arrives as a `type="application/json"` data block, not an inline script:
+ * helmet's `script-src 'self'` refuses inline JS, so a `window.__AFT_SITE_OVERRIDES__=…`
+ * script would never run.
+ *
+ * The age guard only covers a document restored from the back/forward cache,
+ * where this block was written minutes ago; the server fetch corrects anything
+ * older.
+ */
+const INJECTED_MAX_AGE_MS = 5 * 60 * 1000;
+
+const readInjectedRoute = (route) => {
+  if (typeof document === 'undefined' || typeof document.getElementById !== 'function' || !route) return null;
+  const tag = document.getElementById('aft-overrides-bootstrap');
+  if (!tag) return null;
+
+  let payload = null;
+  try {
+    payload = JSON.parse(tag.textContent || '');
+  } catch (error) {
+    return null;
+  }
+
+  // The server stores routes without a trailing slash (`/courses/` → `/courses`),
+  // so compare the same way or one stray slash would silently disable this.
+  const normalized = String(route).replace(/\/+$/, '') || '/';
+  if (!payload || payload.route !== normalized) return null;
+  if (Date.now() - (Number(payload.at) || 0) > INJECTED_MAX_AGE_MS) return null;
+  const text = payload.text && typeof payload.text === 'object' ? payload.text : {};
+  const images = payload.images && typeof payload.images === 'object' ? payload.images : {};
+  return { text, images };
+};
+
 const readCachedRoute = (route) => {
   const entry = readCache()[route];
   if (!entry || typeof entry !== 'object') return null;
@@ -481,11 +524,24 @@ const readCachedRoute = (route) => {
  * page must never cost the admin work they have not published yet.
  */
 export const hydrateRoute = (route) => {
+  const injected = readInjectedRoute(route);
   const cached = route ? readCachedRoute(route) : null;
   state.route = route || null;
   state.staged = heldDrafts(state.route);
 
   const draftCount = Object.keys(state.staged.text).length + Object.keys(state.staged.images).length;
+
+  if (injected) {
+    state.saved = { text: injected.text, images: injected.images };
+    state.loaded = true;
+    state.loading = false;
+    state.error = null;
+    // Keep the browser cache in step with what the server just told us, so the
+    // next load WITHOUT a snapshot (a SPA navigation, or a push that landed
+    // between them) starts from the same truth instead of an older copy.
+    writeCache(route, injected.text, injected.images);
+    return Object.keys(injected.text).length + Object.keys(injected.images).length > 0;
+  }
 
   if (cached) {
     state.saved = { text: cached.text, images: cached.images };

@@ -280,10 +280,15 @@ const serveClientHtml = async (req, res, next) => {
   const clientDist = path.join(__dirname, '../client/dist');
   try {
     const html = readClientHtml(clientDist);
+    const { getBootstrapSettings, getBootstrapOverrides } = require('./controllers/settingsController');
+    const at = Date.now();
     let snapshot = null;
+    let overrides = null;
     try {
-      const { getBootstrapSettings } = require('./controllers/settingsController');
-      snapshot = await getBootstrapSettings();
+      [snapshot, overrides] = await Promise.all([
+        getBootstrapSettings(),
+        getBootstrapOverrides(req.path),
+      ]);
     } catch (error) {
       // The page must still load when the settings read fails; the app then
       // falls back to its cached copy and the normal fetch.
@@ -291,13 +296,32 @@ const serveClientHtml = async (req, res, next) => {
     }
 
     res.setHeader('Cache-Control', 'no-store, must-revalidate');
-    if (!snapshot) return res.type('html').send(html);
+    if (!snapshot && !overrides) return res.type('html').send(html);
 
-    // `<` is escaped so a value containing `</script>` cannot break out of the
-    // tag; the JSON stays valid because \u003c is the same character.
-    const json = JSON.stringify({ settings: snapshot, at: Date.now() }).replace(/</g, '\\u003c');
-    const script = `<script id="aft-settings-bootstrap">window.__AFT_SETTINGS__=${json};</script>`;
-    return res.type('html').send(html.includes('</head>') ? html.replace('</head>', `${script}\n</head>`) : html + script);
+    /*
+     * The payloads ride in `type="application/json"` tags, NOT as inline JS.
+     *
+     * helmet sets `script-src 'self'`, so an inline `window.__AFT_SETTINGS__=…`
+     * script is refused by the browser and the app silently starts from its
+     * defaults again — the exact regression this feature exists to prevent. A
+     * JSON data block is inert (never executed, so never blocked) and the app
+     * reads it from the DOM.
+     *
+     * `<` is escaped as \u003c so a value containing `</script>` cannot break out
+     * of the tag; the JSON stays valid because it is the same character.
+     */
+    const escape = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+    const scripts = [];
+    if (snapshot) {
+      scripts.push(`<script id="aft-settings-bootstrap" type="application/json">${escape({ settings: snapshot, at })}</script>`);
+    }
+    if (overrides) {
+      // The inline editor's own text/image edits for THIS route — the half of the
+      // page the settings snapshot does not cover.
+      scripts.push(`<script id="aft-overrides-bootstrap" type="application/json">${escape({ ...overrides, at })}</script>`);
+    }
+    const injected = `${scripts.join('\n')}\n`;
+    return res.type('html').send(html.includes('</head>') ? html.replace('</head>', `${injected}</head>`) : html + injected);
   } catch (error) {
     return next(error);
   }

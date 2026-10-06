@@ -80,6 +80,29 @@ const getSiteSettings = async (req, res) => {
  * The inline editor never loads them from here anyway: it reads one route at a
  * time from `GET /api/settings/site-editor?route=…`, so nothing loses data.
  */
+/**
+ * The settings snapshot the serving process embeds in the HTML it hands out.
+ *
+ * Why: the client shipped the coded defaults first and swapped in the saved
+ * content once `/api/settings` answered, so a reload showed the OLD wording for
+ * a moment and then the new one ("phle old vala text aata hai phir new vala").
+ * A browser cache of the previous reply made it worse, and no client-side cache
+ * can fix it: the HTML is the first thing the browser has, so the current text
+ * has to BE in the HTML.
+ *
+ * Same payload the anonymous API serves — gateway secrets are stripped and the
+ * inline editor's override maps are never included, because this JSON is
+ * readable by anyone who views source.
+ */
+const getBootstrapSettings = async () => {
+  const { body } = await publicCache.read(
+    `${publicCache.CACHE_KEYS.publicSettings}:bootstrap`,
+    PUBLIC_SETTINGS_TTL_MS,
+    () => buildPublicSettingsPayload(false),
+  );
+  return body?.settings || null;
+};
+
 const buildPublicSettingsPayload = async (includeEditorMaps) => {
   let settings = await SiteSettings.findOne();
   if (!settings) {
@@ -1101,6 +1124,7 @@ const loadPaymentGatewaySecrets = async () => {
 
 module.exports = {
   getSiteSettings,
+  getBootstrapSettings,
   updateSiteSettings,
   stripGatewaySecrets,
   getPaymentGatewayStatus,

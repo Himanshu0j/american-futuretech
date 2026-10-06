@@ -28,6 +28,22 @@ const SiteSettingsContext = createContext(null);
 const CACHE_KEY = 'aft_site_settings_v1';
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
+/**
+ * The snapshot the server embedded in the HTML we are already running in.
+ *
+ * This is the only source that can be on screen at the FIRST paint — it is
+ * parsed before React renders — and it is also the freshest one, because the
+ * HTML response is `no-store` and the serving instance built the snapshot from
+ * its own settings cache. That is what stops a reload from showing the previous
+ * wording and then swapping: whatever the API would answer is already in the
+ * page.
+ */
+const readInjectedSettings = () => {
+  if (typeof window === 'undefined') return null;
+  const settings = window.__AFT_SETTINGS__?.settings;
+  return settings && typeof settings === 'object' ? settings : null;
+};
+
 const readCachedSettings = () => {
   if (typeof window === 'undefined') return null;
   try {
@@ -61,9 +77,21 @@ const writeCachedSettings = (value) => {
 /** The API answered with JSON settings, not an HTML error/interstitial page. */
 const isSettingsReply = (data) => Boolean(data && typeof data === 'object' && data.success && data.settings);
 
+/**
+ * First-paint state: the server's snapshot wins, the browser cache fills the
+ * gaps it does not cover (the snapshot is only served by the production app),
+ * and nothing is left to the coded defaults when either one exists.
+ */
+const readInitialSettings = () => {
+  const injected = readInjectedSettings();
+  const cached = readCachedSettings();
+  if (injected && cached) return { ...cached, ...injected };
+  return injected || cached;
+};
+
 export function SiteSettingsProvider({ children }) {
-  const [settings, setSettings] = useState(readCachedSettings);
-  const [loading, setLoading] = useState(() => !readCachedSettings());
+  const [settings, setSettings] = useState(readInitialSettings);
+  const [loading, setLoading] = useState(() => !readInitialSettings());
 
   /*
    * The settings document is the site's content, so a failed fetch must not be

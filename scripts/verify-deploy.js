@@ -4,21 +4,21 @@
  *
  * Every other verify:* suite answers "is the code in this repo correct?". This
  * one answers a different question: "did the commit I just pushed actually reach
- * the two live deployments?" Vercel keeping the previous bundle, or Render
- * failing to rebuild, is invisible from a browser — the site loads either way.
+ * the live deployment?" A host that keeps serving the previous build is
+ * invisible from a browser — the site loads either way.
  *
- * How each side reports its revision:
- *   - Vercel : client/vite.config.js stamps the built index.html with
- *              <meta name="x-aft-commit"> (from VERCEL_GIT_COMMIT_SHA).
- *   - Render : /api/health reports `build.commit` (from RENDER_GIT_COMMIT).
+ * How the two halves report their revision:
+ *   - website : client/vite.config.js stamps the built index.html with
+ *               <meta name="x-aft-commit">.
+ *   - API     : /api/health reports `build.commit`.
  *
  * Both are compared against this checkout's HEAD. On top of the revision match
  * the script also exercises behaviour that only the current code produces (the
  * reservation allowlist), so a deploy that reports the right SHA while still
  * running a stale process is caught too.
  *
- * A push is not a deploy. Both providers rebuild after it, and Render's free
- * tier regularly takes minutes, so "just pushed" and "deployed" look identical
+ * A push is not a deploy. The host rebuilds after it, and a slow build makes
+ * "just pushed" and "deployed" look identical
  * from the outside. This script therefore waits: it polls until each live
  * revision reports HEAD, and if the budget runs out it prints an alert naming
  * what is behind, which files in that half of the repo have not shipped, and how
@@ -119,7 +119,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const short = (sha) => (sha ? String(sha).trim().slice(0, 8) : '(none)');
 
 /**
- * True when both refer to the same revision. Allows a short SHA (Vercel can be
+ * True when both refer to the same revision. Allows a short SHA (a host can be
  * configured with a length other than 40) against a full one, but never matches
  * on fewer than 7 characters.
  */
@@ -200,8 +200,8 @@ const alertBehind = (label, liveSha, scope) => {
 };
 
 /**
- * Render's free tier sleeps after ~15 idle minutes, and a 502/503 during a
- * redeploy is transient: retry transport errors and gateway statuses, but let a
+ * An idle host can sleep, and a 502/503 during a redeploy is transient: retry
+ * transport errors and gateway statuses, but let a
  * real application answer (including a 500) through so it fails the check.
  */
 const ATTEMPTS = 4;
@@ -252,7 +252,7 @@ const readMeta = (html, name) => {
   return '';
 };
 
-/** Vercel's revision: the stamp vite.config.js injects into the served index.html. */
+/** The website's revision: the stamp vite.config.js injects into the served index.html. */
 const readSiteStamp = async () => {
   const res = await request(`${SITE}/`);
   return {
@@ -264,7 +264,7 @@ const readSiteStamp = async () => {
   };
 };
 
-/** Render's revision: build.commit in /api/health, retrying a free-tier cold start. */
+/** The API's revision: build.commit in /api/health, retrying a cold start. */
 const fetchApiHealth = async () => {
   for (let attempt = 0; attempt < 12; attempt += 1) {
     try {
@@ -331,10 +331,10 @@ const settleDeployments = async (siteCommit, apiCommit) => {
     }
 
     if (!shaMatch(beforeSite, EXPECTED) && shaMatch(site, EXPECTED)) {
-      note(`Vercel just caught up — now serving ${short(site)}`);
+      note(`website just caught up — now serving ${short(site)}`);
     }
     if (!shaMatch(beforeApi, EXPECTED) && shaMatch(api, EXPECTED)) {
-      note(`Render just caught up — now serving ${short(api)}`);
+      note(`API just caught up — now serving ${short(api)}`);
     }
 
     const elapsed = Math.round((Date.now() - started) / 1000);
@@ -363,8 +363,8 @@ const run = async () => {
   section('0. Expected revision');
   check('This checkout resolves to a commit', /^[0-9a-f]{7,40}$/i.test(EXPECTED), short(EXPECTED));
 
-  // ── 1. Vercel ─────────────────────────────────────────────────────────────
-  section('1. Vercel — front-end build');
+  // ── 1. Website ────────────────────────────────────────────────────────────
+  section('1. Website — front-end build');
   let stamp = { html: '', status: 0, commit: '', branch: '', builtAt: '' };
   try {
     stamp = await readSiteStamp();
@@ -405,8 +405,46 @@ const run = async () => {
     }
   }
 
-  // ── 2. Render ─────────────────────────────────────────────────────────────
-  section('2. Render — API');
+  /*
+   * The FIRST paint must already carry the saved content.
+   *
+   * The site used to render its coded defaults — or a browser-cached copy of an
+   * older reply — and only then swap in what the admin saved, so a reload showed
+   * the old text for a moment and then the new one. The server now embeds the
+   * current settings snapshot in the HTML it serves, which is the only way the
+   * first frame can be right: the markup arrives with the text in it.
+   *
+   * Failing here means a reload can show the stale wording again, either because
+   * the injection is gone or because the HTML is being served from a cache older
+   * than the settings it should carry.
+   */
+  const bootstrapTag = (html.match(/<script id="aft-settings-bootstrap">([\s\S]*?)<\/script>/) || [])[1] || '';
+  let snapshot = null;
+  try {
+    snapshot = JSON.parse(bootstrapTag.replace(/^\s*window\.__AFT_SETTINGS__\s*=\s*/, '').replace(/;?\s*$/, ''));
+  } catch (error) {
+    snapshot = null;
+  }
+  check('Served HTML ships the first-paint settings snapshot', Boolean(snapshot?.settings),
+    snapshot?.settings ? '' : 'no window.__AFT_SETTINGS__ in the served HTML');
+
+  if (snapshot?.settings) {
+    try {
+      const settingsRes = await request(`${API}/api/settings`);
+      const apiText = settingsRes.json?.settings?.announcementBanner?.text || '';
+      const htmlText = snapshot.settings.announcementBanner?.text || '';
+      check('First-paint snapshot matches what the API serves right now',
+        Boolean(apiText) && apiText === htmlText,
+        apiText === htmlText
+          ? `"${apiText.slice(0, 48)}"`
+          : `html "${htmlText.slice(0, 48)}" vs api "${apiText.slice(0, 48)}"`);
+    } catch (error) {
+      check('First-paint snapshot matches what the API serves right now', false, error.message);
+    }
+  }
+
+  // ── 2. API ────────────────────────────────────────────────────────────────
+  section('2. API');
   const health = await fetchApiHealth();
   check('Live API answers /api/health', Boolean(health), health ? '' : 'no response after ~48s — free-tier cold start, or the service is down');
 
@@ -434,14 +472,14 @@ const run = async () => {
 
   if (stampCommit && stampCommit !== 'unknown') {
     check(
-      'Vercel serves the expected commit',
+      'Website serves the expected commit',
       shaMatch(settled.site, EXPECTED),
       `${short(settled.site)} vs ${short(EXPECTED)}`,
     );
   }
   if (apiCommit) {
     check(
-      'Render serves the expected commit',
+      'API serves the expected commit',
       shaMatch(settled.api, EXPECTED),
       `${short(settled.api)} vs ${short(EXPECTED)}`,
     );
@@ -450,19 +488,19 @@ const run = async () => {
   // The API is the half that quietly keeps serving old logic, so when it lags,
   // say what is behind — and whether its half of the repo actually changed.
   if (apiCommit && !shaMatch(settled.api, EXPECTED)) {
-    alertBehind('the Render API', settled.api, 'server');
+    alertBehind('the API', settled.api, 'server');
   }
   if (stampCommit && stampCommit !== 'unknown' && !shaMatch(settled.site, EXPECTED)) {
-    alertBehind('the Vercel site', settled.site, 'client');
+    alertBehind('the website', settled.site, 'client');
   }
 
   // ── 4. Behaviour — the running code, not just a matching label ────────────
   section('4. Live behaviour (proves the current code is what is running)');
   try {
     const res = await request(`${SITE}/api/health`);
-    check('Vercel proxies /api to the API', res.status === 200 && res.json?.status === 'online', `status=${res.status}`);
+    check('The website serves its own /api', res.status === 200 && res.json?.status === 'online', `status=${res.status}`);
   } catch (error) {
-    check('Vercel proxies /api to the API', false, error.message);
+    check('The website serves its own /api', false, error.message);
   }
 
   let courseId = '';

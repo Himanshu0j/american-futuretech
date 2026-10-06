@@ -245,6 +245,64 @@ app.use('/uploads', (req, res) => {
 });
 
 // Serve static assets in production if client build exists
+/**
+ * The built index.html, re-read only when the file actually changes.
+ *
+ * A redeploy replaces the file while this process keeps running, so caching it
+ * for the process lifetime would serve the previous page shell until a restart.
+ */
+let clientHtmlCache = { path: '', mtimeMs: 0, html: '' };
+
+const readClientHtml = (clientDist) => {
+  const file = path.join(clientDist, 'index.html');
+  const { mtimeMs } = fs.statSync(file);
+  if (clientHtmlCache.path !== file || clientHtmlCache.mtimeMs !== mtimeMs) {
+    clientHtmlCache = { path: file, mtimeMs, html: fs.readFileSync(file, 'utf8') };
+  }
+  return clientHtmlCache.html;
+};
+
+/**
+ * Serve the SPA shell with the CURRENT settings embedded in it.
+ *
+ * The client used to render its coded defaults (and later a cached copy of an
+ * older reply) and only then swap in the saved content, which is what showed
+ * "pehle purana text, phir naya text" on every reload. The browser's first paint
+ * can only know what the HTML tells it, so the settings snapshot rides along in
+ * a script tag and the app starts from it: whatever the serving instance would
+ * answer on `/api/settings` is already on screen at paint time.
+ *
+ * `no-store` is deliberate. With the default `max-age=0` the browser revalidates
+ * with an ETag, gets a 304, and reuses the previous HTML — snapshot included —
+ * which would reintroduce exactly the stale first paint this removes.
+ */
+const serveClientHtml = async (req, res, next) => {
+  const clientDist = path.join(__dirname, '../client/dist');
+  try {
+    const html = readClientHtml(clientDist);
+    let snapshot = null;
+    try {
+      const { getBootstrapSettings } = require('./controllers/settingsController');
+      snapshot = await getBootstrapSettings();
+    } catch (error) {
+      // The page must still load when the settings read fails; the app then
+      // falls back to its cached copy and the normal fetch.
+      console.warn('[Settings] Could not embed the first-paint snapshot:', error.message);
+    }
+
+    res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    if (!snapshot) return res.type('html').send(html);
+
+    // `<` is escaped so a value containing `</script>` cannot break out of the
+    // tag; the JSON stays valid because \u003c is the same character.
+    const json = JSON.stringify({ settings: snapshot, at: Date.now() }).replace(/</g, '\\u003c');
+    const script = `<script id="aft-settings-bootstrap">window.__AFT_SETTINGS__=${json};</script>`;
+    return res.type('html').send(html.includes('</head>') ? html.replace('</head>', `${script}\n</head>`) : html + script);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 if (process.env.NODE_ENV === 'production') {
   const clientDist = path.join(__dirname, '../client/dist');
   if (fs.existsSync(clientDist)) {
@@ -254,7 +312,11 @@ if (process.env.NODE_ENV === 'production') {
     // revalidated ~50 MB of assets on every visit, which on a slow connection is
     // most of the "website bhut slow hai" wait. `index.html` deliberately keeps
     // the default `max-age=0` so a deploy is picked up immediately.
+    // `index: false` sends `/` and `/index.html` to the bootstrap handler below
+    // instead of letting static serve the file as-is: the HTML is the only place
+    // the current content can reach the FIRST paint, and static cannot inject it.
     app.use(express.static(clientDist, {
+      index: false,
       setHeaders: (res, filePath) => {
         if (/[/\\]assets[/\\]/.test(filePath)) {
           res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -263,7 +325,7 @@ if (process.env.NODE_ENV === 'production') {
     }));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api')) return next();
-      res.sendFile(path.join(clientDist, 'index.html'));
+      return serveClientHtml(req, res, next);
     });
   } else {
     app.get('/', (req, res) => {

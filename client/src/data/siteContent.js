@@ -299,13 +299,14 @@ export const DEFAULT_TOOL_CATEGORIES = [
 /**
  * Starting point for the admin's "Career Paths" list (Settings → Career Paths).
  *
- * The seven positions the client reviewed on the Data Science page: pressing
- * "Load default positions" in the admin fills the editor with these rows, so
- * every title is immediately editable/removable instead of the admin having to
- * retype the whole list to change one job title.
+ * The complete coded list of the flagship Data Science track — the positions the
+ * client reviewed — so pressing "Load default positions" in the admin puts every
+ * one of them in the editor as a real row, renameable/removable, instead of the
+ * admin retyping the list to change a single job title.
  *
- * Only a SEED for the editor and for a database that has no configured list
- * yet — whatever the admin saves takes over from here.
+ * The list must stay COMPLETE: seeding only the rows visible in a screenshot
+ * would silently delete the rest from the page the first time the admin saves.
+ * It is only a seed for the editor; whatever the admin saves takes over.
  */
 export const DEFAULT_CAREER_OPPORTUNITIES = {
   eyebrow: 'Career Opportunities',
@@ -319,5 +320,8 @@ export const DEFAULT_CAREER_OPPORTUNITIES = {
     { name: 'Computer Vision Engineer', color: 'from-red-500 to-red-500', order: 5, active: true },
     { name: 'Data Engineer', color: 'from-blue-500 to-blue-500', order: 6, active: true },
     { name: 'Business Intelligence Analyst', color: 'from-blue-500 to-blue-500', order: 7, active: true },
+    { name: 'MLOps Engineer', color: 'from-blue-500 to-blue-500', order: 8, active: true },
+    { name: 'AI Product Manager', color: 'from-blue-500 to-blue-500', order: 9, active: true },
+    { name: 'AI Solutions Architect', color: 'from-red-500 to-red-500', order: 10, active: true },
   ],
 };

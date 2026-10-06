@@ -1473,8 +1473,9 @@ export default function SettingsCMS() {
                 {(settings.careerOpportunities?.roles || []).length === 0 ? (
                   <div className="text-xs text-slate-400 font-mono bg-slate-950/60 p-3 rounded-xl border border-slate-800">
                     Abhi koi shared list set nahi hai — har program apni coded list dikha raha hai.
-                    <span className="text-white font-bold"> "Load default positions"</span> dabao (7 positions editor me aa
-                    jayengi) ya "Add Position" se apni list shuru karo. Save karte hi saare program pages yahi list dikhayenge.
+                    <span className="text-white font-bold"> "Load default positions"</span> dabao (Data Science flaghship
+                    track ki poori 10 positions editor me aa jayengi — koi position hatati nahi, sab edit ho jaati hain) ya
+                    "Add Position" se apni list shuru karo. Save karte hi saare program pages yahi list dikhayenge.
                   </div>
                 ) : (
                   <div className="space-y-2">

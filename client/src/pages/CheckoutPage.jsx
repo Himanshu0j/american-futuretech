@@ -23,6 +23,15 @@ const MAX_POLLS = 24; // ~60 seconds — long enough for a slow webhook or 3-D S
  */
 const RESERVE_OPTIONS = [99, 499, 2499, 4499];
 
+/**
+ * The two seat amounts painted as buttons inside the "Seat Reservation" block.
+ * $2,499 and $4,499 stay in RESERVE_OPTIONS (the server allowlist and the
+ * ?deposit= deep links still use the full list) but are no longer repeated here
+ * — the client asked for those two to appear only as their own Group Batch /
+ * Personalized Mentorship cards just below.
+ */
+const SEAT_DEPOSIT_OPTIONS = [99, 499];
+
 /** Billing fields start empty; the country defaults to the US as on the form. */
 const EMPTY_BILLING = {
   firstName: '',
@@ -574,7 +583,7 @@ export default function CheckoutPage() {
                     02
                   </span>
                   <h3 className="text-sm font-display font-bold text-[#002060] uppercase tracking-wider">
-                    {checkoutCopy.scheduleHeading || 'Choose Tuition Schedule'}
+                    {checkoutCopy.scheduleHeading || 'Choose Enrollment'}
                   </h3>
                 </div>
                 {/* One fee per row, in the order the client asked for: the $99 seat
@@ -592,18 +601,18 @@ export default function CheckoutPage() {
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mb-3">
                       <span className="text-xs font-bold text-[#002060] uppercase tracking-wider">{checkoutCopy.seatTitle || 'Seat Reservation'}</span>
-                      <span className="text-2xl font-display font-black text-[#002060]">${depositAmount}</span>
                     </div>
                     {checkoutCopy.seatDescription && (
                       <p className="text-xs text-slate-600 leading-relaxed mb-3">
                         {checkoutCopy.seatDescription}
                       </p>
                     )}
-                    {/* All four amounts — tap to switch */}
+                    {/* The two seat deposits — tap to switch. $2,499 and $4,499
+                        have their own cards below, so they are not repeated here. */}
                     <div className="flex flex-wrap items-center gap-2">
-                      {RESERVE_OPTIONS.map((option) => (
+                      {SEAT_DEPOSIT_OPTIONS.map((option) => (
                         <button
                           key={option}
                           type="button"
@@ -620,7 +629,7 @@ export default function CheckoutPage() {
                               : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
                           }`}
                         >
-                          Reserve ${option.toLocaleString('en-US')}
+                          Register Now ${option.toLocaleString('en-US')}
                         </button>
                       ))}
                     </div>
@@ -637,7 +646,7 @@ export default function CheckoutPage() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-xs font-bold text-[#1D4ED8] uppercase tracking-wider">
-                        {checkoutCopy.careerTitle || 'Register Now — Career Program'}
+                        {checkoutCopy.careerTitle || 'Group Batch Enroll Now'}
                       </span>
                       <span className="text-2xl font-display font-black text-[#002060]">
                         ${selectedCourse?.pricing?.discountedPrice || 499}
@@ -663,7 +672,7 @@ export default function CheckoutPage() {
                       Independent
                     </span>
                     <div className="flex justify-between items-start mb-2 pr-14">
-                      <span className="text-xs font-bold text-red-700 uppercase tracking-wider">{checkoutCopy.personalizedTitle || 'Personalized 1-on-1'}</span>
+                      <span className="text-xs font-bold text-red-700 uppercase tracking-wider">{checkoutCopy.personalizedTitle || 'Personalized Mentorship'}</span>
                       <span className="text-2xl font-display font-black text-[#002060]">
                         ${personalizedPrice.toLocaleString()}
                       </span>

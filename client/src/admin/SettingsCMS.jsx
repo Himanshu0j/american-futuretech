@@ -35,9 +35,24 @@ import {
   Handshake,
   GraduationCap,
   CreditCard,
-  ReceiptText
+  ReceiptText,
+  Briefcase,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
-import { DEFAULT_LEADERSHIP, DEFAULT_SISTER_COMPANY, DEFAULT_PEDAGOGY } from '../data/siteContent';
+import {
+  DEFAULT_LEADERSHIP,
+  DEFAULT_SISTER_COMPANY,
+  DEFAULT_PEDAGOGY,
+  DEFAULT_CAREER_OPPORTUNITIES
+} from '../data/siteContent';
+
+/** Badge gradients offered for the career-position rows (must stay Tailwind utilities). */
+const CAREER_ROLE_COLORS = [
+  { label: 'Blue', value: 'from-blue-500 to-blue-500' },
+  { label: 'Amber', value: 'from-red-500 to-yellow-500' },
+  { label: 'Rose', value: 'from-red-500 to-red-500' },
+];
 import {
   LEGAL_POLICY_DEFAULTS,
   LEGAL_POLICY_PAGES,
@@ -274,7 +289,10 @@ export default function SettingsCMS() {
       showPaymentMethodNote: false,
       paymentMethodTitle: '',
       paymentMethodBody: '',
-    }
+    },
+    // "Career Paths" — the target-role checklist every program page shows.
+    // `roles: []` means "keep each track's coded list".
+    careerOpportunities: { ...DEFAULT_CAREER_OPPORTUNITIES, roles: [] }
   });
 
   // Audit logs state
@@ -367,6 +385,11 @@ export default function SettingsCMS() {
             courses: {
               ...prev.courses,
               ...(res.data.settings.courses || {})
+            },
+            careerOpportunities: {
+              ...prev.careerOpportunities,
+              ...(res.data.settings.careerOpportunities || {}),
+              roles: res.data.settings.careerOpportunities?.roles || prev.careerOpportunities.roles
             }
           }));
         }
@@ -413,6 +436,65 @@ export default function SettingsCMS() {
       setSaving(false);
     }
   };
+
+  // ── "Career Paths" helpers — the shared "Unlock Your Potential" checklist ──
+  const handleAddCareerRole = () => setSettings((prev) => {
+    const roles = prev.careerOpportunities?.roles || [];
+    return {
+      ...prev,
+      careerOpportunities: {
+        ...prev.careerOpportunities,
+        roles: [
+          ...roles,
+          { name: 'New Position', color: 'from-blue-500 to-blue-500', order: roles.length + 1, active: true }
+        ]
+      }
+    };
+  });
+
+  const handleUpdateCareerRole = (index, field, value) => setSettings((prev) => {
+    const roles = [...(prev.careerOpportunities?.roles || [])];
+    roles[index] = { ...roles[index], [field]: value };
+    return { ...prev, careerOpportunities: { ...prev.careerOpportunities, roles } };
+  });
+
+  const handleDeleteCareerRole = (index) => setSettings((prev) => ({
+    ...prev,
+    careerOpportunities: {
+      ...prev.careerOpportunities,
+      roles: (prev.careerOpportunities?.roles || []).filter((_, i) => i !== index)
+    }
+  }));
+
+  /**
+   * Order is what the course page sorts on, so a move rewrites every row's
+   * `order`. Swapping two values alone would leave the rest of the numbering
+   * alone and the page would still render the old sequence.
+   */
+  const handleMoveCareerRole = (index, direction) => setSettings((prev) => {
+    const roles = [...(prev.careerOpportunities?.roles || [])];
+    const target = index + direction;
+    if (target < 0 || target >= roles.length) return prev;
+    [roles[index], roles[target]] = [roles[target], roles[index]];
+    return {
+      ...prev,
+      careerOpportunities: {
+        ...prev.careerOpportunities,
+        roles: roles.map((role, i) => ({ ...role, order: i + 1 }))
+      }
+    };
+  });
+
+  // "Load default positions" — the seven titles the client reviewed, dropped into
+  // the editor as real rows so every one of them can be renamed or removed.
+  const handleLoadDefaultCareerRoles = () => setSettings((prev) => ({
+    ...prev,
+    careerOpportunities: {
+      ...DEFAULT_CAREER_OPPORTUNITIES,
+      ...prev.careerOpportunities,
+      roles: DEFAULT_CAREER_OPPORTUNITIES.roles.map((role) => ({ ...role }))
+    }
+  }));
 
   // Tool management helpers
   const handleAddTool = () => {
@@ -673,6 +755,7 @@ export default function SettingsCMS() {
     { id: 'hero', label: 'Homepage Hero', icon: Sparkles },
     { id: 'companies', label: 'Company Logos', icon: Award },
     { id: 'courses', label: 'Career Programs', icon: Award },
+    { id: 'career', label: 'Career Paths', icon: Briefcase },
     { id: 'personalized', label: 'Personalized ($5,499)', icon: DollarSign },
     { id: 'team', label: 'Team & Alliances', icon: Users },
     { id: 'capstone', label: 'Capstone & Tools', icon: Cpu },
@@ -1302,6 +1385,166 @@ export default function SettingsCMS() {
                     <span className="font-bold text-white">Admin → Courses</span> section.
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* TAB: CAREER PATHS — the shared "Unlock Your Potential" checklist       */}
+          {/* ========================================================================= */}
+          {activeTab === 'career' && (
+            <div className="space-y-6">
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="max-w-3xl">
+                    <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-blue-400" />
+                      Career Paths — "Unlock Your Potential" positions
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mt-1.5">
+                      Yeh wahi checklist hai jo har program page par <span className="text-blue-300">Career Opportunities</span> ke
+                      naam se dikhti hai. Yahan ek hi jagah position add / rename / reorder / remove karo — saare program pages
+                      par turant lag jayega (30 second ke andar). Kisi ek course ko apni alag list chahiye to woh{' '}
+                      <span className="text-white">Admin → Curriculum &amp; Courses CMS → "Career Roles"</span> se set hoti hai;
+                      course ki apni list hamesha is shared list se upar rehti hai.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleLoadDefaultCareerRoles}
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold hover:bg-slate-700 cursor-pointer"
+                    >
+                      Load default positions
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddCareerRole}
+                      className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Position</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Badge Text</label>
+                    <input
+                      type="text"
+                      value={settings.careerOpportunities?.eyebrow || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careerOpportunities: { ...settings.careerOpportunities, eyebrow: e.target.value }
+                      })}
+                      placeholder="Career Opportunities"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Section Heading</label>
+                    <input
+                      type="text"
+                      value={settings.careerOpportunities?.heading || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careerOpportunities: { ...settings.careerOpportunities, heading: e.target.value }
+                      })}
+                      placeholder="Unlock Your Potential — What Can You Become?"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-slate-400 uppercase mb-1.5">Section Subtitle</label>
+                    <textarea
+                      rows={2}
+                      value={settings.careerOpportunities?.subtitle || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careerOpportunities: { ...settings.careerOpportunities, subtitle: e.target.value }
+                      })}
+                      placeholder="Khaali chhodo to har program ka apna default line dikhega"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+
+                {(settings.careerOpportunities?.roles || []).length === 0 ? (
+                  <div className="text-xs text-slate-400 font-mono bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    Abhi koi shared list set nahi hai — har program apni coded list dikha raha hai.
+                    <span className="text-white font-bold"> "Load default positions"</span> dabao (7 positions editor me aa
+                    jayengi) ya "Add Position" se apni list shuru karo. Save karte hi saare program pages yahi list dikhayenge.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {(settings.careerOpportunities?.roles || []).map((role, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center gap-2"
+                      >
+                        <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs font-mono flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={role.name || ''}
+                          onChange={(e) => handleUpdateCareerRole(idx, 'name', e.target.value)}
+                          placeholder="Position (e.g. Machine Learning Engineer)"
+                          aria-label={`Career position ${idx + 1} name`}
+                          className="flex-1 px-2.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500"
+                        />
+                        <select
+                          value={role.color || 'from-blue-500 to-blue-500'}
+                          onChange={(e) => handleUpdateCareerRole(idx, 'color', e.target.value)}
+                          aria-label={`Career position ${idx + 1} badge colour`}
+                          className="px-2.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          {CAREER_ROLE_COLORS.map((color) => (
+                            <option key={color.value} value={color.value}>{color.label}</option>
+                          ))}
+                        </select>
+                        <label className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono cursor-pointer whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={role.active !== false}
+                            onChange={(e) => handleUpdateCareerRole(idx, 'active', e.target.checked)}
+                            className="rounded bg-slate-900 border-white/20 text-blue-500"
+                          />
+                          Show
+                        </label>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveCareerRole(idx, -1)}
+                            disabled={idx === 0}
+                            className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                            aria-label={`Move career position ${idx + 1} up`}
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveCareerRole(idx, 1)}
+                            disabled={idx === (settings.careerOpportunities?.roles || []).length - 1}
+                            className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                            aria-label={`Move career position ${idx + 1} down`}
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCareerRole(idx)}
+                            className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-slate-900 cursor-pointer"
+                            aria-label={`Remove career position ${idx + 1}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

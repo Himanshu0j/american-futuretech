@@ -577,7 +577,12 @@ export default function CheckoutPage() {
                     {checkoutCopy.scheduleHeading || 'Choose Tuition Schedule'}
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* One fee per row, in the order the client asked for: the $99 seat
+                    reservation first, then the career program, then the 1-on-1
+                    track. Three side-by-side cards inside the two-column
+                    checkout layout squeezed the third one until its price
+                    ($4,499) was clipped. */}
+                <div className="grid grid-cols-1 gap-4">
                   {/* Deposit Option */}
                   <div
                     onClick={() => { setTier('deposit'); resetCoupon(); }}

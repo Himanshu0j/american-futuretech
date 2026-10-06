@@ -184,14 +184,27 @@ export default function CourseDetailPage() {
   // Optional per-card artwork for the "Why Get … Certification" advantage cards,
   // edited per course in the CMS (Doubt Clearing, Industry Relevant Projects…).
   const advantageImages = Array.isArray(course?.advantageImages) ? course.advantageImages : [];
-  // Target-role pills are per course once the admin edits them (Courses CMS →
-  // "Career Roles"); the coded list stays as the fallback for untouched tracks.
-  const courseCareerRoles = (course?.careerRoles || [])
+  // "What Can You Become?" positions, in priority order:
+  //   1. the course's own list      (Courses CMS → "Career Roles")
+  //   2. the shared list for every course (Settings → "Career Paths")
+  //   3. the track's coded list
+  // The shared list is what lets the client add or rename a position once and
+  // see it on all eight program pages instead of editing each course.
+  const sortRoles = (list) => (Array.isArray(list) ? list : [])
     .filter((role) => role && role.active !== false && role.name)
     .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
-  const careerRoles = courseCareerRoles.length > 0 ? courseCareerRoles : (detailedData.careerRoles || []);
-  const careerRolesHeading = course?.careerRolesHeading || 'Unlock Your Potential — What Can You Become?';
+  const careerBlock = settings?.careerOpportunities || {};
+  const courseCareerRoles = sortRoles(course?.careerRoles);
+  const sharedCareerRoles = sortRoles(careerBlock.roles);
+  const careerRoles = courseCareerRoles.length > 0
+    ? courseCareerRoles
+    : (sharedCareerRoles.length > 0 ? sharedCareerRoles : (detailedData.careerRoles || []));
+  const careerRolesEyebrow = careerBlock.eyebrow || 'Career Opportunities';
+  const careerRolesHeading = course?.careerRolesHeading
+    || careerBlock.heading
+    || 'Unlock Your Potential — What Can You Become?';
   const careerRolesSubtitle = course?.careerRolesSubtitle
+    || careerBlock.subtitle
     || `Master ${course.title} to qualify for high-impact, high-growth technology roles in top tier companies.`;
   const certImages = detailedData.certificates || {};
 
@@ -1029,7 +1042,7 @@ export default function CourseDetailPage() {
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 text-red-900 text-xs font-bold uppercase tracking-wider mb-3">
                 <Briefcase className="w-3.5 h-3.5 text-red-700" />
-                Career Opportunities
+                {careerRolesEyebrow}
               </div>
               <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
                 {careerRolesHeading}

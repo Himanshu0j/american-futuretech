@@ -39,8 +39,10 @@
 const path = require('path');
 const { execSync } = require('node:child_process');
 
-const SITE = (process.env.SITE_URL || 'https://american-futuretech.vercel.app').replace(/\/+$/, '');
-const API = (process.env.API_URL || 'https://american-futuretech-api.onrender.com').replace(/\/+$/, '');
+// The client retired the Vercel website and the Render API: one Hostinger app
+// serves the site and the API on the main domain, so both default to it.
+const SITE = (process.env.SITE_URL || 'https://americanfuturetechllc.com').replace(/\/+$/, '');
+const API = (process.env.API_URL || 'https://americanfuturetechllc.com').replace(/\/+$/, '');
 const ROOT = path.join(__dirname, '..');
 
 /** The reservation amounts server/utils/pricing.js is allowed to honour. */

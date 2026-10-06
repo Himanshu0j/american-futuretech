@@ -87,7 +87,7 @@ const buildPublicSettingsPayload = async (includeEditorMaps) => {
   } else {
     let modified = false;
     const schemaDefaults = new SiteSettings().toObject();
-    const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies', 'sisterCompany', 'pedagogy', 'careerSupport', 'headerMenu'];
+    const keysToCheck = ['hero', 'personalizedLearning', 'capstone', 'roadmap', 'aboutCMS', 'globalCtas', 'trustedCompanies', 'sisterCompany', 'pedagogy', 'careerSupport', 'headerMenu', 'careerOpportunities'];
 
     // Populate the leadership roster for existing databases that predate the team CMS
     if (!settings.leadership || settings.leadership.length === 0) {

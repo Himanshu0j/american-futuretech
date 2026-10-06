@@ -295,3 +295,29 @@ export const DEFAULT_TOOL_CATEGORIES = [
     ],
   },
 ];
+
+/**
+ * Starting point for the admin's "Career Paths" list (Settings → Career Paths).
+ *
+ * The seven positions the client reviewed on the Data Science page: pressing
+ * "Load default positions" in the admin fills the editor with these rows, so
+ * every title is immediately editable/removable instead of the admin having to
+ * retype the whole list to change one job title.
+ *
+ * Only a SEED for the editor and for a database that has no configured list
+ * yet — whatever the admin saves takes over from here.
+ */
+export const DEFAULT_CAREER_OPPORTUNITIES = {
+  eyebrow: 'Career Opportunities',
+  heading: 'Unlock Your Potential — What Can You Become?',
+  subtitle: '',
+  roles: [
+    { name: 'Machine Learning Engineer', color: 'from-blue-500 to-blue-500', order: 1, active: true },
+    { name: 'Data Scientist', color: 'from-blue-500 to-blue-500', order: 2, active: true },
+    { name: 'AI Research Scientist', color: 'from-blue-500 to-blue-500', order: 3, active: true },
+    { name: 'NLP Engineer', color: 'from-red-500 to-yellow-500', order: 4, active: true },
+    { name: 'Computer Vision Engineer', color: 'from-red-500 to-red-500', order: 5, active: true },
+    { name: 'Data Engineer', color: 'from-blue-500 to-blue-500', order: 6, active: true },
+    { name: 'Business Intelligence Analyst', color: 'from-blue-500 to-blue-500', order: 7, active: true },
+  ],
+};

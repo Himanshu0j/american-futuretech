@@ -90,7 +90,7 @@ const getCourseBySlug = async (req, res) => {
 // @access  Private (SuperAdmin, Counselor)
 const createCourse = async (req, res) => {
   try {
-    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail, heroImage, advantageImages, credentialLogo, credentialTitle, credentialSubtitle, certificateImage } = req.body;
+    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail, heroImage, advantageImages, credentialLogo, credentialTitle, credentialSubtitle, certificateImage, careerRoles, careerRolesHeading, careerRolesSubtitle } = req.body;
 
     // Without a title this used to throw on `title.toLowerCase()` and answer
     // 500; an incomplete form is the caller's mistake and must be a 400.
@@ -140,6 +140,12 @@ const createCourse = async (req, res) => {
       toolsSubtitle,
       tools,
       capstoneProjects,
+      // The "What Can You Become?" block. Kept in step with the update path:
+      // declaring it here means a course created with roles does not silently
+      // lose them on the first save.
+      careerRoles,
+      careerRolesHeading,
+      careerRolesSubtitle,
     });
 
     // Mirror the composer's modules into the real curriculum the site renders.

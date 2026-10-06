@@ -318,6 +318,31 @@ const CheckoutCopySchema = new mongoose.Schema({
   paymentMethodBody: { type: String, default: '' },
 }, { _id: false });
 
+// ── "Career Opportunities / Unlock Your Potential" positions ────────────────
+// The course page's "What Can You Become?" checklist. Admin → Settings →
+// "Career Paths" edits this ONE list for every program; a per-course override
+// still lives in Curriculum & Courses CMS → "Career Roles".
+//
+// `roles` defaults to EMPTY on purpose: an empty list means "keep each track's
+// coded list", so an existing database shows exactly what it showed before
+// until an admin edits it (the admin screen can seed the editor from the coded
+// Data Science list with one click).
+const CareerOpportunityRoleSchema = new mongoose.Schema({
+  name: { type: String, default: '' },
+  // Tailwind gradient utilities (not free text) so a stored value can never
+  // render an unstyled badge — the same palette the coded lists use.
+  color: { type: String, default: 'from-blue-500 to-blue-500' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: false });
+
+const CareerOpportunitiesSchema = new mongoose.Schema({
+  eyebrow: { type: String, default: 'Career Opportunities' },
+  heading: { type: String, default: 'Unlock Your Potential — What Can You Become?' },
+  subtitle: { type: String, default: '' },
+  roles: { type: [CareerOpportunityRoleSchema], default: [] },
+}, { _id: false });
+
 // ── Header / top-bar menu CMS ───────────────────────────────────────────────
 // The main navigation used to be hard-coded in Navbar.jsx, so every label or
 // order change (CERTIFICATIONS → SUCCESS STORIES and similar requests) needed
@@ -439,6 +464,13 @@ const SiteSettingsSchema = new mongoose.Schema({
   // 🌟 CHECKOUT COPY — Admin → Settings → "Checkout & Tuition".
   checkout: {
     type: CheckoutCopySchema,
+    default: () => ({}),
+  },
+
+  // 🌟 CAREER OPPORTUNITIES — Admin → Settings → "Career Paths".
+  // One editable list of target job titles for every program page.
+  careerOpportunities: {
+    type: CareerOpportunitiesSchema,
     default: () => ({}),
   },
 

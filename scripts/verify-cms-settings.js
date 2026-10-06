@@ -470,6 +470,61 @@ const run = async () => {
     check('Site-editor override maps are still accepted without warnings',
       Boolean(savedSettings.textOverrides?.['/privacy']) && Boolean(savedSettings.imageOverrides?.['/about']));
 
+    // 12. Career Paths — the shared "Unlock Your Potential" checklist that the
+    //     client edits from Admin → Settings. The point of the block is "add a
+    //     position here, see it on every program page", so an anonymous visitor
+    //     must receive it back with the rows, their order and their visibility.
+    const careerPayload = {
+      careerOpportunities: {
+        eyebrow: 'Career Opportunities',
+        heading: 'Roles You Will Qualify For',
+        subtitle: 'Shared across every program page.',
+        roles: [
+          { name: 'Machine Learning Engineer', color: 'from-blue-500 to-blue-500', order: 1, active: true },
+          { name: 'Data Scientist', color: 'from-blue-500 to-blue-500', order: 2, active: true },
+          { name: 'AI Research Scientist', color: 'from-red-500 to-red-500', order: 3, active: false },
+        ],
+      },
+    };
+    const careerSave = await request('PUT', '/api/settings', { token, body: careerPayload });
+    check('Career Paths save reports no ignored fields',
+      careerSave.status === 200 && (careerSave.json?.ignoredPaths || []).length === 0,
+      `ignoredPaths: ${JSON.stringify(careerSave.json?.ignoredPaths || [])}`);
+
+    const careerPublic = await request('GET', '/api/settings');
+    const careerBlock = careerPublic.json?.settings?.careerOpportunities || {};
+    check('Every visitor receives the shared career positions',
+      careerBlock.heading === 'Roles You Will Qualify For'
+      && careerBlock.subtitle === 'Shared across every program page.'
+      && careerBlock.roles?.length === 3,
+      `${careerBlock.roles?.length} roles, heading "${careerBlock.heading}"`);
+    check('Career position order and visibility survive the round trip',
+      careerBlock.roles?.[1]?.name === 'Data Scientist'
+      && careerBlock.roles?.[1]?.order === 2
+      && careerBlock.roles?.[2]?.active === false
+      && careerBlock.roles?.[0]?.color === 'from-blue-500 to-blue-500');
+    // The client asked to be able to ADD positions, not just rename the seven
+    // that shipped. An eighth row (plus an accent colour of its own) has to
+    // survive the same save path.
+    const careerGrown = await request('PUT', '/api/settings', {
+      token,
+      body: {
+        careerOpportunities: {
+          ...careerPayload.careerOpportunities,
+          roles: [
+            ...careerPayload.careerOpportunities.roles,
+            { name: 'MLOps Engineer', color: 'from-red-500 to-yellow-500', order: 4, active: true },
+          ],
+        },
+      },
+    });
+    const grownRoles = careerGrown.json?.settings?.careerOpportunities?.roles || [];
+    check('An added 8th position is accepted and keeps its badge colour',
+      grownRoles.length === 4
+      && grownRoles[3]?.name === 'MLOps Engineer'
+      && grownRoles[3]?.color === 'from-red-500 to-yellow-500',
+      `${grownRoles.length} roles, last "${grownRoles[3]?.name}"`);
+
     // 12. Per-course page blocks: card image, "Tools Covered" grid and the
     //     course's own capstone cards. Every course used to render the same
     //     hard-coded Data Science tool grid and the same capstone projects.
@@ -490,6 +545,11 @@ const run = async () => {
         capstoneProjects: [
           { tag: 'GRC', title: 'Audit an enterprise AI stack', desc: 'Map controls to NIST CSF', stack: ['NIST', 'ISO'], color: 'from-indigo-500 to-blue-500' },
         ],
+        // A course's own "What Can You Become?" list wins over the shared one.
+        careerRoles: [
+          { name: 'AI Governance Lead', color: 'from-red-500 to-red-500', order: 1, active: true },
+          { name: 'Risk Analyst', color: 'from-blue-500 to-blue-500', order: 2, active: true },
+        ],
       },
     });
     const perCourseDoc = perCourse.json?.course;
@@ -505,6 +565,9 @@ const run = async () => {
     check('Course create keeps the per-course capstone cards',
       perCourseDoc?.capstoneProjects?.length === 1 && perCourseDoc?.capstoneProjects?.[0]?.stack?.length === 2,
       `capstones ${perCourseDoc?.capstoneProjects?.length}`);
+    check('Course create keeps the per-course career roles',
+      perCourseDoc?.careerRoles?.length === 2 && perCourseDoc?.careerRoles?.[0]?.name === 'AI Governance Lead',
+      `roles ${JSON.stringify((perCourseDoc?.careerRoles || []).map((r) => r.name))}`);
 
     const perCoursePublic = await request('GET', `/api/courses/${perCourseDoc?.slug}`);
     const publicDoc = perCoursePublic.json?.course || perCoursePublic.json?.data;

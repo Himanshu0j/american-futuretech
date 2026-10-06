@@ -366,6 +366,34 @@ export default function CheckoutPage() {
   const discountAmount = quote?.discountAmount ?? 0;
   const finalAmount = quote?.amount ?? baseAmount;
 
+  /**
+   * What the breakdown row calls the charge.
+   *
+   * `quote` arrives from an async request, so for a moment after a tier switch it
+   * still describes the previous tier — and if that request fails it stays there.
+   * The server's own wording is therefore only used while it belongs to the tier
+   * on screen; otherwise the name is derived from the selection, so this row can
+   * never read "Personalized …" next to a $99 seat deposit.
+   */
+  const tierName =
+    tier === 'deposit'
+      ? `Cohort Seat Reservation Deposit ($${Number(depositAmount).toLocaleString('en-US')})`
+      : tier === 'personalized'
+        ? 'Personalized 1-on-1 Mentorship Track'
+        : 'Full Program Tuition';
+  const breakdownLabel = (quote?.tier === tier && quote?.label) || tierName;
+
+  /**
+   * The gap between the list price and what is actually due, minus any coupon
+   * already shown on its own line. Without this the breakdown jumps from a
+   * higher sub-total straight to a smaller "Total Due Now" and the difference
+   * reads like a mistake — e.g. $2,999 then $2,499 with nothing in between.
+   */
+  const builtInSaving = Math.max(
+    0,
+    Number(baseAmount || 0) - Number(finalAmount || 0) - Number(discountAmount || 0),
+  );
+
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
@@ -1046,13 +1074,19 @@ export default function CheckoutPage() {
                 {/* Price Breakdown */}
                 <div className="pt-4 border-t border-slate-200 space-y-2.5 text-xs text-slate-700">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">{quote?.label || 'Tuition Subtotal'}</span>
+                    <span className="text-slate-500">{breakdownLabel}</span>
                     <span className="font-semibold text-slate-900">${baseAmount} USD</span>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex justify-between text-[#1D4ED8] font-semibold">
                       <span>Voucher Discount</span>
                       <span>-${discountAmount} USD</span>
+                    </div>
+                  )}
+                  {builtInSaving > 0 && (
+                    <div className="flex justify-between text-[#1D4ED8] font-semibold">
+                      <span>Savings</span>
+                      <span>-${builtInSaving} USD</span>
                     </div>
                   )}
                   <div className="flex justify-between items-baseline text-sm font-bold text-slate-900 pt-3 border-t border-slate-200">

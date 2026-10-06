@@ -405,44 +405,6 @@ const run = async () => {
     }
   }
 
-  /*
-   * The FIRST paint must already carry the saved content.
-   *
-   * The site used to render its coded defaults — or a browser-cached copy of an
-   * older reply — and only then swap in what the admin saved, so a reload showed
-   * the old text for a moment and then the new one. The server now embeds the
-   * current settings snapshot in the HTML it serves, which is the only way the
-   * first frame can be right: the markup arrives with the text in it.
-   *
-   * Failing here means a reload can show the stale wording again, either because
-   * the injection is gone or because the HTML is being served from a cache older
-   * than the settings it should carry.
-   */
-  const bootstrapTag = (html.match(/<script id="aft-settings-bootstrap">([\s\S]*?)<\/script>/) || [])[1] || '';
-  let snapshot = null;
-  try {
-    snapshot = JSON.parse(bootstrapTag.replace(/^\s*window\.__AFT_SETTINGS__\s*=\s*/, '').replace(/;?\s*$/, ''));
-  } catch (error) {
-    snapshot = null;
-  }
-  check('Served HTML ships the first-paint settings snapshot', Boolean(snapshot?.settings),
-    snapshot?.settings ? '' : 'no window.__AFT_SETTINGS__ in the served HTML');
-
-  if (snapshot?.settings) {
-    try {
-      const settingsRes = await request(`${API}/api/settings`);
-      const apiText = settingsRes.json?.settings?.announcementBanner?.text || '';
-      const htmlText = snapshot.settings.announcementBanner?.text || '';
-      check('First-paint snapshot matches what the API serves right now',
-        Boolean(apiText) && apiText === htmlText,
-        apiText === htmlText
-          ? `"${apiText.slice(0, 48)}"`
-          : `html "${htmlText.slice(0, 48)}" vs api "${apiText.slice(0, 48)}"`);
-    } catch (error) {
-      check('First-paint snapshot matches what the API serves right now', false, error.message);
-    }
-  }
-
   // ── 2. API ────────────────────────────────────────────────────────────────
   section('2. API');
   const health = await fetchApiHealth();
@@ -501,6 +463,46 @@ const run = async () => {
     check('The website serves its own /api', res.status === 200 && res.json?.status === 'online', `status=${res.status}`);
   } catch (error) {
     check('The website serves its own /api', false, error.message);
+  }
+
+  /*
+   * The FIRST paint must already carry the saved content.
+   *
+   * The site used to render its coded defaults — or a browser-cached copy of an
+   * older reply — and only then swap in what the admin saved, so a reload showed
+   * the old text for a moment and then the new one. The server now embeds the
+   * current settings snapshot in the HTML, which is the only way the first frame
+   * can be right: the markup arrives with the text already in it.
+   *
+   * This reads the page shell AGAIN rather than reusing section 1's copy. A push
+   * changes both the HTML and the API a moment apart, and checking the fresh HTML
+   * against the fresh API is what tells a *current* snapshot from the previous
+   * build's — which is exactly the failure that matters here.
+   */
+  try {
+    const fresh = await request(`${SITE}/`);
+    const bootstrapTag = (fresh.text.match(/<script id="aft-settings-bootstrap">([\s\S]*?)<\/script>/) || [])[1] || '';
+    let snapshot = null;
+    try {
+      snapshot = JSON.parse(bootstrapTag.replace(/^\s*window\.__AFT_SETTINGS__\s*=\s*/, '').replace(/;?\s*$/, ''));
+    } catch (error) {
+      snapshot = null;
+    }
+    check('Served HTML ships the first-paint settings snapshot', Boolean(snapshot?.settings),
+      snapshot?.settings ? '' : 'no window.__AFT_SETTINGS__ in the served HTML');
+
+    if (snapshot?.settings) {
+      const settingsRes = await request(`${API}/api/settings`);
+      const apiText = settingsRes.json?.settings?.announcementBanner?.text || '';
+      const htmlText = snapshot.settings.announcementBanner?.text || '';
+      check('First-paint snapshot matches what the API serves right now',
+        Boolean(apiText) && apiText === htmlText,
+        apiText === htmlText
+          ? `"${apiText.slice(0, 48)}"`
+          : `html "${htmlText.slice(0, 48)}" vs api "${apiText.slice(0, 48)}"`);
+    }
+  } catch (error) {
+    check('Served HTML ships the first-paint settings snapshot', false, error.message);
   }
 
   let courseId = '';

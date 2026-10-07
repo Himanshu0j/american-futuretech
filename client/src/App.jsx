@@ -6,7 +6,7 @@ import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
 import WhyChooseUs from './components/WhyChooseUs';
-import SiteImagesSection from './components/SiteImagesSection';
+import BrandBand from './components/BrandBand';
 import CallToAction from './components/CallToAction';
 import Footer from './components/Footer';
 import LeadModal from './components/LeadModal';
@@ -235,10 +235,11 @@ function LandingPage() {
         {/* Real Product Showcase & Architectural Depth */}
         {visibility.whyChooseUs !== false && <WhyChooseUs />}
 
-        {/* Admin-managed photo showcase — every picture here (three feature
-            photos + the wall) is dropped in from Admin → Content → Website
-            Images, by link or upload. */}
-        <SiteImagesSection />
+        {/* Sliding brand band — the company name and the disciplines it teaches
+            run past each other between the showcase and the FAQ.
+            It replaces the old admin-managed photo showcase, which the client
+            asked to take off the homepage. */}
+        <BrandBand />
 
         {/* Comprehensive Academic & Program FAQs */}
         {visibility.faqs !== false && (

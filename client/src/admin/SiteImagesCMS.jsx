@@ -3,14 +3,12 @@ import api from '../lib/api';
 import ImageUploadInput from './components/ImageUploadInput';
 import {
   Images,
-  Plus,
   Trash2,
   Save,
   RefreshCw,
   CheckCircle2,
   AlertCircle,
   Layout,
-  Sparkles,
   ArrowUp,
   ArrowDown,
   Eye,
@@ -18,7 +16,6 @@ import {
   Boxes,
 } from 'lucide-react';
 import {
-  DEFAULT_SITE_IMAGES,
   SITE_IMAGE_BANNERS,
   ILLUSTRATION_SLOTS,
   resolveSiteImages,
@@ -42,8 +39,6 @@ const rowFrom = (image = '') => ({
   alt: '',
   active: true,
 });
-
-const newGalleryRow = () => ({ image: '', caption: '', alt: '', active: true });
 
 /** One editable photo row (image + caption + show/hide + order controls). */
 function PhotoRow({ label, hint, value, onChange, onRemove, onMove, canMove, lines = 1 }) {
@@ -218,13 +213,13 @@ export default function SiteImagesCMS() {
     return () => { cancelled = true; };
   }, []);
 
-  // Live preview count so the client can see how many photos are actually live.
+  /*
+   * Live preview count so the client can see how many photos are actually on the
+   * site. The homepage mosaic + photo wall were retired when the sliding brand
+   * band took that space, so only the page banners count as live photos now.
+   */
   useEffect(() => {
-    const count = [
-      ...form.feature.filter((row) => row.image && row.active !== false),
-      ...form.gallery.filter((row) => row.image && row.active !== false),
-      ...form.banners.filter((row) => row.image && row.active !== false),
-    ].length;
+    const count = form.banners.filter((row) => row.image && row.active !== false).length;
     setPhotoCount(count);
 
     const art = Array.isArray(form.illustrations)
@@ -243,30 +238,6 @@ export default function SiteImagesCMS() {
     setForm((prev) => ({
       ...prev,
       illustrations: (prev.illustrations || []).map((row, i) => (i === idx ? { ...row, ...patch } : row)),
-    }));
-
-  const removeFrom = (listKey, idx) =>
-    setForm((prev) => ({ ...prev, [listKey]: prev[listKey].filter((_, i) => i !== idx) }));
-
-  const moveIn = (listKey, idx, delta) =>
-    setForm((prev) => {
-      const list = [...prev[listKey]];
-      const target = idx + delta;
-      if (target < 0 || target >= list.length) return prev;
-      const [item] = list.splice(idx, 1);
-      list.splice(target, 0, item);
-      return { ...prev, [listKey]: list };
-    });
-
-  const resetToShipped = () =>
-    setForm((prev) => ({
-      ...prev,
-      enabled: true,
-      eyebrow: DEFAULT_SITE_IMAGES.eyebrow,
-      heading: DEFAULT_SITE_IMAGES.heading,
-      subheading: DEFAULT_SITE_IMAGES.subheading,
-      feature: DEFAULT_SITE_IMAGES.feature.map((row) => ({ ...row })),
-      gallery: DEFAULT_SITE_IMAGES.gallery.map((row) => ({ ...row })),
     }));
 
   const handleSave = async () => {
@@ -346,25 +317,17 @@ export default function SiteImagesCMS() {
           </div>
           <h1 className="text-2xl md:text-3xl font-black text-white font-heading">Put photos &amp; 3D artwork anywhere on the site</h1>
           <p className="text-slate-400 text-sm mt-1 max-w-3xl">
-            Image ka link paste karo ya computer se upload karo — homepage ka photo showcase, inner-page banners aur
-            section ke andar wali illustrations (journey steps, CTA banner, Careers aur About artwork) turant update ho
-            jaate hain. Koi bhi slot khaali chhodo to waha pehle wali built-in photo/drawing dikhti rehti hai.
+            Image ka link paste karo ya computer se upload karo — inner-page banners aur section ke andar wali
+            illustrations (journey steps, CTA banner, Careers aur About artwork) turant update ho jaate hain. Koi bhi
+            slot khaali chhodo to waha pehle wali built-in photo/drawing dikhti rehti hai.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <span className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-            {photoCount} photos · {artCount} artwork live
+            {photoCount} banners · {artCount} artwork live
           </span>
-          <button
-            type="button"
-            onClick={resetToShipped}
-            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Homepage showcase ko shipped classroom photos par wapas le aao (save karna zaroori hai)"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Shipped defaults
-          </button>
+
           <button
             type="button"
             onClick={() => setForm((prev) => ({ ...prev, enabled: prev.enabled === false }))}
@@ -375,7 +338,7 @@ export default function SiteImagesCMS() {
             }`}
           >
             {form.enabled === false ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            {form.enabled === false ? 'Showcase Hidden' : 'Showcase Visible'}
+            {form.enabled === false ? 'Band Hidden' : 'Band Visible'}
           </button>
           <button
             type="button"
@@ -412,121 +375,19 @@ export default function SiteImagesCMS() {
         <div className="h-64 rounded-2xl bg-slate-900/50 border border-slate-800 animate-pulse" />
       ) : (
         <>
-          {/* Homepage showcase heading */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2">
-              <Layout className="w-4 h-4 text-blue-400" />
-              <h3 className="text-base font-bold text-white font-heading">Homepage showcase heading</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label className="block text-slate-400 font-semibold mb-1" htmlFor="site-img-eyebrow">Eyebrow</label>
-                <input
-                  id="site-img-eyebrow"
-                  type="text"
-                  value={form.eyebrow}
-                  onChange={(e) => setForm((prev) => ({ ...prev, eyebrow: e.target.value }))}
-                  placeholder="Inside The Program"
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-400 font-semibold mb-1" htmlFor="site-img-heading">Heading</label>
-                <input
-                  id="site-img-heading"
-                  type="text"
-                  value={form.heading}
-                  onChange={(e) => setForm((prev) => ({ ...prev, heading: e.target.value }))}
-                  placeholder="Life at American FutureTech"
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-400 font-semibold mb-1" htmlFor="site-img-subheading">Subheading</label>
-                <input
-                  id="site-img-subheading"
-                  type="text"
-                  value={form.subheading}
-                  onChange={(e) => setForm((prev) => ({ ...prev, subheading: e.target.value }))}
-                  placeholder="Live cohort labs, 1-on-1 mentor reviews…"
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-white/10 text-white"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature mosaic */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-400" />
-              <h3 className="text-base font-bold text-white font-heading">Mosaic photos (3)</h3>
-            </div>
+          {/* The homepage mosaic + photo wall were retired when the sliding
+              brand band took that space on the homepage. Leaving these photo
+              pickers here would let the client fill pictures that never render,
+              so they are gone — the saved rows are still in the database and the
+              slots below (banners) plus 3D artwork are what the site reads. */}
+          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-3">
+            <Images className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
             <p className="text-[11px] text-slate-400">
-              Photo 1 homepage par bada (tall) tile banta hai, photo 2 aur 3 uske bagal me. Ek bhi khaali chhodo to
-              waha kuch nahi dikhta.
+              Homepage par ab photos ka mosaic/wall nahi hai — waha <span className="text-slate-200 font-semibold">sliding brand band</span>
+              chalta hai (American FutureTech ka naam + disciplines). Isliye photo pickers hata diye gaye hain. Neeche
+              <span className="text-slate-200 font-semibold"> page banners</span> aur <span className="text-slate-200 font-semibold">3D artwork</span> dono
+              waise hi kaam karte hain.
             </p>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              {form.feature.map((row, idx) => (
-                <PhotoRow
-                  key={`feature-${idx}`}
-                  label={`Photo ${idx + 1}${idx === 0 ? ' (large)' : ''}`}
-                  value={row}
-                  onChange={(next) => updateList('feature', idx, next)}
-                  lines={2}
-                />
-              ))}
-            </div>
-            {form.feature.length < 3 && (
-              <button
-                type="button"
-                onClick={() => setForm((prev) => ({ ...prev, feature: [...prev.feature, rowFrom('')] }))}
-                className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" /> Add mosaic photo
-              </button>
-            )}
-          </div>
-
-          {/* Photo wall */}
-          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Images className="w-4 h-4 text-blue-400" />
-                  <h3 className="text-base font-bold text-white font-heading">Photo wall ({form.gallery.length})</h3>
-                </div>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Homepage par mosaic ke niche photo grid. Jitni photos add karoge, utni dikhengi — caption hover par aata hai.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setForm((prev) => ({ ...prev, gallery: [...prev.gallery, newGalleryRow()] }))}
-                className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 shrink-0 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" /> Add photo
-              </button>
-            </div>
-
-            {form.gallery.length === 0 ? (
-              <p className="text-[11px] text-slate-500 font-mono">
-                Abhi koi wall photo nahi hai — &quot;Add photo&quot; dabao ya Shipped defaults se shuru karo.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-                {form.gallery.map((row, idx) => (
-                  <PhotoRow
-                    key={`gallery-${idx}`}
-                    label={`Wall photo ${idx + 1}`}
-                    value={row}
-                    onChange={(next) => updateList('gallery', idx, next)}
-                    onRemove={() => removeFrom('gallery', idx)}
-                    onMove={(delta) => moveIn('gallery', idx, delta)}
-                    canMove={form.gallery.length > 1}
-                  />
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Inner page banners */}

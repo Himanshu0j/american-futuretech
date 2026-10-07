@@ -15,6 +15,10 @@ const Job = require('../models/Job');
 const BlogPost = require('../models/BlogPost');
 const FAQ = require('../models/FAQ');
 const SuccessStory = require('../models/SuccessStory');
+// 53 curated alumni stories (the original three plus fifty more) — the list
+// lives in its own module so scripts/seed-success-stories.cjs can push the same
+// records into an already-running database.
+const { successStoriesSeed } = require('./successStoriesSeed');
 const SiteSettings = require('../models/SiteSettings');
 
 const autoSeedIfEmpty = async () => {
@@ -1152,45 +1156,8 @@ const autoSeedIfEmpty = async () => {
       await Job.create(j);
     }
 
-    // 8. Success Stories / Testimonials
-    const storiesData = [
-      {
-        studentName: 'Priya Sharma',
-        photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
-        course: 'Data Science with AI Integration',
-        role: 'AI Engineer',
-        company: 'Microsoft',
-        salaryHikePercent: 145,
-        testimonial: 'The capstone projects and mentor code reviews transformed my understanding of machine learning. The career support team conducted 4 rigorous mock interviews that directly helped me crack Microsoft!',
-        rating: 5,
-        isFeatured: true,
-        graduationYear: '2025',
-      },
-      {
-        studentName: 'Marcus Bennett',
-        photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
-        course: 'Cyber Security with Ethical Hacking',
-        role: 'Security Operations Analyst',
-        company: 'Palo Alto Networks',
-        salaryHikePercent: 120,
-        testimonial: 'Coming from non-tech retail, American FutureTech gave me real hands-on penetration testing experience. Within 3 weeks of graduation, I received two job offers in cybersecurity!',
-        rating: 5,
-        isFeatured: true,
-        graduationYear: '2025',
-      },
-      {
-        studentName: 'Daniel Chen',
-        photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&q=80',
-        course: 'Advanced Generative & Agentic AI Master Program',
-        role: 'Senior LLM Systems Engineer',
-        company: 'Amazon Web Services (AWS)',
-        salaryHikePercent: 160,
-        testimonial: 'Agentic AI is moving fast, and this is the only program that taught LangGraph, multi-agent frameworks, and vector architectures at a true production engineering level.',
-        rating: 5,
-        isFeatured: true,
-        graduationYear: '2025',
-      },
-    ];
+    // 8. Success Stories / Testimonials — 53 curated alumni stories.
+    const storiesData = successStoriesSeed;
 
     for (const s of storiesData) {
       await SuccessStory.create(s);

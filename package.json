@@ -16,6 +16,7 @@
     "client": "cd client && npm run dev",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,cyan\" \"npm run server\" \"npm run client\"",
     "seed": "node server/seed.js",
+    "seed:stories": "node scripts/seed-success-stories.js",
     "verify:payments": "node scripts/verify-payments.js",
     "verify:cms": "node scripts/verify-cms-settings.js",
     "verify:auth": "node scripts/verify-auth.js",

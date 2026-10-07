@@ -47,8 +47,6 @@ export default function SuccessStoriesPage() {
   );
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
   const touchStartX = useRef(null);
 
   useEffect(() => {
@@ -62,16 +60,6 @@ export default function SuccessStoriesPage() {
     const onResize = () => setPerPage(slidesFor(window.innerWidth));
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  // Visitors who asked for less motion keep the arrows but lose the auto-slide.
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return undefined;
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setReducedMotion(query.matches);
-    sync();
-    query.addEventListener?.('change', sync);
-    return () => query.removeEventListener?.('change', sync);
   }, []);
 
   const fetchStories = async () => {
@@ -88,7 +76,6 @@ export default function SuccessStoriesPage() {
   const visibleCount = Math.min(perPage, Math.max(stories.length, 1));
   const slideWidth = 100 / visibleCount;
   const maxIndex = Math.max(0, stories.length - visibleCount);
-  const isPaused = paused || hovered || reducedMotion;
 
   useEffect(() => {
     setIndex((current) => Math.min(current, maxIndex));
@@ -102,16 +89,18 @@ export default function SuccessStoriesPage() {
     setIndex((current) => (current <= 0 ? maxIndex : current - 1));
   }, [maxIndex]);
 
-  // Auto-slide through every story, pausing on hover, on focus, by request and
-  // while the tab is in the background.
+  // Auto-slide through every story. Nothing ambient stops it: pausing on hover
+  // would freeze the wall for as long as a visitor's cursor rests anywhere over
+  // it — which, right after scrolling to the section, is always. Only the pause
+  // button stops it (and a background tab, which has nobody watching).
   useEffect(() => {
-    if (isPaused || stories.length <= visibleCount) return undefined;
+    if (paused || stories.length <= visibleCount) return undefined;
     const timer = setInterval(() => {
       if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
       goNext();
     }, AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [isPaused, stories.length, visibleCount, goNext]);
+  }, [paused, stories.length, visibleCount, goNext]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'ArrowRight') {
@@ -253,15 +242,11 @@ export default function SuccessStoriesPage() {
                   each slide keeps a 12px gutter for the next one. */}
               <div
                 className="relative overflow-hidden -mx-3"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-                onFocusCapture={() => setHovered(true)}
-                onBlurCapture={() => setHovered(false)}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
               >
                 <div
-                  className="flex transition-transform duration-700 ease-out"
+                  className="story-carousel-track flex transition-transform duration-700 ease-out"
                   style={{ transform: `translateX(-${index * slideWidth}%)` }}
                 >
                   {stories.map((story, storyIndex) => {

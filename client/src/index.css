@@ -687,6 +687,16 @@
   }
 }
 
+/* The alumni carousel keeps advancing for everyone — the client wants the wall
+   of stories to keep moving — but a visitor who asked for less motion gets each
+   step as an instant cut instead of a 700ms glide. Pausing is theirs to choose,
+   via the pause control. */
+@media (prefers-reduced-motion: reduce) {
+  .story-carousel-track {
+    transition: none;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    PREMIUM EXPERIENCE LAYER
    Editorial accents, textures and depth used across the site.

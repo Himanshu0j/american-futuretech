@@ -143,7 +143,7 @@ export default function WhyChooseUs() {
 
           {/* Product UI Mockup: Academy Cockpit */}
           <div className="lg:col-span-6">
-            <div className="rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden text-left p-6 space-y-4">
+            <div className="rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden text-left p-6 space-y-4 aft-lift">
               
               {/* Contextual Academy Banner with Sourced Vector LMS Dashboard Illustration */}
               <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#002060] via-[#002060] to-[#1D4ED8] p-4">
@@ -394,7 +394,7 @@ export default function WhyChooseUs() {
             </div>
 
             {showcaseMode === 'certificate' ? (
-              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active">
+              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active aft-lift">
                 {certificate.image ? (
                   <img
                     src={certificate.image}
@@ -451,7 +451,7 @@ export default function WhyChooseUs() {
             ) : (
               /* Success-story face — replaces the plain diploma mock on the
                  live site, still backed by the graduate's credential ID. */
-              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active">
+              <div className="p-6 rounded-2xl bg-white border-2 border-[#002060]/15 shadow-xl text-left space-y-4 relative z-10 shimmer-active aft-lift">
                 <div className="border border-red-400/40 p-6 rounded-xl space-y-5 bg-[#fffdfa]">
 
                   <div className="flex items-center justify-between gap-3">
@@ -531,7 +531,7 @@ export default function WhyChooseUs() {
               />
             </div>
 
-            <div className="p-6 rounded-2xl bg-white border border-gray-200 shadow-xl space-y-4 text-left relative z-10">
+            <div className="p-6 rounded-2xl bg-white border border-gray-200 shadow-xl space-y-4 text-left relative z-10 aft-lift">
               {/* Contextual Mentorship Banner with Sourced Vector LMS Progress Illustration */}
               <div className="relative rounded-xl overflow-hidden min-h-[7rem] border border-gray-100 group flex items-center bg-gradient-to-r from-[#002060] via-[#002060] to-[#1D4ED8] p-4">
                 <div className="flex-1 space-y-1 text-white z-10">

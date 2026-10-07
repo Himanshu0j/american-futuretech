@@ -386,6 +386,10 @@ const SiteImagesSchema = new mongoose.Schema({
   gallery: { type: [SiteImageSchema], default: [] },
   // Inner-page banners (Courses / About / Careers / Success stories / Contact).
   banners: { type: [SiteImageSchema], default: [] },
+  // The artwork sitting inside the page sections — the 5 journey step icons,
+  // the CTA banner art, the careers network card, the About illustrations. Each
+  // row uses `key` as the SLOT id (see client/src/data/siteImages.js).
+  illustrations: { type: [SiteImageSchema], default: [] },
 }, { _id: false });
 
 const SiteSettingsSchema = new mongoose.Schema({

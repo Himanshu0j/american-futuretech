@@ -3,13 +3,21 @@ import { ArrowRight, ShieldCheck, PhoneCall, CheckCircle2, Sparkles } from 'luci
 import { Link } from 'react-router-dom';
 import ctaLaunchSvg from '../assets/illustrations/misc/cta-launch.svg';
 import { CTAIllustration } from './illustrations/VectorIllustrations';
+import Tilt3D from './Spatial3D';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 
 export default function CallToAction({ onOpenLeadModal }) {
+  const { settings } = useSiteSettings();
+  // Admin → Content → Website Images → "3D artwork": an uploaded PNG/JPG here
+  // replaces the shipped drawing, an empty slot keeps it.
+  const art = illustrationImageFor(settings, 'cta-launch');
+
   return (
     <section className="py-12 sm:py-16 relative z-10 bg-[#F7F7F5] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Asymmetrical High-Impact CTA Container */}
-        <div className="rounded-3xl bg-gradient-to-br from-[#002060] via-[#002060] to-[#0d1c10] text-[#F7F7F5] border border-[#1D4ED8] shadow-2xl p-6 sm:p-6 lg:p-8 relative overflow-hidden text-left">
+        <div className="rounded-3xl bg-gradient-to-br from-[#002060] via-[#002060] to-[#0d1c10] text-[#F7F7F5] border border-[#1D4ED8] shadow-2xl aft-panel-3d aft-sheen p-6 sm:p-6 lg:p-8 relative overflow-hidden text-left">
           {/* Radial Ambient Glows */}
           <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(255, 90, 90,0.18),transparent_70%)] pointer-events-none" />
           <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(158,79,143,0.15),transparent_70%)] pointer-events-none" />
@@ -65,13 +73,17 @@ export default function CallToAction({ onOpenLeadModal }) {
               </div>
             </div>
 
-            {/* Visual Column (5 cols): Sourced Vector CTA Rocket Launch Illustration */}
+            {/* Visual Column (5 cols): the client's own artwork (admin-managed) */}
             <div className="lg:col-span-5 flex justify-center items-center">
-              <div className="w-full max-w-sm relative group">
-                <img
-                  src={ctaLaunchSvg}
-                  alt="Launch Your Tech Career"
-                  className="w-full h-auto drop-shadow-2xl animate-float-slow group-hover:scale-105 transition-transform duration-500"
+              <div className="w-full max-w-sm relative group aft-3d-scene aft-aura">
+                <Tilt3D
+                  slot="cta-launch"
+                  src={art}
+                  fallbackSrc={ctaLaunchSvg}
+                  alt={illustrationAltFor(settings, 'cta-launch', 'Launch Your Tech Career')}
+                  className="w-full h-auto"
+                  intensity={16}
+                  idle={8}
                 />
               </div>
             </div>

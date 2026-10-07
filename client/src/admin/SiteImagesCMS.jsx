@@ -15,10 +15,12 @@ import {
   ArrowDown,
   Eye,
   EyeOff,
+  Boxes,
 } from 'lucide-react';
 import {
   DEFAULT_SITE_IMAGES,
   SITE_IMAGE_BANNERS,
+  ILLUSTRATION_SLOTS,
   resolveSiteImages,
 } from '../data/siteImages';
 
@@ -149,6 +151,7 @@ export default function SiteImagesCMS() {
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [photoCount, setPhotoCount] = useState(0);
+  const [artCount, setArtCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -162,6 +165,7 @@ export default function SiteImagesCMS() {
 
         const resolved = resolveSiteImages({ siteImages: saved });
         const savedBanners = Array.isArray(saved.banners) ? saved.banners : [];
+        const savedArt = Array.isArray(saved.illustrations) ? saved.illustrations : [];
         const anySaved = Boolean(
           saved.heading || saved.subheading || saved.eyebrow
           || (Array.isArray(saved.feature) && saved.feature.length)
@@ -189,6 +193,17 @@ export default function SiteImagesCMS() {
               active: found.active !== false,
             };
           }),
+          // Artwork inside the page sections (journey steps, CTA banner, About…).
+          // A blank row means "keep the drawing the site ships with".
+          illustrations: ILLUSTRATION_SLOTS.map((slot) => {
+            const found = savedArt.find((b) => b.key === slot.key) || {};
+            return {
+              key: slot.key,
+              image: found.image || '',
+              alt: found.alt || '',
+              active: found.active !== false,
+            };
+          }),
         });
       } catch (err) {
         if (!cancelled) {
@@ -211,12 +226,23 @@ export default function SiteImagesCMS() {
       ...form.banners.filter((row) => row.image && row.active !== false),
     ].length;
     setPhotoCount(count);
+
+    const art = Array.isArray(form.illustrations)
+      ? form.illustrations.filter((row) => row.image && row.active !== false).length
+      : 0;
+    setArtCount(art);
   }, [form]);
 
   const updateList = (listKey, idx, next) =>
     setForm((prev) => ({
       ...prev,
       [listKey]: prev[listKey].map((row, i) => (i === idx ? next : row)),
+    }));
+
+  const updateIllustration = (idx, patch) =>
+    setForm((prev) => ({
+      ...prev,
+      illustrations: (prev.illustrations || []).map((row, i) => (i === idx ? { ...row, ...patch } : row)),
     }));
 
   const removeFrom = (listKey, idx) =>
@@ -281,6 +307,16 @@ export default function SiteImagesCMS() {
               active: row.active !== false,
             }))
             .filter((row) => row.key && row.image),
+          illustrations: (form.illustrations || [])
+            .map((row, idx) => ({
+              key: String(row.key || '').trim(),
+              image: String(row.image || '').trim(),
+              caption: '',
+              alt: String(row.alt || '').trim(),
+              order: idx + 1,
+              active: row.active !== false,
+            }))
+            .filter((row) => row.key && row.image),
         },
       };
 
@@ -308,16 +344,17 @@ export default function SiteImagesCMS() {
             <Images className="w-3.5 h-3.5" />
             Website Images & Photo Showcase
           </div>
-          <h1 className="text-2xl md:text-3xl font-black text-white font-heading">Put photos anywhere on the site</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-white font-heading">Put photos &amp; 3D artwork anywhere on the site</h1>
           <p className="text-slate-400 text-sm mt-1 max-w-3xl">
-            Image ka link paste karo ya computer se upload karo — homepage ka photo showcase aur inner-page banners
-            turant update ho jaate hain. Koi bhi photo khaali chhodo to waha pehle wala built-in photo dikhta rehta hai.
+            Image ka link paste karo ya computer se upload karo — homepage ka photo showcase, inner-page banners aur
+            section ke andar wali illustrations (journey steps, CTA banner, Careers aur About artwork) turant update ho
+            jaate hain. Koi bhi slot khaali chhodo to waha pehle wali built-in photo/drawing dikhti rehti hai.
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <span className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-            {photoCount} photos live
+            {photoCount} photos · {artCount} artwork live
           </span>
           <button
             type="button"
@@ -513,6 +550,93 @@ export default function SiteImagesCMS() {
                   lines={2}
                 />
               ))}
+            </div>
+          </div>
+
+          {/* Section artwork: the client's own PNG/SVG inside the page sections */}
+          <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Boxes className="w-4 h-4 text-blue-400" />
+                  <h3 className="text-base font-bold text-white font-heading">3D artwork inside the sections</h3>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-0.5 max-w-3xl">
+                  Ye woh drawings hain jo page ke andar dikhti hain — home ka 5-step journey rail, navy CTA banner,
+                  Careers ka partner-network card + form art, aur About page ki illustrations. Link paste karo ya PNG
+                  upload karo: upload ki gayi image 3D me float karti hai, mouse le jaane par tilt hoti hai aur scroll par
+                  halke se ukhad kar aati hai. Slot khaali chhodne par pehle wali built-in drawing hi dikhti rehti hai.
+                </p>
+              </div>
+              <span className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 shrink-0">
+                {artCount}/{ILLUSTRATION_SLOTS.length} replaced
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              {ILLUSTRATION_SLOTS.map((slot, idx) => {
+                const row = (form.illustrations || [])[idx] || { key: slot.key, image: '', alt: '', active: true };
+                const custom = Boolean(row.image);
+                return (
+                  <div key={slot.key} className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-[11px] font-mono text-slate-200 font-bold truncate">{slot.label}</div>
+                        <div className="text-[10px] font-mono text-slate-500 truncate">
+                          {slot.page} · slot {slot.key} · default: {slot.default}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <span
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                            custom ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {custom ? 'Your image' : 'Shipped'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateIllustration(idx, { active: row.active === false })}
+                          className={`px-1.5 py-1 rounded-lg text-[10px] font-mono font-bold cursor-pointer ${
+                            row.active === false
+                              ? 'bg-slate-800 text-slate-400'
+                              : 'bg-blue-600/80 text-white hover:bg-blue-500'
+                          }`}
+                          title={row.active === false ? 'Hidden — shipped drawing dikhegi' : 'Live'}
+                        >
+                          {row.active === false ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <ImageUploadInput
+                      label="Artwork — PNG / JPG / SVG / WebP"
+                      value={row.image}
+                      onChange={(url) => updateIllustration(idx, { image: url })}
+                      previewSize="w-14 h-14"
+                    />
+
+                    <input
+                      type="text"
+                      value={row.alt}
+                      onChange={(e) => updateIllustration(idx, { alt: e.target.value })}
+                      placeholder={`Alt text (SEO) — default: ${slot.default}`}
+                      className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-[11px]"
+                    />
+
+                    {custom && (
+                      <button
+                        type="button"
+                        onClick={() => updateIllustration(idx, { image: '', alt: '' })}
+                        className="text-[10px] font-mono font-bold text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        Apni image hatao — shipped drawing wapas
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

@@ -25,14 +25,105 @@ import {
 } from './illustrations/VectorIllustrations';
 import { Lottie } from 'lottie-react';
 import successLottie from '../assets/animations/learning/success-celebration.json';
+import Tilt3D, { useCard3D, motion } from './Spatial3D';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 import assessSvg from '../assets/illustrations/learning/01-assess-diagnostic.svg';
 import learnSvg from '../assets/illustrations/learning/02-learn-masterclass.svg';
 import practiceSvg from '../assets/illustrations/learning/03-practice-sandbox.svg';
 import certifySvg from '../assets/illustrations/learning/04-certify-credential.svg';
 import careerReadySvg from '../assets/illustrations/learning/05-job-ready-career.svg';
 
+/**
+ * One card of the 5-step journey rail.
+ *
+ * It is its own component only so each card can own a 3D entrance/tilt; the
+ * markup it renders is byte-for-byte the same tree as before, because the
+ * inline website editor keys text edits by DOM position and a shifted key
+ * silently drops a published edit. `slot` is the admin artwork slot id.
+ */
+function StepTile({ step, idx, isActive, isPast, onSelect, thumb }) {
+  const StepSvg = step.Illustration;
+  const card3d = useCard3D({
+    delay: idx * 0.07,
+    distance: 22,
+    rotate: 10,
+    intensity: 5,
+    amount: 0.25,
+    settleY: isActive ? -4 : 0,
+  });
+
+  return (
+    <motion.button
+      {...card3d}
+      onClick={() => onSelect(idx)}
+      className={`group text-left p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative cursor-pointer ${
+        isActive
+          ? 'bg-white border-[#002060] shadow-xl ring-2 ring-[#2563EB]/40'
+          : 'bg-white/80 hover:bg-white border-gray-200 hover:border-gray-300 shadow-xs hover:shadow-md'
+      }`}
+    >
+      {/* Step Top Bar: Number & Status */}
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className={`font-mono text-xs font-black px-2.5 py-0.5 rounded-full ${
+            isActive
+              ? 'bg-[#002060] text-[#FF6B6B]'
+              : isPast
+              ? 'bg-[#FCE7E7] text-[#002060]'
+              : 'bg-gray-100 text-gray-700'
+          }`}
+        >
+          {step.number}
+        </span>
+
+        {isActive && (
+          <span className="flex h-2.5 w-2.5 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2563EB] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2563EB]" />
+          </span>
+        )}
+      </div>
+
+      {/* Client artwork slot (admin can drop their own PNG here) */}
+      <div className="w-12 h-12 mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform overflow-hidden aft-3d-scene">
+        {step.sourcedSvg ? (
+          <Tilt3D
+            slot={step.slot}
+            src={thumb}
+            fallbackSrc={step.sourcedSvg}
+            alt={step.title}
+            className="w-full h-full object-contain"
+            intensity={11}
+            idle={0}
+            float={false}
+            lift={1.12}
+          />
+        ) : (
+          <StepSvg className="w-full h-full object-contain" />
+        )}
+      </div>
+
+      {/* Title & Short Tag */}
+      <div className="space-y-1">
+        <div
+          className={`text-xs sm:text-sm font-black font-heading tracking-tight ${
+            isActive ? 'text-[#002060]' : 'text-gray-700'
+          }`}
+        >
+          {step.title}
+        </div>
+        <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed hidden sm:block">
+          {step.shortDesc}
+        </p>
+      </div>
+    </motion.button>
+  );
+}
+
 export default function LearningJourney() {
   const [activeStep, setActiveStep] = useState(0);
+  const { settings } = useSiteSettings();
 
   const steps = [
     {
@@ -49,6 +140,7 @@ export default function LearningJourney() {
         'Dedicated 1-on-1 curriculum consultation with a faculty advisor'
       ],
       tag: 'Step 01 · Diagnostic',
+      slot: 'journey-assess',
       Illustration: AssessIllustration,
       sourcedSvg: assessSvg,
       ctaText: 'Explore Syllabus Tracks',
@@ -68,6 +160,7 @@ export default function LearningJourney() {
         'Deep theory combined with immediate practical implementation'
       ],
       tag: 'Step 02 · Mastery',
+      slot: 'journey-learn',
       Illustration: LearnIllustration,
       sourcedSvg: learnSvg,
       ctaText: 'View All Programs',
@@ -87,6 +180,7 @@ export default function LearningJourney() {
         'Automated test suites (PyTest, Jest) validating your code against standards'
       ],
       tag: 'Step 03 · Execution',
+      slot: 'journey-practice',
       Illustration: PracticeIllustration,
       sourcedSvg: practiceSvg,
       ctaText: 'Inspect Capstone Scope',
@@ -106,6 +200,7 @@ export default function LearningJourney() {
         'One-click digital credential export directly to your LinkedIn profile'
       ],
       tag: 'Step 04 · Credential',
+      slot: 'journey-certify',
       Illustration: CertifyIllustration,
       sourcedSvg: certifySvg,
       ctaText: 'Inspect Live Certificate',
@@ -125,6 +220,7 @@ export default function LearningJourney() {
         'Direct referral pathways into our network of 200+ technology employers'
       ],
       tag: 'Step 05 · Placement',
+      slot: 'journey-ready',
       Illustration: CareerReadyIllustration,
       sourcedSvg: careerReadySvg,
       ctaText: 'View Career Placement',
@@ -169,68 +265,17 @@ export default function LearningJourney() {
 
           {/* Stepper Buttons Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 relative z-10">
-            {steps.map((step, idx) => {
-              const isActive = activeStep === idx;
-              const isPast = idx < activeStep;
-              const StepSvg = step.Illustration;
-
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => setActiveStep(idx)}
-                  className={`group text-left p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative cursor-pointer ${
-                    isActive
-                      ? 'bg-white border-[#002060] shadow-xl ring-2 ring-[#2563EB]/40 -translate-y-1'
-                      : 'bg-white/80 hover:bg-white border-gray-200 hover:border-gray-300 shadow-xs hover:shadow-md'
-                  }`}
-                >
-                  {/* Step Top Bar: Number & Status */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`font-mono text-xs font-black px-2.5 py-0.5 rounded-full ${
-                        isActive
-                          ? 'bg-[#002060] text-[#FF6B6B]'
-                          : isPast
-                          ? 'bg-[#FCE7E7] text-[#002060]'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {step.number}
-                    </span>
-
-                    {isActive && (
-                      <span className="flex h-2.5 w-2.5 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2563EB] opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2563EB]" />
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Custom Vector SVG Thumbnail */}
-                  <div className="w-12 h-12 mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform overflow-hidden">
-                    {step.sourcedSvg ? (
-                      <img src={step.sourcedSvg} alt={step.title} className="w-full h-full object-contain" />
-                    ) : (
-                      <StepSvg className="w-full h-full object-contain" />
-                    )}
-                  </div>
-
-                  {/* Title & Short Tag */}
-                  <div className="space-y-1">
-                    <div
-                      className={`text-xs sm:text-sm font-black font-heading tracking-tight ${
-                        isActive ? 'text-[#002060]' : 'text-gray-700'
-                      }`}
-                    >
-                      {step.title}
-                    </div>
-                    <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed hidden sm:block">
-                      {step.shortDesc}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+            {steps.map((step, idx) => (
+              <StepTile
+                key={step.id}
+                step={step}
+                idx={idx}
+                isActive={activeStep === idx}
+                isPast={idx < activeStep}
+                onSelect={setActiveStep}
+                thumb={illustrationImageFor(settings, step.slot)}
+              />
+            ))}
           </div>
         </div>
 
@@ -302,8 +347,15 @@ export default function LearningJourney() {
 
                   {/* Diagnostic Radar Graphic + Score Bars */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-                    <div className="flex justify-center p-3 bg-white rounded-xl border border-gray-200">
-                      <img src={assessSvg} alt="Skills Diagnostic" className="w-36 h-36 object-contain" />
+                    <div className="flex justify-center p-3 bg-white rounded-xl border border-gray-200 aft-3d-scene">
+                      <Tilt3D
+                        slot="journey-assess"
+                        src={illustrationImageFor(settings, 'journey-assess')}
+                        fallbackSrc={assessSvg}
+                        alt={illustrationAltFor(settings, 'journey-assess', 'Skills Diagnostic')}
+                        className="w-36 h-36 object-contain"
+                        delay={0.1}
+                      />
                     </div>
                     <div className="space-y-2.5 text-xs">
                       <div>
@@ -568,8 +620,17 @@ export default function LearningJourney() {
                           Direct introductions across 200+ partner network
                         </div>
                       </div>
-                      <div className="w-14 h-14 shrink-0 ml-3">
-                        <img src={careerReadySvg} alt="Career Ready" className="w-full h-full object-contain" />
+                      <div className="w-14 h-14 shrink-0 ml-3 aft-3d-scene">
+                        <Tilt3D
+                          slot="journey-ready"
+                          src={illustrationImageFor(settings, 'journey-ready')}
+                          fallbackSrc={careerReadySvg}
+                          alt={illustrationAltFor(settings, 'journey-ready', 'Career Ready')}
+                          className="w-full h-full object-contain"
+                          intensity={11}
+                          idle={0}
+                          float={false}
+                        />
                       </div>
                     </div>
 

@@ -84,7 +84,7 @@ export default function SiteImagesSection() {
             <Tile
               src={lead?.image}
               alt={lead?.alt || lead?.caption}
-              containerClassName="lg:col-span-2 lg:row-span-2 overflow-hidden rounded-3xl bg-[#002060] min-h-[280px] sm:min-h-[380px] lg:min-h-[520px] shadow-xl ring-1 ring-black/5 group"
+              containerClassName="lg:col-span-2 lg:row-span-2 overflow-hidden rounded-3xl bg-[#002060] min-h-[280px] sm:min-h-[380px] lg:min-h-[520px] shadow-xl ring-1 ring-black/5 group aft-lift"
               imgClassName="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               overlay={leadOverlay}
             >
@@ -103,7 +103,7 @@ export default function SiteImagesSection() {
                 key={`feature-${idx}`}
                 src={photo.image}
                 alt={photo.alt || photo.caption}
-                containerClassName="overflow-hidden rounded-3xl bg-slate-900 min-h-[200px] lg:min-h-[250px] shadow-lg ring-1 ring-black/5 group"
+                containerClassName="overflow-hidden rounded-3xl bg-slate-900 min-h-[200px] lg:min-h-[250px] shadow-lg ring-1 ring-black/5 group aft-lift"
                 imgClassName="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 overlay={
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
@@ -127,7 +127,7 @@ export default function SiteImagesSection() {
                 key={`wall-${idx}`}
                 src={photo.image}
                 alt={photo.alt || photo.caption}
-                containerClassName="overflow-hidden rounded-2xl bg-slate-200 h-36 sm:h-44 shadow-sm ring-1 ring-black/5 group"
+                containerClassName="overflow-hidden rounded-2xl bg-slate-200 h-36 sm:h-44 shadow-sm ring-1 ring-black/5 group aft-lift"
                 imgClassName="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 overlay={
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

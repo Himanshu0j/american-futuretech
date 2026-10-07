@@ -38,6 +38,9 @@ import noDataSvg from '../assets/illustrations/misc/no-data.svg';
 import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.svg';
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
+import Tilt3D from '../components/Spatial3D';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
 import TrustMarquee from '../components/TrustMarquee';
@@ -46,6 +49,7 @@ import FaqAccordion from '../components/common/FaqAccordion';
 import JobPagination from '../components/common/JobPagination';
 
 export default function CareersPage() {
+  const { settings } = useSiteSettings();
   const [jobs, setJobs] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -364,7 +368,7 @@ export default function CareersPage() {
             {/* Right Column: Visual Showcase */}
             <div className="lg:col-span-5 relative flex justify-center">
               <div className="relative w-full max-w-sm">
-                <div className="p-6 sm:p-6 rounded-3xl bg-[#002060] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#1D4ED8]">
+                <div className="p-6 sm:p-6 rounded-3xl bg-[#002060] text-white shadow-2xl aft-panel-3d aft-sheen relative overflow-hidden flex flex-col justify-between min-h-[360px] border border-[#1D4ED8]">
                   <div className="flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#F00000] animate-ping" />
@@ -375,11 +379,15 @@ export default function CareersPage() {
                     </div>
                   </div>
 
-                  <div className="my-auto py-3 flex justify-center z-10">
-                    <img
-                      src={jobHuntSvg}
-                      alt="Career Placement"
-                      className="w-full max-w-[240px] h-auto object-contain transform hover:scale-105 transition-transform duration-500"
+                  <div className="my-auto py-3 flex justify-center z-10 aft-3d-scene">
+                    <Tilt3D
+                      slot="careers-network"
+                      src={illustrationImageFor(settings, 'careers-network')}
+                      fallbackSrc={jobHuntSvg}
+                      alt={illustrationAltFor(settings, 'careers-network', 'Career Placement')}
+                      className="w-full max-w-[240px] h-auto object-contain"
+                      intensity={15}
+                      idle={7}
                     />
                   </div>
 
@@ -694,8 +702,16 @@ export default function CareersPage() {
                 </div>
               ) : (
                 <>
-                  <div className="mb-4 p-2 bg-[#F7F7F5] rounded-xl border border-gray-100 flex justify-center">
-                    <img src={interviewPrepSvg} alt="Fast-Track Concierge" className="w-32 h-20 object-contain" />
+                  <div className="mb-4 p-2 bg-[#F7F7F5] rounded-xl border border-gray-100 flex justify-center aft-3d-scene">
+                    <Tilt3D
+                      slot="careers-fast-track"
+                      src={illustrationImageFor(settings, 'careers-fast-track')}
+                      fallbackSrc={interviewPrepSvg}
+                      alt={illustrationAltFor(settings, 'careers-fast-track', 'Fast-Track Concierge')}
+                      className="w-32 h-20 object-contain"
+                      intensity={13}
+                      idle={6}
+                    />
                   </div>
                   <form onSubmit={handleFastTrackSubmit} className="space-y-3">
                     <div>

@@ -200,7 +200,7 @@ export default function ToolsSection() {
           {featuredTools.map((tool, idx) => (
             <div
               key={tool.name || idx}
-              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative"
+              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/40 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group relative aft-lift"
             >
               <div className="space-y-3">
                 {/* Logo & Category Badge */}

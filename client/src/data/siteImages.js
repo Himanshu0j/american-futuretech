@@ -109,6 +109,30 @@ export const DEFAULT_SITE_IMAGES = {
   banners: [],
 };
 
+/**
+ * Artwork slots — every illustration that sits INSIDE a page section.
+ *
+ * These are the drawings the client pointed at and said "yaha client khud se
+ * image/png laga paye". Each entry is one picture on the live site; the key is
+ * what the page component asks for and what the admin panel saves.
+ *
+ * `default` is only a human hint for the admin panel — the SVG that ships with
+ * the site stays imported by the component, so an untouched slot keeps looking
+ * exactly like it does today (nothing has to be re-uploaded).
+ */
+export const ILLUSTRATION_SLOTS = [
+  { key: 'journey-assess', label: 'Journey step 01 — Assess', page: 'Home', default: 'Diagnostic line-art' },
+  { key: 'journey-learn', label: 'Journey step 02 — Learn', page: 'Home', default: 'Masterclass line-art' },
+  { key: 'journey-practice', label: 'Journey step 03 — Practice', page: 'Home', default: 'Sandbox line-art' },
+  { key: 'journey-certify', label: 'Journey step 04 — Certify', page: 'Home', default: 'Credential line-art' },
+  { key: 'journey-ready', label: 'Journey step 05 — Get Job Ready', page: 'Home', default: 'Placement line-art' },
+  { key: 'cta-launch', label: 'Home CTA banner art (navy banner)', page: 'Home', default: 'Serpent + figure' },
+  { key: 'careers-network', label: 'Careers hero — partner network card', page: 'Careers', default: 'Resume check-off figure' },
+  { key: 'careers-fast-track', label: "Careers — 'Don't See Your Exact Role?' form art", page: 'Careers', default: 'Two people at a desk' },
+  { key: 'about-mission', label: 'About — mission & growth artwork', page: 'About', default: 'Analytics window' },
+  { key: 'about-worldwide', label: 'About — worldwide cohort artwork', page: 'About', default: 'Three people at a desk' },
+];
+
 /** Banner slots the admin can fill — one per inner page. */
 export const SITE_IMAGE_BANNERS = [
   { key: 'courses', label: 'Academy Programs (/courses)' },
@@ -162,8 +186,35 @@ export function resolveSiteImages(settings) {
     feature: cleanList(raw.feature, []),
     gallery: cleanList(raw.gallery, []),
     banners: cleanList(raw.banners, []),
+    illustrations: cleanList(raw.illustrations, []),
   };
 }
+
+/**
+ * The artwork the client put in one slot ('' = keep the shipped drawing).
+ *
+ * Reads the RAW saved list rather than resolveSiteImages() on purpose: an
+ * untouched settings document still has to hand back `''` so the component
+ * falls back to the SVG it imports itself.
+ */
+export function illustrationImageFor(settings, key) {
+  const list = settings?.siteImages?.illustrations;
+  if (!Array.isArray(list)) return '';
+  const match = list.find((row) => row?.key === key && row?.active !== false && row?.image);
+  return match ? String(match.image).trim() : '';
+}
+
+/** Alt text for one slot, falling back to the component's own description. */
+export function illustrationAltFor(settings, key, fallback) {
+  const list = settings?.siteImages?.illustrations;
+  if (!Array.isArray(list)) return fallback;
+  const match = list.find((row) => row?.key === key && row?.active !== false && row?.image);
+  return (match && String(match.alt || '').trim()) || fallback;
+}
+
+/** Human label for an artwork slot (falls back to the raw key). */
+export const illustrationLabelFor = (key) =>
+  ILLUSTRATION_SLOTS.find((slot) => slot.key === key)?.label || key;
 
 /** The banner photo configured for one page ('' when the admin left it blank). */
 export function bannerImageFor(settings, key) {

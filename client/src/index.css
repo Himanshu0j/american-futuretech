@@ -923,6 +923,126 @@
 .eq-bar-7 { animation-duration: 1.4s; animation-delay: 0.3s; }
 .eq-bar-8 { animation-duration: 1.2s; animation-delay: 0.12s; }
 
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM 3D SPATIAL SYSTEM
+   ═══════════════════════════════════════════════════════════════
+   Depth for the artwork the client uploads (Spatial3D.jsx) plus a
+   few class-only helpers so sections and cards can lean into space
+   without any markup change — markup changes would shift the inline
+   editor's DOM keys and silently unpublish the client's own edits.
+*/
+
+@keyframes aftFloat3D {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes aftGlowPulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.06); }
+}
+
+@keyframes aftSheenSweep {
+  0% { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
+  18% { opacity: 0.55; }
+  60%, 100% { transform: translateX(240%) skewX(-18deg); opacity: 0; }
+}
+
+@keyframes aftRise3D {
+  from { opacity: 0; transform: perspective(900px) rotateX(14deg) translateY(26px); }
+  to { opacity: 1; transform: perspective(900px) rotateX(0deg) translateY(0); }
+}
+
+@keyframes aftBeacon {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240, 0, 0, 0.45); }
+  70% { box-shadow: 0 0 0 12px rgba(240, 0, 0, 0); }
+}
+
+/* One helper = a real perspective camera for its children. */
+.aft-3d-scene {
+  perspective: 1100px;
+  perspective-origin: 50% 40%;
+}
+
+.aft-3d-flat {
+  transform-style: preserve-3d;
+}
+
+/* Depth shadows, cheapest way to make flat art read as lifted. */
+.aft-depth-1 { filter: drop-shadow(0 10px 18px rgba(0, 32, 96, 0.16)); }
+.aft-depth-2 { filter: drop-shadow(0 20px 32px rgba(0, 32, 96, 0.26)); }
+
+/* A lifted dark panel: inner highlight + deep drop shadow, no markup change. */
+.aft-panel-3d {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+    0 34px 60px -26px rgba(0, 32, 96, 0.62),
+    0 0 0 1px rgba(29, 78, 216, 0.35);
+}
+
+/* A card that lifts towards the visitor on hover (pointer devices only). */
+.aft-lift {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aft-lift:hover {
+    transform: perspective(1000px) translateY(-8px) rotateX(3.2deg) scale(1.015);
+    box-shadow: 0 26px 48px -18px rgba(0, 32, 96, 0.45);
+  }
+}
+
+/* Slow glow behind a container, drawn as a pseudo element. */
+.aft-aura {
+  position: relative;
+}
+
+.aft-aura::before {
+  content: '';
+  position: absolute;
+  inset: -12% -6%;
+  background: radial-gradient(60% 60% at 50% 45%, rgba(37, 99, 235, 0.22), transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+  animation: aftGlowPulse 7.5s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* Faint engineering grid for the dark panels — pure background-image. */
+.aft-grid-3d {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 42px 42px, 42px 42px;
+  background-position: center;
+}
+
+.aft-float-3d {
+  animation: aftFloat3D 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.aft-rise-3d {
+  animation: aftRise3D 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.aft-beacon {
+  animation: aftBeacon 2.6s ease-out infinite;
+}
+
+.aft-sheen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  pointer-events: none;
+  animation: aftSheenSweep 7s ease-in-out infinite;
+}
+
 /* Balanced, professional line breaks for long statements */
 .text-balance {
   text-wrap: balance;

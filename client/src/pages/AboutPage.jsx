@@ -32,6 +32,8 @@ import {
 } from '../data/siteContent';
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
+import Tilt3D from '../components/Spatial3D';
+import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
@@ -182,9 +184,16 @@ export default function AboutPage() {
                   </p>
                 </div>
 
-                {/* Sourced Vector Illustration: Mission & Transformation */}
-                <div className="p-4 rounded-2xl bg-[#F7F7F5] border border-[#1D4ED8]/20 flex items-center justify-center">
-                  <img src={missionGrowthSvg} alt="American FutureTech Mission & Growth" className="w-full max-w-xs h-auto object-contain" />
+                {/* Client artwork slot: About mission & growth */}
+                <div className="p-4 rounded-2xl bg-[#F7F7F5] border border-[#1D4ED8]/20 flex items-center justify-center aft-3d-scene aft-aura">
+                  <Tilt3D
+                    slot="about-mission"
+                    src={illustrationImageFor(settings, 'about-mission')}
+                    fallbackSrc={missionGrowthSvg}
+                    alt={illustrationAltFor(settings, 'about-mission', 'American FutureTech Mission & Growth')}
+                    className="w-full max-w-xs h-auto object-contain"
+                    delay={0.05}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
@@ -571,7 +580,7 @@ export default function AboutPage() {
         {/* Global Vision Visual Banner */}
         {show('cta') && (
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-10 text-center">
-          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#002060] to-[#0f1b11] text-white shadow-2xl relative overflow-hidden">
+          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#002060] to-[#0f1b11] text-white shadow-2xl aft-panel-3d aft-sheen relative overflow-hidden">
             <div className="max-w-2xl mx-auto space-y-4 relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#FF6B6B] text-xs font-mono font-bold uppercase">
                 Worldwide Impact
@@ -593,8 +602,16 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="mt-8 flex justify-center">
-              <img src={engineeringTeamSvg} alt="Worldwide Tech Engineering Cohort" className="w-full max-w-md h-auto object-contain drop-shadow-xl" />
+            <div className="mt-8 flex justify-center aft-3d-scene">
+              <Tilt3D
+                slot="about-worldwide"
+                src={illustrationImageFor(settings, 'about-worldwide')}
+                fallbackSrc={engineeringTeamSvg}
+                alt={illustrationAltFor(settings, 'about-worldwide', 'Worldwide Tech Engineering Cohort')}
+                className="w-full max-w-md h-auto object-contain"
+                intensity={14}
+                idle={7}
+              />
             </div>
           </div>
         </section>

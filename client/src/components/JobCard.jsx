@@ -83,7 +83,7 @@ export default function JobCard({
   const locationText = job.location || 'Remote (US & Global)';
 
   return (
-    <div className="p-6 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-blue-500/40 dark:hover:border-blue-500/40 shadow-xs hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left">
+    <div className="p-6 sm:p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-blue-500/40 dark:hover:border-blue-500/40 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between gap-5 group relative text-left aft-lift">
       
       {/* 1. TOP ROW: Prominent Company Logo + Title & Key Metadata Tags */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">

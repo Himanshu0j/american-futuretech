@@ -1028,6 +1028,7 @@ export default function SettingsCMS() {
                         tools: true,
                         roadmap: true,
                         whyChooseUs: true,
+                        siteImages: true,
                         faqs: true,
                         callToAction: true,
                       };
@@ -1051,8 +1052,9 @@ export default function SettingsCMS() {
                   { key: 'tools', label: '7. 40+ Industry Tools & Tech', desc: 'Interactive developer tools, frameworks, and cloud stack grid' },
                   { key: 'roadmap', label: '8. 6-Step Career Transformation Roadmap', desc: 'Step-by-step pathway from orientation to elite hiring' },
                   { key: 'whyChooseUs', label: '9. Why Choose Us & Product Showcase', desc: 'Live sandbox terminals, code reviews, and architectural depth' },
-                  { key: 'faqs', label: '10. Frequently Asked Questions (Accordion)', desc: 'Categorized expandable answers for admissions & placement' },
-                  { key: 'callToAction', label: '11. Selective Admissions Bottom CTA', desc: 'Urgency countdown and final enrollment reservation banner' },
+                  { key: 'siteImages', label: '10. Campus & Classroom Photo Showcase', desc: 'The admin-managed photos from Content → Website Images (mosaic + photo wall)' },
+                  { key: 'faqs', label: '11. Frequently Asked Questions (Accordion)', desc: 'Categorized expandable answers for admissions & placement' },
+                  { key: 'callToAction', label: '12. Selective Admissions Bottom CTA', desc: 'Urgency countdown and final enrollment reservation banner' },
                 ].map(({ key, keyName, label, desc }) => {
                   const prop = keyName || key;
                   const isVisible = settings.sectionVisibility?.[prop] !== false;

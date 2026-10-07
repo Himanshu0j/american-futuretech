@@ -6,6 +6,7 @@ import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
 import WhyChooseUs from './components/WhyChooseUs';
+import SiteImagesSection from './components/SiteImagesSection';
 import CallToAction from './components/CallToAction';
 import Footer from './components/Footer';
 import LeadModal from './components/LeadModal';
@@ -233,6 +234,11 @@ function LandingPage() {
 
         {/* Real Product Showcase & Architectural Depth */}
         {visibility.whyChooseUs !== false && <WhyChooseUs />}
+
+        {/* Admin-managed photo showcase — every picture here (three feature
+            photos + the wall) is dropped in from Admin → Content → Website
+            Images, by link or upload. */}
+        <SiteImagesSection />
 
         {/* Comprehensive Academic & Program FAQs */}
         {visibility.faqs !== false && (

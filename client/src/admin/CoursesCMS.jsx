@@ -67,6 +67,26 @@ const mergeLessons = (titles, previous = []) =>
     };
   });
 
+/**
+ * The three certificate rows every course page can show. Row 3 starts empty —
+ * as soon as the client gives it an artwork the course page grows a third
+ * certificate card, which is exactly what was asked for.
+ */
+const emptyCertificateRows = () => [0, 1, 2].map(() => ({
+  image: '',
+  title: '',
+  issuer: '',
+  code: '',
+  description: '',
+  active: true,
+}));
+
+const CERTIFICATE_ROLE_LABELS = [
+  '1st — US Fellowship diploma (shown beside the credential mark in the hero)',
+  '2nd — Microsoft / partner credential',
+  '3rd — extra certificate (this is the new card on every course page)',
+];
+
 export default function CoursesCMS() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,6 +149,11 @@ export default function CoursesCMS() {
   // Optional second credential artwork (Microsoft + US Fellowship, GRC AIGP +
   // its own certificate). Blank keeps the single-certificate layout.
   const [certificateImage2, setCertificateImage2] = useState('');
+  // The three certificate cards shown on the course page (Curriculum & Courses
+  // CMS → "Certificates"). Row 1 & 2 refine the built-in US Fellowship and
+  // Microsoft/partner cards, row 3 is the extra credential the client asked for;
+  // they are also what the hero band renders.
+  const [certificates, setCertificates] = useState(() => emptyCertificateRows());
   // "What Can You Become?" career-role pills + that block's heading/subtitle.
   const [careerRolesHeading, setCareerRolesHeading] = useState('');
   const [careerRolesSubtitle, setCareerRolesSubtitle] = useState('');
@@ -171,6 +196,8 @@ export default function CoursesCMS() {
     setCredentialTitle('');
     setCredentialSubtitle('');
     setCertificateImage('');
+    setCertificateImage2('');
+    setCertificates(emptyCertificateRows());
     setToolsTitle('');
     setToolsSubtitle('');
     setTools([]);
@@ -211,6 +238,28 @@ export default function CoursesCMS() {
     setCredentialSubtitle(course.credentialSubtitle || '');
     setCertificateImage(course.certificateImage || '');
     setCertificateImage2(course.certificateImage2 || '');
+    // Prefill the three rows from what the course already has, so an existing
+    // course opens with its own artwork in the new section instead of looking
+    // empty (and the client only has to fill the third slot).
+    {
+      // Rows are positional: a course whose ONLY filled row is the 3rd must open
+      // with that artwork in row 3, not pulled up into row 1.
+      const savedRows = Array.isArray(course.certificates) ? course.certificates : [];
+      const bySlot = {};
+      savedRows.forEach((cert, idx) => {
+        const slot = Math.min(3, Math.max(1, Number(cert?.order) || idx + 1));
+        bySlot[slot] = cert;
+      });
+      const legacy = [course.certificateImage || '', course.certificateImage2 || ''];
+      setCertificates([1, 2, 3].map((slot) => ({
+        image: String(bySlot[slot]?.image || '').trim() || legacy[slot - 1] || '',
+        title: bySlot[slot]?.title || '',
+        issuer: bySlot[slot]?.issuer || '',
+        code: bySlot[slot]?.code || '',
+        description: bySlot[slot]?.description || '',
+        active: bySlot[slot]?.active !== false,
+      })));
+    }
     setCareerRolesHeading(course.careerRolesHeading || '');
     setCareerRolesSubtitle(course.careerRolesSubtitle || '');
     setCareerRoles(
@@ -424,6 +473,21 @@ export default function CoursesCMS() {
       credentialSubtitle: String(credentialSubtitle || '').trim(),
       certificateImage: String(certificateImage || '').trim(),
       certificateImage2: String(certificateImage2 || '').trim(),
+      // Up to three showcase certificates. `order` is the SLOT (1–3), not a
+      // position in the list: leaving row 1 blank must not pull row 3 up into
+      // the first card. Rows carry no content at all are simply dropped.
+      certificates: certificates
+        .slice(0, 3)
+        .map((cert, idx) => ({
+          image: String(cert.image || '').trim(),
+          title: String(cert.title || '').trim(),
+          issuer: String(cert.issuer || '').trim(),
+          code: String(cert.code || '').trim(),
+          description: String(cert.description || '').trim(),
+          order: idx + 1,
+          active: cert.active !== false,
+        }))
+        .filter((cert) => cert.image || cert.title || cert.issuer || cert.code || cert.description),
       careerRolesHeading: String(careerRolesHeading || '').trim(),
       careerRolesSubtitle: String(careerRolesSubtitle || '').trim(),
       careerRoles: careerRoles
@@ -989,12 +1053,107 @@ export default function CoursesCMS() {
                       GRC's AIGP mark beside its own certificate). Khaali chhodo to
                       hero band pehle jaisa, ek hi certificate. */}
                   <ImageUploadInput
-                    label="Second Certificate Artwork (optional)"
+                    label="Second Certificate Artwork (optional, legacy)"
                     value={certificateImage2}
                     onChange={setCertificateImage2}
                     placeholder="Doosra certificate (e.g. GRC / Fellowship diploma) — URL ya upload"
                     previewSize="w-28 h-16"
                   />
+                </div>
+
+                {/* Certificate showcase — the three credentials this course page
+                    shows. Exactly what the client asked for: course page par teen
+                    certificate dikhne chahiye, aur teesra yahan se add hota hai. */}
+                <div className="pt-3 border-t border-white/[0.08] space-y-3">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Award className="w-4 h-4 text-blue-400" />
+                      <span>Certificates (3 per course)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Course page ke certificate showcase ke teen cards. Row 1 aur 2 built-in cards ko refine karte hain
+                      (khaali chhodne par unka default title/description hi dikhta rahega), aur <strong className="text-slate-200">row 3
+                      bharne par course page par teesra certificate card aa jaata hai</strong>. Yahuin se hero band ka artwork      aur
+                      bhi set hota hai — teesri baar alag se image dene ki zarurat nahi.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {certificates.map((cert, idx) => (
+                      <div key={idx} className="p-3 rounded-xl bg-slate-950/70 border border-white/10 space-y-2.5">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-mono text-slate-300 font-bold">
+                            {CERTIFICATE_ROLE_LABELS[idx] || `Certificate ${idx + 1}`}
+                          </span>
+                          <label className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono cursor-pointer whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={cert.active !== false}
+                              onChange={(e) => setCertificates((prev) => prev.map((c, i) => (
+                                i === idx ? { ...c, active: e.target.checked } : c
+                              )))}
+                              className="rounded bg-slate-900 border-white/20 text-blue-500"
+                            />
+                            Show
+                          </label>
+                        </div>
+
+                        <ImageUploadInput
+                          label="Certificate artwork"
+                          value={cert.image}
+                          onChange={(url) => setCertificates((prev) => prev.map((c, i) => (
+                            i === idx ? { ...c, image: url } : c
+                          )))}
+                          placeholder="https://… ya upload — khaali chhodne par built-in artwork dikhta hai"
+                          previewSize="w-24 h-16"
+                        />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <input
+                            type="text"
+                            value={cert.title}
+                            onChange={(e) => setCertificates((prev) => prev.map((c, i) => (
+                              i === idx ? { ...c, title: e.target.value } : c
+                            )))}
+                            placeholder="Certificate title"
+                            aria-label={`Certificate ${idx + 1} title`}
+                            className="p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                          />
+                          <input
+                            type="text"
+                            value={cert.issuer}
+                            onChange={(e) => setCertificates((prev) => prev.map((c, i) => (
+                              i === idx ? { ...c, issuer: e.target.value } : c
+                            )))}
+                            placeholder="Issued by (Microsoft / American FutureTech)"
+                            aria-label={`Certificate ${idx + 1} issuer`}
+                            className="p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                          />
+                          <input
+                            type="text"
+                            value={cert.code}
+                            onChange={(e) => setCertificates((prev) => prev.map((c, i) => (
+                              i === idx ? { ...c, code: e.target.value } : c
+                            )))}
+                            placeholder="Credential code (AI-102 / AFT-SPECIALIST)"
+                            aria-label={`Certificate ${idx + 1} code`}
+                            className="p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                          />
+                        </div>
+
+                        <textarea
+                          value={cert.description}
+                          onChange={(e) => setCertificates((prev) => prev.map((c, i) => (
+                            i === idx ? { ...c, description: e.target.value } : c
+                          )))}
+                          rows={2}
+                          placeholder="Short description shown under the card title"
+                          aria-label={`Certificate ${idx + 1} description`}
+                          className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* "What Can You Become?" career-role pills — editable per course

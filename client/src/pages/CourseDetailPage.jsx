@@ -208,6 +208,101 @@ export default function CourseDetailPage() {
     || `Master ${course.title} to qualify for high-impact, high-growth technology roles in top tier companies.`;
   const certImages = detailedData.certificates || {};
 
+  /*
+   * ── Certificate showcase cards (three per course) ──
+   *
+   * The base cards are exactly what this section has always rendered (the US
+   * Fellowship diploma + the Microsoft/partner credential). A course's own
+   * Certificates list — edited in Curriculum & Courses CMS → "Certificates" —
+   * refines those two field by field and adds the THIRD credential the client
+   * asked for on every program. A blank field keeps the built-in wording, and an
+   * untouched course still shows the same two cards as before.
+   */
+  const certificateBase = [
+    {
+      headerIcon: 'aft',
+      eyebrow: 'Accredited US Fellowship',
+      meta: 'Issued by American FutureTech',
+      title: certImages.completionTitle || 'Certificate of Completion',
+      image: certImages.completionImage || '/static/images/dsai.jpeg',
+      code: 'AFT-FELLOWSHIP-DIPLOMA',
+      issuer: certImages.completionIssuer || 'American FutureTech',
+      description: certImages.completionDesc
+        || `Awarded to learners who successfully complete ${course.title}. Verified on the public registry.`,
+      footerLabel: 'Public Verification Registry',
+      footerMeta: null,
+      accent: '#1D4ED8',
+    },
+    {
+      headerIcon: 'ms',
+      eyebrow: 'Microsoft Official Exam',
+      meta: certImages.microsoftCode || alignedMsCert.code,
+      title: certImages.microsoftTitle || alignedMsCert.title,
+      image: certImages.microsoftImage || alignedMsCert.image,
+      code: certImages.microsoftCode || alignedMsCert.code,
+      issuer: certImages.microsoftIssuer || 'Microsoft',
+      description: certImages.microsoftDesc
+        || 'Earn official Microsoft certification validating enterprise proficiency in modern cloud frameworks and Azure AI infrastructure.',
+      footerLabel: 'Microsoft Certified Professional',
+      footerMeta: 'Global Transcript ID',
+      accent: '#00A4EF',
+    },
+    {
+      headerIcon: 'partner',
+      eyebrow: 'Advanced Specialisation',
+      meta: 'Issued after capstone defense',
+      title: 'Specialisation Certificate',
+      image: '',
+      code: 'AFT-SPECIALIST',
+      issuer: 'American FutureTech',
+      description: `Awarded for the defended ${course.title} capstone — the third credential a graduate can hand to an employer.`,
+      footerLabel: 'Public Verification Registry',
+      footerMeta: null,
+      accent: '#F59E0B',
+    },
+  ];
+
+  /* The entries carry a SLOT (order 1–3), not a list position: a course whose
+     only filled card is the third one must show it as the third card, never
+     pulled up into the first. */
+  const adminCertificatesBySlot = {};
+  (Array.isArray(course?.certificates) ? course.certificates : []).forEach((cert, idx) => {
+    if (!cert || cert.active === false) return;
+    if (!String(cert.image || '').trim() && !String(cert.title || '').trim()) return;
+    const slot = Math.min(3, Math.max(1, Number(cert.order) || idx + 1));
+    adminCertificatesBySlot[slot] = cert;
+  });
+  const adminCertificateSlots = Object.keys(adminCertificatesBySlot).map(Number);
+
+  const certificateCards = certificateBase
+    .slice(0, adminCertificateSlots.length > 0 ? 3 : 2)
+    .map((base, idx) => {
+      const custom = adminCertificatesBySlot[idx + 1] || {};
+      return {
+        ...base,
+        image: String(custom.image || '').trim() || base.image,
+        title: String(custom.title || '').trim() || base.title,
+        issuer: String(custom.issuer || '').trim() || base.issuer,
+        code: String(custom.code || '').trim() || base.code,
+        description: String(custom.description || '').trim() || base.description,
+      };
+    })
+    // The third card only exists once the admin gives it an artwork; without one
+    // the section keeps its familiar two-card layout.
+    .filter((card) => card.image);
+
+  const certificateCount = certificateCards.length;
+  const certificateEyebrow = certificateCount >= 3 ? 'Triple Industry Recognition' : 'Dual Industry Recognition';
+  const certificateHeading = certificateCount >= 3
+    ? 'American FutureTech & Partner Credentials'
+    : 'American FutureTech & Microsoft Credentials';
+  const certificateSubtitle = certificateCount >= 3
+    ? 'Graduate with three stacked credentials: the accredited American FutureTech US Fellowship Diploma, official Microsoft Certified Professional exam alignment, and a defended specialisation certificate.'
+    : 'Successfully graduate to receive dual industry credentials: an accredited American FutureTech US Fellowship Diploma and official alignment with Microsoft Certified Professional certifications.';
+  const certificateGridCols = certificateCards.length >= 3
+    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl'
+    : 'grid-cols-1 md:grid-cols-2 max-w-5xl';
+
   // Partner mark + certificate artwork shown in the hero (Microsoft logo /
   // "Microsoft Certificate" on the Microsoft-aligned tracks, the AI GRC
   // certificate on the GRC track). Both are editable per course in the CMS.
@@ -421,29 +516,33 @@ export default function CourseDetailPage() {
                     </div>
 
                     <div className="sm:col-span-3 rounded-2xl border border-[#1D4ED8]/60 bg-[#002060]/70 overflow-hidden min-h-[170px] flex items-center justify-center">
-                      {heroCredential.certificateImage || heroCredential.certificateImage2 ? (
-                        /* One or two credentials — whichever artwork the admin
-                           uploaded in the course CMS. A certificate is a
-                           document, not a photo: `object-contain` keeps every
-                           line and the seal visible instead of cropping them. */
+                      {heroCredential.certificates.length > 0 ? (
+                        /* Up to three credentials — whatever artwork the admin
+                           uploaded in the course CMS (Curriculum & Courses →
+                           "Certificates"), with the legacy single-artwork fields
+                           still honoured. A certificate is a document, not a
+                           photo: `object-contain` keeps every line and the seal
+                           visible instead of cropping them. */
                         <div
                           className={`w-full p-2 ${
-                            heroCredential.certificateImage && heroCredential.certificateImage2
-                              ? 'grid grid-cols-1 sm:grid-cols-2 gap-2'
-                              : ''
+                            heroCredential.certificates.length === 1
+                              ? ''
+                              : heroCredential.certificates.length === 2
+                                ? 'grid grid-cols-1 sm:grid-cols-2 gap-2'
+                                : 'grid grid-cols-1 sm:grid-cols-3 gap-2'
                           }`}
                         >
-                          {[heroCredential.certificateImage, heroCredential.certificateImage2]
-                            .filter(Boolean)
-                            .map((art, index) => (
-                              <img
-                                key={index}
-                                src={art}
-                                alt={`${course.title} certificate ${index + 1}`}
-                                className="w-full h-40 sm:h-48 object-contain"
-                                loading="lazy"
-                              />
-                            ))}
+                          {heroCredential.certificates.map((art, index) => (
+                            <img
+                              key={index}
+                              src={art}
+                              alt={`${course.title} certificate ${index + 1}`}
+                              className={`w-full object-contain ${
+                                heroCredential.certificates.length >= 3 ? 'h-32 sm:h-40' : 'h-40 sm:h-48'
+                              }`}
+                              loading="lazy"
+                            />
+                          ))}
                         </div>
                       ) : (
                         <div className="text-center px-6 py-8">
@@ -1070,146 +1169,110 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {/* 7. American FutureTech Certificate & Microsoft Certification Showcase */}
+        {/* 7. Certificate showcase — up to three credentials per course */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3">
               <Award className="w-3.5 h-3.5 text-blue-700" />
-              Dual Industry Recognition
+              {certificateEyebrow}
             </div>
             <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
-              American FutureTech & Microsoft Credentials
+              {certificateHeading}
             </h2>
             <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Successfully graduate to receive dual industry credentials: an accredited American FutureTech US Fellowship Diploma and official alignment with Microsoft Certified Professional certifications.
+              {certificateSubtitle}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6 max-w-5xl mx-auto">
-            {/* Card 1: American FutureTech Certificate */}
-            <div data-certificate-card className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
-              <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-                  <span data-certificate-issuer className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
-                    Accredited US Fellowship
-                  </span>
-                </div>
-                <span className="text-[11px] font-semibold text-slate-300">Issued by American FutureTech</span>
-              </div>
-
-              {/* Certificate Image Preview with zoom */}
+          <div className={`grid gap-6 lg:gap-6 mx-auto ${certificateGridCols}`}>
+            {certificateCards.map((card, cardIdx) => (
               <div
-                onClick={(event) => openCertificatePreview(event, {
-                  title: certImages.completionTitle || 'American FutureTech Certificate of Completion',
-                  image: certImages.completionImage || '/static/images/dsai.jpeg',
-                  code: 'AFT-FELLOWSHIP-DIPLOMA',
-                  issuer: certImages.completionIssuer || 'American FutureTech',
-                })}
-                className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
-                title="Click to inspect certificate in 4K"
+                key={cardIdx}
+                data-certificate-card
+                className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col"
               >
-                <img
-                  src={certImages.completionImage || '/static/images/dsai.jpeg'}
-                  alt="American FutureTech Certificate"
-                  className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
-                />
-                {/* pointer-events-none: this overlay sits on top of the artwork with
-                    no pointer-events-none it swallowed the click, so the inline
-                    Website Editor never received it and the certificate image
-                    could not be replaced from Admin → Edit Website Content. */}
-                <div className="pointer-events-none absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
-                  <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
-                    <ZoomIn className="w-4 h-4 text-[#002060]" /> Inspect in 4K
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 font-display mb-2">
-                    {certImages.completionTitle || 'Certificate of Completion'}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {certImages.completionDesc || `Awarded to learners who successfully complete ${course.title}. Verified on the public registry.`}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-blue-700 font-bold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    Public Verification Registry
-                  </span>
-                  <Link
-                    to="/certificate/AFT-CERT-AI9821"
-                    className="text-[#002060] font-semibold hover:underline flex items-center gap-1"
-                  >
-                    Sample <ExternalLink className="w-3 h-3" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2: the partner certification track (Microsoft, or the course's
-                own AIGP / GRC credential when the artwork says so). */}
-            <div data-certificate-card className="group rounded-3xl bg-white border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col">
-              <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="grid grid-cols-2 gap-[2px]">
-                    <span className="w-1.5 h-1.5 bg-[#f25022]" />
-                    <span className="w-1.5 h-1.5 bg-[#7fba00]" />
-                    <span className="w-1.5 h-1.5 bg-[#00a4ef]" />
-                    <span className="w-1.5 h-1.5 bg-[#ffb900]" />
+                <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {card.headerIcon === 'ms' ? (
+                      <div className="grid grid-cols-2 gap-[2px]">
+                        <span className="w-1.5 h-1.5 bg-[#f25022]" />
+                        <span className="w-1.5 h-1.5 bg-[#7fba00]" />
+                        <span className="w-1.5 h-1.5 bg-[#00a4ef]" />
+                        <span className="w-1.5 h-1.5 bg-[#ffb900]" />
+                      </div>
+                    ) : (
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full ${card.headerIcon === 'aft' ? 'bg-blue-400 animate-pulse' : 'bg-amber-400'}`}
+                      />
+                    )}
+                    <span data-certificate-issuer className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
+                      {card.eyebrow}
+                    </span>
                   </div>
-                  <span data-certificate-issuer className="text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
-                    Microsoft Official Exam
+                  <span
+                    {...(card.headerIcon === 'ms' ? { 'data-certificate-code': true } : {})}
+                    className="text-[11px] font-semibold text-slate-300 truncate max-w-[45%]"
+                  >
+                    {card.meta}
                   </span>
                 </div>
-                <span data-certificate-code className="text-[11px] font-semibold text-slate-300">{certImages.microsoftCode || alignedMsCert.code}</span>
-              </div>
 
-              {/* Certificate Image Preview with zoom */}
-              <div
-                onClick={(event) => openCertificatePreview(event, {
-                  title: certImages.microsoftTitle || alignedMsCert.title,
-                  image: certImages.microsoftImage || alignedMsCert.image,
-                  code: certImages.microsoftCode || alignedMsCert.code,
-                  issuer: certImages.microsoftIssuer || 'Microsoft',
-                })}
-                className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
-                title="Click to inspect this certificate in 4K"
-              >
-                <img
-                  src={certImages.microsoftImage || alignedMsCert.image}
-                  alt="Microsoft Certificate"
-                  className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
-                  <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
-                    <ZoomIn className="w-4 h-4 text-blue-600" /> Inspect in 4K
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 font-display mb-2">
-                    {certImages.microsoftTitle || alignedMsCert.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {certImages.microsoftDesc || 'Earn official Microsoft certification validating enterprise proficiency in modern cloud frameworks and Azure AI infrastructure.'}
-                  </p>
+                {/* Certificate Image Preview with zoom */}
+                <div
+                  onClick={(event) => openCertificatePreview(event, {
+                    title: card.title,
+                    image: card.image,
+                    code: card.code,
+                    issuer: card.issuer,
+                  })}
+                  className="relative h-44 sm:h-52 bg-slate-100 overflow-hidden cursor-pointer group/zoom"
+                  title="Click to inspect this certificate in 4K"
+                >
+                  <img
+                    src={card.image}
+                    alt={`${course.title} — ${card.title}`}
+                    className="w-full h-full object-contain p-2.5 transition-transform duration-500 group-hover/zoom:scale-105"
+                  />
+                  {/* pointer-events-none: this overlay sits on top of the artwork with
+                      no pointer-events-none it swallowed the click, so the inline
+                      Website Editor never received it and the certificate image
+                      could not be replaced from Admin → Edit Website Content. */}
+                  <div className="pointer-events-none absolute inset-0 bg-slate-950/40 opacity-0 group-hover/zoom:opacity-100 flex items-center justify-center transition-opacity">
+                    <span className="px-4 py-2 rounded-full bg-white text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow-xl">
+                      <ZoomIn className="w-4 h-4" style={{ color: card.accent }} /> Inspect in 4K
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-blue-700 font-bold flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    Microsoft Certified Professional
-                  </span>
-                  <span className="text-slate-600 font-mono text-[11px]">Global Transcript ID</span>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 font-display mb-2">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {card.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-blue-700 font-bold flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-blue-600" />
+                      {card.footerLabel}
+                    </span>
+                    {card.footerMeta ? (
+                      <span className="text-slate-600 font-mono text-[11px]">{card.footerMeta}</span>
+                    ) : (
+                      <Link
+                        to="/certificate/AFT-CERT-AI9821"
+                        className="text-[#002060] font-semibold hover:underline flex items-center gap-1"
+                      >
+                        Sample <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 

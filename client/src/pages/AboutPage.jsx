@@ -31,6 +31,7 @@ import {
   DEFAULT_PEDAGOGY
 } from '../data/siteContent';
 import Navbar from '../components/Navbar';
+import PageBanner from '../components/PageBanner';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
@@ -114,6 +115,9 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
+
+      {/* Admin photo strip (Content → Website Images). */}
+      <PageBanner pageKey="about" />
 
       <main className="pt-28 pb-10">
 

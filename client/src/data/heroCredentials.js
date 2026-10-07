@@ -60,6 +60,30 @@ export function getHeroCredential(course, certImages = {}) {
 
   const logo = course?.credentialLogo || fallbackLogo;
 
+  // The Certificates list on the course (Curriculum & Courses CMS →
+  // "Certificates") is what the admin actually fills in — up to three artworks,
+  // in order. Resolution is PER SLOT, so leaving the first card blank while
+  // filling the third still shows the default certificate beside the new one,
+  // and a course nobody has touched keeps exactly the band it had before.
+  const adminSlotImage = (slot) => {
+    const list = Array.isArray(course?.certificates) ? course.certificates : [];
+    for (let i = 0; i < list.length; i += 1) {
+      const cert = list[i];
+      if (!cert || cert.active === false) continue;
+      const certSlot = Math.min(3, Math.max(1, Number(cert.order) || i + 1));
+      if (certSlot !== slot) continue;
+      const image = String(cert.image || '').trim();
+      if (image) return image;
+    }
+    return '';
+  };
+
+  const certificates = [
+    adminSlotImage(1) || certificateImage,
+    adminSlotImage(2) || course?.certificateImage2 || '',
+    adminSlotImage(3),
+  ].filter(Boolean).slice(0, 3);
+
   return {
     logo,
     title: course?.credentialTitle || fallbackTitle,
@@ -70,6 +94,8 @@ export function getHeroCredential(course, certImages = {}) {
     // Only what the admin uploaded — never inherited from a fallback, so the
     // band shows one certificate unless a second one was deliberately added.
     certificateImage2: course?.certificateImage2 || '',
+    // Every artwork the hero band renders, in order (1–3).
+    certificates,
     // Badge-shaped artwork ships on its own light plate, so the dark hero needs
     // a white tile behind it. Only true when we fell back to the AIGP badge.
     logoOnLightTile: logo === AIGP_LOGO,

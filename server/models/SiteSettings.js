@@ -359,6 +359,35 @@ const HeaderMenuItemSchema = new mongoose.Schema({
   hasDropdown: { type: Boolean, default: false },
 }, { _id: true });
 
+// ── "Website Images" section ──
+// One admin section for every photo on the site that is not tied to a course:
+// the homepage image showcase (three feature photos + an unlimited gallery) plus
+// optional banner photos for the inner pages. Each entry is just an image URL
+// (uploaded file or pasted link), an optional caption and an on/off switch, so
+// the client can drop in as many pictures as they like without a code change.
+const SiteImageSchema = new mongoose.Schema({
+  key: { type: String, default: '' },
+  image: { type: String, default: '' },
+  caption: { type: String, default: '' },
+  alt: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: false });
+
+const SiteImagesSchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: true },
+  eyebrow: { type: String, default: '' },
+  heading: { type: String, default: '' },
+  subheading: { type: String, default: '' },
+  // The big mosaic on the homepage: entry 1 is the tall lead photo, entries 2
+  // and 3 sit stacked beside it.
+  feature: { type: [SiteImageSchema], default: [] },
+  // The photo wall under the mosaic — as many rows as the client adds.
+  gallery: { type: [SiteImageSchema], default: [] },
+  // Inner-page banners (Courses / About / Careers / Success stories / Contact).
+  banners: { type: [SiteImageSchema], default: [] },
+}, { _id: false });
+
 const SiteSettingsSchema = new mongoose.Schema({
   siteName: {
     type: String,
@@ -540,6 +569,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     tools: { type: Boolean, default: true },
     roadmap: { type: Boolean, default: true },
     whyChooseUs: { type: Boolean, default: true },
+    siteImages: { type: Boolean, default: true },
     faqs: { type: Boolean, default: true },
     callToAction: { type: Boolean, default: true },
   },
@@ -827,6 +857,12 @@ const SiteSettingsSchema = new mongoose.Schema({
     refund: { type: PolicySchema, default: () => ({}) },
     cookies: { type: PolicySchema, default: () => ({}) },
     terms: { type: PolicySchema, default: () => ({}) },
+  },
+
+  // 🌟 WEBSITE IMAGES CMS (homepage image showcase + inner-page banners)
+  siteImages: {
+    type: SiteImagesSchema,
+    default: () => ({}),
   },
 
   // 🌟 BRAND & COMPANY LOGOS CMS

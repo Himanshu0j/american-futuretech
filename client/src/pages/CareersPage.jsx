@@ -37,6 +37,7 @@ import jobOffersSvg from '../assets/illustrations/careers/job-offers.svg';
 import noDataSvg from '../assets/illustrations/misc/no-data.svg';
 import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.svg';
 import Navbar from '../components/Navbar';
+import PageBanner from '../components/PageBanner';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
 import TrustMarquee from '../components/TrustMarquee';
@@ -293,6 +294,9 @@ export default function CareersPage() {
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
       <Navbar />
+
+      {/* Admin photo strip (Content → Website Images). */}
+      <PageBanner pageKey="careers" />
 
       <main className="pt-24 sm:pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
         <TrustMarquee />

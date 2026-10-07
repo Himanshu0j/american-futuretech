@@ -19,11 +19,13 @@ import {
   ChevronUp,
   ChevronDown,
   Eye,
-  EyeOff
+  EyeOff,
+  Images
 } from 'lucide-react';
+import SiteImagesCMS from './SiteImagesCMS';
 
 export default function ContentCMS() {
-  const [activeTab, setActiveTab] = useState('blogs'); // 'blogs' | 'faqs' | 'stories'
+  const [activeTab, setActiveTab] = useState('blogs'); // 'blogs' | 'faqs' | 'stories' | 'images'
   const [blogs, setBlogs] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [stories, setStories] = useState([]);
@@ -297,15 +299,28 @@ export default function ContentCMS() {
             >
               Alumni Reviews ({stories.length})
             </button>
+            <button
+              onClick={() => setActiveTab('images')}
+              className={`px-4 py-2 rounded-lg text-xs font-mono transition-colors flex items-center gap-1.5 ${
+                activeTab === 'images' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Images className="w-3.5 h-3.5" />
+              Website Images
+            </button>
           </div>
 
-          <button
-            onClick={handleOpenCreate}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all"
-          >
-            <PlusCircle className="w-4 h-4" />
-            Add {activeTab === 'blogs' ? 'Article' : activeTab === 'faqs' ? 'FAQ' : 'Alumni Review'}
-          </button>
+          {/* The images tab has no "create one item" flow — it edits the site's
+              photo slots directly, so the Add button stays out of the way. */}
+          {activeTab !== 'images' && (
+            <button
+              onClick={handleOpenCreate}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Add {activeTab === 'blogs' ? 'Article' : activeTab === 'faqs' ? 'FAQ' : 'Alumni Review'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -517,6 +532,9 @@ export default function ContentCMS() {
           )}
         </div>
       )}
+
+      {/* Website Images Tab — one place to put photos anywhere on the site */}
+      {activeTab === 'images' && <SiteImagesCMS />}
 
       {/* Editor Modal */}
       <AnimatePresence>

@@ -27,7 +27,7 @@ const SECTIONS = [
     title: '3. Curriculum & Courses CMS',
     path: '/admin/courses',
     what: 'Saare career programs — title, price, duration, badge, curriculum modules, capstone projects.',
-    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai — module add/rename/delete karo, course page turant badal jata hai (lessons bhi wahin se bante hain). Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain. Course list mein ab sahi module count dikhta hai. Isi modal me: Course Card Image (home page + /courses cards), Course Hero Image, Advantage Card Images (\"Why Get\" ke 6 cards ke artwork), aur Hero Credential Block (Microsoft logo / AI GRC certificate mark + certificate image) — sab URL ya upload se set hote hain.',
+    how: 'Edit (✏️) button dabao → modal khulega. Yahan se title, tuition fee, discounted price, duration, highlights, aur curriculum modules edit karo. Save karte hi website par live update ho jata hai — module add/rename/delete karo, course page turant badal jata hai (lessons bhi wahin se bante hain). Badge dropdown se "Most Popular" etc. turant switch hota hai. Capstone projects bhi isi modal ke Capstone section se edit hote hain. Course list mein ab sahi module count dikhta hai. Isi modal me: Course Card Image (home page + /courses cards), Course Hero Image, Advantage Card Images (\"Why Get\" ke 6 cards ke artwork), aur Hero Credential Block (Microsoft logo / AI GRC certificate mark + certificate image) — sab URL ya upload se set hote hain. Isi modal ke "Certificates (3 per course)" section me 3 certificate cards ka artwork + title/issuer/code bharein — row 3 bharte hi course page par teesra certificate card live dikhne lagta hai.',
   },
   {
     icon: Calendar,
@@ -84,11 +84,14 @@ const SECTIONS = [
   },
   {
     icon: FileText,
-    title: '8. Content & FAQs CMS',
+    title: '8. Content, FAQs & Website Images CMS',
     path: '/admin/content',
-    what: 'Blogs, FAQs, aur Success Stories jo public pages par dikhte hain.',
-    how: 'Har card type ke liye Add / Edit / Delete available hai. FAQ mein category set karna mat bhoolo (e.g. "Live Jobs") taaki wo sahi page par filter ho.',
+    what: 'Blogs, FAQs aur Success Stories jo public pages par dikhte hain — aur "Website Images" tab, jahan se poori website ki photos lagti hain.',
+    how: 'Har card type ke liye Add / Edit / Delete available hai. FAQ mein category set karna mat bhoolo (e.g. "Live Jobs") taaki wo sahi page par filter ho. "Website Images" tab kholo → homepage ka photo showcase (3 mosaic photos), photo wall (jitni photos add karo), aur 5 inner pages ke banners — sab link paste karke ya upload karke set karo, phir Save & Publish.',
     notes: [
+      'WEBSITE IMAGES: koi bhi photo khaali chhodne par waha pehle wali built-in photo dikhti rehti hai — isliye aap ek-ek karke replace kar sakte ho. Mosaic ki Photo 1 homepage par bada (tall) tile banti hai, 2 aur 3 uske bagal mein; "Photo wall" mein jitni photos add karoge utni grid mein dikhengi (caption hover par aata hai).',
+      'WEBSITE IMAGES → Page banners: Academy Programs, About, Careers, Success Stories aur Contact page ke top par ek wide banner photo. Khaali chhodo to us page par banner nahi dikhta — page pehle jaisa hi rehta hai.',
+      'WEBSITE IMAGES → "Shipped defaults" se homepage showcase wapas company ki shipped classroom photos par aa jaati hai (save karna zaroori hai). "Showcase Visible / Hidden" se poori section on/off ho jati hai.',
       'Success Story mein naam, role, company, salary hike %, course, rating aur graduation year — ye sab website ke card par dikhte hain.',
       '"Show on the public Success Stories page" tick hona zaroori hai — untick story website par nahi aayegi (badge "Not on site" dikhega). Isi tarah blog/FAQ mein "Published" tick rakho.',
       'Admin se daali gayi story turant /success-stories page par live ho jati hai.',
@@ -188,9 +191,9 @@ const SECTIONS = [
   {
     icon: ImageIcon,
     title: '13. Images / PNG Upload Kaise Karein',
-    path: '/admin/settings',
-    what: 'Company logos, course banners, job logos — sab ImageUploadInput field se.',
-    how: 'Jahan bhi image field ho: "Choose File" se apna PNG/JPG/SVG upload karo (max 10MB) — URL automatically fill ho jayega — ya seedha koi image URL paste kar do. Preview turant dikh jata hai. Publish karne par website par live.',
+    path: '/admin/content',
+    what: 'Website ki photos (Homepage showcase + page banners) → Content → "Website Images". Company logos, course banners, job logos → unke apne page par.',
+    how: 'Jahan bhi image field ho: "Choose File" se apna PNG/JPG/SVG upload karo (max 10MB) — URL automatically fill ho jayega — ya seedha koi image URL paste kar do. Preview turant dikh jata hai. Publish karne par website par live. Website ki badi photos ke liye ek hi jagah hai: Content → "Website Images" tab.',
   },
   {
     icon: ShieldAlert,

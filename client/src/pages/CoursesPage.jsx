@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, Clock, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import PageBanner from '../components/PageBanner';
 import Footer from '../components/Footer';
 import CyberParticles from '../components/CyberParticles';
 import LeadModal from '../components/LeadModal';
@@ -132,6 +133,10 @@ export default function CoursesPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#001C57] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
+
+      {/* Admin photo strip (Content → Website Images). Renders nothing until a
+          photo is picked for this page. */}
+      <PageBanner pageKey="courses" />
 
       <main className="pt-28 pb-10 relative z-10">
         <TrustMarquee />

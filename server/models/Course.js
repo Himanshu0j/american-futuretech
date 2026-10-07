@@ -72,6 +72,23 @@ const CareerRoleSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true });
 
+// ── Per-course certificate showcase ──
+// Every program page shows the credentials a graduate earns. The first two
+// cards used to be hard-coded artwork, so the client could only change them from
+// the code. This list is what the course page renders instead: the first two
+// entries refine the built-in cards (their titles/descriptions stay the default
+// when a field is left blank) and the third is the extra credential the client
+// asked for — every course can now show THREE certificates.
+const CourseCertificateSchema = new mongoose.Schema({
+  image: { type: String, default: '' },
+  title: { type: String, default: '' },
+  issuer: { type: String, default: '' },
+  code: { type: String, default: '' },
+  description: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: false });
+
 const CourseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -147,6 +164,14 @@ const CourseSchema = new mongoose.Schema({
   certificateImage2: {
     type: String,
     default: '',
+  },
+  // The certificate showcase cards on the course page (up to three, in order).
+  // This is the CMS field the client fills in: image + title + issuer + code +
+  // description per credential. Empty list = the course keeps the built-in
+  // American FutureTech + Microsoft/partner cards.
+  certificates: {
+    type: [CourseCertificateSchema],
+    default: [],
   },
   badge: {
     type: String,

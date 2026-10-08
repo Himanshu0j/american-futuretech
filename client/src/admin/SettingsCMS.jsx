@@ -61,6 +61,7 @@ import {
 import RepeatableListInput from './components/RepeatableListInput';
 import ImageUploadInput from './components/ImageUploadInput';
 import PaymentGatewayPanel from './PaymentGatewayPanel';
+import { DEFAULT_GRADIENT, gradientOptionsFor } from './components/gradientChoices';
 
 /**
  * What this screen actually owns.
@@ -543,7 +544,7 @@ export default function SettingsCMS() {
       title: 'New Capstone Project',
       desc: 'Describe what students will build in this project.',
       stack: ['Python', 'TensorFlow'],
-      color: 'from-blue-500 to-blue-500'
+      color: DEFAULT_GRADIENT
     };
     setSettings(prev => ({
       ...prev,
@@ -2464,9 +2465,12 @@ export default function SettingsCMS() {
                         </div>
                         <div>
                           <label className="block text-slate-400 uppercase mb-1">Gradient Color</label>
-                          <input type="text" value={proj.color || ''} onChange={(e) => handleUpdateCapstoneProject(idx, 'color', e.target.value)}
-                            placeholder="from-blue-500 to-blue-500"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500" />
+                          <select value={proj.color || DEFAULT_GRADIENT} onChange={(e) => handleUpdateCapstoneProject(idx, 'color', e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500">
+                            {gradientOptionsFor(proj.color).map((c) => (
+                              <option key={c.value} value={c.value}>{c.label}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>

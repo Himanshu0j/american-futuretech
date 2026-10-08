@@ -22,24 +22,17 @@ import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
 import { getDetailedCourseData } from '../data/courseContentData';
+import { GRADIENT_CHOICES, DEFAULT_GRADIENT, gradientOptionsFor } from './components/gradientChoices';
 
 /**
- * Badge gradients offered for the "What Can You Become?" role pills.
- * These strings are Tailwind utility classes (not free text) so the stored value
- * can never render an unstyled badge — the same palette the coded lists use.
+ * Badge gradients offered for the "What Can You Become?" role pills and the
+ * capstone cards. Shared with SettingsCMS so both editors offer the same
+ * on-brand set — and, crucially, only classes that are safelisted in
+ * client/tailwind.config.js (a free-text gradient used to store a class that
+ * was never compiled into the CSS, which made the capstone level badges
+ * invisible on four course pages).
  */
-const CAREER_ROLE_COLORS = [
-  { label: 'Emerald', value: 'from-blue-500 to-blue-500' },
-  { label: 'Blue', value: 'from-blue-500 to-blue-500' },
-  { label: 'Violet', value: 'from-blue-500 to-blue-500' },
-  { label: 'Amber', value: 'from-red-500 to-yellow-500' },
-  { label: 'Rose', value: 'from-red-500 to-red-500' },
-  { label: 'Teal', value: 'from-blue-500 to-blue-500' },
-  { label: 'Indigo', value: 'from-blue-500 to-blue-500' },
-  { label: 'Orange', value: 'from-red-500 to-red-500' },
-  { label: 'Fuchsia', value: 'from-blue-500 to-blue-500' },
-  { label: 'Red', value: 'from-red-500 to-red-500' },
-];
+const CAREER_ROLE_COLORS = GRADIENT_CHOICES;
 
 /**
  * Split the composer's bulk "topics" text into lesson titles.
@@ -265,7 +258,7 @@ export default function CoursesCMS() {
     setCareerRoles(
       (Array.isArray(course.careerRoles) ? course.careerRoles : []).map((role, idx) => ({
         name: role?.name || '',
-        color: role?.color || 'from-blue-500 to-blue-500',
+        color: role?.color || DEFAULT_GRADIENT,
         order: Number(role?.order) || idx + 1,
         active: role?.active !== false,
       })),
@@ -397,7 +390,7 @@ export default function CoursesCMS() {
   const addCapstone = () => {
     setCapstoneProjects((prev) => [
       ...prev,
-      { tag: 'Machine Learning', title: 'New Capstone Project', desc: 'Describe what students will build.', stack: ['Python'], color: 'from-blue-500 to-blue-500' },
+      { tag: 'Machine Learning', title: 'New Capstone Project', desc: 'Describe what students will build.', stack: ['Python'], color: DEFAULT_GRADIENT },
     ]);
   };
 
@@ -1236,7 +1229,7 @@ export default function CoursesCMS() {
                             aria-label={`Career role ${idx + 1} badge colour`}
                             className="p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
                           >
-                            {CAREER_ROLE_COLORS.map((color) => (
+                            {gradientOptionsFor(role.color).map((color) => (
                               <option key={color.value} value={color.value}>{color.label}</option>
                             ))}
                           </select>
@@ -1551,13 +1544,15 @@ export default function CoursesCMS() {
                           onChange={(e) => updateCapstone(idx, 'stack', e.target.value)}
                           className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-slate-300 text-xs"
                         />
-                        <input
-                          type="text"
-                          placeholder="Gradient (e.g. from-blue-500 to-blue-500)"
-                          value={proj.color || ''}
+                        <select
+                          value={proj.color || DEFAULT_GRADIENT}
                           onChange={(e) => updateCapstone(idx, 'color', e.target.value)}
-                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs font-mono"
-                        />
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white text-xs"
+                        >
+                          {gradientOptionsFor(proj.color).map((c) => (
+                            <option key={c.value} value={c.value}>{c.label}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   ))}

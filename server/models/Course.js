@@ -58,7 +58,10 @@ const CourseCapstoneSchema = new mongoose.Schema({
   title: { type: String, required: true },
   desc: { type: String, default: '' },
   stack: [{ type: String }],
-  color: { type: String, default: 'from-indigo-500 to-blue-500' },
+  // Brand blue → ink. This was 'from-indigo-500 to-blue-500', a class Tailwind
+  // never emitted because the value only ever lived in the database; the card
+  // badge then painted no background and the white level label was invisible.
+  color: { type: String, default: 'from-brand-600 to-ink-900' },
   order: { type: Number, default: 1 },
   active: { type: Boolean, default: true },
 }, { _id: false });
@@ -67,7 +70,7 @@ const CourseCapstoneSchema = new mongoose.Schema({
 // gradient of the badge, so the admin can recolour a role without a deploy.
 const CareerRoleSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  color: { type: String, default: 'from-emerald-500 to-teal-500' },
+  color: { type: String, default: 'from-brand-600 to-ink-900' },
   order: { type: Number, default: 1 },
   active: { type: Boolean, default: true },
 }, { _id: true });

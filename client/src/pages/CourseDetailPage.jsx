@@ -1100,11 +1100,15 @@ export default function CourseDetailPage() {
                 key={idx}
                 className="rounded-xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col group"
               >
-                {/* Colored Top Accent Banner */}
-                <div className={`h-0.5 w-full bg-gradient-to-r ${proj.color || 'from-blue-500 to-blue-500'}`} />
+                {/* Colored Top Accent Banner.
+                    `bg-brand-700` is the base coat: it paints when the gradient
+                    below it cannot (an unknown/typo'd class coming from the CMS
+                    produces background-image: none). Without it the badge was
+                    white text on a white card — the level label "disappeared". */}
+                <div className={`h-0.5 w-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'}`} />
 
                 <div className="p-3.5 flex-1">
-                  <span className={`inline-block px-2 py-0.5 rounded-full bg-gradient-to-r ${proj.color || 'from-blue-500 to-blue-500'} text-white text-[9px] font-bold uppercase tracking-wider mb-1.5 shadow-xs`}>
+                  <span className={`inline-block px-2 py-0.5 rounded-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'} text-white text-[9px] font-bold uppercase tracking-wider mb-1.5 shadow-xs`}>
                     {proj.tag}
                   </span>
 
@@ -1157,7 +1161,7 @@ export default function CourseDetailPage() {
                   key={idx}
                   className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#002060]/40 transition-all flex items-center gap-3.5 group"
                 >
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${role.color || 'from-blue-500 to-blue-500'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
+                  <div className={`w-8 h-8 rounded-full bg-brand-700 bg-gradient-to-br ${role.color || 'from-brand-600 to-ink-900'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
                   <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#002060] transition-colors">

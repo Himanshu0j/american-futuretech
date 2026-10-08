@@ -4,6 +4,29 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  /* ── Colours the CMS can set at runtime ─────────────────────────────
+     Capstone cards, career-role pills and every other list the client
+     recolours from the admin panel store a Tailwind gradient as a plain
+     string in MongoDB (default "from-brand-600 to-ink-900"). Tailwind scans
+     source files only, so a class that exists in the database but nowhere in
+     the code was never emitted — the badge then painted NO background while
+     its text stayed white, which made "ENTRY LEVEL" invisible on the four
+     course pages that used the old indigo default. Safelisting the gradient
+     stops keeps every colour the admin can pick in the build. Values that
+     still fall outside this list are covered by a solid brand-blue base on
+     the element itself (see the capstone card in CourseDetailPage).
+  ----------------------------------------------------------------*/
+  safelist: [
+    // The .jsx picker only offers 400/500/600 shades, so that is all the
+    // safelist needs to emit (~5 KB gzipped) — the darker/lighter shades the
+    // code itself uses are compiled from source as usual.
+    {
+      pattern: /^(from|via|to)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(400|500|600)$/,
+    },
+    {
+      pattern: /^(from|via|to)-(brand|ink|gold|sand)-(100|200|300|400|500|600|700|800|900|950)$/,
+    },
+  ],
   darkMode: 'class',
   theme: {
     extend: {

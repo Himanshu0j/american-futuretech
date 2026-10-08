@@ -31,7 +31,10 @@ const CapstoneProjectSchema = new mongoose.Schema({
   title: { type: String, required: true },
   desc: { type: String, default: '' },
   stack: [{ type: String }],
-  color: { type: String, default: 'from-indigo-500 to-blue-500' },
+  // Brand blue → ink, kept in the Tailwind safelist (see client/tailwind.config.js).
+  // The old indigo default was never emitted into the CSS, so those badges
+  // rendered as white text on a white card.
+  color: { type: String, default: 'from-brand-600 to-ink-900' },
   order: { type: Number, default: 1 },
   active: { type: Boolean, default: true },
 }, { _id: true });

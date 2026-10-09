@@ -16,12 +16,17 @@ const {
   deleteSuccessStory,
 } = require('../controllers/contentController');
 const { protect, checkPermission } = require('../middleware/auth');
+const guardImages = require('../middleware/blockExternalImages');
+
+// Blog covers, author avatars and alumni photos must be served by this site:
+// the live CSP (`img-src 'self' data:`) refuses any other origin, which is how
+// the alumni wall ended up rendering 50 empty circles.
 
 // Blogs
 router.get('/blogs', getBlogs);
 router.get('/blogs/:slug', getBlogBySlug);
-router.post('/blogs', protect, checkPermission('FAQ_CREATE', 'HOMEPAGE_EDIT'), createBlog);
-router.put('/blogs/:id', protect, checkPermission('FAQ_EDIT', 'HOMEPAGE_EDIT'), updateBlog);
+router.post('/blogs', protect, checkPermission('FAQ_CREATE', 'HOMEPAGE_EDIT'), guardImages, createBlog);
+router.put('/blogs/:id', protect, checkPermission('FAQ_EDIT', 'HOMEPAGE_EDIT'), guardImages, updateBlog);
 router.delete('/blogs/:id', protect, checkPermission('FAQ_DELETE', 'HOMEPAGE_EDIT'), deleteBlog);
 
 // FAQs
@@ -32,8 +37,8 @@ router.delete('/faqs/:id', protect, checkPermission('FAQ_DELETE'), deleteFaq);
 
 // Success Stories
 router.get('/success-stories', getSuccessStories);
-router.post('/success-stories', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_CREATE'), createSuccessStory);
-router.put('/success-stories/:id', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_EDIT'), updateSuccessStory);
+router.post('/success-stories', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_CREATE'), guardImages, createSuccessStory);
+router.put('/success-stories/:id', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_EDIT'), guardImages, updateSuccessStory);
 router.delete('/success-stories/:id', protect, checkPermission('HOMEPAGE_EDIT', 'FAQ_DELETE'), deleteSuccessStory);
 
 module.exports = router;

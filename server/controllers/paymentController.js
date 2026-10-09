@@ -565,7 +565,10 @@ const fulfillPaidCheckout = async ({ payment, session, clientUrl }) => {
       phone: payment.phone || '',
       role: 'STUDENT',
       isActive: true,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payment.studentName)}`,
+      // Local file, not a third-party avatar service: the live CSP
+      // (`img-src 'self' data:`) refuses anything from another origin, so a
+      // paid student would have gotten a blank avatar in the LMS.
+      avatar: '/images/avatars/default-avatar.webp',
       studentDetails: {
         enrollmentNumber: `AFT-${Math.floor(100000 + Math.random() * 900000)}`,
         assignedBatch: payment.batch || null,

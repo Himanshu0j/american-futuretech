@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node ../scripts/verify-logo-variants.js",
+    "prebuild": "node ../scripts/verify-logo-variants.js && node ../scripts/verify-no-hotlinks.js && node ../scripts/verify-image-paths.js",
     "build": "vite build",
     "preview": "vite preview"
   },

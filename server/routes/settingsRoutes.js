@@ -14,6 +14,11 @@ const {
   testPaymentGatewayConnection,
 } = require('../controllers/settingsController');
 const { protect, identifyUser, checkPermission } = require('../middleware/auth');
+const guardImages = require('../middleware/blockExternalImages');
+
+// Saves must not store an image the live CSP (`img-src 'self' data:`) will
+// refuse to load: an off-site logo saves fine and then renders as an empty
+// tile. See middleware/blockExternalImages.js.
 
 // Public read of one page's text/image overrides (used by the public overlay).
 const editorReadLimiter = rateLimit({
@@ -32,7 +37,7 @@ router.get(
   getSiteEditorSummary,
 );
 router.get('/site-editor', editorReadLimiter, getSiteEditorOverrides);
-router.put('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), saveSiteEditorOverrides);
+router.put('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), guardImages, saveSiteEditorOverrides);
 router.delete('/site-editor', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), resetSiteEditorRoute);
 
 // ── Payment gateway (Stripe) — secrets go in, never come back out ────────────
@@ -56,7 +61,7 @@ router.post('/payment-gateway/test', protect, checkPermission('SETTINGS_EDIT'), 
 // (94 kB of the document) are omitted for anonymous callers, which is most of
 // the weight every visitor used to download on every page view.
 router.get('/', identifyUser, getSiteSettings);
-router.put('/', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), updateSiteSettings);
+router.put('/', protect, checkPermission('SETTINGS_EDIT', 'HOMEPAGE_EDIT'), guardImages, updateSiteSettings);
 router.get('/audit-logs', protect, checkPermission('AUDIT_LOG_VIEW', 'SETTINGS_VIEW'), getAuditLogs);
 
 module.exports = router;

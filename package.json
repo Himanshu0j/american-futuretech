@@ -12,6 +12,7 @@
     "build:hostinger": "cd server && npm ci --ignore-scripts --no-audit --no-fund && cd ../client && npm ci --include=dev --no-audit --no-fund && npm run build",
     "logos": "node scripts/generate-logo-variants.js",
     "verify:logos": "node scripts/verify-logo-variants.js",
+    "verify:images": "node scripts/verify-no-hotlinks.js && node scripts/verify-image-paths.js",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,cyan\" \"npm run server\" \"npm run client\"",

@@ -2388,7 +2388,10 @@ export default function SettingsCMS() {
                             type="url"
                             value={tool.logoUrl || ''}
                             onChange={(e) => handleUpdateTool(idx, 'logoUrl', e.target.value)}
-                            placeholder="https://...logo.svg"
+                            // A local path, never an external URL: the live CSP
+                            // (`img-src 'self' data:`) refuses another origin, so a
+                            // pasted CDN link would save but render as an empty tile.
+                            placeholder="/images/tools/python.svg"
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500"
                           />
                         </div>

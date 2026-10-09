@@ -88,7 +88,9 @@ const registerStudent = async (req, res) => {
       phone: phone || '',
       role: 'STUDENT',
       isActive: true,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
+      // Local avatar: the live CSP is `img-src 'self' data:`, so a generated
+      // third-party avatar (dicebear) would render as a blank image in the LMS.
+      avatar: '/images/avatars/default-avatar.webp',
       studentDetails: {
         enrollmentNumber: 'AFT-' + Math.floor(100000 + Math.random() * 900000),
       },

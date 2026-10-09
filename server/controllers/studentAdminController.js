@@ -275,7 +275,7 @@ const createStudent = async (req, res) => {
       phone: phone || '',
       role: 'STUDENT',
       isActive: isActive !== false,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
+      avatar: '/images/avatars/default-avatar.webp',
       studentDetails: {
         enrollmentNumber: `AFT-${Math.floor(100000 + Math.random() * 900000)}`,
         assignedBatch: batchId || null,

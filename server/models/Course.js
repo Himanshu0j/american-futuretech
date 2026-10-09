@@ -197,7 +197,9 @@ const CourseSchema = new mongoose.Schema({
   instructor: {
     name: { type: String, default: 'Dr. Marcus Vance' },
     role: { type: String, default: 'Chief AI Architect & Ex-FAANG Lead' },
-    avatar: { type: String, default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' },
+    // Local by default: `img-src 'self' data:` blocks any third-party avatar,
+    // so an instructor without a photo must fall back to a file we serve.
+    avatar: { type: String, default: '/images/avatars/default-avatar.webp' },
     bio: { type: String, default: '15+ years engineering scalable distributed intelligence and cybersecurity architectures.' },
   },
   rating: {

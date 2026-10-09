@@ -69,7 +69,9 @@ export default function StudentLayout() {
           {/* Student Profile Strip */}
           <div className="p-4 border-b border-[#1D4ED8] flex items-center gap-3 bg-[#002060] text-left">
             <img
-              src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'}
+              // A local fallback: `img-src 'self' data:` blocks any remote
+              // avatar, so an Unsplash default here is always a broken image.
+              src={user?.avatar || '/images/avatars/default-avatar.webp'}
               alt={user?.name || 'Student'}
               className="w-10 h-10 rounded-full object-cover border-2 border-[#F00000]"
             />

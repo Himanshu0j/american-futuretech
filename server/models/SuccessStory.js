@@ -7,7 +7,9 @@ const SuccessStorySchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    default: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
+    // A local file, not Unsplash: the live CSP (`img-src 'self' data:`) refuses
+    // third-party images, which is why the alumni wall rendered empty circles.
+    default: '/images/avatars/default-story.webp',
   },
   course: {
     type: String,

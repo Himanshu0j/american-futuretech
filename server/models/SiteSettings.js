@@ -655,17 +655,19 @@ const SiteSettingsSchema = new mongoose.Schema({
     },
     tools: {
       type: [ToolItemSchema],
+      // Self-hosted logos: the live CSP is `img-src 'self' data:`, so the CDN
+      // URLs this list used to seed rendered as broken tiles on the homepage.
       default: [
-        { name: 'Python', category: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', badge: 'Core Standard', order: 1, active: true, description: 'Core programming language for AI, data systems, and automation.' },
-        { name: 'Docker', category: 'DevOps & Cloud', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg', badge: 'DevOps Standard', order: 2, active: true, description: 'Enterprise container virtualization platform for immutable deployments.' },
-        { name: 'AWS', category: 'DevOps & Cloud', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg', badge: 'Cloud Leader', order: 3, active: true, description: 'Production cloud infrastructure, ECS, EKS, and serverless compute.' },
-        { name: 'PyTorch', category: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg', badge: 'Production AI', order: 4, active: true, description: 'Deep learning framework powering computer vision and LLM models.' },
-        { name: 'Git', category: 'Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg', badge: 'Version Control', order: 5, active: true, description: 'Distributed version control and professional code collaboration.' },
-        { name: 'GitHub', category: 'Development', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg', badge: 'CI/CD Platform', order: 6, active: true, description: 'Repository hosting, automated actions, and enterprise review workflows.' },
-        { name: 'Jupyter', category: 'Data & AI', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg', badge: 'Data Science', order: 7, active: true, description: 'Interactive computational notebooks for data exploration and analysis.' },
-        { name: 'Hugging Face', category: 'Data & AI', logo: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg', badge: 'Transformers', order: 8, active: true, description: 'Open-source ecosystem for transformer models, weights, and fine-tuning.' },
-        { name: 'PostgreSQL', category: 'Data & Analytics', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg', badge: 'Relational DB', order: 9, active: true, description: 'Advanced open-source relational database with robust ACID compliance.' },
-        { name: 'Kubernetes', category: 'DevOps & Cloud', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg', badge: 'Orchestration', order: 10, active: true, description: 'Automated container deployment, scaling, and cluster management.' }
+        { name: 'Python', category: 'Data & AI', logo: '/images/tools/python.svg', badge: 'Core Standard', order: 1, active: true, description: 'Core programming language for AI, data systems, and automation.' },
+        { name: 'Docker', category: 'DevOps & Cloud', logo: '/images/tools/docker.svg', badge: 'DevOps Standard', order: 2, active: true, description: 'Enterprise container virtualization platform for immutable deployments.' },
+        { name: 'AWS', category: 'DevOps & Cloud', logo: '/images/tools/aws.svg', badge: 'Cloud Leader', order: 3, active: true, description: 'Production cloud infrastructure, ECS, EKS, and serverless compute.' },
+        { name: 'PyTorch', category: 'Data & AI', logo: '/images/tools/pytorch.svg', badge: 'Production AI', order: 4, active: true, description: 'Deep learning framework powering computer vision and LLM models.' },
+        { name: 'Git', category: 'Development', logo: '/images/tools/git.svg', badge: 'Version Control', order: 5, active: true, description: 'Distributed version control and professional code collaboration.' },
+        { name: 'GitHub', category: 'Development', logo: '/images/tools/github.svg', badge: 'CI/CD Platform', order: 6, active: true, description: 'Repository hosting, automated actions, and enterprise review workflows.' },
+        { name: 'Jupyter', category: 'Data & AI', logo: '/images/tools/jupyter.svg', badge: 'Data Science', order: 7, active: true, description: 'Interactive computational notebooks for data exploration and analysis.' },
+        { name: 'Hugging Face', category: 'Data & AI', logo: '/images/tools/huggingface.svg', badge: 'Transformers', order: 8, active: true, description: 'Open-source ecosystem for transformer models, weights, and fine-tuning.' },
+        { name: 'PostgreSQL', category: 'Data & Analytics', logo: '/images/tools/postgresql.svg', badge: 'Relational DB', order: 9, active: true, description: 'Advanced open-source relational database with robust ACID compliance.' },
+        { name: 'Kubernetes', category: 'DevOps & Cloud', logo: '/images/tools/kubernetes.svg', badge: 'Orchestration', order: 10, active: true, description: 'Automated container deployment, scaling, and cluster management.' }
       ]
     },
     // Empty by default so each course keeps showing its own curated capstone

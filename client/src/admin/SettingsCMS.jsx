@@ -502,7 +502,9 @@ export default function SettingsCMS() {
     const newTool = {
       name: 'New Tool',
       category: 'Infrastructure',
-      logoUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+      // Seed a NEW tool row with a logo of ours, never a CDN URL: whatever the
+      // admin leaves untouched must still render on a blocked network.
+      logoUrl: '/images/tools/docker.svg',
       description: 'Production containerization platform',
       order: (settings.capstone?.tools?.length || 0) + 1,
       active: true

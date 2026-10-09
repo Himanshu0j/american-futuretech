@@ -215,7 +215,7 @@ export default function StudentProfile() {
                 type="text"
                 value={avatar}
                 onChange={(e) => setAvatar(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
+                placeholder="/images/avatars/default-avatar.webp"
                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
               />
             </div>

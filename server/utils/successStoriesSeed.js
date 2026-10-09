@@ -15,7 +15,7 @@
 const legacyStories = [
   {
     studentName: 'Priya Sharma',
-    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
+    photo: '/images/avatars/priya-sharma.webp',
     course: 'Data Science with AI Integration',
     role: 'AI Engineer',
     company: 'Microsoft',
@@ -27,7 +27,7 @@ const legacyStories = [
   },
   {
     studentName: 'Marcus Bennett',
-    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
+    photo: '/images/avatars/marcus-bennett.webp',
     course: 'Cyber Security with Ethical Hacking',
     role: 'Security Operations Analyst',
     company: 'Palo Alto Networks',
@@ -39,7 +39,7 @@ const legacyStories = [
   },
   {
     studentName: 'Daniel Chen',
-    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&auto=format&fit=crop&q=80',
+    photo: '/images/avatars/daniel-chen.webp',
     course: 'Advanced Generative & Agentic AI Master Program',
     role: 'Senior LLM Systems Engineer',
     company: 'Amazon Web Services (AWS)',
@@ -51,13 +51,14 @@ const legacyStories = [
   },
 ];
 
-// 50 further alumni, grouped by program. Photos come from randomuser.me —
+// 50 further alumni, grouped by program. Photos are self-hosted (they used to
+// come from randomuser.me, which the live `img-src 'self' data:` CSP blocks) —
 // stable portrait URLs, one per person — and the card falls back to the model
 // default if one ever fails to load.
 const alumniStories = [
   {
     studentName: 'Aarav Mehta',
-    photo: 'https://randomuser.me/api/portraits/men/12.jpg',
+    photo: '/images/avatars/aarav-mehta.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Data Scientist',
     company: 'Capital One',
@@ -69,7 +70,7 @@ const alumniStories = [
   },
   {
     studentName: 'Sophia Ramirez',
-    photo: 'https://randomuser.me/api/portraits/women/44.jpg',
+    photo: '/images/avatars/sophia-ramirez.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Machine Learning Engineer',
     company: 'NVIDIA',
@@ -81,7 +82,7 @@ const alumniStories = [
   },
   {
     studentName: 'Ethan Brooks',
-    photo: 'https://randomuser.me/api/portraits/men/32.jpg',
+    photo: '/images/avatars/ethan-brooks.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Analytics Engineer',
     company: 'Walmart Global Tech',
@@ -93,7 +94,7 @@ const alumniStories = [
   },
   {
     studentName: 'Neha Kulkarni',
-    photo: 'https://randomuser.me/api/portraits/women/68.jpg',
+    photo: '/images/avatars/neha-kulkarni.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Senior Data Analyst',
     company: 'UnitedHealth Group',
@@ -105,7 +106,7 @@ const alumniStories = [
   },
   {
     studentName: 'Jamal Wright',
-    photo: 'https://randomuser.me/api/portraits/men/86.jpg',
+    photo: '/images/avatars/jamal-wright.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Machine Learning Engineer',
     company: 'Databricks',
@@ -117,7 +118,7 @@ const alumniStories = [
   },
   {
     studentName: 'Emily Zhao',
-    photo: 'https://randomuser.me/api/portraits/women/26.jpg',
+    photo: '/images/avatars/emily-zhao.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Data Science Manager',
     company: 'Adobe',
@@ -129,7 +130,7 @@ const alumniStories = [
   },
   {
     studentName: 'Andre Baptiste',
-    photo: 'https://randomuser.me/api/portraits/men/46.jpg',
+    photo: '/images/avatars/andre-baptiste.webp',
     course: 'Data Science with AI Integration Program',
     role: 'Applied Scientist',
     company: 'Qualcomm',
@@ -141,7 +142,7 @@ const alumniStories = [
   },
   {
     studentName: 'Rohan Iyer',
-    photo: 'https://randomuser.me/api/portraits/men/54.jpg',
+    photo: '/images/avatars/rohan-iyer.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'Penetration Tester',
     company: 'CrowdStrike',
@@ -153,7 +154,7 @@ const alumniStories = [
   },
   {
     studentName: 'Grace Okafor',
-    photo: 'https://randomuser.me/api/portraits/women/57.jpg',
+    photo: '/images/avatars/grace-okafor.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'Security Analyst',
     company: 'IBM',
@@ -165,7 +166,7 @@ const alumniStories = [
   },
   {
     studentName: 'Lucas Moreau',
-    photo: 'https://randomuser.me/api/portraits/men/18.jpg',
+    photo: '/images/avatars/lucas-moreau.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'Application Security Engineer',
     company: 'Shopify',
@@ -177,7 +178,7 @@ const alumniStories = [
   },
   {
     studentName: 'Hana Suzuki',
-    photo: 'https://randomuser.me/api/portraits/women/35.jpg',
+    photo: '/images/avatars/hana-suzuki.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'SOC Analyst Tier II',
     company: 'Palo Alto Networks',
@@ -189,7 +190,7 @@ const alumniStories = [
   },
   {
     studentName: 'Diego Alvarez',
-    photo: 'https://randomuser.me/api/portraits/men/45.jpg',
+    photo: '/images/avatars/diego-alvarez.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'Red Team Operator',
     company: 'Booz Allen Hamilton',
@@ -201,7 +202,7 @@ const alumniStories = [
   },
   {
     studentName: 'Priyanka Nair',
-    photo: 'https://randomuser.me/api/portraits/women/79.jpg',
+    photo: '/images/avatars/priyanka-nair.webp',
     course: 'Cyber Security with Ethical Hacking Program',
     role: 'Vulnerability Researcher',
     company: 'Cisco',
@@ -213,7 +214,7 @@ const alumniStories = [
   },
   {
     studentName: 'Omar Haddad',
-    photo: 'https://randomuser.me/api/portraits/men/23.jpg',
+    photo: '/images/avatars/omar-haddad.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'AI Security Engineer',
     company: 'Microsoft',
@@ -225,7 +226,7 @@ const alumniStories = [
   },
   {
     studentName: 'Chloe Bennett',
-    photo: 'https://randomuser.me/api/portraits/women/12.jpg',
+    photo: '/images/avatars/chloe-bennett.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'Threat Detection Engineer',
     company: 'Splunk',
@@ -237,7 +238,7 @@ const alumniStories = [
   },
   {
     studentName: 'Arjun Desai',
-    photo: 'https://randomuser.me/api/portraits/men/67.jpg',
+    photo: '/images/avatars/arjun-desai.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'Security Data Scientist',
     company: 'Fortinet',
@@ -249,7 +250,7 @@ const alumniStories = [
   },
   {
     studentName: 'Maya Thompson',
-    photo: 'https://randomuser.me/api/portraits/women/90.jpg',
+    photo: '/images/avatars/maya-thompson.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'Adversarial ML Engineer',
     company: 'Cloudflare',
@@ -261,7 +262,7 @@ const alumniStories = [
   },
   {
     studentName: 'Vikram Rathore',
-    photo: 'https://randomuser.me/api/portraits/men/9.jpg',
+    photo: '/images/avatars/vikram-rathore.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'SOC Automation Engineer',
     company: 'Accenture',
@@ -273,7 +274,7 @@ const alumniStories = [
   },
   {
     studentName: 'Isabella Rossi',
-    photo: 'https://randomuser.me/api/portraits/women/48.jpg',
+    photo: '/images/avatars/isabella-rossi.webp',
     course: 'Cyber Security & Artificial Intelligence Program',
     role: 'Senior Security Analyst',
     company: 'Okta',
@@ -285,7 +286,7 @@ const alumniStories = [
   },
   {
     studentName: 'Nathan Cole',
-    photo: 'https://randomuser.me/api/portraits/men/71.jpg',
+    photo: '/images/avatars/nathan-cole.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'AI Engineer',
     company: 'Google',
@@ -297,7 +298,7 @@ const alumniStories = [
   },
   {
     studentName: 'Sneha Reddy',
-    photo: 'https://randomuser.me/api/portraits/women/21.jpg',
+    photo: '/images/avatars/sneha-reddy.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'LLM Engineer',
     company: 'Salesforce',
@@ -309,7 +310,7 @@ const alumniStories = [
   },
   {
     studentName: 'Daniel Osei',
-    photo: 'https://randomuser.me/api/portraits/men/38.jpg',
+    photo: '/images/avatars/daniel-osei.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'GenAI Solutions Architect',
     company: 'ServiceNow',
@@ -321,7 +322,7 @@ const alumniStories = [
   },
   {
     studentName: 'Laura Kim',
-    photo: 'https://randomuser.me/api/portraits/women/63.jpg',
+    photo: '/images/avatars/laura-kim.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'Applied AI Engineer',
     company: 'Uber',
@@ -333,7 +334,7 @@ const alumniStories = [
   },
   {
     studentName: 'Faisal Khan',
-    photo: 'https://randomuser.me/api/portraits/men/90.jpg',
+    photo: '/images/avatars/faisal-khan.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'RAG Platform Engineer',
     company: 'Snowflake',
@@ -345,7 +346,7 @@ const alumniStories = [
   },
   {
     studentName: 'Elena Petrova',
-    photo: 'https://randomuser.me/api/portraits/women/8.jpg',
+    photo: '/images/avatars/elena-petrova.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'AI Automation Engineer',
     company: 'Stripe',
@@ -357,7 +358,7 @@ const alumniStories = [
   },
   {
     studentName: 'Karan Malhotra',
-    photo: 'https://randomuser.me/api/portraits/men/61.jpg',
+    photo: '/images/avatars/karan-malhotra.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'Senior AI Engineer',
     company: 'Meta',
@@ -369,7 +370,7 @@ const alumniStories = [
   },
   {
     studentName: 'Wei Zhang',
-    photo: 'https://randomuser.me/api/portraits/women/55.jpg',
+    photo: '/images/avatars/wei-zhang.webp',
     course: 'Advanced RAG, Generative & Agentic AI Program',
     role: 'Machine Learning Engineer',
     company: 'AMD',
@@ -381,7 +382,7 @@ const alumniStories = [
   },
   {
     studentName: 'Rachel Adeyemi',
-    photo: 'https://randomuser.me/api/portraits/women/33.jpg',
+    photo: '/images/avatars/rachel-adeyemi.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'DevOps Engineer',
     company: 'Amazon Web Services (AWS)',
@@ -393,7 +394,7 @@ const alumniStories = [
   },
   {
     studentName: 'Tomas Novak',
-    photo: 'https://randomuser.me/api/portraits/men/15.jpg',
+    photo: '/images/avatars/tomas-novak.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Platform Engineer',
     company: 'Shopify',
@@ -405,7 +406,7 @@ const alumniStories = [
   },
   {
     studentName: 'Aisha Rahman',
-    photo: 'https://randomuser.me/api/portraits/women/71.jpg',
+    photo: '/images/avatars/aisha-rahman.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Site Reliability Engineer',
     company: 'Datadog',
@@ -417,7 +418,7 @@ const alumniStories = [
   },
   {
     studentName: 'Brandon Lewis',
-    photo: 'https://randomuser.me/api/portraits/men/49.jpg',
+    photo: '/images/avatars/brandon-lewis.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Cloud Solutions Architect',
     company: 'Oracle',
@@ -429,7 +430,7 @@ const alumniStories = [
   },
   {
     studentName: 'Meera Joshi',
-    photo: 'https://randomuser.me/api/portraits/women/5.jpg',
+    photo: '/images/avatars/meera-joshi.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Kubernetes Engineer',
     company: 'Red Hat',
@@ -441,7 +442,7 @@ const alumniStories = [
   },
   {
     studentName: 'Victor Santos',
-    photo: 'https://randomuser.me/api/portraits/men/28.jpg',
+    photo: '/images/avatars/victor-santos.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Infrastructure Automation Engineer',
     company: 'Siemens',
@@ -453,7 +454,7 @@ const alumniStories = [
   },
   {
     studentName: 'Hannah Fischer',
-    photo: 'https://randomuser.me/api/portraits/women/52.jpg',
+    photo: '/images/avatars/hannah-fischer.webp',
     course: 'DevOps, & Cloud Computing with AI Program',
     role: 'Cloud Engineer',
     company: 'Bosch',
@@ -465,7 +466,7 @@ const alumniStories = [
   },
   {
     studentName: 'Aditya Rao',
-    photo: 'https://randomuser.me/api/portraits/men/83.jpg',
+    photo: '/images/avatars/aditya-rao.webp',
     course: 'AI Product Manager Program',
     role: 'AI Product Manager',
     company: 'Adobe',
@@ -477,7 +478,7 @@ const alumniStories = [
   },
   {
     studentName: 'Julia Sanders',
-    photo: 'https://randomuser.me/api/portraits/women/40.jpg',
+    photo: '/images/avatars/julia-sanders.webp',
     course: 'AI Product Manager Program',
     role: 'Technical Product Manager',
     company: 'Intuit',
@@ -489,7 +490,7 @@ const alumniStories = [
   },
   {
     studentName: 'Yusuf Demir',
-    photo: 'https://randomuser.me/api/portraits/men/6.jpg',
+    photo: '/images/avatars/yusuf-demir.webp',
     course: 'AI Product Manager Program',
     role: 'Product Owner',
     company: 'Salesforce',
@@ -501,7 +502,7 @@ const alumniStories = [
   },
   {
     studentName: 'Camila Duarte',
-    photo: 'https://randomuser.me/api/portraits/women/60.jpg',
+    photo: '/images/avatars/camila-duarte.webp',
     course: 'AI Product Manager Program',
     role: 'Senior Product Manager',
     company: 'Target',
@@ -513,7 +514,7 @@ const alumniStories = [
   },
   {
     studentName: 'Ryan Patel',
-    photo: 'https://randomuser.me/api/portraits/men/41.jpg',
+    photo: '/images/avatars/ryan-patel.webp',
     course: 'AI Product Manager Program',
     role: 'AI Product Lead',
     company: 'Zoom',
@@ -525,7 +526,7 @@ const alumniStories = [
   },
   {
     studentName: 'Nadia Choudhury',
-    photo: 'https://randomuser.me/api/portraits/women/17.jpg',
+    photo: '/images/avatars/nadia-choudhury.webp',
     course: 'Governance, Risk and Compliance with AI Program',
     role: 'GRC Analyst',
     company: 'Deloitte',
@@ -537,7 +538,7 @@ const alumniStories = [
   },
   {
     studentName: 'Samuel Reed',
-    photo: 'https://randomuser.me/api/portraits/men/75.jpg',
+    photo: '/images/avatars/samuel-reed.webp',
     course: 'Governance, Risk and Compliance with AI Program',
     role: 'AI Governance Lead',
     company: 'EY',
@@ -549,7 +550,7 @@ const alumniStories = [
   },
   {
     studentName: 'Ananya Bose',
-    photo: 'https://randomuser.me/api/portraits/women/84.jpg',
+    photo: '/images/avatars/ananya-bose.webp',
     course: 'Governance, Risk and Compliance with AI Program',
     role: 'Compliance Engineer',
     company: 'Visa',
@@ -561,7 +562,7 @@ const alumniStories = [
   },
   {
     studentName: 'Gabriel Mendes',
-    photo: 'https://randomuser.me/api/portraits/men/58.jpg',
+    photo: '/images/avatars/gabriel-mendes.webp',
     course: 'Governance, Risk and Compliance with AI Program',
     role: 'Risk & Controls Analyst',
     company: 'JPMorgan Chase',
@@ -573,7 +574,7 @@ const alumniStories = [
   },
   {
     studentName: 'Tara Whitfield',
-    photo: 'https://randomuser.me/api/portraits/women/29.jpg',
+    photo: '/images/avatars/tara-whitfield.webp',
     course: 'Governance, Risk and Compliance with AI Program',
     role: 'Security Compliance Specialist',
     company: 'Mastercard',
@@ -585,7 +586,7 @@ const alumniStories = [
   },
   {
     studentName: 'Nikhil Sharma',
-    photo: 'https://randomuser.me/api/portraits/men/2.jpg',
+    photo: '/images/avatars/nikhil-sharma.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Data Engineer',
     company: 'Bank of America',
@@ -597,7 +598,7 @@ const alumniStories = [
   },
   {
     studentName: 'Olivia Grant',
-    photo: 'https://randomuser.me/api/portraits/women/73.jpg',
+    photo: '/images/avatars/olivia-grant.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Big Data Engineer',
     company: 'Snowflake',
@@ -609,7 +610,7 @@ const alumniStories = [
   },
   {
     studentName: 'Hassan Al-Farsi',
-    photo: 'https://randomuser.me/api/portraits/men/34.jpg',
+    photo: '/images/avatars/hassan-al-farsi.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Streaming Data Engineer',
     company: 'Confluent',
@@ -621,7 +622,7 @@ const alumniStories = [
   },
   {
     studentName: 'Divya Menon',
-    photo: 'https://randomuser.me/api/portraits/women/11.jpg',
+    photo: '/images/avatars/divya-menon.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Analytics Engineer',
     company: 'Humana',
@@ -633,7 +634,7 @@ const alumniStories = [
   },
   {
     studentName: 'Peter Lindqvist',
-    photo: 'https://randomuser.me/api/portraits/men/79.jpg',
+    photo: '/images/avatars/peter-lindqvist.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Data Platform Engineer',
     company: 'MongoDB',
@@ -645,7 +646,7 @@ const alumniStories = [
   },
   {
     studentName: 'Simran Kaur',
-    photo: 'https://randomuser.me/api/portraits/women/65.jpg',
+    photo: '/images/avatars/simran-kaur.webp',
     course: 'Big Data & Data Engineering Fundamentals Program',
     role: 'Senior Data Engineer',
     company: 'Cognizant',

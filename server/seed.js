@@ -69,7 +69,7 @@ const seedData = async () => {
       password: adminPassword,
       role: 'SuperAdmin',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-avatar.webp',
     });
 
     const counselor1 = await User.create({
@@ -78,7 +78,7 @@ const seedData = async () => {
       password: counselorPassword,
       role: 'Counselor',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-counselor.webp',
     });
 
     const instructor1 = await User.create({
@@ -87,7 +87,7 @@ const seedData = async () => {
       password: instructorPassword,
       role: 'Instructor',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-story.webp',
     });
 
     console.log('✓ Staff accounts created with generated passwords (printed at the end).');

@@ -20,13 +20,23 @@ import { Link } from 'react-router-dom';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import BulletContent from './common/BulletContent';
 
+/*
+ * Fallback stack for the home "Capstone & Tools" grid, used until the admin CMS
+ * supplies its own list. The logos are served from this site under
+ * /images/tools rather than hotlinked off cdn.jsdelivr.net: this grid is 12
+ * images in the middle of the homepage, so a slow or blocked CDN made the
+ * homepage wait on a third-party host and left blank tiles behind ("aadhi
+ * images nahi dikh rahi"). Local SVG files are cacheable and cannot 404.
+ */
+const TOOL_ICONS = '/images/tools';
+
 const DEFAULT_TOOLS = [
   {
     name: 'Python',
     category: 'Data & AI',
     description: 'Core programming language powering modern generative AI, machine learning architectures, and data engineering pipelines.',
     badge: 'Core Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    logo: `${TOOL_ICONS}/python.svg`,
     order: 1,
     active: true
   },
@@ -35,7 +45,7 @@ const DEFAULT_TOOLS = [
     category: 'Cloud & Container Systems',
     description: 'Enterprise container virtualization ensuring immutable multi-cloud deployment and reproducible runtime environments.',
     badge: 'DevOps Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+    logo: `${TOOL_ICONS}/docker.svg`,
     order: 2,
     active: true
   },
@@ -44,7 +54,7 @@ const DEFAULT_TOOLS = [
     category: 'Cloud & Container Systems',
     description: 'Premier hyperscale cloud platform utilizing EKS, ECS, Lambda, and IAM for resilient production infrastructure.',
     badge: 'Cloud Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+    logo: `${TOOL_ICONS}/aws.svg`,
     order: 3,
     active: true
   },
@@ -53,7 +63,7 @@ const DEFAULT_TOOLS = [
     category: 'Data & AI',
     description: 'State-of-the-art deep learning and tensor computation framework powering modern computer vision and transformer LLMs.',
     badge: 'Production AI',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg',
+    logo: `${TOOL_ICONS}/pytorch.svg`,
     order: 4,
     active: true
   },
@@ -62,7 +72,7 @@ const DEFAULT_TOOLS = [
     category: 'Cloud & Container Systems',
     description: 'Automated container orchestration, self-healing deployments, and auto-scaling microservice infrastructure.',
     badge: 'Enterprise Infra',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg',
+    logo: `${TOOL_ICONS}/kubernetes.svg`,
     order: 5,
     active: true
   },
@@ -71,7 +81,7 @@ const DEFAULT_TOOLS = [
     category: 'Software Engineering',
     description: 'Modern front-end user interface framework powering mission-critical interactive dashboards and SaaS cockpits.',
     badge: 'Frontend Core',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    logo: `${TOOL_ICONS}/react.svg`,
     order: 6,
     active: true
   },
@@ -80,7 +90,7 @@ const DEFAULT_TOOLS = [
     category: 'Data Science & Analytics',
     description: 'Distributed document and vector-enabled database engineered for real-time scale, JSON pipelines, and rapid queries.',
     badge: 'Modern NoSQL',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+    logo: `${TOOL_ICONS}/mongodb.svg`,
     order: 7,
     active: true
   },
@@ -89,7 +99,7 @@ const DEFAULT_TOOLS = [
     category: 'Software Engineering',
     description: 'Distributed version control, automated CI/CD GitHub Actions, and production peer code review workflows.',
     badge: 'Dev Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg',
+    logo: `${TOOL_ICONS}/git.svg`,
     order: 8,
     active: true
   },
@@ -98,7 +108,7 @@ const DEFAULT_TOOLS = [
     category: 'Design & Architecture',
     description: 'Collaborative UI/UX design and design system architecture used for high-fidelity capstone spec definitions.',
     badge: 'Design Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+    logo: `${TOOL_ICONS}/figma.svg`,
     order: 9,
     active: true
   },
@@ -107,7 +117,7 @@ const DEFAULT_TOOLS = [
     category: 'Data Science & Analytics',
     description: 'Enterprise relational database management system supporting advanced analytics, indexing, and pgvector extensions.',
     badge: 'Database Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+    logo: `${TOOL_ICONS}/postgresql.svg`,
     order: 10,
     active: true
   },
@@ -116,7 +126,7 @@ const DEFAULT_TOOLS = [
     category: 'Data & AI',
     description: 'Global transformer model hub, tokenizer pipelines, and fine-tuning ecosystem for open-weight foundation models.',
     badge: 'GenAI Hub',
-    logo: 'https://huggingface.co/front/assets/huggingface_logo-noborder.svg',
+    logo: `${TOOL_ICONS}/huggingface.svg`,
     order: 11,
     active: true
   },
@@ -125,7 +135,7 @@ const DEFAULT_TOOLS = [
     category: 'Data Science & Analytics',
     description: 'Interactive computational notebooks for exploratory data analysis, statistical modeling, and ML experimentation.',
     badge: 'Data Standard',
-    logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg',
+    logo: `${TOOL_ICONS}/jupyter.svg`,
     order: 12,
     active: true
   },

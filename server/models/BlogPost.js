@@ -30,12 +30,14 @@ const BlogPostSchema = new mongoose.Schema({
   }],
   coverImage: {
     type: String,
-    default: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80',
+    // Self-hosted defaults: the live CSP is `img-src 'self' data:`, so a new
+    // post that leaves these blank must not fall back to a blocked URL.
+    default: '/images/blog/default-cover.webp',
   },
   author: {
     name: { type: String, default: 'American FutureTech AI Research Group' },
     role: { type: String, default: 'Principal Instructor & AI Architect' },
-    avatar: { type: String, default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' },
+    avatar: { type: String, default: '/images/avatars/default-avatar.webp' },
   },
   readTimeMinutes: {
     type: Number,

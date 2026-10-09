@@ -33,12 +33,17 @@ import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
 import SafeImage from '../components/common/SafeImage';
 
+/*
+ * Presets for a job card's badge. They used to point at Unsplash: the live CSP
+ * is `img-src 'self' data:`, so picking one published a card whose logo the
+ * browser refused to load. The files below ship with the site.
+ */
 const LOGO_PRESETS = [
-  { name: 'AWS / Cloud', url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&auto=format&fit=crop&q=80' },
-  { name: 'Cyber Defense', url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&auto=format&fit=crop&q=80' },
-  { name: 'AI Labs', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80' },
-  { name: 'Fintech Data', url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=120&auto=format&fit=crop&q=80' },
-  { name: 'Enterprise Cloud', url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=120&auto=format&fit=crop&q=80' },
+  { name: 'AWS / Cloud', url: '/images/jobs/logo-aws-cloud.webp' },
+  { name: 'Cyber Defense', url: '/images/jobs/logo-cyber-defense.webp' },
+  { name: 'AI Labs', url: '/images/jobs/logo-ai-labs.webp' },
+  { name: 'Fintech Data', url: '/images/jobs/logo-fintech-data.webp' },
+  { name: 'Enterprise Cloud', url: '/images/jobs/logo-enterprise-cloud.webp' },
 ];
 
 export default function JobsManager() {

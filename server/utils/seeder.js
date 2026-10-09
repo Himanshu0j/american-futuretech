@@ -80,7 +80,7 @@ const autoSeedIfEmpty = async () => {
       password: adminPassword,
       role: 'SUPERADMIN',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-avatar.webp',
       bio: 'Principal Architect & Director of Academic Systems at American FutureTech.',
     });
 
@@ -90,7 +90,7 @@ const autoSeedIfEmpty = async () => {
       password: counselorPassword,
       role: 'COUNSELOR',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-counselor.webp',
       bio: 'Senior Admissions & Tech Career Counselor.',
     });
 
@@ -101,7 +101,7 @@ const autoSeedIfEmpty = async () => {
       phone: '+1 (415) 555-0192',
       role: 'STUDENT',
       isActive: true,
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      avatar: '/images/avatars/default-story.webp',
       studentDetails: {
         enrollmentNumber: 'AFT-892144',
         targetCareer: 'Senior AI Engineer',

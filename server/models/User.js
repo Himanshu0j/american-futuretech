@@ -57,7 +57,9 @@ const UserSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    // Served from this site: the CSP is `img-src 'self' data:`, so a default
+    // pointing at Unsplash would give every new student a broken avatar.
+    default: '/images/avatars/default-avatar.webp',
   },
   bio: {
     type: String,

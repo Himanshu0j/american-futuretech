@@ -4,11 +4,16 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const Job = require('../models/Job');
 const Course = require('../models/Course');
 
+/*
+ * Logos are local files. The live CSP is `img-src 'self' data:`, so a seeded
+ * posting with an Unsplash URL published a company tile the browser refused to
+ * load; these five route to the same artwork the admin's presets use.
+ */
 const additionalJobs = [
   {
     title: 'Data Platform & Analytics Engineer',
     company: 'QuantMatrix Capital',
-    companyLogo: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=120&auto=format&fit=crop&q=80',
+    companyLogo: '/images/jobs/logo-fintech-data.webp',
     location: 'Remote (US & Canada)',
     employmentType: 'Full-time',
     experienceLevel: 'Entry to Mid Level (1-3 Yrs)',
@@ -59,7 +64,7 @@ const additionalJobs = [
   {
     title: 'AI Governance & Compliance Auditor',
     company: 'Securitas Advisory Group',
-    companyLogo: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=120&auto=format&fit=crop&q=80',
+    companyLogo: '/images/jobs/logo-enterprise-cloud.webp',
     location: 'Remote / New York, NY',
     employmentType: 'Full-time',
     experienceLevel: 'Entry to Mid Level (0-2 Yrs)',
@@ -110,7 +115,7 @@ const additionalJobs = [
   {
     title: 'AI Product Associate',
     company: 'Synthetix Systems',
-    companyLogo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=120&auto=format&fit=crop&q=80',
+    companyLogo: '/images/jobs/logo-aws-cloud.webp',
     location: 'Remote (US, UK, & EU)',
     employmentType: 'Full-time',
     experienceLevel: 'Entry Level (0-2 Yrs)',
@@ -161,7 +166,7 @@ const additionalJobs = [
   {
     title: 'Cloud Security & Threat Hunter',
     company: 'DefenseShield AI',
-    companyLogo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=120&auto=format&fit=crop&q=80',
+    companyLogo: '/images/jobs/logo-cyber-defense.webp',
     location: 'Remote / Washington, DC',
     employmentType: 'Full-time',
     experienceLevel: 'Mid Level (1-3 Yrs)',
@@ -212,7 +217,7 @@ const additionalJobs = [
   {
     title: 'Full-Stack AI Application Engineer',
     company: 'NeuralFlow Labs',
-    companyLogo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=120&auto=format&fit=crop&q=80',
+    companyLogo: '/images/jobs/logo-ai-labs.webp',
     location: 'Remote / Austin, TX',
     employmentType: 'Full-time',
     experienceLevel: 'Entry to Mid Level (1-3 Yrs)',

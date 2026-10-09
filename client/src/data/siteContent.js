@@ -197,19 +197,27 @@ export const DEFAULT_CAREER_SUPPORT = {
 
 /**
  * Enterprise tool stack grouped by discipline (Courses page "Tools & Tech Stack").
- * Icon URLs use the same CDN pattern as the capstone tools CMS.
  *
- * IMPORTANT (verified 2026-09-24 against the live CDNs): only logo URLs that
- * actually resolve are kept. Brand icons pulled from Simple Icons/Devicon for
- * trademark reasons (and the Devicon Wireshark path, which jsDelivr refuses to
- * serve) return 404/403 and rendered as broken images. Those entries ship with
- * `logo: ''` and the Courses page renders a letter monogram tile instead, so the
- * grid can never show a broken image. Non-empty URLs still win: the admin
- * "Capstone & Tools" CMS can supply a replacement logo at any time.
+ * Every mark is served from this site, under /images/tools. No logo is fetched
+ * from cdn.jsdelivr.net or cdn.simpleicons.org any more: that section draws 36
+ * logos in six lanes, so the CDNs sat on the critical path of the page's most
+ * image-dense area — a fresh DNS lookup and TLS handshake per host on top of the
+ * download — and any CDN hiccup or corporate/mobile block turned the lanes into
+ * broken-image icons, which is what "aadhi images nahi dikh rahi" looked like.
+ * Local SVGs are cacheable, tiny, and cannot 404 because a CDN moved a path.
+ *
+ * A brand we have no right to ship keeps `logo: ''`; the page then draws a
+ * letter monogram tile, so a lane can never show a broken image. Non-empty
+ * values still win: the admin "Capstone & Tools" CMS can supply its own logo.
  */
-const DEV = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons';
+const TOOL_ICONS = '/images/tools';
 
-/** Verified 200 on 2026-09-24: cdn.jsdelivr.net devicons + live Simple Icons. */
+/**
+ * Marks the third-party CDNs refused (404/403 — mostly trademark takedowns) and
+ * that therefore live in /images/tools instead. Kept as the record of which
+ * brands MUST stay local: putting any of these back on a CDN URL brings the
+ * broken tiles straight back. Verified dead on the CDNs 2026-09-24.
+ */
 export const VERIFIED_DEAD_TOOL_LOGOS = [
   'nmap', 'wireshark', 'powerbi', 'tableau', 'openai', 'onetrust', 'servicenow',
   'drata', 'vanta', 'bigid', 'collibra', 'productboard',
@@ -221,12 +229,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Cyber Security & Ethical Hacking',
     color: 'rose',
     tools: [
-      { name: 'Kali Linux', logo: `${DEV}/linux/linux-original.svg` },
-      { name: 'Wireshark', logo: '' },
-      { name: 'Python', logo: `${DEV}/python/python-original.svg` },
-      { name: 'Nmap', logo: '' },
-      { name: 'Burp Suite', logo: 'https://cdn.simpleicons.org/portswigger/FF6633' },
-      { name: 'Metasploit', logo: 'https://cdn.simpleicons.org/metasploit/2596CD' },
+      { name: 'Kali Linux', logo: `${TOOL_ICONS}/linux.svg` },
+      { name: 'Wireshark', logo: `${TOOL_ICONS}/wireshark.svg` },
+      { name: 'Python', logo: `${TOOL_ICONS}/python.svg` },
+      { name: 'Nmap', logo: `${TOOL_ICONS}/nmap.svg` },
+      { name: 'Burp Suite', logo: `${TOOL_ICONS}/burpsuite.svg` },
+      { name: 'Metasploit', logo: `${TOOL_ICONS}/metasploit.svg` },
     ],
   },
   {
@@ -234,12 +242,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Data Science & Analytics',
     color: 'sky',
     tools: [
-      { name: 'TensorFlow', logo: `${DEV}/tensorflow/tensorflow-original.svg` },
-      { name: 'PyTorch', logo: `${DEV}/pytorch/pytorch-original.svg` },
-      { name: 'pandas', logo: `${DEV}/pandas/pandas-original.svg` },
-      { name: 'NumPy', logo: `${DEV}/numpy/numpy-original.svg` },
-      { name: 'Power BI', logo: '' },
-      { name: 'Tableau', logo: '' },
+      { name: 'TensorFlow', logo: `${TOOL_ICONS}/tensorflow.svg` },
+      { name: 'PyTorch', logo: `${TOOL_ICONS}/pytorch.svg` },
+      { name: 'pandas', logo: `${TOOL_ICONS}/pandas.svg` },
+      { name: 'NumPy', logo: `${TOOL_ICONS}/numpy.svg` },
+      { name: 'Power BI', logo: `${TOOL_ICONS}/powerbi.svg` },
+      { name: 'Tableau', logo: `${TOOL_ICONS}/tableau.svg` },
     ],
   },
   {
@@ -247,12 +255,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Generative & Agentic AI',
     color: 'violet',
     tools: [
-      { name: 'LangChain', logo: 'https://cdn.simpleicons.org/langchain/1C3C3C' },
-      { name: 'OpenAI', logo: '' },
-      { name: 'Claude', logo: 'https://cdn.simpleicons.org/anthropic/D97757' },
-      { name: 'Gemini', logo: 'https://cdn.simpleicons.org/googlegemini/8E75B2' },
-      { name: 'Docker', logo: `${DEV}/docker/docker-original.svg` },
-      { name: 'FastAPI', logo: `${DEV}/fastapi/fastapi-original.svg` },
+      { name: 'LangChain', logo: `${TOOL_ICONS}/langchain.svg` },
+      { name: 'OpenAI', logo: `${TOOL_ICONS}/openai.svg` },
+      { name: 'Claude', logo: `${TOOL_ICONS}/claude.svg` },
+      { name: 'Gemini', logo: `${TOOL_ICONS}/gemini.svg` },
+      { name: 'Docker', logo: `${TOOL_ICONS}/docker.svg` },
+      { name: 'FastAPI', logo: `${TOOL_ICONS}/fastapi.svg` },
     ],
   },
   {
@@ -273,12 +281,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Product & Collaboration',
     color: 'amber',
     tools: [
-      { name: 'Jira', logo: `${DEV}/jira/jira-original.svg` },
-      { name: 'Figma', logo: `${DEV}/figma/figma-original.svg` },
-      { name: 'Notion', logo: `${DEV}/notion/notion-original.svg` },
-      { name: 'Miro', logo: 'https://cdn.simpleicons.org/miro/050038' },
+      { name: 'Jira', logo: `${TOOL_ICONS}/jira.svg` },
+      { name: 'Figma', logo: `${TOOL_ICONS}/figma.svg` },
+      { name: 'Notion', logo: `${TOOL_ICONS}/notion.svg` },
+      { name: 'Miro', logo: `${TOOL_ICONS}/miro.svg` },
       { name: 'Productboard', logo: '' },
-      { name: 'Mixpanel', logo: 'https://cdn.simpleicons.org/mixpanel/7856FF' },
+      { name: 'Mixpanel', logo: `${TOOL_ICONS}/mixpanel.svg` },
     ],
   },
   {
@@ -286,12 +294,12 @@ export const DEFAULT_TOOL_CATEGORIES = [
     label: 'Security Operations & Big Data',
     color: 'indigo',
     tools: [
-      { name: 'Splunk', logo: 'https://cdn.simpleicons.org/splunk/000000' },
-      { name: 'OWASP ZAP', logo: 'https://cdn.simpleicons.org/owasp/000000' },
-      { name: 'scikit-learn', logo: `${DEV}/scikitlearn/scikitlearn-original.svg` },
-      { name: 'Hadoop', logo: `${DEV}/hadoop/hadoop-original.svg` },
-      { name: 'Apache Spark', logo: `${DEV}/apachespark/apachespark-original.svg` },
-      { name: 'GitHub', logo: `${DEV}/github/github-original.svg` },
+      { name: 'Splunk', logo: `${TOOL_ICONS}/splunk.svg` },
+      { name: 'OWASP ZAP', logo: `${TOOL_ICONS}/owasp.svg` },
+      { name: 'scikit-learn', logo: `${TOOL_ICONS}/scikitlearn.svg` },
+      { name: 'Hadoop', logo: `${TOOL_ICONS}/hadoop.svg` },
+      { name: 'Apache Spark', logo: `${TOOL_ICONS}/spark.svg` },
+      { name: 'GitHub', logo: `${TOOL_ICONS}/github.svg` },
     ],
   },
 ];

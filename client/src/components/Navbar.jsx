@@ -284,6 +284,9 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
             <img
               src="/images/logo-horizontal.webp"
               alt="American FutureTech"
+              // The logo is in the first screen on every page: it must not wait
+              // for the lazy-image default the build applies to other <img>s.
+              loading="eager"
               className={`w-auto object-contain transition-all duration-200 group-hover:scale-[1.02] ${scrolled ? 'h-8 sm:h-9' : 'h-9 sm:h-10'}`}
             />
           </Link>

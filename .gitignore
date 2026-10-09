@@ -17,7 +17,7 @@ dist/
 .env
 */.env
 *.local
-*.local.md
+*.local.*
 credentials.local*
 
 # Tunnel and scratch logs

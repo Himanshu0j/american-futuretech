@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { execSync } from 'node:child_process';
+import lazyImages from './build/lazyImages.js';
 
 /**
  * Build stamp.
@@ -53,7 +54,13 @@ const buildStamp = () => ({
 });
 
 export default defineConfig({
-  plugins: [react(), buildStamp()],
+  plugins: [
+    // `lazyImages` runs on every JSX file: images get loading="lazy" +
+    // decoding="async" unless they set `loading` themselves. See
+    // client/build/lazyImages.js for why this is done in the build.
+    react({ babel: { plugins: [lazyImages] } }),
+    buildStamp(),
+  ],
   server: {
     host: true,
     allowedHosts: true,
@@ -94,6 +101,10 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-icons': ['lucide-react'],
+          // framer-motion is ~120 kB of the entry bundle. As its own chunk it
+          // downloads in parallel with the app code instead of after it, and a
+          // deploy that only changes app code leaves the cached copy alone.
+          'vendor-motion': ['framer-motion'],
         },
       },
     },

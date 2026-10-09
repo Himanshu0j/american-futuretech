@@ -344,6 +344,23 @@ if (process.env.NODE_ENV === 'production') {
       setHeaders: (res, filePath) => {
         if (/[/\\]assets[/\\]/.test(filePath)) {
           res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          return;
+        }
+        /*
+         * Photos, logos and illustrations under /images keep STABLE filenames
+         * (only /assets are fingerprinted), so they cannot be immutable. The
+         * default `max-age=0` meant the browser re-downloaded the whole page's
+         * artwork on every visit — ~1.5 MB and ~90 image requests for images that
+         * had not changed in weeks, which is most of "images slow load hoti
+         * hain" on a repeat view.
+         *
+         * One hour freshly cached + a week of background revalidation: a repeat
+         * view paints from disk, and a file we replace in a later build is picked
+         * up within the hour (the revalidation is invisible — the cached image
+         * stays on screen while the browser checks).
+         */
+        if (/[/\\]images[/\\]/.test(filePath)) {
+          res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=604800');
         }
       },
     }));

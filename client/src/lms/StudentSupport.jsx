@@ -115,11 +115,11 @@ export default function StudentSupport() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
-            <LifeBuoy className="w-3.5 h-3.5 text-[#1D4ED8]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-ink-900))] text-xs font-bold uppercase tracking-wider mb-2">
+            <LifeBuoy className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
             <span>Academic & Technical Faculty Desk</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[#002060]">
+          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-[color:rgb(var(--tw-ink-900))]">
             Student Support & Mentorship Desk
           </h1>
           <p className="text-slate-600 text-xs sm:text-sm mt-1 leading-relaxed max-w-xl">
@@ -129,7 +129,7 @@ export default function StudentSupport() {
 
         <button
           onClick={() => setShowNewModal(true)}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-all shrink-0"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-bold text-xs shadow-xs transition-all shrink-0"
         >
           <PlusCircle className="w-4 h-4" />
           Create Support Ticket
@@ -141,16 +141,16 @@ export default function StudentSupport() {
         <div className="h-96 rounded-2xl bg-white border border-slate-200 animate-pulse shadow-xs" />
       ) : tickets.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center max-w-xl mx-auto shadow-xs">
-          <div className="w-16 h-16 mx-auto rounded-full bg-[#FCE7E7] border border-[#F00000]/40 flex items-center justify-center text-[#002060] mb-4">
-            <Headphones className="w-8 h-8 text-[#1D4ED8]" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center text-[color:rgb(var(--tw-ink-900))] mb-4">
+            <Headphones className="w-8 h-8 text-[color:rgb(var(--tw-blue-700))]" />
           </div>
-          <h3 className="text-lg font-heading font-bold text-[#002060] mb-2">No Open Tickets</h3>
+          <h3 className="text-lg font-heading font-bold text-[color:rgb(var(--tw-ink-900))] mb-2">No Open Tickets</h3>
           <p className="text-slate-600 text-xs sm:text-sm mb-6 leading-relaxed">
             All coursework and services are running smoothly. If you ever have questions about lectures or project milestones, raise a ticket here.
           </p>
           <button
             onClick={() => setShowNewModal(true)}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-bold text-xs shadow-xs transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
             Open First Support Query
@@ -171,17 +171,17 @@ export default function StudentSupport() {
                   onClick={() => setActiveTicket(ticket)}
                   className={`text-left p-4 rounded-xl border transition-all ${
                     isSelected
-                      ? 'bg-[#F7F7F5] border-[#002060] shadow-xs'
+                      ? 'bg-[#F7F7F5] border-[rgb(var(--tw-ink-900))] shadow-xs'
                       : 'bg-white border-slate-200 hover:bg-slate-50/80 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#F7F7F5] text-[#002060] border border-slate-200">
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#F7F7F5] text-[color:rgb(var(--tw-ink-900))] border border-slate-200">
                       {ticket.category}
                     </span>
                     <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
                       ticket.status === 'Resolved' || ticket.status === 'Closed'
-                        ? 'bg-[#FCE7E7] text-[#002060]'
+                        ? 'bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))]'
                         : ticket.status === 'In Progress'
                         ? 'bg-blue-100 text-blue-800'
                         : 'bg-red-100 text-red-800'
@@ -189,7 +189,7 @@ export default function StudentSupport() {
                       {ticket.status}
                     </span>
                   </div>
-                  <h4 className="text-xs sm:text-sm font-bold text-[#002060] truncate mb-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-[color:rgb(var(--tw-ink-900))] truncate mb-1">
                     {ticket.subject}
                   </h4>
                   <div className="flex items-center justify-between text-[11px] text-slate-500">
@@ -209,11 +209,11 @@ export default function StudentSupport() {
                 <div className="p-5 border-b border-slate-200 bg-[#F7F7F5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-[#1D4ED8] uppercase tracking-wider">
+                      <span className="text-xs font-bold text-[color:rgb(var(--tw-blue-700))] uppercase tracking-wider">
                         {activeTicket.category} • Priority: {activeTicket.priority}
                       </span>
                     </div>
-                    <h3 className="text-base font-heading font-bold text-[#002060]">
+                    <h3 className="text-base font-heading font-bold text-[color:rgb(var(--tw-ink-900))]">
                       {activeTicket.subject}
                     </h3>
                   </div>
@@ -233,14 +233,14 @@ export default function StudentSupport() {
                         className={`flex gap-3 max-w-[85%] ${isStaff ? 'mr-auto' : 'ml-auto flex-row-reverse'}`}
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
-                          isStaff ? 'bg-[#002060] text-white' : 'bg-[#1D4ED8] text-white'
+                          isStaff ? 'bg-[rgb(var(--tw-ink-900))] text-white' : 'bg-[rgb(var(--tw-blue-700))] text-white'
                         }`}>
                           {isStaff ? 'AF' : 'ME'}
                         </div>
                         <div className={`p-4 rounded-2xl text-xs sm:text-sm shadow-xs ${
                           isStaff
                             ? 'bg-white border border-slate-200 text-slate-800'
-                            : 'bg-[#002060] text-white'
+                            : 'bg-[rgb(var(--tw-ink-900))] text-white'
                         }`}>
                           <div className={`flex items-center justify-between gap-4 mb-1 text-[11px] ${
                             isStaff ? 'text-slate-400' : 'text-slate-300'
@@ -263,12 +263,12 @@ export default function StudentSupport() {
                     onChange={(e) => setReplyMessage(e.target.value)}
                     placeholder="Type your response to faculty..."
                     disabled={activeTicket.status === 'Closed'}
-                    className="flex-1 px-4 py-2.5 rounded-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:bg-white disabled:opacity-50 transition-all"
+                    className="flex-1 px-4 py-2.5 rounded-full bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white disabled:opacity-50 transition-all"
                   />
                   <button
                     type="submit"
                     disabled={replying || !replyMessage.trim() || activeTicket.status === 'Closed'}
-                    className="px-5 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] disabled:opacity-40 text-white font-bold text-xs flex items-center gap-2 transition-colors shrink-0 shadow-xs"
+                    className="px-5 py-2.5 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] disabled:opacity-40 text-white font-bold text-xs flex items-center gap-2 transition-colors shrink-0 shadow-xs"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Send</span>
@@ -296,8 +296,8 @@ export default function StudentSupport() {
             >
               <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-5">
                 <div className="flex items-center gap-2">
-                  <LifeBuoy className="w-4 h-4 text-[#1D4ED8]" />
-                  <h3 className="text-base font-heading font-bold text-[#002060]">Submit Academic Support Ticket</h3>
+                  <LifeBuoy className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))]" />
+                  <h3 className="text-base font-heading font-bold text-[color:rgb(var(--tw-ink-900))]">Submit Academic Support Ticket</h3>
                 </div>
                 <button
                   onClick={() => setShowNewModal(false)}
@@ -322,7 +322,7 @@ export default function StudentSupport() {
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g., Question about Module 3 PyTorch Loss Function"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all"
                   />
                 </div>
 
@@ -333,7 +333,7 @@ export default function StudentSupport() {
                       aria-label="Ticket category"
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all"
                     >
                       <option value="Technical">Technical / Code</option>
                       <option value="Curriculum">Curriculum / Labs</option>
@@ -350,7 +350,7 @@ export default function StudentSupport() {
                       aria-label="Ticket priority"
                       value={priority}
                       onChange={(e) => setPriority(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[#002060] focus:bg-white transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all"
                     >
                       <option value="Low">Low</option>
                       <option value="Medium">Medium</option>
@@ -368,7 +368,7 @@ export default function StudentSupport() {
                     value={initialMessage}
                     onChange={(e) => setInitialMessage(e.target.value)}
                     placeholder="Describe what you are trying to accomplish and any error messages..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:bg-white resize-none transition-all"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white resize-none transition-all"
                   />
                 </div>
 
@@ -383,7 +383,7 @@ export default function StudentSupport() {
                   <button
                     type="submit"
                     disabled={creating}
-                    className="px-6 py-2.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-xs transition-colors"
+                    className="px-6 py-2.5 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-bold text-xs shadow-xs transition-colors"
                   >
                     {creating ? 'Submitting...' : 'Submit Support Ticket'}
                   </button>

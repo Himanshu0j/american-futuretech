@@ -30,7 +30,7 @@ const renderInline = (text, keyPrefix) => {
       out.push(<strong key={key} className="font-bold text-slate-900">{token.slice(2, -2)}</strong>);
     } else if (token.startsWith('`')) {
       out.push(
-        <code key={key} className="px-1.5 py-0.5 rounded bg-slate-100 text-[0.85em] font-mono text-[#002060]">
+        <code key={key} className="px-1.5 py-0.5 rounded bg-slate-100 text-[0.85em] font-mono text-[color:rgb(var(--tw-ink-900))]">
           {token.slice(1, -1)}
         </code>,
       );
@@ -42,7 +42,7 @@ const renderInline = (text, keyPrefix) => {
           href={token.slice(split + 2, -1)}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#1D4ED8] font-semibold underline decoration-dotted hover:text-[#002060]"
+          className="text-[color:rgb(var(--tw-blue-700))] font-semibold underline decoration-dotted hover:text-[color:rgb(var(--tw-ink-900))]"
         >
           {token.slice(1, split)}
         </a>,
@@ -85,7 +85,7 @@ const renderBlocks = (content) => {
       blocks.push(
         React.createElement(
           level <= 2 ? 'h3' : 'h4',
-          { key: `b${blockKey++}`, className: `${sizes[level]} font-heading font-bold text-[#002060] pt-1` },
+          { key: `b${blockKey++}`, className: `${sizes[level]} font-heading font-bold text-[color:rgb(var(--tw-ink-900))] pt-1` },
           renderInline(heading[2], `h${blockKey}`),
         ),
       );
@@ -106,7 +106,7 @@ const renderBlocks = (content) => {
         i += 1;
       }
       blocks.push(
-        <blockquote key={`b${blockKey++}`} className="border-l-4 border-[#1D4ED8]/40 pl-3 text-slate-600 italic">
+        <blockquote key={`b${blockKey++}`} className="border-l-4 border-[rgb(var(--tw-blue-700)/40%)] pl-3 text-slate-600 italic">
           {renderInline(quote.join(' '), `q${blockKey}`)}
         </blockquote>,
       );

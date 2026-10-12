@@ -5,12 +5,12 @@ import { Loader2, X } from 'lucide-react';
 // consistent without each one re-inventing a table, a modal or a card.
 
 export const inputClass =
-  'w-full px-3 py-2 rounded-xl bg-[#001C57] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/40';
+  'w-full px-3 py-2 rounded-xl bg-[rgb(var(--tw-ink-800))] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/40';
 
 // #1D4ED8 (blue-700) rather than blue-500: white text on the lighter shade
 // fails the 4.5:1 contrast threshold the accessibility audit enforces.
 export const btnPrimary =
-  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const btnGhost =
   'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
@@ -42,7 +42,7 @@ export function PageHeader({ title, subtitle, actions, icon: Icon }) {
 
 export function Card({ children, className = '' }) {
   return (
-    <div className={`rounded-2xl bg-[#002060] border border-white/[0.08] ${className}`}>{children}</div>
+    <div className={`rounded-2xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.08] ${className}`}>{children}</div>
   );
 }
 
@@ -120,7 +120,7 @@ export function Modal({ open, title, subtitle, onClose, children, footer, wide =
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
       <div
-        className={`relative w-full ${wide ? 'max-w-4xl' : 'max-w-2xl'} my-8 rounded-2xl bg-[#002060] border border-white/[0.1] shadow-2xl`}
+        className={`relative w-full ${wide ? 'max-w-4xl' : 'max-w-2xl'} my-8 rounded-2xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.1] shadow-2xl`}
       >
         <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-white/[0.08]">
           <div>

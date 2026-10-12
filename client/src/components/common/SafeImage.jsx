@@ -17,7 +17,7 @@ export default function SafeImage({
   fallbackText,
   className = '',
   imageClassName = 'w-full h-full object-contain',
-  fallbackClassName = 'w-full h-full rounded-2xl bg-gradient-to-br from-[#002060] to-[#1D4ED8] text-[#FF6B6B] font-bold text-sm flex items-center justify-center',
+  fallbackClassName = 'w-full h-full rounded-2xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-gold-400))] font-bold text-sm flex items-center justify-center',
   placeholderIcon: PlaceholderIcon = Building2,
 }) {
   const [hasError, setHasError] = useState(false);

@@ -111,7 +111,7 @@ export default function BatchesManager() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl bg-[#002060]/80 border border-white/[0.08] p-6 space-y-4">
+            <div key={i} className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] border border-white/[0.08] p-6 space-y-4">
               <div className="flex justify-between">
                 <div className="h-6 w-24 bg-slate-800 rounded-full" />
                 <div className="h-5 w-16 bg-slate-800 rounded" />
@@ -132,7 +132,7 @@ export default function BatchesManager() {
           return (
             <div
               key={batch._id}
-              className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:border-blue-400/40"
+              className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:border-blue-400/40"
             >
               {/* Top Details */}
               <div>
@@ -218,7 +218,7 @@ export default function BatchesManager() {
       {/* Schedule Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl p-7 text-left">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl p-7 text-left">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-white">Schedule New Cohort</h3>
               <button

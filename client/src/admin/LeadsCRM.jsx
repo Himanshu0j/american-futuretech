@@ -180,7 +180,7 @@ export default function LeadsCRM() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -212,10 +212,10 @@ export default function LeadsCRM() {
       </div>
 
       {/* Leads Table */}
-      <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+            <thead className="bg-[rgb(var(--tw-ink-950))] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
               <tr>
                 <th className="px-5 py-3.5 font-bold">Applicant Details</th>
                 <th className="px-5 py-3.5 font-bold">Target Program</th>
@@ -329,10 +329,10 @@ export default function LeadsCRM() {
       {/* Slide-over Drawer for Detailed Applicant Profile & Call Recorder */}
       {drawerOpen && selectedLead && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-lg bg-[#002060] border-l border-white/[0.1] h-full shadow-2xl flex flex-col overflow-hidden animate-slideInRight">
+          <div className="w-full max-w-lg bg-[rgb(var(--tw-ink-900))] border-l border-white/[0.1] h-full shadow-2xl flex flex-col overflow-hidden animate-slideInRight">
             
             {/* Drawer Header */}
-            <div className="p-6 bg-[#001845] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-6 bg-[rgb(var(--tw-ink-950))] border-b border-white/[0.08] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-400 to-blue-600 flex items-center justify-center font-bold text-white">
                   {selectedLead.fullName.charAt(0)}

@@ -101,7 +101,7 @@ export default function JobDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#001C57] text-slate-800 dark:text-slate-200 font-sans antialiased">
+      <div className="min-h-screen bg-slate-50 dark:bg-[rgb(var(--tw-ink-800))] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
         <div className="pt-40 pb-20 flex flex-col items-center justify-center space-y-4">
           <div className="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
@@ -114,7 +114,7 @@ export default function JobDetailPage() {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#001C57] text-slate-800 dark:text-slate-200 font-sans antialiased">
+      <div className="min-h-screen bg-slate-50 dark:bg-[rgb(var(--tw-ink-800))] text-slate-800 dark:text-slate-200 font-sans antialiased">
         <Navbar />
         <div className="pt-40 pb-20 container mx-auto px-4 text-center max-w-lg space-y-4">
           <Briefcase className="w-12 h-12 text-slate-400 mx-auto" />
@@ -152,7 +152,7 @@ export default function JobDetailPage() {
   })();
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[rgb(var(--tw-gold-500))] selection:text-[color:rgb(var(--tw-ink-900))] relative">
       <Navbar />
 
       <main className="pt-28 pb-14 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-left">
@@ -163,16 +163,16 @@ export default function JobDetailPage() {
             pushed the row 64px past a 320px viewport. */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mb-8 text-xs font-mono text-slate-600">
           <div className="flex items-center gap-2 min-w-0">
-            <Link to="/" className="hover:text-[#002060] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/careers" className="hover:text-[#002060] transition-colors">Live Jobs</Link>
+            <Link to="/careers" className="hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">Live Jobs</Link>
             <span>/</span>
             <span className="text-slate-900 font-semibold truncate min-w-0 max-w-[130px] sm:max-w-none">{job.title}</span>
           </div>
 
           <Link
             to="/careers"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1D4ED8] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[color:rgb(var(--tw-blue-700))] hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Openings</span>
@@ -181,7 +181,7 @@ export default function JobDetailPage() {
 
         {/* Hero Header Card (Department & Verified Partner REMOVED) */}
         <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-lg relative overflow-hidden mb-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#F00000]/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[rgb(var(--tw-gold-500)/15%)] rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
             {/* Left: Logo & Core Identity */}
@@ -193,7 +193,7 @@ export default function JobDetailPage() {
                 fallbackText={job.company || 'AFT'}
                 className="w-12 h-12 sm:w-20 sm:h-20 rounded-2xl bg-white border border-slate-200 shadow-sm p-2 shrink-0"
                 imageClassName="w-full h-full object-contain rounded-xl"
-                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#002060] to-[#1D4ED8] text-white font-bold text-xl flex items-center justify-center"
+                fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white font-bold text-xl flex items-center justify-center"
               />
 
               <div className="space-y-1.5">
@@ -417,7 +417,7 @@ export default function JobDetailPage() {
             
             {/* Recommended Course Card with $99 CTA */}
             {(job.recommendedCourse || job.recommendedCourseTitle || job.course) && (
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#001C57] via-slate-900 to-blue-950 border border-blue-500/30 text-white shadow-2xl space-y-4 text-left relative overflow-hidden">
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-800))] via-slate-900 to-blue-950 border border-blue-500/30 text-white shadow-2xl space-y-4 text-left relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
 
                 <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest font-bold text-blue-400">
@@ -505,16 +505,16 @@ export default function JobDetailPage() {
 
             {applySuccess ? (
               <div className="text-center py-6">
-                <div className="w-12 h-12 rounded-full bg-[#FCE7E7] text-[#002060] flex items-center justify-center mx-auto mb-4 border border-[#F00000]">
-                  <CheckCircle2 className="w-8 h-8 text-[#1D4ED8]" />
+                <div className="w-12 h-12 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] flex items-center justify-center mx-auto mb-4 border border-[rgb(var(--tw-gold-500))]">
+                  <CheckCircle2 className="w-8 h-8 text-[color:rgb(var(--tw-blue-700))]" />
                 </div>
-                <h3 className="text-xl font-display font-bold text-[#002060] mb-2">Application Transmitted!</h3>
+                <h3 className="text-xl font-display font-bold text-[color:rgb(var(--tw-ink-900))] mb-2">Application Transmitted!</h3>
                 <p className="text-xs text-slate-600 leading-relaxed mb-6">
                   Your application for <strong className="text-slate-900">{job.title}</strong> has been transmitted directly to <strong className="text-slate-900">{job.company}</strong>. Our Placement Officer will follow up within 24 hours.
                 </p>
                 <button
                   onClick={() => setApplyModalOpen(false)}
-                  className="w-full py-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
                 >
                   Done
                 </button>
@@ -522,8 +522,8 @@ export default function JobDetailPage() {
             ) : (
               <form onSubmit={handleApplySubmit} className="space-y-4">
                 <div>
-                  <div className="text-[11px] font-bold text-[#1D4ED8] uppercase tracking-wider mb-1">Direct Application</div>
-                  <h3 className="text-lg font-display font-bold text-[#002060]">{job.title}</h3>
+                  <div className="text-[11px] font-bold text-[color:rgb(var(--tw-blue-700))] uppercase tracking-wider mb-1">Direct Application</div>
+                  <h3 className="text-lg font-display font-bold text-[color:rgb(var(--tw-ink-900))]">{job.title}</h3>
                   <div className="text-xs text-slate-500">{job.company} • {job.location}</div>
                 </div>
 
@@ -535,7 +535,7 @@ export default function JobDetailPage() {
                     placeholder="Jane Doe"
                     value={applicantName}
                     onChange={(e) => setApplicantName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                   />
                 </div>
 
@@ -548,7 +548,7 @@ export default function JobDetailPage() {
                       placeholder="jane@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                     />
                   </div>
                   <div>
@@ -559,7 +559,7 @@ export default function JobDetailPage() {
                       placeholder="+1 (555) 019-2834"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                     />
                   </div>
                 </div>
@@ -571,7 +571,7 @@ export default function JobDetailPage() {
                     placeholder="https://linkedin.com/in/janedoe"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                   />
                 </div>
 
@@ -583,7 +583,7 @@ export default function JobDetailPage() {
                     placeholder="https://drive.google.com/your-resume.pdf"
                     value={resumeUrl}
                     onChange={(e) => setResumeUrl(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                   />
                 </div>
 
@@ -594,14 +594,14 @@ export default function JobDetailPage() {
                     placeholder="Relevant capstone projects, certifications, and availability..."
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060]"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3.5 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {submitting ? 'Transmitting Application...' : (
                     <>

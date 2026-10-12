@@ -8,48 +8,120 @@
 
 :root {
   /* ══════════════════════════════════════════════════════════
-     BRAND PALETTE — red + blue + white
+     RUNTIME THEME CHANNELS
      ══════════════════════════════════════════════════════════
-                     brand blue        brand red
+     Every brand colour below resolves through one of these "R G B"
+     channel variables. The defaults here are the site's shipped palette
+     (brand blue #002060 / bright blue #2563EB / brand red #F00000, sampled
+     from client/public/images/logo-horizontal.png), so with no JS applied the
+     site paints exactly what it always painted.
+
+     Admin → Settings → Appearance rewrites these channels live
+     (client/src/lib/siteTheme.js derives whole shade ramps from three base
+     colours), which recolours headings, buttons, links, dark sections, borders
+     and body text site-wide — no rebuild. Both Tailwind's ramps (see
+     client/tailwind.config.js) and the tokens below read the same channels.
+     ══════════════════════════════════════════════════════════ */
+  --tw-ink-950: 0 24 69;
+  --tw-ink-900: 0 32 96;
+  --tw-ink-800: 0 28 87;
+  --tw-ink-700: 10 42 99;
+  --tw-ink-600: 11 58 128;
+
+  --tw-brand-50: 239 246 255;
+  --tw-brand-100: 219 234 254;
+  --tw-brand-400: 96 165 250;
+  --tw-brand-500: 59 130 246;
+  --tw-brand-600: 37 99 235;
+  --tw-brand-700: 29 78 216;
+  --tw-brand-800: 30 64 175;
+
+  --tw-blue-50: 239 246 255;
+  --tw-blue-100: 219 234 254;
+  --tw-blue-200: 191 219 254;
+  --tw-blue-300: 147 197 253;
+  --tw-blue-400: 96 165 250;
+  --tw-blue-500: 59 130 246;
+  --tw-blue-600: 37 99 235;
+  --tw-blue-700: 29 78 216;
+  --tw-blue-800: 30 64 175;
+  --tw-blue-900: 30 58 138;
+  --tw-blue-950: 23 37 84;
+
+  --tw-gold-100: 253 236 236;
+  --tw-gold-200: 249 201 201;
+  --tw-gold-300: 245 175 175;
+  --tw-gold-400: 255 107 107;
+  --tw-gold-500: 240 0 0;
+  --tw-gold-600: 200 30 30;
+
+  --tw-sand-100: 250 240 240;
+  --tw-sand-200: 252 231 231;
+  --tw-sand-300: 245 201 201;
+
+  --tw-accent-deep: 220 0 0;
+  --tw-accent-deeper: 176 22 22;
+
+  --tw-slate-50: 248 250 252;
+  --tw-slate-100: 241 245 249;
+  --tw-slate-200: 226 232 240;
+  --tw-slate-300: 203 213 225;
+  --tw-slate-400: 148 163 184;
+  --tw-slate-500: 100 116 139;
+  --tw-slate-600: 71 85 105;
+  --tw-slate-700: 51 65 85;
+  --tw-slate-800: 30 41 59;
+  --tw-slate-900: 15 23 42;
+  --tw-slate-950: 2 6 23;
+
+  --tw-text-strong: 0 32 96;
+  --tw-text-body: 68 80 107;
+  --tw-text-muted: 107 114 128;
+  --tw-text-faint: 154 163 178;
+
+  /* Type stacks — the Appearance tab swaps these for other Google Fonts. */
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Rubik", "Inter", sans-serif;
+
+  /* ══════════════════════════════════════════════════════════
+     BRAND PALETTE — red + blue + white
        #002060  ·  #F00000  ·  #FFFFFF
 
-     Both were sampled from the client's own logo artwork
-     (client/public/images/logo-horizontal.png). Deep blue carries the dark
-     sections, headings and structure; brand red is the accent — badges, CTAs,
-     highlights, icon fills; white is the page base. Green and champagne-gold
-     are gone from the site on purpose.
-
+     Deep blue carries the dark sections, headings and structure; brand red is
+     the accent — badges, CTAs, highlights, icon fills; white is the page base.
+     Every value derives from the channel variables above.
+     ══════════════════════════════════════════════════════════
      The token names below are historical (--gold-* / --sand-* now hold red
      values) so 60+ files of existing markup kept working through the rebrand;
      new work should use --brand-red-* and the blue ramp.
      ══════════════════════════════════════════════════════════ */
-  --brand-blue: #002060;
-  --brand-blue-deep: #001845;
-  --brand-blue-bright: #1D4ED8;
-  --brand-red: #F00000;
-  --brand-red-readable: #FF6B6B;
+  --brand-blue: rgb(var(--tw-ink-900));
+  --brand-blue-deep: rgb(var(--tw-ink-950));
+  --brand-blue-bright: rgb(var(--tw-blue-700));
+  --brand-red: rgb(var(--tw-gold-500));
+  --brand-red-readable: rgb(var(--tw-gold-400));
 
   /* ── Deep blue ink ramp (dark surfaces, headings, solid buttons) ── */
-  --ink-950: #001845;
-  --ink-900: #002060;
-  --ink-800: #001C57;
-  --ink-700: #0A2A63;
-  --ink-600: #0B3A80;
+  --ink-950: rgb(var(--tw-ink-950));
+  --ink-900: rgb(var(--tw-ink-900));
+  --ink-800: rgb(var(--tw-ink-800));
+  --ink-700: rgb(var(--tw-ink-700));
+  --ink-600: rgb(var(--tw-ink-600));
 
-  --blue-700: #1D4ED8;
-  --blue-600: #2563EB;
-  --blue-500: #3B82F6;
-  --blue-100: #EFF6FF;
+  --blue-700: rgb(var(--tw-blue-700));
+  --blue-600: rgb(var(--tw-blue-600));
+  --blue-500: rgb(var(--tw-blue-500));
+  --blue-100: rgb(var(--tw-blue-100));
 
-  --brand-blue-700: #1E40AF;
+  --brand-blue-700: rgb(var(--tw-blue-800));
 
-  --brand-red-700: #C81E1E;
-  --brand-red-500: #F00000;
-  --brand-red-200: #F9C9C9;
-  --brand-red-50: #FDECEC;
+  --brand-red-700: rgb(var(--tw-gold-600));
+  --brand-red-500: rgb(var(--tw-gold-500));
+  --brand-red-200: rgb(var(--tw-gold-200));
+  --brand-red-50: rgb(var(--tw-gold-100));
 
-  --brand-red-tint: #FCE7E7;
-  --brand-red-tint-soft: #FAF0F0;
+  --brand-red-tint: rgb(var(--tw-sand-200));
+  --brand-red-tint-soft: rgb(var(--tw-sand-100));
 
   --canvas: #F7F7F5;
   --canvas-cool: #F8FAFC;
@@ -57,36 +129,36 @@
   --hairline: #E6E8EC;
   --hairline-strong: #D5D9E0;
 
-  --text-strong: #002060;
-  --text-body: #44506B;
-  --text-muted: #6B7280;
-  --text-faint: #9AA3B2;
+  --text-strong: rgb(var(--tw-text-strong));
+  --text-body: rgb(var(--tw-text-body));
+  --text-muted: rgb(var(--tw-text-muted));
+  --text-faint: rgb(var(--tw-text-faint));
 
-  --ring: rgba(29, 78, 216, 0.35);
+  --ring: rgb(var(--tw-blue-700) / 0.35);
 
   --shadow-xs: 0 1px 2px rgba(11, 18, 32, 0.05);
   --shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.05), 0 4px 12px -4px rgba(11, 18, 32, 0.08);
   --shadow-md: 0 1px 2px rgba(11, 18, 32, 0.05), 0 12px 28px -10px rgba(11, 18, 32, 0.14);
   --shadow-lg: 0 2px 4px rgba(11, 18, 32, 0.04), 0 24px 48px -18px rgba(11, 18, 32, 0.22);
-  --shadow-indigo: 0 10px 30px -12px rgba(29, 78, 216, 0.55);
-  --shadow-red: 0 10px 30px -12px rgba(200, 30, 30, 0.5);
+  --shadow-indigo: 0 10px 30px -12px rgb(var(--tw-blue-700) / 0.55);
+  --shadow-red: 0 10px 30px -12px rgb(var(--tw-gold-600) / 0.5);
 
   /* Legacy aliases kept so older markup keeps resolving */
   --color-brand-beige: #F7F7F5;
-  --color-brand-blue-900: #001845;
-  --color-brand-blue-700: #0A2A63;
-  --color-brand-blue-500: #2563EB;
-  --color-brand-blue-300: #60A5FA;
-  --color-brand-blue-100: #DBEAFE;
+  --color-brand-blue-900: rgb(var(--tw-ink-950));
+  --color-brand-blue-700: rgb(var(--tw-ink-700));
+  --color-brand-blue-500: rgb(var(--tw-blue-600));
+  --color-brand-blue-300: rgb(var(--tw-blue-400));
+  --color-brand-blue-100: rgb(var(--tw-blue-100));
   /* The alias that used to hold the gold accent now holds brand red, under a
      name that says so. Each shade is declared exactly once: the previous
      green/purple aliases all renamed onto --color-brand-blue-* and duplicated
      shades, so the last one silently won. */
-  --color-brand-red-500: #F00000;
-  --color-brand-red-100: #FCE7E7;
-  --color-foreground: #002060;
-  --color-heading: #002060;
-  --color-muted: #6B7280;
+  --color-brand-red-500: rgb(var(--tw-gold-500));
+  --color-brand-red-100: rgb(var(--tw-sand-200));
+  --color-foreground: rgb(var(--tw-text-strong));
+  --color-heading: rgb(var(--tw-ink-900));
+  --color-muted: rgb(var(--tw-text-muted));
   --color-border: #E6E8EC;
 
   /* Executive Design System Variables */
@@ -98,14 +170,14 @@
   --aft-border-strong: #D5D9E0;
   --aft-specular-top: rgba(255, 255, 255, 0.06);
 
-  --aft-text-primary: #002060;
-  --aft-text-secondary: #44506B;
-  --aft-text-muted: #6B7280;
+  --aft-text-primary: rgb(var(--tw-ink-900));
+  --aft-text-secondary: rgb(var(--tw-text-body));
+  --aft-text-muted: rgb(var(--tw-text-muted));
 
-  --aft-brand-blue: #002060;
-  --aft-brand-blue-hover: #0A2A63;
-  --aft-brand-sky: #2563EB;
-  --aft-brand-emerald: #2563EB;
+  --aft-brand-blue: rgb(var(--tw-ink-900));
+  --aft-brand-blue-hover: rgb(var(--tw-ink-700));
+  --aft-brand-sky: rgb(var(--tw-blue-600));
+  --aft-brand-emerald: rgb(var(--tw-blue-600));
 }
 
 @layer base {
@@ -114,7 +186,7 @@
     scroll-padding-top: 118px;
     background-color: var(--canvas);
     color: var(--text-strong);
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
     font-size: 16px;
     text-rendering: optimizeLegibility;
   }
@@ -122,14 +194,14 @@
     background-color: var(--canvas);
     color: var(--text-strong);
     overflow-x: hidden;
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+    font-family: var(--font-heading);
     color: var(--ink-900);
     letter-spacing: -0.028em;
     /* Professional wrapping: no orphan words, no zig-zag headings */
@@ -146,7 +218,7 @@
 
   /* Brand-tinted text selection */
   ::selection {
-    background: rgba(240, 0, 0, 0.38);
+    background: rgb(var(--tw-gold-500) / 0.38);
     color: var(--ink-900);
   }
 
@@ -167,9 +239,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .highlight {
-  background-image: linear-gradient(180deg, rgba(240, 0, 0, 0.34) 0%, rgba(240, 0, 0, 0.5) 100%);
+  background-image: linear-gradient(180deg, rgb(var(--tw-gold-500) / 0.34) 0%, rgb(var(--tw-gold-500) / 0.5) 100%);
   color: var(--ink-900);
-  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-family: var(--font-heading);
   font-weight: 700;
   padding: 0.08em 0.4em;
   border-radius: 8px;
@@ -212,7 +284,7 @@
 }
 
 .elms-card-dark {
-  background-image: linear-gradient(165deg, #002060 0%, #001C57 100%);
+  background-image: linear-gradient(165deg, rgb(var(--tw-ink-900)) 0%, rgb(var(--tw-ink-800)) 100%);
   color: #E8ECF4;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
@@ -250,9 +322,9 @@
 /* Primary Action Button (Indigo → Violet premium gradient) */
 .elms-btn-primary, .aft-btn-primary, .apple-btn-primary {
   position: relative;
-  background-image: linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%);
+  background-image: linear-gradient(135deg, rgb(var(--tw-blue-600)) 0%, rgb(var(--tw-blue-700)) 55%, rgb(var(--tw-blue-800)) 100%);
   color: #FFFFFF;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 14px;
   padding: 12px 28px;
@@ -271,7 +343,7 @@
   filter: saturate(115%) brightness(1.05);
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 14px 34px -12px rgba(29, 78, 216, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 14px 34px -12px rgb(var(--tw-blue-700) / 0.7);
 }
 .elms-btn-primary:active, .aft-btn-primary:active, .apple-btn-primary:active {
   transform: translateY(0);
@@ -284,7 +356,7 @@
   /* Deepened from the pure #F00000: white on that red is 3.99:1 and fails WCAG
      AA (the real-browser audit flagged every red button). #DC0000 keeps the
      brand red while white text clears 4.5:1 across the whole gradient. */
-  background-image: linear-gradient(135deg, #DC0000 0%, #B01616 100%);
+  background-image: linear-gradient(135deg, rgb(var(--tw-accent-deep)) 0%, rgb(var(--tw-accent-deeper)) 100%);
   color: #FFFFFF;
   font-weight: 700;
   font-size: 14px;
@@ -302,14 +374,14 @@
 .elms-btn-gold:hover {
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -14px rgba(200, 30, 30, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -14px rgb(var(--tw-gold-600) / 0.65);
 }
 
 /* Secondary Action Button (Executive Clean Outline) */
 .elms-btn-secondary, .aft-btn-secondary, .apple-btn-secondary {
   background: #FFFFFF;
   color: var(--ink-900);
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 14px;
   padding: 11px 24px;
@@ -336,9 +408,9 @@
 
 /* Executive Solid Ink Button */
 .elms-btn-green {
-  background-image: linear-gradient(180deg, #001A4D 0%, #002060 100%);
+  background-image: linear-gradient(180deg, rgb(var(--tw-ink-950)) 0%, rgb(var(--tw-ink-900)) 100%);
   color: #FFFFFF;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 14px;
   padding: 12px 26px;
@@ -381,7 +453,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .apple-headline-gradient {
-  background-image: linear-gradient(120deg, #002060 0%, #0B3A80 55%, #1D4ED8 100%);
+  background-image: linear-gradient(120deg, rgb(var(--tw-ink-900)) 0%, rgb(var(--tw-ink-600)) 55%, rgb(var(--tw-blue-700)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -499,6 +571,26 @@
     heroBannerIn 1.15s cubic-bezier(0.16, 1, 0.3, 1) both,
     heroBannerDrift 30s ease-in-out 1.15s infinite alternate;
   will-change: transform, opacity;
+}
+
+/* The LMS-cockpit's studio frame (hero right column) gets the same breathing
+   treatment the banner has, at a slower pace and smaller amplitude: it is a
+   smaller frame closer to the reader, so the movement has to stay under the
+   threshold where it distracts from the headline. Like the banner, no fill
+   mode on purpose — the global reduced-motion rule cuts it to one 0.01ms pass,
+   and a fill mode would strand it at the zoomed end state. */
+@keyframes cockpitDrift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.045) translate3d(0, -0.8%, 0);
+  }
+}
+
+.anim-cockpit-drift {
+  animation: cockpitDrift 26s ease-in-out 0.8s infinite alternate;
+  will-change: transform;
 }
 
 .anim-hero-eyebrow {
@@ -655,6 +747,28 @@
   animation-play-state: paused;
 }
 
+/* Slower variant for the "Tools Covered" strips (course detail + /courses).
+   The tools are dense, wordy labels the visitor is meant to actually read, so
+   the shared 32s company-logo speed flew past unreadable. Extends the SAME
+   0% → -50% loop keyframes so the duplicated-track seam stays invisible; only
+   the pace changes. */
+.animate-infinite-marquee-slow:hover,
+.animate-infinite-marquee-slower:hover {
+  animation-play-state: paused;
+}
+
+.animate-infinite-marquee-slow {
+  display: flex;
+  width: max-content;
+  animation: infiniteMarquee 72s linear infinite;
+}
+
+.animate-infinite-marquee-slower {
+  display: flex;
+  width: max-content;
+  animation: infiniteMarquee 96s linear infinite;
+}
+
 /* The same loop running left → right (the tools catalogue). The duplicated
    track travels from -50% back to 0, so there is never a visible jump. */
 @keyframes infiniteMarqueeLeftToRight {
@@ -682,7 +796,9 @@
    reduced-motion opt-out. */
 @media (prefers-reduced-motion: reduce) {
   .animate-infinite-marquee,
-  .animate-infinite-marquee-ltr {
+  .animate-infinite-marquee-ltr,
+  .animate-infinite-marquee-slow,
+  .animate-infinite-marquee-slower {
     animation: none;
   }
 }
@@ -713,8 +829,8 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--blue-600);
-  background: rgba(29, 78, 216, 0.07);
-  border: 1px solid rgba(29, 78, 216, 0.14);
+  background: rgb(var(--tw-blue-600) / 0.07);
+  border: 1px solid rgb(var(--tw-blue-600) / 0.14);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
 }
@@ -730,19 +846,19 @@
 @media (max-width: 639px) {
   .section-eyebrow-on-photo {
     background: rgba(255, 255, 255, 0.96);
-    border-color: rgba(29, 78, 216, 0.3);
+    border-color: rgb(var(--tw-blue-600) / 0.3);
   }
 }
 
 .section-eyebrow-dark {
   color: var(--brand-red-500);
-  background: rgba(240, 0, 0, 0.1);
-  border-color: rgba(240, 0, 0, 0.22);
+  background: rgb(var(--tw-gold-500) / 0.1);
+  border-color: rgb(var(--tw-gold-500) / 0.22);
 }
 
 /* Gradient display type for hero headlines */
 .text-premium-gradient {
-  background-image: linear-gradient(115deg, #002060 0%, #0B3A80 45%, #1D4ED8 100%);
+  background-image: linear-gradient(115deg, rgb(var(--tw-ink-900)) 0%, rgb(var(--tw-ink-600)) 45%, rgb(var(--tw-blue-700)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -752,7 +868,7 @@
    keeps working; `.text-brand-gradient` is the name to use from now on. */
 .text-gold-gradient,
 .text-brand-gradient {
-  background-image: linear-gradient(110deg, #C81E1E 0%, #F00000 45%, #C81E1E 100%);
+  background-image: linear-gradient(110deg, rgb(var(--tw-gold-600)) 0%, rgb(var(--tw-gold-500)) 45%, rgb(var(--tw-gold-600)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -763,14 +879,14 @@
   height: 2px;
   width: 56px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #F00000, rgba(240, 0, 0, 0));
+  background: linear-gradient(90deg, rgb(var(--tw-gold-500)), rgb(var(--tw-gold-500) / 0));
 }
 
 .rule-indigo {
   height: 2px;
   width: 56px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #2563EB, rgba(29, 78, 216, 0));
+  background: linear-gradient(90deg, rgb(var(--tw-blue-600)), rgb(var(--tw-blue-600) / 0));
 }
 
 /* Badges & chips */
@@ -790,13 +906,13 @@
 
 .chip-indigo {
   background: var(--blue-100);
-  border-color: rgba(29, 78, 216, 0.18);
+  border-color: rgb(var(--tw-blue-600) / 0.18);
   color: var(--blue-700);
 }
 
 .chip-gold {
   background: var(--brand-red-50);
-  border-color: rgba(200, 30, 30, 0.24);
+  border-color: rgb(var(--tw-gold-600) / 0.24);
   color: #8A6D12;
 }
 
@@ -822,16 +938,16 @@
 /* Soft light wash for hero / header areas */
 .bg-aurora-light {
   background-image:
-    radial-gradient(900px 420px at 12% -10%, rgba(29, 78, 216, 0.10), transparent 60%),
-    radial-gradient(760px 420px at 88% 0%, rgba(240, 0, 0, 0.14), transparent 62%),
+    radial-gradient(900px 420px at 12% -10%, rgb(var(--tw-blue-600) / 0.10), transparent 60%),
+    radial-gradient(760px 420px at 88% 0%, rgb(var(--tw-gold-500) / 0.14), transparent 62%),
     linear-gradient(180deg, #FFFFFF 0%, var(--canvas) 100%);
 }
 
 .bg-aurora-ink {
   background-image:
-    radial-gradient(820px 420px at 8% -15%, rgba(29, 78, 216, 0.30), transparent 62%),
-    radial-gradient(720px 460px at 92% 10%, rgba(200, 30, 30, 0.16), transparent 60%),
-    linear-gradient(165deg, #001845 0%, #002060 55%, #001C57 100%);
+    radial-gradient(820px 420px at 8% -15%, rgb(var(--tw-blue-600) / 0.30), transparent 62%),
+    radial-gradient(720px 460px at 92% 10%, rgb(var(--tw-gold-600) / 0.16), transparent 60%),
+    linear-gradient(165deg, rgb(var(--tw-ink-950)) 0%, rgb(var(--tw-ink-900)) 55%, rgb(var(--tw-ink-800)) 100%);
 }
 
 /* Fade the edges of marquees and long scrollers */
@@ -954,8 +1070,8 @@
 }
 
 @keyframes aftBeacon {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(240, 0, 0, 0.45); }
-  70% { box-shadow: 0 0 0 12px rgba(240, 0, 0, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--tw-gold-500) / 0.45); }
+  70% { box-shadow: 0 0 0 12px rgb(var(--tw-gold-500) / 0); }
 }
 
 /* One helper = a real perspective camera for its children. */
@@ -995,8 +1111,8 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    0 34px 60px -26px rgba(0, 32, 96, 0.62),
-    0 0 0 1px rgba(29, 78, 216, 0.35);
+    0 34px 60px -26px rgb(var(--tw-ink-900) / 0.62),
+    0 0 0 1px rgb(var(--tw-blue-600) / 0.35);
 }
 
 /* A card that lifts towards the visitor on hover (pointer devices only). */

@@ -223,7 +223,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
 
   return (
-    <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[#001C57] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
+    <section id="courses" className="py-12 sm:py-16 relative z-10 bg-white dark:bg-[rgb(var(--tw-ink-800))] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-10 gap-6 text-left">
@@ -275,15 +275,24 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           >
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column */}
-              <div className="lg:col-span-5 relative aspect-[16/10] lg:aspect-auto min-h-[220px] sm:min-h-[260px] lg:min-h-[330px] overflow-hidden bg-slate-950">
-                {/* The flagship artwork is usually a wide graphic: cropping it to
-                    this tall panel cut its headline text off. Fitting the whole
-                    picture in and letting the dark panel take the letterbox keeps
-                    any upload intact, whatever its shape. */}
+              {/* Fixed heights on mobile, not aspect-[16/10]: a min-height on an
+                  aspect-ratio box back-computes the WIDTH (220 × 16/10 = 352px), which
+                  overflows a 315px column and silently clips ~20px off the right edge on
+                  360px phones. At lg the column is wide enough that aspect-auto + min-h
+                  behaves, so we restore that there. */}
+              <div className="lg:col-span-5 relative min-w-0 h-[220px] sm:h-[260px] lg:h-auto lg:min-h-[330px] overflow-hidden bg-slate-950">
+                {/* The artwork is a wide 3:2 photo. object-contain letterboxed it into
+                    this near-square panel, leaving dark bars and pinning the badge and
+                    cohort labels off the picture — the client's "cut" look. object-cover
+                    fills the panel edge-to-edge instead. It trims the left/right edges
+                    (~29% for a 3:2 photo in a 5:4 box), which is safe here because these
+                    are full-bleed photographic textures with no baked-in headline text.
+                    If an admin ever uploads a banner with text, switch that card back to
+                    object-contain so the words don't get clipped. */}
                 <img
                   src={getCourseCardImage(flagship)}
                   alt={flagship.title}
-                  className="w-full h-full object-contain object-center group-hover:scale-[1.02] transition-transform duration-700 opacity-95 group-hover:opacity-100"
+                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 opacity-95 group-hover:opacity-100"
                   decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-slate-950/40 lg:to-slate-950" />
@@ -409,7 +418,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
 
         {/* Official Microsoft Partner Credential Showcase */}
-        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[#001C57] to-[#001C57] text-white border border-blue-500/30 shadow-2xl text-left">
+        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-[rgb(var(--tw-ink-800))] to-[rgb(var(--tw-ink-800))] text-white border border-blue-500/30 shadow-2xl text-left">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-blue-500/20">
             <div className="space-y-2 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-mono font-bold uppercase tracking-wider">

@@ -62,11 +62,11 @@ export default function BrandBand() {
   return (
     <section
       id="campus-life"
-      className="relative py-12 sm:py-14 bg-[#002060] border-t border-b border-[#1D4ED8]/40 overflow-hidden"
+      className="relative py-12 sm:py-14 bg-[rgb(var(--tw-ink-900))] border-t border-b border-[rgb(var(--tw-blue-700)/40%)] overflow-hidden"
     >
       {/* Depth: brand glows plus the faint engineering grid used on the dark panels */}
-      <div className="pointer-events-none absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-[#F00000]/25 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 right-1/4 h-72 w-72 rounded-full bg-[#1D4ED8]/30 blur-3xl" />
+      <div className="pointer-events-none absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-[rgb(var(--tw-gold-500)/25%)] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 right-1/4 h-72 w-72 rounded-full bg-[rgb(var(--tw-blue-700)/30%)] blur-3xl" />
       <div className="pointer-events-none absolute inset-0 aft-grid-3d opacity-50" />
 
       <div className="relative">
@@ -90,7 +90,7 @@ export default function BrandBand() {
                 >
                   {WORDMARK}
                 </span>
-                <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-[#F00000] shrink-0" />
+                <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-[color:rgb(var(--tw-gold-500))] shrink-0" />
               </span>
             ))}
           </div>
@@ -108,7 +108,7 @@ export default function BrandBand() {
                 <span className="text-[11px] sm:text-sm font-mono font-bold uppercase tracking-[0.2em] text-[#FFD9D9]/85 whitespace-nowrap">
                   {item.label}
                 </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B6B] shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--tw-gold-400))] shrink-0" />
               </span>
             ))}
           </div>
@@ -116,7 +116,7 @@ export default function BrandBand() {
       </div>
 
       {/* Edges fade into the neighbouring white sections */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F00000]/60 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgb(var(--tw-gold-500)/60%)] to-transparent" />
     </section>
   );
 }

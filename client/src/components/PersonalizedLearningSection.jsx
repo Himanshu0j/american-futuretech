@@ -41,7 +41,7 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
     : DEFAULT_FEATURES;
 
   return (
-    <section className="relative py-14 bg-gradient-to-b from-slate-900 via-[#001C57] to-slate-950 text-white overflow-hidden" id="personalized-learning">
+    <section className="relative py-14 bg-gradient-to-b from-slate-900 via-[rgb(var(--tw-ink-800))] to-slate-950 text-white overflow-hidden" id="personalized-learning">
       {/* Ambient background glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
@@ -134,7 +134,7 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
           </div>
 
           {/* Right Column: Pricing & Direct Enrollment Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl border-2 border-red-500/40 bg-gradient-to-b from-slate-900 via-slate-900 to-[#002060] p-6 lg:p-7 shadow-2xl relative overflow-hidden">
+          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl border-2 border-red-500/40 bg-gradient-to-b from-slate-900 via-slate-900 to-[rgb(var(--tw-ink-900))] p-6 lg:p-7 shadow-2xl relative overflow-hidden">
             {/* Top Ribbon */}
             <div className="absolute top-0 right-0">
               <div className="bg-gradient-to-l from-red-500 to-red-500 text-white font-black text-[10px] tracking-wider uppercase py-1.5 px-6 rounded-bl-xl shadow-lg">

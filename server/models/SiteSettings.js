@@ -568,11 +568,17 @@ const SiteSettingsSchema = new mongoose.Schema({
   // 🌟 HOMEPAGE SECTION VISIBILITY CONTROLS
   sectionVisibility: {
     hero: { type: Boolean, default: true },
+    // The standalone dark clip band under the hero. Off by default: the hero's
+    // own Flagship Studio frame already plays `hero.videoUrl`, and the same clip
+    // appearing twice in the first two screens reads as a mistake. Switch it on
+    // here (Admin → Settings → Section Visibility) to have both.
+    videoShowcase: { type: Boolean, default: false },
     trustMarquee: { type: Boolean, default: true },
     metrics: { type: Boolean, default: true },
     learningJourney: { type: Boolean, default: true },
     courses: { type: Boolean, default: true },
     personalizedLearning: { type: Boolean, default: true },
+    whatIs: { type: Boolean, default: true },
     tools: { type: Boolean, default: true },
     roadmap: { type: Boolean, default: true },
     whyChooseUs: { type: Boolean, default: true },
@@ -592,6 +598,13 @@ const SiteSettingsSchema = new mongoose.Schema({
     secondaryCtaText: { type: String, default: 'Explore Programs' },
     secondaryCtaLink: { type: String, default: '/courses' },
     statsBadgeText: { type: String, default: '1,200+ Fellows Placed' },
+    // The muted promo clip that plays in the hero cockpit's Flagship Studio
+    // frame, in place of the studio photograph (Settings → Homepage Hero →
+    // "Homepage Video URL"). Absolute URL or a site-relative path such as
+    // /videos/hero.mp4. Empty falls the hero back to its photograph; the same
+    // clip also feeds the optional showcase band under the hero
+    // (see sectionVisibility.videoShowcase).
+    videoUrl: { type: String, default: '/videos/hero.mp4' },
     showAnimation: { type: Boolean, default: true },
   },
 
@@ -872,6 +885,28 @@ const SiteSettingsSchema = new mongoose.Schema({
   siteImages: {
     type: SiteImagesSchema,
     default: () => ({}),
+  },
+
+  // 🌟 SITE APPEARANCE CMS (Admin → Settings → Appearance)
+  // Fonts are KEYS, not raw font stacks: the client maps a key to a curated
+  // Google Fonts family in client/src/lib/siteTheme.js, so a saved value can
+  // never become an arbitrary CSS injection. Colours are 6-digit hex and are
+  // validated here for the same reason. Defaults equal the site's current
+  // design tokens — an untouched theme renders byte-identical to today.
+  theme: {
+    bodyFont: {
+      type: String,
+      enum: ['inter', 'poppins', 'montserrat', 'roboto', 'opensans', 'lato', 'nunito'],
+      default: 'inter',
+    },
+    headingFont: {
+      type: String,
+      enum: ['jakarta', 'poppins', 'montserrat', 'rubik', 'playfair', 'lora'],
+      default: 'jakarta',
+    },
+    primaryColor: { type: String, match: [/^#[0-9A-Fa-f]{6}$/, 'primaryColor must be a 6-digit hex colour'], default: '#2563EB' },
+    accentColor: { type: String, match: [/^#[0-9A-Fa-f]{6}$/, 'accentColor must be a 6-digit hex colour'], default: '#F00000' },
+    textColor: { type: String, match: [/^#[0-9A-Fa-f]{6}$/, 'textColor must be a 6-digit hex colour'], default: '#475569' },
   },
 
   // 🌟 BRAND & COMPANY LOGOS CMS

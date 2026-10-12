@@ -2,6 +2,8 @@ import React, { useState, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import HomeVideoShowcase from './components/HomeVideoShowcase';
+import WhatIsSection from './components/WhatIsSection';
 import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
@@ -202,6 +204,12 @@ function LandingPage() {
           />
         )}
 
+        {/* Client promo video — optional cinema-framed band under the hero. The
+            hero's own Flagship Studio frame plays the clip as well, so this band
+            is off in the CMS by default (Section Visibility → 2.) to keep the
+            same footage from running twice in the first two screens. */}
+        {visibility.videoShowcase === true && <HomeVideoShowcase />}
+
         {/* Global Enterprise Brand & Logo Marquee */}
         {visibility.trustMarquee !== false && <TrustMarquee />}
 
@@ -223,6 +231,9 @@ function LandingPage() {
         {visibility.personalizedLearning !== false && (
           <PersonalizedLearningSection onOpenLeadModal={() => handleOpenLeadModal(null)} />
         )}
+
+        {/* Myth-vs-facts trust block ("What American FutureTech Is - And Is Not") */}
+        {visibility.whatIs !== false && <WhatIsSection />}
 
         {/* 40+ Industry Tools & Technologies Showcase (Real Database Data) */}
         {visibility.tools !== false && <ToolsSection />}

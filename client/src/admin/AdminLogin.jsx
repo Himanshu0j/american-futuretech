@@ -34,7 +34,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#001845] flex flex-col justify-center items-center p-4 relative overflow-hidden antialiased">
+    <div className="min-h-screen bg-[rgb(var(--tw-ink-950))] flex flex-col justify-center items-center p-4 relative overflow-hidden antialiased">
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -54,7 +54,7 @@ export default function AdminLogin() {
       </div>
 
       {/* Card */}
-      <div className="relative w-full max-w-md rounded-3xl bg-[#002060]/90 backdrop-blur-2xl border border-white/[0.1] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(14,165,233,0.15)] p-8 sm:p-9 z-10">
+      <div className="relative w-full max-w-md rounded-3xl bg-[rgb(var(--tw-ink-900)/90%)] backdrop-blur-2xl border border-white/[0.1] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(14,165,233,0.15)] p-8 sm:p-9 z-10">
         
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold font-heading text-white tracking-tight">

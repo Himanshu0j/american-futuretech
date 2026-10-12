@@ -22,7 +22,7 @@ const InlineBold = ({ text }) => {
     <>
       {parts.map((part, index) =>
         part.startsWith('**') && part.endsWith('**') ? (
-          <strong key={index} className="font-bold text-[#002060]">{part.slice(2, -2)}</strong>
+          <strong key={index} className="font-bold text-[color:rgb(var(--tw-ink-900))]">{part.slice(2, -2)}</strong>
         ) : (
           <React.Fragment key={index}>{part}</React.Fragment>
         ),
@@ -50,13 +50,13 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
       .filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[rgb(var(--tw-gold-500))] selection:text-[color:rgb(var(--tw-ink-900))] relative">
       <Navbar />
 
       <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-left">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-mono text-slate-600 mb-6">
-          <Link to="/" className="hover:text-[#002060] transition-colors">Home</Link>
+          <Link to="/" className="hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">Home</Link>
           <span>/</span>
           <span className="text-slate-900 font-semibold">{label || policy.title}</span>
         </div>
@@ -64,12 +64,12 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
         {/* Header — title words centred + bold */}
         <div className="border-b border-slate-200 pb-8 mb-10 text-center">
           {policy.badge && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-bold mb-4">
-              {Icon ? <Icon className="w-3.5 h-3.5 text-[#1D4ED8]" /> : null}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-ink-900))] text-xs font-bold mb-4">
+              {Icon ? <Icon className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" /> : null}
               <span>{policy.badge}</span>
             </div>
           )}
-          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[#002060] text-center">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold tracking-tight text-[color:rgb(var(--tw-ink-900))] text-center">
             {policy.title}
           </h1>
           {policy.lastUpdated && (
@@ -82,13 +82,13 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
         {/* Content */}
         <div className="prose prose-slate max-w-none text-xs sm:text-sm leading-relaxed space-y-8 text-slate-700">
           {policy.intro && (
-            <p className="font-semibold text-[#002060]">{policy.intro}</p>
+            <p className="font-semibold text-[color:rgb(var(--tw-ink-900))]">{policy.intro}</p>
           )}
 
           {policy.sections.map((section, index) => (
             <section key={section._key || index} className="space-y-3">
               {section.heading && (
-                <h2 className="text-lg sm:text-xl font-display font-bold text-[#002060]">
+                <h2 className="text-lg sm:text-xl font-display font-bold text-[color:rgb(var(--tw-ink-900))]">
                   {section.heading}
                 </h2>
               )}
@@ -102,9 +102,9 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
                   {section.bullets.map((bullet, bIndex) => (
                     <li
                       key={bIndex}
-                      className="flex items-start gap-2.5 rounded-xl bg-[#FCE7E7]/40 border border-[#F00000]/30 px-3.5 py-2.5 text-xs sm:text-sm text-slate-700"
+                      className="flex items-start gap-2.5 rounded-xl bg-[rgb(var(--tw-sand-200)/40%)] border border-[rgb(var(--tw-gold-500)/30%)] px-3.5 py-2.5 text-xs sm:text-sm text-slate-700"
                     >
-                      <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-[#1D4ED8]" />
+                      <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-[rgb(var(--tw-blue-700))]" />
                       <span className="leading-relaxed">
                         <InlineBold text={bullet} />
                       </span>
@@ -115,7 +115,7 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
 
               {/* Highlighted, bold contact card (privacy officer block) */}
               {section.contactBlock && (
-                <div className="rounded-2xl bg-[#FCE7E7] border-2 border-[#F00000] px-4 py-4 space-y-1.5 font-mono text-xs font-bold text-[#002060] shadow-xs">
+                <div className="rounded-2xl bg-[rgb(var(--tw-sand-200))] border-2 border-[rgb(var(--tw-gold-500))] px-4 py-4 space-y-1.5 font-mono text-xs font-bold text-[color:rgb(var(--tw-ink-900))] shadow-xs">
                   <p className="font-extrabold">{company.legalName}</p>
                   <p>{company.address}</p>
                   <p>
@@ -123,7 +123,7 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
                     {emails.map((email, eIndex) => (
                       <React.Fragment key={email}>
                         {eIndex > 0 ? ', ' : ''}
-                        <a href={`mailto:${email}`} className="text-[#1D4ED8] hover:underline font-bold">
+                        <a href={`mailto:${email}`} className="text-[color:rgb(var(--tw-blue-700))] hover:underline font-bold">
                           {email}
                         </a>
                       </React.Fragment>

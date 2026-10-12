@@ -286,7 +286,7 @@ export default function HeaderManager() {
               key={item._key}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${
                 item.active
-                  ? 'bg-[#F7F7F5] text-[#002060] border border-slate-200'
+                  ? 'bg-[#F7F7F5] text-[color:rgb(var(--tw-ink-900))] border border-slate-200'
                   : 'bg-slate-950 text-slate-500 border border-slate-800 line-through'
               }`}
             >

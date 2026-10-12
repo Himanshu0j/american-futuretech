@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-[#001845] text-slate-200 flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[rgb(var(--tw-ink-950))] text-slate-200 flex flex-col antialiased selection:bg-blue-600 selection:text-white">
       {/* Top Navbar Shimmer */}
       <div className="h-20 border-b border-white/[0.08] bg-[#0c1322]/80 px-6 sm:px-12 flex items-center justify-between">
         <div className="flex items-center gap-3 animate-pulse">

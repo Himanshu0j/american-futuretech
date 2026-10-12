@@ -120,7 +120,7 @@ export default function CertificateVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-[#1b1b1b] font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-[#1b1b1b] font-sans antialiased selection:bg-[rgb(var(--tw-gold-500))] selection:text-[color:rgb(var(--tw-ink-900))] relative">
       <Navbar />
 
       <main className="pt-28 pb-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
@@ -133,7 +133,7 @@ export default function CertificateVerificationPage() {
         <div className="mb-6 flex flex-wrap justify-between items-center gap-4 print:hidden">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-[#002060] font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-[color:rgb(var(--tw-ink-900))] font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to American FutureTech</span>
@@ -143,9 +143,9 @@ export default function CertificateVerificationPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={handlePrint}
-                className="py-2 px-5 rounded-full border border-[#002060] text-[#002060] bg-white hover:bg-gray-50 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
+                className="py-2 px-5 rounded-full border border-[rgb(var(--tw-ink-900))] text-[color:rgb(var(--tw-ink-900))] bg-white hover:bg-gray-50 text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
               >
-                <Printer className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                <Printer className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                 <span>Print / Save PDF</span>
               </button>
 
@@ -153,7 +153,7 @@ export default function CertificateVerificationPage() {
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="py-2 px-4 rounded-full bg-[#002060] text-white hover:bg-[#1D4ED8] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                className="py-2 px-4 rounded-full bg-[rgb(var(--tw-ink-900))] text-white hover:bg-[rgb(var(--tw-blue-700))] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Add to LinkedIn</span>
@@ -164,7 +164,7 @@ export default function CertificateVerificationPage() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="w-10 h-10 border-4 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-[rgb(var(--tw-ink-900)/20%)] border-t-[rgb(var(--tw-ink-900))] rounded-full animate-spin" />
             <div className="text-xs font-mono text-gray-500">Querying Cryptographic Credential Registry...</div>
           </div>
         ) : error ? (
@@ -177,7 +177,7 @@ export default function CertificateVerificationPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 to="/certificate/AFT-CERT-AI9821"
-                className="py-2.5 px-5 bg-[#002060] hover:bg-[#1D4ED8] text-white rounded-full text-xs font-bold transition-colors shadow-xs w-full sm:w-auto"
+                className="py-2.5 px-5 bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-blue-700))] text-white rounded-full text-xs font-bold transition-colors shadow-xs w-full sm:w-auto"
               >
                 Inspect Sample Verified Certificate
               </Link>
@@ -212,7 +212,7 @@ export default function CertificateVerificationPage() {
                   onClick={() => setActiveTab('us-diploma')}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                     activeTab === 'us-diploma'
-                      ? 'bg-[#002060] text-white shadow-sm'
+                      ? 'bg-[rgb(var(--tw-ink-900))] text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
@@ -242,10 +242,10 @@ export default function CertificateVerificationPage() {
 
             {/* TAB 1: Official High-Resolution Double-Bordered US Diploma Presentation */}
             {(activeTab === 'us-diploma' || activeTab === 'both') && (
-              <div className="rounded-3xl bg-white border-8 border-double border-[#002060]/40 p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[#002060] print:border-4 print:p-6">
+              <div className="rounded-3xl bg-white border-8 border-double border-[rgb(var(--tw-ink-900)/40%)] p-6 sm:p-14 shadow-2xl relative overflow-hidden text-[color:rgb(var(--tw-ink-900))] print:border-4 print:p-6">
                 {/* Background Crest Watermark */}
                 <div className="absolute right-4 -bottom-10 opacity-[0.03] pointer-events-none">
-                  <Award className="w-96 h-96 text-[#002060]" />
+                  <Award className="w-96 h-96 text-[color:rgb(var(--tw-ink-900))]" />
                 </div>
 
                 {/* Top Institutional Bar */}
@@ -257,10 +257,10 @@ export default function CertificateVerificationPage() {
                       className="w-12 h-12 sm:w-20 sm:h-20 object-contain shrink-0 drop-shadow-md"
                     />
                     <div>
-                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#1D4ED8]">
+                      <div className="text-[11px] font-mono font-bold uppercase tracking-widest text-[color:rgb(var(--tw-blue-700))]">
                         Accredited Technical Education
                       </div>
-                      <div className="text-xl sm:text-2xl font-black font-heading text-[#002060] mt-0.5">
+                      <div className="text-xl sm:text-2xl font-black font-heading text-[color:rgb(var(--tw-ink-900))] mt-0.5">
                         American FutureTech Institute
                       </div>
                       <div className="text-xs text-gray-500">
@@ -280,8 +280,8 @@ export default function CertificateVerificationPage() {
                       </>
                     ) : (
                       <>
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FCE7E7] border border-[#2563EB]/40 text-[#002060] text-xs font-bold shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-blue-600)/40%)] text-[color:rgb(var(--tw-ink-900))] text-xs font-bold shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-[rgb(var(--tw-blue-600))] animate-pulse" />
                           <span>Officially Verified Credential</span>
                         </div>
                         <span className="text-[10px] font-mono text-gray-500">Registry Status: Active &amp; Conferred</span>
@@ -312,7 +312,7 @@ export default function CertificateVerificationPage() {
                   <div className="text-xs text-gray-600">This official diploma is proudly conferred upon</div>
 
                   {/* Graduate Name */}
-                  <div className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-[#002060] tracking-tight py-1">
+                  <div className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading text-[color:rgb(var(--tw-ink-900))] tracking-tight py-1">
                     {cert.studentName}
                   </div>
 
@@ -321,13 +321,13 @@ export default function CertificateVerificationPage() {
                   </div>
 
                   {/* Course Title Badge */}
-                  <div className="text-lg sm:text-2xl font-black font-heading text-[#002060] py-3 px-8 rounded-2xl bg-[#F7F7F5] inline-block border border-[#002060]/20 shadow-sm">
+                  <div className="text-lg sm:text-2xl font-black font-heading text-[color:rgb(var(--tw-ink-900))] py-3 px-8 rounded-2xl bg-[#F7F7F5] inline-block border border-[rgb(var(--tw-ink-900)/20%)] shadow-sm">
                     {cert.courseTitle}
                   </div>
 
                   {/* Academic Distinction & Credits */}
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <span className="px-3 py-1 rounded-full bg-[#FCE7E7] text-[#002060] text-xs font-bold">
+                    <span className="px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] text-xs font-bold">
                       {cert.grade}
                     </span>
                     <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-mono font-medium">
@@ -342,7 +342,7 @@ export default function CertificateVerificationPage() {
                   <div className="text-center sm:text-left space-y-1">
                     <div>
                       <span className="text-gray-600 font-mono text-[10px] block">CONFERRAL DATE</span>
-                      <strong className="text-[#002060] font-medium">
+                      <strong className="text-[color:rgb(var(--tw-ink-900))] font-medium">
                         {new Date(cert.issueDate).toLocaleDateString('en-US', {
                           month: 'long',
                           day: 'numeric',
@@ -352,7 +352,7 @@ export default function CertificateVerificationPage() {
                     </div>
                     <div>
                       <span className="text-gray-600 font-mono text-[10px] block">PERMANENT REGISTRY ID</span>
-                      <strong className="font-mono text-[#002060] font-black">{cert.certificateId}</strong>
+                      <strong className="font-mono text-[color:rgb(var(--tw-ink-900))] font-black">{cert.certificateId}</strong>
                     </div>
                   </div>
 
@@ -370,7 +370,7 @@ export default function CertificateVerificationPage() {
 
                   {/* Right Column: Academic Director Signature */}
                   <div className="text-center sm:text-right space-y-1">
-                    <div className="font-serif italic text-lg sm:text-xl text-[#002060]">Alexander Pierce</div>
+                    <div className="font-serif italic text-lg sm:text-xl text-[color:rgb(var(--tw-ink-900))]">Alexander Pierce</div>
                     <div className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">
                       Dean & Academic Director
                     </div>
@@ -383,13 +383,13 @@ export default function CertificateVerificationPage() {
                 {/* Cryptographic Hash Strip */}
                 <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-mono text-gray-500 bg-gray-50/80 -mx-6 -mb-6 sm:-mx-14 sm:-mb-10 p-4 px-6 sm:px-14">
                   <div className="flex items-center gap-1.5">
-                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-red-500' : 'text-[#1D4ED8]'}`} />
+                    <Lock className={`w-3 h-3 ${cert.isSample ? 'text-red-500' : 'text-[color:rgb(var(--tw-blue-700))]'}`} />
                     <span className="text-gray-600">
                       {cert.isSample ? 'Reference (illustrative, no ledger entry):' : 'SHA-256 Ledger Hash:'}
                     </span>
                     <span className="text-gray-800 break-all">{cert.completionHash}</span>
                   </div>
-                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-red-600' : 'text-[#1D4ED8]'}`}>
+                  <div className={`font-bold shrink-0 ${cert.isSample ? 'text-red-600' : 'text-[color:rgb(var(--tw-blue-700))]'}`}>
                     {cert.isSample
                       ? 'Sample Record \u2022 Not a Cryptographic Proof'
                       : 'Verified Cryptographic Signature \u2022 US Jurisdiction'}

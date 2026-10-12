@@ -375,7 +375,7 @@ export default function StaffRBAC() {
         <div className="space-y-4">
           
           {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[#002060]/70 border border-white/[0.08]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl bg-[rgb(var(--tw-ink-900)/70%)] border border-white/[0.08]">
             <div className="relative w-full sm:w-80">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -405,10 +405,10 @@ export default function StaffRBAC() {
           </div>
 
           {/* Table */}
-          <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
+          <div className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+                <thead className="bg-[rgb(var(--tw-ink-950))] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
                   <tr>
                     <th className="px-6 py-4 font-bold">Administrator / Staff</th>
                     <th className="px-6 py-4 font-bold">System Email</th>
@@ -599,7 +599,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {activeTab === 'audit' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-2xl bg-[#002060]/70 border border-white/[0.08]">
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-[rgb(var(--tw-ink-900)/70%)] border border-white/[0.08]">
             <span className="text-xs font-mono text-slate-400">
               Showing recent administrative actions and security events.
             </span>
@@ -612,10 +612,10 @@ export default function StaffRBAC() {
             </button>
           </div>
 
-          <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
+          <div className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+                <thead className="bg-[rgb(var(--tw-ink-950))] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
                   <tr>
                     <th className="px-6 py-4 font-bold">Timestamp</th>
                     <th className="px-6 py-4 font-bold">Actor</th>
@@ -674,7 +674,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-heading flex items-center gap-2">
@@ -854,7 +854,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {permissionsModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
+          <div className="relative w-full max-w-2xl rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl p-7 text-left max-h-[92vh] overflow-y-auto space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white font-heading flex items-center gap-2">
@@ -973,7 +973,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {editModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
+          <div className="relative w-full max-w-md rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <h3 className="text-base font-bold text-white font-heading">
                 Edit Staff Member Details
@@ -1046,7 +1046,7 @@ export default function StaffRBAC() {
       {/* ========================================================================= */}
       {passwordModalOpen && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
+          <div className="relative w-full max-w-md rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl p-6 text-left space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
                 <Lock className="w-4 h-4 text-red-400" />

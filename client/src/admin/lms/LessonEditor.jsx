@@ -161,7 +161,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
         </div>
 
         {/* ── Video ─────────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.08] bg-[rgb(var(--tw-ink-800)/60%)] p-4 space-y-3">
           <div className="flex items-center gap-2 text-[11px] font-bold text-slate-200">
             <Video className="w-3.5 h-3.5 text-blue-300" /> Video lesson
           </div>
@@ -244,7 +244,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
         </Field>
 
         {/* ── Resources ─────────────────────────────────────────────────── */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
+        <div className="rounded-xl border border-white/[0.08] bg-[rgb(var(--tw-ink-800)/60%)] p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-[11px] font-bold text-slate-200">
               <FileText className="w-3.5 h-3.5 text-blue-300" /> Lab resources
@@ -310,7 +310,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
               type="checkbox"
               checked={draft.isPublished}
               onChange={(e) => set('isPublished', e.target.checked)}
-              className="rounded border-white/20 bg-[#001C57]"
+              className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
             />
             Published to students
           </label>
@@ -319,7 +319,7 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
               type="checkbox"
               checked={draft.isPreview}
               onChange={(e) => set('isPreview', e.target.checked)}
-              className="rounded border-white/20 bg-[#001C57]"
+              className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
             />
             Free preview (visible before enrollment)
           </label>

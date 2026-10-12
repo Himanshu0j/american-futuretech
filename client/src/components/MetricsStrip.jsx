@@ -37,7 +37,7 @@ export default function MetricsStrip() {
       label: 'ADVANCE',
       tag: 'Career Acceleration',
       icon: TrendingUp,
-      iconBg: 'bg-blue-50 text-[#1D4ED8] border-blue-200/80',
+      iconBg: 'bg-blue-50 text-[color:rgb(var(--tw-blue-700))] border-blue-200/80',
       accentBorder: 'hover:border-blue-500/40',
       title: 'Build toward accelerated tech opportunities.',
       description: 'Access dedicated 1-on-1 mentorship, technical interview defense panels, and direct referral pathways into our 200+ employer network.',
@@ -90,7 +90,7 @@ export default function MetricsStrip() {
                 className={`p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 ${item.accentBorder} shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden`}
               >
                 {/* Subtle card top glowing ambient accent */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#1D4ED8]/20 to-transparent group-hover:via-[#1D4ED8]/60 transition-all" />
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[rgb(var(--tw-blue-700)/20%)] to-transparent group-hover:via-[rgb(var(--tw-blue-700)/60%)] transition-all" />
 
                 <div className="space-y-4">
                   {/* Top Bar: Icon + Category Badge + Tag */}
@@ -99,18 +99,18 @@ export default function MetricsStrip() {
                       <div className={`w-11 h-11 rounded-2xl ${item.iconBg} border flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform`}>
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-xs font-bold tracking-widest text-[#002060] font-heading uppercase">
+                      <span className="text-xs font-bold tracking-widest text-[color:rgb(var(--tw-ink-900))] font-heading uppercase">
                         {item.label}
                       </span>
                     </div>
 
-                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[#FCE7E7] text-[#002060] font-bold border border-[#F00000]/40 shadow-2xs">
+                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] font-bold border border-[rgb(var(--tw-gold-500)/40%)] shadow-2xs">
                       {item.tag}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-[#002060] font-heading leading-snug pt-1">
+                  <h3 className="text-xl font-bold text-[color:rgb(var(--tw-ink-900))] font-heading leading-snug pt-1">
                     {item.title}
                   </h3>
 
@@ -123,7 +123,7 @@ export default function MetricsStrip() {
                   <div className="space-y-2 pt-2 border-t border-slate-100">
                     {item.bullets.map((b, bIdx) => (
                       <div key={bIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))] shrink-0" />
                         <span>{b}</span>
                       </div>
                     ))}
@@ -131,12 +131,12 @@ export default function MetricsStrip() {
                 </div>
 
                 {/* Footer Tag */}
-                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#1D4ED8]">
+                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:rgb(var(--tw-blue-700))]">
                   <span className="inline-flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                     Included in All Cohorts
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#002060] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[color:rgb(var(--tw-ink-900))] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                 </div>
               </div>
             );
@@ -148,8 +148,8 @@ export default function MetricsStrip() {
             ============================================================ */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[#002060] shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-[color:rgb(var(--tw-ink-900))] shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[rgb(var(--tw-blue-600))] animate-pulse" />
               <span>FELLOWSHIP STANDARDS & BENCHMARKS</span>
             </div>
             <div className="text-xs text-slate-600 font-mono hidden sm:block">
@@ -163,7 +163,7 @@ export default function MetricsStrip() {
               return (
                 <div
                   key={idx}
-                  className={`rounded-3xl bg-white border border-slate-200/90 hover:border-[#002060]/40 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden ${
+                  className={`rounded-3xl bg-white border border-slate-200/90 hover:border-[rgb(var(--tw-ink-900)/40%)] hover:shadow-lg transition-all duration-300 flex flex-col justify-between group relative overflow-hidden ${
                     m.emphasise ? 'p-6 sm:p-7 sm:scale-[1.02] shadow-md' : 'p-5 sm:p-6 shadow-xs'
                   }`}
                 >
@@ -180,8 +180,8 @@ export default function MetricsStrip() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
                     {/* Floating Pill Badge */}
-                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[#002060] shadow-2xs flex items-center gap-1.5">
-                      <Icon className="w-3 h-3 text-[#1D4ED8]" />
+                    <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/80 text-[10px] font-bold text-[color:rgb(var(--tw-ink-900))] shadow-2xs flex items-center gap-1.5">
+                      <Icon className="w-3 h-3 text-[color:rgb(var(--tw-blue-700))]" />
                       <span>{m.badge}</span>
                     </div>
                   </div>
@@ -189,7 +189,7 @@ export default function MetricsStrip() {
                   {/* Title words — centred + bold, per the client's request */}
                   <div className="space-y-2 text-center">
                     <h3
-                      className={`font-black text-[#002060] font-heading tracking-tight leading-tight ${m.emphasise ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'}`}
+                      className={`font-black text-[color:rgb(var(--tw-ink-900))] font-heading tracking-tight leading-tight ${m.emphasise ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'}`}
                     >
                       {m.title}
                     </h3>

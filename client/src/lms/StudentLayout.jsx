@@ -28,9 +28,9 @@ export default function StudentLayout() {
   return (
     <div className="min-h-screen bg-[#F7F7F5] text-slate-800 flex flex-col lg:flex-row antialiased">
       {/* Mobile Top Header */}
-      <header className="lg:hidden h-16 bg-[#002060] border-b border-[#1D4ED8] px-4 flex items-center justify-between z-30 sticky top-0 text-white">
+      <header className="lg:hidden h-16 bg-[rgb(var(--tw-ink-900))] border-b border-[rgb(var(--tw-blue-700))] px-4 flex items-center justify-between z-30 sticky top-0 text-white">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#1D4ED8] border border-[#F00000]/30 flex items-center justify-center font-bold text-white text-xs">
+          <div className="w-8 h-8 rounded-lg bg-[rgb(var(--tw-blue-700))] border border-[rgb(var(--tw-gold-500)/30%)] flex items-center justify-center font-bold text-white text-xs">
             AF
           </div>
           <span className="font-display font-bold text-sm text-white">Student Classroom</span>
@@ -45,13 +45,13 @@ export default function StudentLayout() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-40 w-72 bg-[#002060] text-white border-r border-[#1D4ED8] flex flex-col justify-between
+        fixed inset-y-0 left-0 z-40 w-72 bg-[rgb(var(--tw-ink-900))] text-white border-r border-[rgb(var(--tw-blue-700))] flex flex-col justify-between
         transition-transform duration-300 lg:translate-x-0 lg:static
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div>
           {/* Brand Header */}
-          <div className="p-5 border-b border-[#1D4ED8] flex items-center justify-between">
+          <div className="p-5 border-b border-[rgb(var(--tw-blue-700))] flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
               {/* White plate + dark lockup — the white lockup's crest box read
                   as a stray square on this blue sidebar (same fix as the
@@ -67,18 +67,18 @@ export default function StudentLayout() {
           </div>
 
           {/* Student Profile Strip */}
-          <div className="p-4 border-b border-[#1D4ED8] flex items-center gap-3 bg-[#002060] text-left">
+          <div className="p-4 border-b border-[rgb(var(--tw-blue-700))] flex items-center gap-3 bg-[rgb(var(--tw-ink-900))] text-left">
             <img
               // A local fallback: `img-src 'self' data:` blocks any remote
               // avatar, so an Unsplash default here is always a broken image.
               src={user?.avatar || '/images/avatars/default-avatar.webp'}
               alt={user?.name || 'Student'}
-              className="w-10 h-10 rounded-full object-cover border-2 border-[#F00000]"
+              className="w-10 h-10 rounded-full object-cover border-2 border-[rgb(var(--tw-gold-500))]"
             />
             <div className="min-w-0">
               <div className="font-display font-bold text-xs text-white truncate">{user?.name || 'Ethan Hunt'}</div>
               <div className="text-[11px] text-blue-200/80 truncate">{user?.email || 'Enrolled student'}</div>
-              <div className="text-[10px] text-[#FF6B6B] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
+              <div className="text-[10px] text-[color:rgb(var(--tw-gold-400))] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
             </div>
           </div>
 
@@ -94,12 +94,12 @@ export default function StudentLayout() {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all
                     ${isActive
-                      ? 'bg-[#1D4ED8] text-white font-bold border-l-4 border-[#F00000] shadow-xs'
-                      : 'text-blue-100/90 hover:bg-[#1D4ED8]/50 hover:text-white'
+                      ? 'bg-[rgb(var(--tw-blue-700))] text-white font-bold border-l-4 border-[rgb(var(--tw-gold-500))] shadow-xs'
+                      : 'text-blue-100/90 hover:bg-[rgb(var(--tw-blue-700)/50%)] hover:text-white'
                     }
                   `}
                 >
-                  <Icon className="w-4 h-4 shrink-0 text-[#FF6B6B]" />
+                  <Icon className="w-4 h-4 shrink-0 text-[color:rgb(var(--tw-gold-400))]" />
                   <span>{item.name}</span>
                 </NavLink>
               );
@@ -108,10 +108,10 @@ export default function StudentLayout() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-4 border-t border-[#1D4ED8] space-y-1.5 text-left">
+        <div className="p-4 border-t border-[rgb(var(--tw-blue-700))] space-y-1.5 text-left">
           <Link
             to="/"
-            className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-blue-200/80 hover:bg-[#1D4ED8]/50 hover:text-white transition-colors"
+            className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs text-blue-200/80 hover:bg-[rgb(var(--tw-blue-700)/50%)] hover:text-white transition-colors"
           >
             <span>Return to Public Site</span>
             <ExternalLink className="w-3.5 h-3.5" />

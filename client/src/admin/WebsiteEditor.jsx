@@ -96,7 +96,7 @@ export default function WebsiteEditor() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl bg-[#002060] border border-white/[0.08] p-6">
+      <div className="rounded-2xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.08] p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 text-[11px] font-mono text-blue-400 uppercase tracking-wider">
@@ -125,7 +125,7 @@ export default function WebsiteEditor() {
             { label: 'Text changes', value: summary.totals.text, icon: Type },
             { label: 'Image changes', value: summary.totals.images, icon: ImageIcon },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-xl bg-[#001845] border border-white/[0.08] p-3">
+            <div key={stat.label} className="rounded-xl bg-[rgb(var(--tw-ink-950))] border border-white/[0.08] p-3">
               <stat.icon className="w-3.5 h-3.5 text-blue-400 mb-2" />
               <div className="text-lg font-black text-white font-heading">{stat.value}</div>
               <div className="text-[10px] text-slate-400 uppercase tracking-wider">{stat.label}</div>
@@ -164,7 +164,7 @@ export default function WebsiteEditor() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search a page — e.g. courses, blog, privacy…"
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#002060] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-blue-500"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.08] text-white text-xs focus:outline-none focus:border-blue-500"
         />
       </div>
 
@@ -175,7 +175,7 @@ export default function WebsiteEditor() {
       )}
 
       {!loading && Object.entries(groups).map(([groupName, pages]) => (
-        <div key={groupName} className="rounded-2xl bg-[#002060] border border-white/[0.08] overflow-hidden">
+        <div key={groupName} className="rounded-2xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.08] overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.08] flex items-center gap-2">
             <BookOpen className="w-3.5 h-3.5 text-blue-400" />
             <span className="text-xs font-bold text-white uppercase tracking-wider">{groupName}</span>
@@ -244,7 +244,7 @@ export default function WebsiteEditor() {
       ))}
 
       {!loading && filtered.length === 0 && (
-        <div className="rounded-2xl bg-[#002060] border border-white/[0.08] p-8 text-center text-xs text-slate-400">
+        <div className="rounded-2xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.08] p-8 text-center text-xs text-slate-400">
           No page matches “{search}”.
         </div>
       )}

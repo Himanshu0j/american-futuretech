@@ -204,7 +204,7 @@ export default function ListItemsEditor({
       {/* Paste Multiple Lines Modal */}
       {showPasteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#002060] border border-white/[0.12] p-6 shadow-2xl text-left space-y-4">
+          <div className="relative w-full max-w-lg rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] p-6 shadow-2xl text-left space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">

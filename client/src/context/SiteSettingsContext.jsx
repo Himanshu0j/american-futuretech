@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { applySiteTheme } from '../lib/siteTheme';
 
 const SiteSettingsContext = createContext(null);
 
@@ -105,6 +106,25 @@ const readInitialSettings = () => {
 export function SiteSettingsProvider({ children }) {
   const [settings, setSettings] = useState(readInitialSettings);
   const [loading, setLoading] = useState(() => !readInitialSettings());
+
+  /*
+   * Paint the CMS "Appearance" tab onto the page.
+   *
+   * The first call runs during the first render — with the snapshot or cache
+   * values — so the saved fonts and colours are already on screen at first
+   * paint, before /api/settings answers. Later saves repaint in the same hook.
+   * applySiteTheme is idempotent (it only sets CSS variables), so StrictMode's
+   * double render and a settings refetch are both harmless.
+   */
+  const appliedTheme = React.useRef(null);
+  useEffect(() => {
+    const theme = settings?.theme;
+    const key = JSON.stringify(theme || null);
+    if (key !== appliedTheme.current) {
+      appliedTheme.current = key;
+      applySiteTheme(theme);
+    }
+  }, [settings]);
 
   /*
    * The settings document is the site's content, so a failed fetch must not be

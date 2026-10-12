@@ -175,7 +175,7 @@ export default function ToolsSection() {
   ];
 
   return (
-    <section id="tools" className="py-12 bg-slate-50 dark:bg-[#001C57] border-t border-slate-200/60 dark:border-slate-800 relative">
+    <section id="tools" className="py-12 bg-slate-50 dark:bg-[rgb(var(--tw-ink-800))] border-t border-slate-200/60 dark:border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

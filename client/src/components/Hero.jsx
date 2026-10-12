@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowRight,
   Briefcase,
   CheckCircle2,
+  Pause,
   Play,
   Award,
   Calendar,
@@ -30,6 +31,11 @@ import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json'
 const HERO_WORKSPACE_IMG = '/images/hero-innovator.jpg';
 const HERO_WORKSPACE_IMG_TALL = '/images/hero-innovator-tall.jpg';
 
+// The promo clip that ships with the site (client/public/videos/hero.mp4). It
+// plays in the cockpit's Flagship Studio frame in place of the photograph;
+// Admin → Settings → Homepage Hero → "Homepage Video URL" overrides it.
+const BUNDLED_HERO_VIDEO = '/videos/hero.mp4';
+
 // The graduation photograph the client chose for the top of the home page. It
 // is the section's own background now (not a card): a wide crop for desktop and
 // a portrait crop so narrow screens are not squeezed into an unreadable sliver
@@ -50,6 +56,18 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const [lessonCompleted, setLessonCompleted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // The client's promo clip fills the Flagship Studio frame — the first thing a
+  // visitor looks at — and the studio photograph becomes the fallback.
+  //   • a URL/path      → that file plays;
+  //   • empty string    → the CMS value was cleared, so the photo returns;
+  //   • undefined       → an older server that predates the setting, so the
+  //                       bundled clip plays rather than an empty frame.
+  const heroVideoUrl = heroData.videoUrl === undefined
+    ? BUNDLED_HERO_VIDEO
+    : String(heroData.videoUrl || '').trim();
+  const heroVideoRef = useRef(null);
+  const [heroVideoPlaying, setHeroVideoPlaying] = useState(true);
+
   // Subtle mouse parallax for desktop viewports
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -64,6 +82,31 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // The hero clip loops, so a visitor who asked their system for reduced motion
+  // gets a frozen first frame instead of movement — the play control is still
+  // there if they want it.
+  useEffect(() => {
+    const node = heroVideoRef.current;
+    if (!node) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+      node.pause();
+      setHeroVideoPlaying(false);
+    }
+  }, [heroVideoUrl]);
+
+  const toggleHeroVideo = () => {
+    const node = heroVideoRef.current;
+    if (!node) return;
+    if (node.paused) {
+      const attempt = node.play();
+      if (attempt?.catch) attempt.catch(() => {});
+      setHeroVideoPlaying(true);
+    } else {
+      node.pause();
+      setHeroVideoPlaying(false);
+    }
+  };
 
   const cockpitTabs = [
     { id: 'workspace', label: 'Flagship Studio', icon: Laptop },
@@ -116,7 +159,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
           {/* Phone/tablet: a short rise that hides the photo's bottom edge
               without veiling the graduates' faces. */}
-          <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-[#001845] dark:via-[#001845]/55 lg:hidden" />
+          <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-[rgb(var(--tw-ink-950))] dark:via-[rgb(var(--tw-ink-950)/55%)] lg:hidden" />
 
           {/* Desktop scrim: it has one job — hold the copy's contrast — so it
               stays near 0.9 across the editorial column and then falls away to
@@ -136,11 +179,11 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               so this rise carries those two blocks. It is masked off across the
               right half of the frame on purpose: that is where the faces are,
               and a full-width rise is exactly what blanked them. */}
-          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white from-0% via-white/[0.62] via-[45%] to-transparent [mask-image:linear-gradient(to_right,black_0%,black_52%,transparent_78%)] dark:from-[#001845] dark:via-[#001845]/[0.62]" />
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-white from-0% via-white/[0.62] via-[45%] to-transparent [mask-image:linear-gradient(to_right,black_0%,black_52%,transparent_78%)] dark:from-[rgb(var(--tw-ink-950))] dark:via-[rgb(var(--tw-ink-950))]/[0.62]" />
           {/* A short full-width fade, so the photograph's bottom edge still
               dissolves into the section's own aurora wash instead of ending on
               a hard line. Deliberately short: only gowns live down here. */}
-          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[9%] bg-gradient-to-t from-white to-transparent dark:from-[#001845]" />
+          <div className="hidden lg:block absolute inset-x-0 bottom-0 h-[9%] bg-gradient-to-t from-white to-transparent dark:from-[rgb(var(--tw-ink-950))]" />
         </div>
       </div>
 
@@ -478,35 +521,62 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 {/* VIEW 0: FLAGSHIP WORKSPACE & STUDIO */}
                 {activeTab === 'workspace' && (
                   <div className="space-y-4 animate-in fade-in duration-200 text-left">
-                    {/* This photo is the first thing a visitor looks at, so it is
+                    {/* This frame is the first thing a visitor looks at, so it is
                         deliberately the largest element in the cockpit: a tall,
-                        full-bleed frame instead of the old 240px strip. */}
-                    <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-xl group bg-slate-950">
-                      {/* Below `lg` the frame is taller than it is wide, so the
-                          portrait crop is used; from `lg` the card is wider and
-                          the 1.16:1 crop fits without cropping the subject. */}
-                      <picture>
+                        full-bleed media box instead of the old 240px strip. The
+                        client's promo clip plays in it; the studio photograph is
+                        the fallback when no video URL is configured. */}
+                    <div className="relative h-[22rem] sm:h-[26rem] lg:h-[30rem] rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-xl group bg-slate-950">
+                      {heroVideoUrl ? (
+                        /* The clip was recorded landscape (1920×1080) and exported
+                           into a vertical 1080×1920 canvas with pure-black bars
+                           top and bottom, so plain `object-cover` would show those
+                           bars inside this frame. The element is therefore shaped
+                           9:5 — the exact shape of the footage between the bars —
+                           and centred, which lets the frame crop the sides instead
+                           of showing letterboxing. */
+                        <video
+                          ref={heroVideoRef}
+                          className="absolute left-1/2 top-1/2 aspect-[9/5] h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+                          src={heroVideoUrl}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="auto"
+                          disablePictureInPicture
+                          disableRemotePlayback
+                          aria-label="Promo clip: instructors and fellows inside a live American FutureTech cohort session"
+                        />
+                      ) : (
+                      /* The photograph keeps the frame's shape, so clearing the
+                         video URL in the CMS never leaves an empty box. `block
+                         h-full` matters here: on an inline <picture> the image's
+                         `h-full` resolves to auto, and the photo then grew past
+                         the frame and got clipped instead of cropped. */
+                      <picture className="block h-full">
                         <source media="(min-width: 1024px)" srcSet={HERO_WORKSPACE_IMG} />
                         <img
                           src={HERO_WORKSPACE_IMG_TALL}
-                          alt="A professional working on a laptop — American FutureTech fellows train for exactly this work"
-                          width="1300"
-                          height="1721"
-                          loading="eager"
-                          // Lowercase on purpose: React 18.3 does not map
-                          // `fetchPriority` and warns about the camelCase prop.
-                          fetchpriority="high"
-                          decoding="async"
-                          // The crop carries the headroom now, so the anchor is
-                          // only here for the frames whose shape differs from the
-                          // crop's: from `sm` up to `lg` the frame is much wider
-                          // than the 0.76 portrait, and `object-cover` can only
-                          // show a horizontal slice of it — the default 46%
-                          // centred on the man's chest and cut his head off.
-                          className="w-full h-[22rem] sm:h-[26rem] lg:h-[30rem] object-cover object-[50%_40%] sm:object-[50%_16%] lg:object-[50%_50%] group-hover:scale-[1.03] transition-transform duration-700"
-                        />
-                      </picture>
-                      {/* Soft, bottom-anchored scrim: the photo carries the section,
+                            alt="A professional working on a laptop — American FutureTech fellows train for exactly this work"
+                            width="1300"
+                            height="1721"
+                            loading="eager"
+                            // Lowercase on purpose: React 18.3 does not map
+                            // `fetchPriority` and warns about the camelCase prop.
+                            fetchpriority="high"
+                            decoding="async"
+                            // The crop carries the headroom now, so the anchor is
+                            // only here for the frames whose shape differs from the
+                            // crop's: from `sm` up to `lg` the frame is much wider
+                            // than the 0.76 portrait, and `object-cover` can only
+                            // show a horizontal slice of it — the default 46%
+                            // centred on the man's chest and cut his head off.
+                            className="anim-cockpit-drift w-full h-full object-cover object-[50%_40%] sm:object-[50%_16%] lg:object-[50%_50%]"
+                          />
+                        </picture>
+                      )}
+                      {/* Soft, bottom-anchored scrim: the media carries the section,
                           so the gradient only exists to keep the caption legible. */}
                       <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-5">
@@ -526,6 +596,19 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                           Enterprise cloud environments, dedicated workstations, and live 1-on-1 faculty coaching.
                         </p>
                       </div>
+
+                      {/* Pause / play — the clip loops, so WCAG 2.2.2 asks for a
+                          visible way to stop the motion. */}
+                      {heroVideoUrl && (
+                        <button
+                          type="button"
+                          onClick={toggleHeroVideo}
+                          aria-label={heroVideoPlaying ? 'Pause the hero video' : 'Play the hero video'}
+                          className="absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                        >
+                          {heroVideoPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                        </button>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 pt-1">

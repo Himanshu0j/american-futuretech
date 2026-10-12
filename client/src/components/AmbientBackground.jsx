@@ -25,8 +25,8 @@ export default function AmbientBackground() {
       </svg>
 
       {/* Delicate horizontal accent lines */}
-      <div className="absolute top-66 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#002060]/[0.05] to-transparent" />
-      <div className="absolute top-[1200px] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#002060]/[0.04] to-transparent" />
+      <div className="absolute top-66 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgb(var(--tw-ink-900))]/[0.05] to-transparent" />
+      <div className="absolute top-[1200px] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgb(var(--tw-ink-900))]/[0.04] to-transparent" />
     </div>
   );
 }

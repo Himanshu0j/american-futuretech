@@ -146,7 +146,7 @@ export default function LmsSettings() {
                   type="checkbox"
                   checked={settings.allowLessonPreview !== false}
                   onChange={(e) => set('allowLessonPreview', e.target.checked)}
-                  className="rounded border-white/20 bg-[#001C57]"
+                  className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
                 />
                 Allow free-preview lessons before enrollment
               </label>
@@ -155,7 +155,7 @@ export default function LmsSettings() {
                   type="checkbox"
                   checked={settings.showAnnouncementsInLms !== false}
                   onChange={(e) => set('showAnnouncementsInLms', e.target.checked)}
-                  className="rounded border-white/20 bg-[#001C57]"
+                  className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
                 />
                 Show announcements on the student dashboard
               </label>

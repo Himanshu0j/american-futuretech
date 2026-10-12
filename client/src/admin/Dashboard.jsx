@@ -151,7 +151,7 @@ export default function Dashboard() {
           return (
             <div
               key={idx}
-              className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] p-5 relative overflow-hidden transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_25px_rgba(14,165,233,0.15)] flex flex-col justify-between"
+              className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] p-5 relative overflow-hidden transition-all duration-300 hover:border-blue-400/40 hover:shadow-[0_0_25px_rgba(14,165,233,0.15)] flex flex-col justify-between"
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -184,7 +184,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Lead Conversion Funnel — all-time, straight from the leads table */}
-        <div className="lg:col-span-8 rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
+        <div className="lg:col-span-8 rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold font-heading text-white">
@@ -229,7 +229,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Distribution Donut */}
-        <div className="lg:col-span-4 rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
+        <div className="lg:col-span-4 rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] p-6 flex flex-col justify-between">
           <div className="mb-4">
             <h3 className="text-base font-bold font-heading text-white">
               Course Distribution
@@ -314,7 +314,7 @@ export default function Dashboard() {
       </div>
 
       {/* Real-Time Incoming Student Applications Feed */}
-      <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] p-6">
+      <div className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />

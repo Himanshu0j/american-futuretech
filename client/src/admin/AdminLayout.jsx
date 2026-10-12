@@ -116,10 +116,10 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#001845] text-slate-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-[rgb(var(--tw-ink-950))] text-slate-100 flex flex-col md:flex-row antialiased">
       
       {/* Mobile Topbar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#002060] border-b border-white/[0.08] sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[rgb(var(--tw-ink-900))] border-b border-white/[0.08] sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 border border-white/15 flex items-center justify-center font-bold text-white text-xs">
             AF
@@ -151,7 +151,7 @@ export default function AdminLayout() {
       <aside
         className={`${
           mobileOpen ? 'block' : 'hidden'
-        } md:flex flex-col flex-shrink-0 bg-[#002060] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
+        } md:flex flex-col flex-shrink-0 bg-[rgb(var(--tw-ink-900))] border-r border-white/[0.08] transition-all duration-300 z-40 fixed md:sticky top-0 h-screen ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -189,8 +189,8 @@ export default function AdminLayout() {
 
         {/* User Quick Info */}
         <div className="p-3 border-b border-white/[0.06]">
-          <div className={`p-2.5 rounded-xl bg-[#002060] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 rounded-lg bg-[#001C57] border border-white/10 flex items-center justify-center font-bold text-xs text-blue-400 flex-shrink-0">
+          <div className={`p-2.5 rounded-xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.06] flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
+            <div className="w-8 h-8 rounded-lg bg-[rgb(var(--tw-ink-800))] border border-white/10 flex items-center justify-center font-bold text-xs text-blue-400 flex-shrink-0">
               {user?.name ? user.name.charAt(0) : 'A'}
             </div>
             {!collapsed && (
@@ -286,7 +286,7 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header Bar */}
-        <header className="h-16 px-6 sm:px-8 bg-[#001845]/90 backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
+        <header className="h-16 px-6 sm:px-8 bg-[rgb(var(--tw-ink-950)/90%)] backdrop-blur-xl border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-2 text-left">
             <span className="text-xs font-mono text-slate-400">Executive /</span>
             <span className="text-sm font-semibold text-white">
@@ -304,7 +304,7 @@ export default function AdminLayout() {
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[#001C57] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-[rgb(var(--tw-ink-800))] text-slate-300 hover:text-white hover:border-white/20 flex items-center gap-1.5 transition-colors"
               title="Open the live site in a new tab (keeps you signed in here)"
             >
               <span>Landing Page</span>
@@ -314,12 +314,12 @@ export default function AdminLayout() {
         </header>
 
         {/* Body Content */}
-        <main ref={contentRef} className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#001845]">
+        <main ref={contentRef} className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[rgb(var(--tw-ink-950))]">
           {(() => {
             const matchedNav = navItems.find((n) => location.pathname.startsWith(n.path));
             if (matchedNav && !hasItemAccess(matchedNav)) {
               return (
-                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[#002060] border border-red-500/30 text-center space-y-4 shadow-2xl">
+                <div className="max-w-xl mx-auto mt-16 p-8 rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-red-500/30 text-center space-y-4 shadow-2xl">
                   <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
                     <ShieldAlert className="w-7 h-7" />
                   </div>

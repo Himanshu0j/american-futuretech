@@ -31,7 +31,7 @@ export default function PageBanner({ pageKey }) {
        of the top padding the page's own <main> already carries, so the strip
        does not leave a hollow band above the page heading. */
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-2 -mb-12 sm:-mb-16">
-      <div className="relative overflow-hidden rounded-3xl border border-[#1D4ED8]/30 bg-[#002060] shadow-xl h-40 sm:h-56 lg:h-64">
+      <div className="relative overflow-hidden rounded-3xl border border-[rgb(var(--tw-blue-700)/30%)] bg-[rgb(var(--tw-ink-900))] shadow-xl h-40 sm:h-56 lg:h-64">
         <img
           src={banner.image}
           alt={banner.alt || banner.caption || 'American FutureTech'}
@@ -40,7 +40,7 @@ export default function PageBanner({ pageKey }) {
           onError={() => setBroken(true)}
           className="h-full w-full object-cover"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#002060]/70 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgb(var(--tw-ink-900)/70%)] via-transparent to-transparent" />
         {banner.caption && (
           <p className="absolute bottom-4 left-5 right-5 text-white text-sm sm:text-base font-bold drop-shadow">
             {banner.caption}

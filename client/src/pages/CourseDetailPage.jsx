@@ -80,17 +80,17 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-[#002060] font-sans text-sm">
-        <div className="w-10 h-10 border-4 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin mb-4" />
+      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-[color:rgb(var(--tw-ink-900))] font-sans text-sm">
+        <div className="w-10 h-10 border-4 border-[rgb(var(--tw-ink-900)/20%)] border-t-[rgb(var(--tw-ink-900))] rounded-full animate-spin mb-4" />
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-[#F7F7F5] text-[#002060] flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F7F7F5] text-[color:rgb(var(--tw-ink-900))] flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-display font-bold mb-4">Program Not Found</h2>
-        <Link to="/courses" className="px-6 py-2.5 bg-[#1D4ED8] text-white rounded-full font-semibold hover:bg-[#1E40AF] transition-colors">
+        <Link to="/courses" className="px-6 py-2.5 bg-[rgb(var(--tw-blue-700))] text-white rounded-full font-semibold hover:bg-[rgb(var(--tw-blue-800))] transition-colors">
           Browse All Programs
         </Link>
       </div>
@@ -323,7 +323,7 @@ export default function CourseDetailPage() {
     ? eligibility.audiences
     : audiencePills.map((p) => p.tag);
   const audienceColors = [
-    'from-[#1D4ED8] to-[#3B82F6]',
+    'from-[rgb(var(--tw-blue-700))] to-[rgb(var(--tw-blue-500))]',
     'from-blue-600 to-blue-500',
     'from-red-500 to-red-500',
     'from-blue-600 to-blue-500',
@@ -362,36 +362,36 @@ export default function CourseDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased relative selection:bg-[#F00000] selection:text-[#002060]">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased relative selection:bg-[rgb(var(--tw-gold-500))] selection:text-[color:rgb(var(--tw-ink-900))]">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       <main className="pt-24 pb-10">
         {/* Breadcrumb strip */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6">
           <nav className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-            <Link to="/" className="hover:text-[#002060] transition-colors">Home</Link>
+            <Link to="/" className="hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/courses" className="hover:text-[#002060] transition-colors">Academy Programs</Link>
+            <Link to="/courses" className="hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">Academy Programs</Link>
             <span>/</span>
-            <span className="text-[#002060] font-semibold truncate">{course.title}</span>
+            <span className="text-[color:rgb(var(--tw-ink-900))] font-semibold truncate">{course.title}</span>
           </nav>
         </div>
 
         {/* 1. Course Hero Banner Container */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-          <div className="rounded-3xl bg-[#002060] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[#1D4ED8] relative overflow-hidden">
+          <div className="rounded-3xl bg-[rgb(var(--tw-ink-900))] text-white p-6 sm:p-7 lg:p-8 shadow-xl border border-[rgb(var(--tw-blue-700))] relative overflow-hidden">
             {/* Background ambient glow */}
-            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[#F00000]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[#1D4ED8]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 -mt-10 -mr-16 w-96 h-96 bg-[rgb(var(--tw-gold-500)/10%)] rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -mb-10 -ml-16 w-96 h-96 bg-[rgb(var(--tw-blue-700)/20%)] rounded-full blur-3xl pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start relative z-10">
               {/* Left Column: Course Header Info */}
               <div className="lg:col-span-8">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#002060] bg-[#FCE7E7] px-3.5 py-1.5 rounded-full shadow-xs">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-sand-200))] px-3.5 py-1.5 rounded-full shadow-xs">
                     {course.category || 'Career Program'}
                   </span>
-                  <span className="text-xs font-semibold text-[#FF6B6B] bg-[#F00000]/15 px-3.5 py-1.5 rounded-full border border-[#F00000]/40">
+                  <span className="text-xs font-semibold text-[color:rgb(var(--tw-gold-400))] bg-[rgb(var(--tw-gold-500)/15%)] px-3.5 py-1.5 rounded-full border border-[rgb(var(--tw-gold-500)/40%)]">
                     Dual US & Microsoft Accredited
                   </span>
                   <span className="text-xs font-medium text-blue-200 bg-blue-900/50 px-3 py-1 rounded-full border border-blue-500/30">
@@ -401,7 +401,7 @@ export default function CourseDetailPage() {
 
                 {/* Course image — a rectangle above the title, admin editable per course */}
                 {course.heroImage && (
-                  <div className="mb-5 overflow-hidden rounded-2xl border border-[#1D4ED8]/70 shadow-lg bg-[#002060]">
+                  <div className="mb-5 overflow-hidden rounded-2xl border border-[rgb(var(--tw-blue-700)/70%)] shadow-lg bg-[rgb(var(--tw-ink-900))]">
                     <img
                       src={course.heroImage}
                       alt={`${courseTitleText} course`}
@@ -420,11 +420,11 @@ export default function CourseDetailPage() {
                 </p>
 
                 {/* Key Metrics / Highlights Strip */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[#002060]/90 border border-[#1D4ED8] text-center sm:text-left backdrop-blur-xs mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-[rgb(var(--tw-ink-900)/90%)] border border-[rgb(var(--tw-blue-700))] text-center sm:text-left backdrop-blur-xs mb-8">
                   <div>
                     <div className="text-xs text-blue-300/80 font-medium">Duration</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Clock className="w-4 h-4 text-[#FF6B6B]" />
+                      <Clock className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                       {course.duration || '24 Weeks'}
                     </div>
                   </div>
@@ -438,14 +438,14 @@ export default function CourseDetailPage() {
                   <div>
                     <div className="text-xs text-blue-300/80 font-medium">Learning Format</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Zap className="w-4 h-4 text-[#FF6B6B]" />
+                      <Zap className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                       Live Interactive Lab
                     </div>
                   </div>
                   <div>
                     <div className="text-xs text-blue-300/80 font-medium">Placement Support</div>
                     <div className="text-base font-bold text-white flex items-center justify-center sm:justify-start gap-1.5 mt-1">
-                      <Briefcase className="w-4 h-4 text-[#FF6B6B]" />
+                      <Briefcase className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                       100% Career Assistance
                     </div>
                   </div>
@@ -456,7 +456,7 @@ export default function CourseDetailPage() {
                   <div className="text-xs font-bold text-blue-300/90 uppercase tracking-wider mb-3">Skills You Will Master:</div>
                   <div className="flex flex-wrap gap-2">
                     {(course.skills || ['Machine Learning', 'Deep Learning', 'PyTorch', 'Vector Databases', 'RAG Pipelines', 'Computer Vision', 'LLM Fine-Tuning', 'MLOps']).map((skill, i) => (
-                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[#002060] text-blue-100 text-xs font-semibold border border-[#1D4ED8] shadow-xs">
+                      <span key={i} className="px-3.5 py-1.5 rounded-full bg-[rgb(var(--tw-ink-900))] text-blue-100 text-xs font-semibold border border-[rgb(var(--tw-blue-700))] shadow-xs">
                         {skill}
                       </span>
                     ))}
@@ -471,7 +471,7 @@ export default function CourseDetailPage() {
                   <div className="mt-8 grid grid-cols-1 sm:grid-cols-5 gap-4">
                     {/* Credential card — the client asked for the wording to sit
                         centred under the partner mark. */}
-                    <div className="sm:col-span-2 rounded-2xl border border-[#1D4ED8]/60 bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col items-center justify-between gap-5 text-center">
+                    <div className="sm:col-span-2 rounded-2xl border border-[rgb(var(--tw-blue-700)/60%)] bg-white/[0.04] backdrop-blur-xs p-5 flex flex-col items-center justify-between gap-5 text-center">
                       <div className="min-h-20 flex items-center justify-center">
                         {heroCredential.logo && !credentialLogoBroken ? (
                           heroCredential.logoOnLightTile ? (
@@ -497,7 +497,7 @@ export default function CourseDetailPage() {
                             />
                           )
                         ) : (
-                          <Award className="w-9 h-9 text-[#FF6B6B]" />
+                          <Award className="w-9 h-9 text-[color:rgb(var(--tw-gold-400))]" />
                         )}
                       </div>
                       <div>
@@ -515,7 +515,7 @@ export default function CourseDetailPage() {
                       </div>
                     </div>
 
-                    <div className="sm:col-span-3 rounded-2xl border border-[#1D4ED8]/60 bg-[#002060]/70 overflow-hidden min-h-[170px] flex items-center justify-center">
+                    <div className="sm:col-span-3 rounded-2xl border border-[rgb(var(--tw-blue-700)/60%)] bg-[rgb(var(--tw-ink-900)/70%)] overflow-hidden min-h-[170px] flex items-center justify-center">
                       {heroCredential.certificates.length > 0 ? (
                         /* Up to three credentials — whatever artwork the admin
                            uploaded in the course CMS (Curriculum & Courses →
@@ -546,7 +546,7 @@ export default function CourseDetailPage() {
                         </div>
                       ) : (
                         <div className="text-center px-6 py-8">
-                          <Award className="w-10 h-10 text-[#FF6B6B] mx-auto mb-3" />
+                          <Award className="w-10 h-10 text-[color:rgb(var(--tw-gold-400))] mx-auto mb-3" />
                           <div className="text-sm font-bold text-white">
                             {isMicrosoftCredential ? 'Microsoft Certificate' : heroCredential.title}
                           </div>
@@ -568,23 +568,23 @@ export default function CourseDetailPage() {
                       Career Program — Register Now
                     </div>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-3xl font-display font-black text-[#002060]">${course.pricing?.discountedPrice || 499}</span>
+                      <span className="text-3xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">${course.pricing?.discountedPrice || 499}</span>
                       <span className="text-sm text-slate-500 line-through">${course.pricing?.basePrice || 1299}</span>
                     </div>
                     <div className="text-[11px] text-slate-600 font-semibold mt-1">
                       Group batch · per person · {course.duration || '6 Months'}
                     </div>
-                    <div className="text-xs text-[#1D4ED8] font-bold flex items-center gap-1.5 mt-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <div className="text-xs text-[color:rgb(var(--tw-blue-700))] font-bold flex items-center gap-1.5 mt-2">
+                      <Sparkles className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                       Save ${Math.max((course.pricing?.basePrice || 1299) - (course.pricing?.discountedPrice || 499), 0)} with institutional scholarship
                     </div>
                     {showPersonalizedMentor && (
-                      <div className="mt-3 p-3 rounded-xl bg-[#F2F6FF] border border-[#1D4ED8]/20">
+                      <div className="mt-3 p-3 rounded-xl bg-[#F2F6FF] border border-[rgb(var(--tw-blue-700)/20%)]">
                         <div className="flex items-baseline justify-between">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1D4ED8]">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[color:rgb(var(--tw-blue-700))]">
                             Personalized 1-on-1
                           </span>
-                          <span className="text-xl font-display font-black text-[#002060]">
+                          <span className="text-xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">
                             ${personalizedPrice.toLocaleString()}
                           </span>
                         </div>
@@ -596,12 +596,12 @@ export default function CourseDetailPage() {
                   </div>
 
                   {/* Flexible Deposit Box */}
-                  <div className="p-4 rounded-2xl bg-[#F2F6FF] border border-[#F00000]/60 mb-4 shadow-xs">
+                  <div className="p-4 rounded-2xl bg-[#F2F6FF] border border-[rgb(var(--tw-gold-500)/60%)] mb-4 shadow-xs">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#002060]">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))]">
                         Flexible Seat Deposit
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#FCE7E7] text-[#002060] text-[10px] font-black uppercase tracking-wider">
+                      <span className="px-2 py-0.5 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] text-[10px] font-black uppercase tracking-wider">
                         Most Popular
                       </span>
                     </div>
@@ -615,14 +615,14 @@ export default function CourseDetailPage() {
                     <div className="space-y-2.5">
                       <Link
                         to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
-                        className="w-full py-3 px-4 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 px-4 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                       >
                         Reserve Seat for $99
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link
                         to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
-                        className="w-full py-2.5 px-4 rounded-full border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
+                        className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
                       >
                         Reserve Seat for $499
                         <ArrowRight className="w-4 h-4" />
@@ -632,7 +632,7 @@ export default function CourseDetailPage() {
 
                   <Link
                     to={`/checkout?courseId=${course._id}&tier=full`}
-                    className="w-full py-2.5 px-4 rounded-full border-2 border-[#002060] hover:bg-[#002060] hover:text-white text-[#002060] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                    className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-900))] hover:text-white text-[color:rgb(var(--tw-ink-900))] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                   >
                     Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                   </Link>
@@ -640,7 +640,7 @@ export default function CourseDetailPage() {
                   {showPersonalizedMentor && (
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
-                      className="w-full py-2.5 px-4 rounded-full border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
+                      className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
                     >
                       Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
@@ -648,9 +648,9 @@ export default function CourseDetailPage() {
 
                   <button
                     onClick={() => setIsLeadModalOpen(true)}
-                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[#002060] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
+                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[color:rgb(var(--tw-ink-900))] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
                   >
-                    <PhoneCall className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <PhoneCall className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                     Talk to Admissions Counselor
                   </button>
 
@@ -673,7 +673,7 @@ export default function CourseDetailPage() {
                 <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
                 Choose Your Learning Experience
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
                 One curriculum. Two ways to learn.
               </h2>
               <p className="text-slate-600 text-base mt-3 leading-relaxed">
@@ -695,7 +695,7 @@ export default function CourseDetailPage() {
                   <div className="pointer-events-none absolute -top-16 -right-16 w-48 h-48 rounded-full bg-blue-200/30 blur-3xl" />
                   <div className="relative p-6 sm:p-7 flex flex-col flex-1">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-2xl font-bold font-display text-[#002060]">Group Classes</h3>
+                      <h3 className="text-2xl font-bold font-display text-[color:rgb(var(--tw-ink-900))]">Group Classes</h3>
                       <span className="px-3 py-1 rounded-full bg-blue-100 border border-blue-300 text-blue-800 text-[10px] font-black uppercase tracking-wider">
                         Cohort Track
                       </span>
@@ -731,14 +731,14 @@ export default function CourseDetailPage() {
               )}
 
               {showPersonalizedMentor && (
-                <div className="relative rounded-3xl bg-gradient-to-br from-[#002060] via-[#0A2A63] to-[#002060] text-white shadow-2xl border border-[#1D4ED8]/40 flex flex-col overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-52 h-52 bg-[#F00000]/20 rounded-full blur-3xl pointer-events-none" />
-                  <span className="absolute top-5 right-5 px-3 py-1 rounded-full bg-[#C81E1E] text-white text-[10px] font-black uppercase tracking-wider">
+                <div className="relative rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[rgb(var(--tw-ink-700))] to-[rgb(var(--tw-ink-900))] text-white shadow-2xl border border-[rgb(var(--tw-blue-700)/40%)] flex flex-col overflow-hidden">
+                  <div className="absolute -top-10 -right-10 w-52 h-52 bg-[rgb(var(--tw-gold-500)/20%)] rounded-full blur-3xl pointer-events-none" />
+                  <span className="absolute top-5 right-5 px-3 py-1 rounded-full bg-[rgb(var(--tw-gold-600))] text-white text-[10px] font-black uppercase tracking-wider">
                     Most Popular
                   </span>
                   <div className="p-6 sm:p-7 flex flex-col flex-1 relative">
                     <h3 className="text-2xl font-bold font-display text-white">Personalized Services</h3>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#FF6B6B] mt-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[color:rgb(var(--tw-gold-400))] mt-1">
                       Top Industry Mentor Track
                     </div>
 
@@ -752,7 +752,7 @@ export default function CourseDetailPage() {
                     <ul className="mt-6 space-y-3 text-sm text-slate-200 flex-1">
                       {personalizedFeatures.map((feature, i) => (
                         <li key={i} className="flex items-start gap-2.5">
-                          <Check className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
+                          <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0 mt-0.5" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -760,7 +760,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?tier=personalized&courseId=${course._id}`}
-                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#C81E1E] text-white hover:bg-[#C81E1E] text-sm font-bold transition-colors"
+                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[rgb(var(--tw-gold-600))] text-white hover:bg-[rgb(var(--tw-gold-600))] text-sm font-bold transition-colors"
                     >
                       Enroll in personalized classes <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -777,11 +777,11 @@ export default function CourseDetailPage() {
             before the support features. */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkle className="w-3.5 h-3.5 text-[#1D4ED8]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-[color:rgb(var(--tw-ink-900))] text-xs font-bold uppercase tracking-wider mb-2">
+              <Sparkle className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
               Hands-On Industry Toolkit
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#002060] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
               {toolsHeading} Tools Covered
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -793,7 +793,7 @@ export default function CourseDetailPage() {
               catalogue on /courses. Only the first pass is announced to screen
               readers; the repeats exist purely to make the loop seamless. */}
           <div className="relative overflow-hidden marquee-mask">
-            <div className="animate-infinite-marquee items-stretch gap-2.5 sm:gap-3 py-1">
+            <div className="animate-infinite-marquee-slow items-stretch gap-3 sm:gap-4 py-2">
               {toolTrack.map((tool, idx) => {
                 const toolName = tool.name || tool;
                 // A tool the admin added may have no logo anywhere — fall back to
@@ -810,24 +810,24 @@ export default function CourseDetailPage() {
                   <div
                     key={idx}
                     aria-hidden={idx >= toolsList.length ? 'true' : undefined}
-                    className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-white border border-slate-200/80 p-2.5 text-center shadow-xs hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center"
+                    className="group w-[128px] sm:w-[150px] shrink-0 rounded-xl bg-white border border-slate-200/80 p-3 text-center shadow-xs hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
+                    <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-2 group-hover:bg-slate-100/80 group-hover:scale-105 transition-all duration-200">
                       {iconPath ? (
                         <img
                           src={iconPath}
                           alt={toolName}
-                          className="w-6 h-6 object-contain"
+                          className="w-8 h-8 object-contain"
                           loading="lazy"
                         />
                       ) : (
-                        <span className="text-[11px] font-black text-[#002060] font-display tracking-tight">
+                        <span className="text-xs font-black text-[color:rgb(var(--tw-ink-900))] font-display tracking-tight">
                           {initials}
                         </span>
                       )}
                     </div>
 
-                    <h3 className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-[#002060] tracking-tight leading-tight truncate w-full group-hover:text-[#1D4ED8] transition-colors">
+                    <h3 className="mt-2 text-[11px] sm:text-xs font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight leading-tight w-full group-hover:text-[color:rgb(var(--tw-blue-700))] transition-colors">
                       {toolName}
                     </h3>
                   </div>
@@ -844,11 +844,11 @@ export default function CourseDetailPage() {
         <section className="bg-slate-50/70 border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FCE7E7] text-[#002060] text-xs font-bold uppercase tracking-wider mb-3">
-                <Award className="w-3.5 h-3.5 text-[#1D4ED8]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] text-xs font-bold uppercase tracking-wider mb-3">
+                <Award className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                 The American FutureTech Advantage
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight max-w-3xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight max-w-3xl mx-auto">
                 Why Get {course.title} Certification From American FutureTech
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -898,8 +898,8 @@ export default function CourseDetailPage() {
                       </p>
 
                       <div className="mt-auto pt-5">
-                        <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[#1D4ED8]">
-                          <CheckCircle2 className="w-4 h-4 text-[#1D4ED8]" />
+                        <div className="pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-[color:rgb(var(--tw-blue-700))]">
+                          <CheckCircle2 className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))]" />
                           <span>Guaranteed Standard</span>
                         </div>
                       </div>
@@ -920,7 +920,7 @@ export default function CourseDetailPage() {
                 <Users className="w-3.5 h-3.5 text-blue-700" />
                 {eligibility.eyebrow || 'Eligibility & Candidate Profile'}
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight mb-4">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight mb-4">
                 {eligibility.title || 'Who Can Apply for this Course?'}
               </h2>
               <p className="text-slate-600 text-base mb-8 leading-relaxed">
@@ -931,9 +931,9 @@ export default function CourseDetailPage() {
                 {eligibilityPoints.map((point, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[#002060]/40 transition-colors"
+                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[rgb(var(--tw-ink-900)/40%)] transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-[#002060] text-[#FF6B6B] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    <div className="w-8 h-8 rounded-xl bg-[rgb(var(--tw-ink-900))] text-[color:rgb(var(--tw-gold-400))] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
                       {idx + 1}
                     </div>
                     <p className="text-sm text-slate-700 leading-relaxed font-medium pt-0.5">
@@ -946,9 +946,9 @@ export default function CourseDetailPage() {
 
             {/* Right: Globally Recognised Certification Card + Audience Pills */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-3xl bg-gradient-to-br from-[#002060] via-[#1f4223] to-[#002060] text-white p-6 sm:p-6 shadow-2xl border border-[#1D4ED8] relative overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[#F00000]/20 rounded-full blur-2xl pointer-events-none" />
-                <div className="w-12 h-12 rounded-2xl bg-[#F00000]/20 border border-[#F00000]/40 text-[#FF6B6B] flex items-center justify-center mb-5">
+              <div className="rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[#1f4223] to-[rgb(var(--tw-ink-900))] text-white p-6 sm:p-6 shadow-2xl border border-[rgb(var(--tw-blue-700))] relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[rgb(var(--tw-gold-500)/20%)] rounded-full blur-2xl pointer-events-none" />
+                <div className="w-12 h-12 rounded-2xl bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-gold-400))] flex items-center justify-center mb-5">
                   <Award className="w-7 h-7" />
                 </div>
                 <h3 className="text-2xl font-bold font-display text-white mb-3">
@@ -958,10 +958,10 @@ export default function CourseDetailPage() {
                   {eligibility.certificationText || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.'}
                 </p>
 
-                <div className="space-y-2.5 text-xs text-blue-200 font-medium pt-2 border-t border-[#1D4ED8]">
+                <div className="space-y-2.5 text-xs text-blue-200 font-medium pt-2 border-t border-[rgb(var(--tw-blue-700))]">
                   {certificationPoints.map((point, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-[#FF6B6B] shrink-0" />
+                      <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
                       <span>{point}</span>
                     </div>
                   ))}
@@ -995,11 +995,11 @@ export default function CourseDetailPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Centered like every other section heading on this page */}
             <div className="flex flex-col items-center text-center gap-1 mb-10 pb-6 border-b border-slate-200">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-[#002060] text-xs font-bold uppercase tracking-wider mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-[color:rgb(var(--tw-ink-900))] text-xs font-bold uppercase tracking-wider mb-2">
                 <BookOpen className="w-3.5 h-3.5" />
                 Structured Syllabus
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060]">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))]">
                 {course.title} Course Curriculum
               </h2>
               <p className="text-slate-600 text-sm mt-1">
@@ -1014,18 +1014,18 @@ export default function CourseDetailPage() {
                 return (
                   <div
                     key={mod._id || index}
-                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[#002060]/40"
+                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[rgb(var(--tw-ink-900)/40%)]"
                   >
                     <button
                       onClick={() => setOpenModuleIndex(isOpen ? -1 : index)}
                       className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="w-11 h-11 rounded-xl bg-[#FCE7E7] text-[#002060] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        <span className="w-11 h-11 rounded-xl bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
                           {index + 1 < 10 ? `0${index + 1}` : index + 1}
                         </span>
                         <div className="min-w-0">
-                          <h3 className="text-base sm:text-lg font-bold text-[#002060] truncate leading-tight">
+                          <h3 className="text-base sm:text-lg font-bold text-[color:rgb(var(--tw-ink-900))] truncate leading-tight">
                             {mod.title}
                           </h3>
                           <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
@@ -1033,7 +1033,7 @@ export default function CourseDetailPage() {
                             {mod.quiz && (
                               <>
                                 <span>•</span>
-                                <span className="text-[#1D4ED8] font-semibold">1 Assessment</span>
+                                <span className="text-[color:rgb(var(--tw-blue-700))] font-semibold">1 Assessment</span>
                               </>
                             )}
                           </div>
@@ -1056,13 +1056,13 @@ export default function CourseDetailPage() {
                               className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <Play className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
+                                <Play className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))] shrink-0" />
                                 <span className="truncate font-medium">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2.5 shrink-0 text-slate-500">
                                 <span>{lesson.videoDuration || '45m'}</span>
                                 {lesson.isPreview && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FCE7E7] text-[#002060]">
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))]">
                                     Free Preview
                                   </span>
                                 )}
@@ -1086,7 +1086,7 @@ export default function CourseDetailPage() {
               <Layers className="w-3.5 h-3.5 text-blue-700" />
               Build &amp; Showcase
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[#002060] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
               Capstone Projects
             </h2>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -1112,7 +1112,7 @@ export default function CourseDetailPage() {
                     {proj.tag}
                   </span>
 
-                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[#002060] transition-colors font-display leading-snug line-clamp-1">
+                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[color:rgb(var(--tw-ink-900))] transition-colors font-display leading-snug line-clamp-1">
                     {proj.title}
                   </h3>
 
@@ -1147,7 +1147,7 @@ export default function CourseDetailPage() {
                 <Briefcase className="w-3.5 h-3.5 text-red-700" />
                 {careerRolesEyebrow}
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
                 {careerRolesHeading}
               </h2>
               <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -1159,12 +1159,12 @@ export default function CourseDetailPage() {
               {careerRoles.map((role, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[#002060]/40 transition-all flex items-center gap-3.5 group"
+                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-[rgb(var(--tw-ink-900)/40%)] transition-all flex items-center gap-3.5 group"
                 >
                   <div className={`w-8 h-8 rounded-full bg-brand-700 bg-gradient-to-br ${role.color || 'from-brand-600 to-ink-900'} text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform`}>
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
-                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[#002060] transition-colors">
+                  <span className="text-sm font-bold text-slate-800 leading-tight group-hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">
                     {role.name}
                   </span>
                 </div>
@@ -1180,7 +1180,7 @@ export default function CourseDetailPage() {
               <Award className="w-3.5 h-3.5 text-blue-700" />
               {certificateEyebrow}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#002060] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
               {certificateHeading}
             </h2>
             <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -1268,7 +1268,7 @@ export default function CourseDetailPage() {
                     ) : (
                       <Link
                         to="/certificate/AFT-CERT-AI9821"
-                        className="text-[#002060] font-semibold hover:underline flex items-center gap-1"
+                        className="text-[color:rgb(var(--tw-ink-900))] font-semibold hover:underline flex items-center gap-1"
                       >
                         Sample <ExternalLink className="w-3 h-3" />
                       </Link>
@@ -1282,16 +1282,16 @@ export default function CourseDetailPage() {
 
         {/* 8. Register Now Bottom Cockpit (Matching user request: Register now ka niche option) */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002060] via-[#002060] to-[#001C57] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[#1D4ED8]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-ink-800))] text-white p-6 sm:p-6 lg:p-8 shadow-2xl border border-[rgb(var(--tw-blue-700))]">
             {/* Ambient background orbs */}
-            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[#F00000]/15 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[#1D4ED8]/25 blur-3xl" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-[rgb(var(--tw-gold-500)/15%)] blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-[rgb(var(--tw-blue-700)/25%)] blur-3xl" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center relative z-10">
               {/* Left Column: Register Now Details & Checklist */}
               <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 text-[#FF6B6B] text-xs font-bold uppercase tracking-wider mb-5">
-                  <span className="w-2 h-2 rounded-full bg-[#F00000] animate-ping" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-gold-400))] text-xs font-bold uppercase tracking-wider mb-5">
+                  <span className="w-2 h-2 rounded-full bg-[rgb(var(--tw-gold-500))] animate-ping" />
                   Limited Seats Available for Next Cohort
                 </div>
 
@@ -1306,20 +1306,20 @@ export default function CourseDetailPage() {
                 {/* 3 Checklist Items */}
                 <div className="space-y-3.5 mb-8">
                   <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#FF6B6B]" />
+                    <span className="w-7 h-7 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                     </span>
                     <span>Complete the course successfully with 1-on-1 mentor guidance</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#FF6B6B]" />
+                    <span className="w-7 h-7 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                     </span>
                     <span>Receive your accredited American FutureTech completion diploma</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-blue-100 font-medium">
-                    <span className="w-7 h-7 rounded-full bg-[#F00000]/20 border border-[#F00000]/40 flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 text-[#FF6B6B]" />
+                    <span className="w-7 h-7 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                     </span>
                     <span>Eligible learners receive official Microsoft certification alignment</span>
                   </div>
@@ -1327,7 +1327,7 @@ export default function CourseDetailPage() {
 
                 {/* Post-Registration Guarantee Note */}
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-start gap-3 text-xs text-blue-200/90 max-w-xl">
-                  <Mail className="w-4 h-4 text-[#FF6B6B] shrink-0 mt-0.5" />
+                  <Mail className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-white">After registration:</strong> You will immediately receive a welcome orientation email, syllabus kit, and direct invite to the private cohort Slack & virtual lab.
                   </p>
@@ -1339,7 +1339,7 @@ export default function CourseDetailPage() {
                 <div className="rounded-3xl bg-white text-slate-800 p-5 sm:p-6 shadow-2xl border border-white/20">
                   <div className="text-center mb-6">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Career Program · Register Now</span>
-                    <div className="text-3xl font-display font-black text-[#002060] mt-1">
+                    <div className="text-3xl font-display font-black text-[color:rgb(var(--tw-ink-900))] mt-1">
                       ${course.pricing?.discountedPrice || 499}
                       <span className="text-sm font-bold text-slate-500"> / person</span>
                     </div>
@@ -1351,7 +1351,7 @@ export default function CourseDetailPage() {
                   <div className="space-y-3.5">
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
-                      className="w-full py-4 px-6 rounded-2xl bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                      className="w-full py-4 px-6 rounded-2xl bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     >
                       Reserve Seat — $99
                       <ArrowRight className="w-5 h-5" />
@@ -1359,7 +1359,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Reserve Seat — $499
                       <ArrowRight className="w-4 h-4" />
@@ -1367,14 +1367,14 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=full`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#002060] hover:bg-[#002060] hover:text-white text-[#002060] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-900))] hover:text-white text-[color:rgb(var(--tw-ink-900))] font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
                     </Link>
 
                     <Link
                       to={`/checkout?courseId=${course._id}&tier=personalized`}
-                      className="w-full py-3 px-6 rounded-2xl border-2 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-6 rounded-2xl border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
                       Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
                     </Link>
@@ -1383,13 +1383,13 @@ export default function CourseDetailPage() {
                       onClick={() => setIsLeadModalOpen(true)}
                       className="w-full py-3 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs text-center transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <PhoneCall className="w-4 h-4 text-[#1D4ED8]" />
+                      <PhoneCall className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))]" />
                       Talk to an Admissions Advisor
                     </button>
                   </div>
 
                   <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    <Shield className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <Shield className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                     <span>256-Bit SSL Encrypted & Money-Back Guaranteed</span>
                   </div>
                 </div>

@@ -192,7 +192,7 @@ export default function QuizEditor({ open, quiz, courseId, moduleId, defaults = 
 
         <div className="space-y-3">
           {draft.questions.map((question, qIndex) => (
-            <div key={qIndex} className="rounded-xl border border-white/[0.08] bg-[#001C57]/60 p-4 space-y-3">
+            <div key={qIndex} className="rounded-xl border border-white/[0.08] bg-[rgb(var(--tw-ink-800)/60%)] p-4 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-bold text-slate-200">Question {qIndex + 1}</span>
                 {draft.questions.length > 1 && (
@@ -267,7 +267,7 @@ export default function QuizEditor({ open, quiz, courseId, moduleId, defaults = 
             type="checkbox"
             checked={draft.isPublished}
             onChange={(e) => set('isPublished', e.target.checked)}
-            className="rounded border-white/20 bg-[#001C57]"
+            className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
           />
           Published to students
         </label>

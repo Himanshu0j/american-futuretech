@@ -33,8 +33,8 @@ function LocalTime({ timeZone, label }) {
 
   return (
     <span className="flex items-center gap-2" title={label || 'Local time'}>
-      <Clock className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0" />
-      <span className="text-[#FF6B6B] font-semibold">{label || 'Sheridan, Wyoming — Local Time'}:</span>
+      <Clock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
+      <span className="text-[color:rgb(var(--tw-gold-400))] font-semibold">{label || 'Sheridan, Wyoming — Local Time'}:</span>
       <span className="font-mono text-[#FFD9D9]">{formatted}</span>
     </span>
   );
@@ -126,12 +126,12 @@ export default function Footer({ onOpenLeadModal }) {
   };
 
   return (
-    <footer id="contact" className="border-t border-[#1D4ED8] bg-[#002060] pt-16 pb-12 text-[#FFD9D9]/80 text-sm relative z-10">
+    <footer id="contact" className="border-t border-[rgb(var(--tw-blue-700))] bg-[rgb(var(--tw-ink-900))] pt-16 pb-12 text-[#FFD9D9]/80 text-sm relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Alumni Hiring Network Strip */}
         {footer.hiringStrip?.enabled !== false && (
-          <div id="placement" className="pb-12 border-b border-[#1D4ED8]/80">
-            <p className="text-[11px] uppercase tracking-widest font-mono font-bold text-[#FF6B6B] mb-6 text-center">
+          <div id="placement" className="pb-12 border-b border-[rgb(var(--tw-blue-700)/80%)]">
+            <p className="text-[11px] uppercase tracking-widest font-mono font-bold text-[color:rgb(var(--tw-gold-400))] mb-6 text-center">
               {footer.hiringStrip?.text}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-6">
@@ -177,8 +177,8 @@ export default function Footer({ onOpenLeadModal }) {
             </Link>
             <p className="text-xs text-[#FFD9D9]/80 leading-relaxed font-normal max-w-md">{footer.description}</p>
             {footer.badgeText && (
-              <div className="flex items-center gap-2 text-xs text-[#FF6B6B] font-semibold pt-1">
-                <Award className="w-4 h-4 text-[#FF6B6B] shrink-0" />
+              <div className="flex items-center gap-2 text-xs text-[color:rgb(var(--tw-gold-400))] font-semibold pt-1">
+                <Award className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
                 <span>{footer.badgeText}</span>
               </div>
             )}
@@ -186,7 +186,7 @@ export default function Footer({ onOpenLeadModal }) {
 
           {columns.map((column) => (
             <div key={column._id || column.title} className="space-y-3">
-              <h4 className="text-xs font-bold text-[#FF6B6B] uppercase tracking-wider font-heading">
+              <h4 className="text-xs font-bold text-[color:rgb(var(--tw-gold-400))] uppercase tracking-wider font-heading">
                 {column.title}
               </h4>
               <ul className="space-y-2.5 text-xs text-[#FFD9D9]/80">
@@ -199,20 +199,20 @@ export default function Footer({ onOpenLeadModal }) {
         </div>
 
         {/* Contact block — address, phone, email, socials, CTA */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 py-8 border-t border-[#1D4ED8]/60">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 py-8 border-t border-[rgb(var(--tw-blue-700)/60%)]">
           <div className="space-y-2.5 text-xs text-[#FFD9D9]/80 lg:col-span-2">
             <div className="flex items-start gap-2">
-              <MapPin className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0 mt-0.5" />
+              <MapPin className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))] shrink-0 mt-0.5" />
               <span>{company.address}</span>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <span className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0" />
+                <Phone className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
                 <a href={company.phoneHref} className="hover:text-white transition-colors">{company.phone}</a>
               </span>
               {emails.map((email) => (
                 <span key={email} className="flex items-center gap-2">
-                  <Mail className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0" />
+                  <Mail className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
                   <a href={`mailto:${email}`} className="hover:text-white transition-colors break-all">{email}</a>
                 </span>
               ))}
@@ -229,7 +229,7 @@ export default function Footer({ onOpenLeadModal }) {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={label}
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#FFD9D9] hover:text-[#002060] hover:bg-[#F00000] transition-colors"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#FFD9D9] hover:text-[color:rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-gold-500))] transition-colors"
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </a>
@@ -243,14 +243,14 @@ export default function Footer({ onOpenLeadModal }) {
               footer.cta.url ? (
                 <a
                   href={footer.cta.url}
-                  className="text-xs font-bold text-white bg-[#C81E1E] hover:bg-[#C81E1E] px-3.5 py-2 rounded-full transition-colors"
+                  className="text-xs font-bold text-white bg-[rgb(var(--tw-gold-600))] hover:bg-[rgb(var(--tw-gold-600))] px-3.5 py-2 rounded-full transition-colors"
                 >
                   {footer.cta.label}
                 </a>
               ) : (
                 <button
                   onClick={onOpenLeadModal}
-                  className="text-xs font-bold text-white bg-[#C81E1E] hover:bg-[#C81E1E] px-3.5 py-2 rounded-full transition-colors cursor-pointer"
+                  className="text-xs font-bold text-white bg-[rgb(var(--tw-gold-600))] hover:bg-[rgb(var(--tw-gold-600))] px-3.5 py-2 rounded-full transition-colors cursor-pointer"
                 >
                   {footer.cta.label}
                 </button>
@@ -260,7 +260,7 @@ export default function Footer({ onOpenLeadModal }) {
         </div>
 
         {/* Bottom copyright & legal links */}
-        <div className="pt-8 border-t border-[#1D4ED8]/80 flex flex-col sm:flex-row items-center justify-between text-xs text-[#FFD9D9]/70 gap-4">
+        <div className="pt-8 border-t border-[rgb(var(--tw-blue-700)/80%)] flex flex-col sm:flex-row items-center justify-between text-xs text-[#FFD9D9]/70 gap-4">
           <div>{footer.copyrightText}</div>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             {legalLinks.map((link, index) => (

@@ -376,7 +376,7 @@ export default function MediaLibrary() {
             role="dialog"
             aria-modal="true"
             aria-label={`Delete ${pendingDelete.filename}`}
-            className="w-full max-w-lg rounded-2xl border border-slate-800 bg-[#002060] p-5 space-y-4 shadow-2xl"
+            className="w-full max-w-lg rounded-2xl border border-slate-800 bg-[rgb(var(--tw-ink-900))] p-5 space-y-4 shadow-2xl"
           >
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-sm font-bold text-white font-heading flex items-center gap-2">

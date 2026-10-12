@@ -95,14 +95,14 @@ export default function JobCard({
             fallbackText={job.company || 'FT'}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 p-2.5 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-200"
             imageClassName="w-full h-full object-contain rounded-xl"
-            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[#002060] to-[#1D4ED8] text-[#FF6B6B] font-black text-lg flex items-center justify-center"
+            fallbackClassName="w-full h-full rounded-xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-gold-400))] font-black text-lg flex items-center justify-center"
           />
 
           {/* Job Title & Structured Tags Row */}
           <div className="space-y-2 flex-1">
             <Link
               to={`/jobs/${jobId}`}
-              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[#002060] dark:group-hover:text-[#FF6B6B] transition-colors leading-snug block"
+              className="text-lg sm:text-xl font-display font-bold text-slate-900 dark:text-white group-hover:text-[color:rgb(var(--tw-ink-900))] dark:group-hover:text-[color:rgb(var(--tw-gold-400))] transition-colors leading-snug block"
             >
               {job.title}
             </Link>
@@ -142,7 +142,7 @@ export default function JobCard({
 
         {/* Right: Compensation & Actively Hiring Badge */}
         <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-1.5 shrink-0 pt-1 md:pt-0">
-          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[#002060] dark:text-[#FF6B6B] font-mono tracking-tight bg-[#FCE7E7]/70 dark:bg-blue-950/60 px-3.5 py-1.5 rounded-xl border border-[#F00000]/60 dark:border-blue-800 shadow-2xs">
+          <div className="inline-flex items-center text-xs sm:text-sm font-bold text-[color:rgb(var(--tw-ink-900))] dark:text-[color:rgb(var(--tw-gold-400))] font-mono tracking-tight bg-[rgb(var(--tw-sand-200)/70%)] dark:bg-blue-950/60 px-3.5 py-1.5 rounded-xl border border-[rgb(var(--tw-gold-500)/60%)] dark:border-blue-800 shadow-2xs">
             {formatSalary() || 'Salary on request'}
           </div>
           <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-blue-800 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-950/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-semibold">
@@ -155,12 +155,12 @@ export default function JobCard({
       {/* 2. Recommended Course Track Banner */}
       {(job.recommendedCourseTitle || (job.recommendedCourse && job.recommendedCourse.title) || job.course) && (
         <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200">
-          <GraduationCap className="w-4 h-4 text-[#1D4ED8] dark:text-[#FF6B6B] shrink-0" />
+          <GraduationCap className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))] dark:text-[color:rgb(var(--tw-gold-400))] shrink-0" />
           <span className="font-semibold text-slate-500 dark:text-slate-400">Recommended Track:</span>
           {job.recommendedCourse?.slug ? (
             <Link
               to={`/courses/${job.recommendedCourse.slug}`}
-              className="font-bold text-[#002060] dark:text-[#FF6B6B] hover:underline truncate"
+              className="font-bold text-[color:rgb(var(--tw-ink-900))] dark:text-[color:rgb(var(--tw-gold-400))] hover:underline truncate"
             >
               {job.recommendedCourse.title || job.recommendedCourseTitle}
             </Link>
@@ -220,13 +220,13 @@ export default function JobCard({
 
           <button
             onClick={handleApplyClick}
-            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[#002060] hover:bg-[#1D4ED8] text-[#FFD9D9] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 sm:flex-none py-2.5 px-6 rounded-xl bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-blue-700))] text-[#FFD9D9] font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>APPLY NOW</span>
             {job.applyLink ? (
-              <ExternalLink className="w-3.5 h-3.5 text-[#FF6B6B]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
             ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-[#FF6B6B]" />
+              <ChevronRight className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
             )}
           </button>
         </div>

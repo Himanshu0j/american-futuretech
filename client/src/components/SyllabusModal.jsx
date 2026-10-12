@@ -57,16 +57,16 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
           </button>
 
           <div className="flex items-center gap-2 mb-2.5">
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#FCE7E7] text-[#002060]">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))]">
               {course.badge || 'Official Curriculum'}
             </span>
             <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-              <Clock className="w-3.5 h-3.5 text-[#1D4ED8]" />
+              <Clock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
               {course.duration || '6 Months'} Intensive
             </span>
           </div>
 
-          <h3 className="text-2xl font-display font-bold tracking-tight text-[#002060]">
+          <h3 className="text-2xl font-display font-bold tracking-tight text-[color:rgb(var(--tw-ink-900))]">
             {course.title}
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
@@ -77,14 +77,14 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
         {/* Scrollable Curriculum Content */}
         <div className="p-6 sm:p-6 overflow-y-auto space-y-4 flex-1 text-left">
           {/* Key Highlights */}
-          <div className="p-5 rounded-2xl bg-[#F2F6FF] border border-[#F00000]/40">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#002060] mb-3">
+          <div className="p-5 rounded-2xl bg-[#F2F6FF] border border-[rgb(var(--tw-gold-500)/40%)]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))] mb-3">
               Track Highlights
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {course.highlights?.map((h, i) => (
                 <div key={i} className="flex items-center gap-2.5 text-xs text-slate-700">
-                  <CheckCircle2 className="w-4 h-4 text-[#1D4ED8] flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))] flex-shrink-0" />
                   <span>{h}</span>
                 </div>
               ))}
@@ -100,10 +100,10 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
             {modules.map((mod) => (
               <div
                 key={mod.moduleNumber}
-                className="p-4 rounded-xl bg-white border border-slate-200 hover:border-[#002060]/30 transition-colors shadow-xs"
+                className="p-4 rounded-xl bg-white border border-slate-200 hover:border-[rgb(var(--tw-ink-900)/30%)] transition-colors shadow-xs"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-[#002060]">
+                  <span className="text-xs font-bold text-[color:rgb(var(--tw-ink-900))]">
                     Module {mod.moduleNumber}
                   </span>
                   <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-medium">
@@ -116,7 +116,7 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
                 <div className="space-y-1">
                   {mod.topics?.map((topic, ti) => (
                     <div key={ti} className="flex items-center gap-2 text-xs text-slate-600">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--tw-blue-600))]" />
                       <span>{topic}</span>
                     </div>
                   ))}
@@ -137,7 +137,7 @@ export default function SyllabusModal({ isOpen, onClose, course, onApplyNow }) {
               onClose();
               onApplyNow(course);
             }}
-            className="w-full sm:w-auto text-xs py-2.5 px-7 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-bold cursor-pointer flex items-center justify-center gap-2 shadow-sm transition-colors"
+            className="w-full sm:w-auto text-xs py-2.5 px-7 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-bold cursor-pointer flex items-center justify-center gap-2 shadow-sm transition-colors"
           >
             <span>Register Now — $499 / Program</span>
             <ArrowRight className="w-3.5 h-3.5" />

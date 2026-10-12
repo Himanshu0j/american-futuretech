@@ -91,12 +91,12 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
         {isSuccess ? (
           /* Thank You / Confetti State */
           <div className="p-6 sm:p-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-[#FCE7E7] border border-[#F00000] flex items-center justify-center text-[#002060] mx-auto shadow-md animate-bounce">
-              <CheckCircle className="w-8 h-8 text-[#1D4ED8]" />
+            <div className="w-12 h-12 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500))] flex items-center justify-center text-[color:rgb(var(--tw-ink-900))] mx-auto shadow-md animate-bounce">
+              <CheckCircle className="w-8 h-8 text-[color:rgb(var(--tw-blue-700))]" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-display font-bold tracking-tight text-[#002060]">
+              <h3 className="text-xl sm:text-2xl font-display font-bold tracking-tight text-[color:rgb(var(--tw-ink-900))]">
                 Application Received!
               </h3>
               <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
@@ -111,13 +111,13 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
               </div>
               <div className="flex justify-between">
                 <span>Admissions Status:</span>
-                <span className="text-[#1D4ED8] font-semibold">Priority Queue Active</span>
+                <span className="text-[color:rgb(var(--tw-blue-700))] font-semibold">Priority Queue Active</span>
               </div>
             </div>
 
             <button
               onClick={resetAndClose}
-              className="w-full py-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-sm font-bold shadow-sm transition-colors cursor-pointer"
+              className="w-full py-3 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-sm font-bold shadow-sm transition-colors cursor-pointer"
             >
               Done
             </button>
@@ -126,11 +126,11 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
           /* Lead Capture Form */
           <div className="p-6 sm:p-6 text-left">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-semibold mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-ink-900))] text-xs font-semibold mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                 <span>Priority 2026 Admissions</span>
               </div>
-              <h3 className="text-2xl font-display font-bold tracking-tight text-[#002060]">
+              <h3 className="text-2xl font-display font-bold tracking-tight text-[color:rgb(var(--tw-ink-900))]">
                 Apply for Certification
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
@@ -158,7 +158,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                     placeholder="e.g. Alexander Vance"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))] transition-all"
                   />
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                       placeholder="alex@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))] transition-all"
                     />
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                       placeholder="+1 (555) 000-0000"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))] transition-all"
                     />
                   </div>
                 </div>
@@ -209,7 +209,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                   aria-label="Select program track"
                   value={targetCourse}
                   onChange={(e) => setTargetCourse(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))] transition-all"
                 >
                   {courses.map((c) => (
                     <option key={c._id} value={c._id} className="bg-white text-slate-900">
@@ -236,7 +236,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
                     aria-label="Preferred batch timing"
                     value={preferredBatch}
                     onChange={(e) => setPreferredBatch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#002060] focus:ring-1 focus:ring-[#002060] transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:ring-1 focus:ring-[rgb(var(--tw-ink-900))] transition-all"
                   >
                     <option value="Weekend Live (2 Hours)" className="bg-white text-slate-900">Weekend Live Classes (2 Hours Each)</option>
                     <option value="Morning Batch" className="bg-white text-slate-900">Morning Weekday Batch</option>
@@ -248,7 +248,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
 
               {/* Security guarantee */}
               <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
-                <Lock className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                <Lock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
                 <span>Zero spam guarantee. Your details are strictly confidential.</span>
               </div>
 
@@ -256,7 +256,7 @@ export default function LeadModal({ isOpen, onClose, preselectedCourse, courses 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 mt-3 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-sm font-bold shadow-sm transition-colors cursor-pointer group disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3.5 mt-3 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-sm font-bold shadow-sm transition-colors cursor-pointer group disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <span>Securing Seat...</span>

@@ -41,35 +41,75 @@ export default {
            Brand blue #002060 and brand red #F00000 were sampled from
            client/public/images/logo-horizontal.png. The site is blue + red
            on white; retuning the palette starts here.
+
+           ── Admin → Settings → Appearance ────────────────────────
+           Every brand ramp below resolves through a "R G B" channel
+           variable declared in client/src/index.css (`--tw-*`). The
+           defaults there equal the hexes shown in these comments, so an
+           unthemed build is pixel-identical to the old hardcoded one —
+           but the CMS can now rewrite a channel (see
+           client/src/lib/siteTheme.js) and the WHOLE site follows: all
+           `bg-blue-600`, `text-slate-600`, `border-gold-500`… utilities,
+           including `/opacity` variants, keep working because Tailwind
+           substitutes the channel into `rgb(... / <alpha-value>)`.
         ---------------------------------------------------------*/
         ink: {
-          950: '#001845',
-          900: '#002060',
-          800: '#001C57',
-          700: '#0A2A63',
-          600: '#0B3A80',
+          950: 'rgb(var(--tw-ink-950) / <alpha-value>)',   // #001845
+          900: 'rgb(var(--tw-ink-900) / <alpha-value>)',   // #002060
+          800: 'rgb(var(--tw-ink-800) / <alpha-value>)',   // #001C57
+          700: 'rgb(var(--tw-ink-700) / <alpha-value>)',   // #0A2A63
+          600: 'rgb(var(--tw-ink-600) / <alpha-value>)',   // #0B3A80
         },
         brand: {
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-          800: '#1E40AF',
+          50: 'rgb(var(--tw-brand-50) / <alpha-value>)',    // #EFF6FF
+          100: 'rgb(var(--tw-brand-100) / <alpha-value>)',  // #DBEAFE
+          400: 'rgb(var(--tw-brand-400) / <alpha-value>)',  // #60A5FA
+          500: 'rgb(var(--tw-brand-500) / <alpha-value>)',  // #3B82F6
+          600: 'rgb(var(--tw-brand-600) / <alpha-value>)',  // #2563EB
+          700: 'rgb(var(--tw-brand-700) / <alpha-value>)',  // #1D4ED8
+          800: 'rgb(var(--tw-brand-800) / <alpha-value>)',  // #1E40AF
         },
         gold: {
-          100: '#FDECEC',
-          200: '#F9C9C9',
-          300: '#F5AFAF',
-          400: '#FF6B6B',
-          500: '#F00000',
-          600: '#C81E1E',
+          100: 'rgb(var(--tw-gold-100) / <alpha-value>)',   // #FDECEC
+          200: 'rgb(var(--tw-gold-200) / <alpha-value>)',   // #F9C9C9
+          300: 'rgb(var(--tw-gold-300) / <alpha-value>)',   // #F5AFAF
+          400: 'rgb(var(--tw-gold-400) / <alpha-value>)',   // #FF6B6B
+          500: 'rgb(var(--tw-gold-500) / <alpha-value>)',   // #F00000
+          600: 'rgb(var(--tw-gold-600) / <alpha-value>)',   // #C81E1E
         },
         sand: {
-          100: '#FAF0F0',
-          200: '#FCE7E7',
-          300: '#F5C9C9',
+          100: 'rgb(var(--tw-sand-100) / <alpha-value>)',   // #FAF0F0
+          200: 'rgb(var(--tw-sand-200) / <alpha-value>)',   // #FCE7E7
+          300: 'rgb(var(--tw-sand-300) / <alpha-value>)',   // #F5C9C9
+        },
+        /* The neutral ramp drives most body text, borders and card surfaces on
+           the public site, so the Appearance tab's "Text colour" retints it
+           (50 stays near-white, 950 near-black — only the hue shifts). */
+        slate: {
+          50: 'rgb(var(--tw-slate-50) / <alpha-value>)',    // #F8FAFC
+          100: 'rgb(var(--tw-slate-100) / <alpha-value>)',  // #F1F5F9
+          200: 'rgb(var(--tw-slate-200) / <alpha-value>)',  // #E2E8F0
+          300: 'rgb(var(--tw-slate-300) / <alpha-value>)',  // #CBD5E1
+          400: 'rgb(var(--tw-slate-400) / <alpha-value>)',  // #94A3B8
+          500: 'rgb(var(--tw-slate-500) / <alpha-value>)',  // #64748B
+          600: 'rgb(var(--tw-slate-600) / <alpha-value>)',  // #475569
+          700: 'rgb(var(--tw-slate-700) / <alpha-value>)',  // #334155
+          800: 'rgb(var(--tw-slate-800) / <alpha-value>)',  // #1E293B
+          900: 'rgb(var(--tw-slate-900) / <alpha-value>)',  // #0F172A
+          950: 'rgb(var(--tw-slate-950) / <alpha-value>)',  // #020617
+        },
+        blue: {
+          50: 'rgb(var(--tw-blue-50) / <alpha-value>)',
+          100: 'rgb(var(--tw-blue-100) / <alpha-value>)',
+          200: 'rgb(var(--tw-blue-200) / <alpha-value>)',
+          300: 'rgb(var(--tw-blue-300) / <alpha-value>)',
+          400: 'rgb(var(--tw-blue-400) / <alpha-value>)',
+          500: 'rgb(var(--tw-blue-500) / <alpha-value>)',
+          600: 'rgb(var(--tw-blue-600) / <alpha-value>)',
+          700: 'rgb(var(--tw-blue-700) / <alpha-value>)',
+          800: 'rgb(var(--tw-blue-800) / <alpha-value>)',
+          900: 'rgb(var(--tw-blue-900) / <alpha-value>)',
+          950: 'rgb(var(--tw-blue-950) / <alpha-value>)',
         },
         canvas: '#F7F7F5',
         hairline: {
@@ -79,20 +119,20 @@ export default {
         elms: {
           beige: '#F7F7F5',
           bg: '#F7F7F5',
-          'green-900': '#002060',
-          'green-700': '#0A2A63',
-          'green-500': '#1D4ED8',
-          'green-300': '#F00000',
-          'green-100': '#FCE7E7',
-          'purple-900': '#001C57',
-          'purple-500': '#2563EB',
-          'purple-100': '#DBEAFE',
+          'green-900': 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          'green-700': 'rgb(var(--tw-ink-700) / <alpha-value>)',
+          'green-500': 'rgb(var(--tw-blue-700) / <alpha-value>)',
+          'green-300': 'rgb(var(--tw-gold-500) / <alpha-value>)',
+          'green-100': 'rgb(var(--tw-sand-200) / <alpha-value>)',
+          'purple-900': 'rgb(var(--tw-ink-800) / <alpha-value>)',
+          'purple-500': 'rgb(var(--tw-blue-600) / <alpha-value>)',
+          'purple-100': 'rgb(var(--tw-blue-100) / <alpha-value>)',
           card: '#ffffff',
           border: '#E6E8EC',
-          'border-dark': 'rgba(0, 32, 96, 0.12)',
-          text: '#002060',
-          muted: '#44506B',
-          faint: '#9AA3B2',
+          'border-dark': 'rgb(var(--tw-ink-900) / 0.12)',
+          text: 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          muted: 'rgb(var(--tw-text-body) / <alpha-value>)',
+          faint: 'rgb(var(--tw-text-faint) / <alpha-value>)',
         },
         aft: {
           canvas: '#F7F7F5',
@@ -101,14 +141,14 @@ export default {
           elevated: '#F1F5F9',
           border: '#E6E8EC',
           'border-strong': '#D5D9E0',
-          blue: '#002060',
-          blueHover: '#0A2A63',
-          sky: '#1D4ED8',
-          emerald: '#2563EB',
-          amber: '#C81E1E',
-          text: '#002060',
-          muted: '#44506B',
-          faint: '#9AA3B2',
+          blue: 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          blueHover: 'rgb(var(--tw-ink-700) / <alpha-value>)',
+          sky: 'rgb(var(--tw-blue-700) / <alpha-value>)',
+          emerald: 'rgb(var(--tw-blue-600) / <alpha-value>)',
+          amber: 'rgb(var(--tw-gold-600) / <alpha-value>)',
+          text: 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          muted: 'rgb(var(--tw-text-body) / <alpha-value>)',
+          faint: 'rgb(var(--tw-text-faint) / <alpha-value>)',
         },
         apple: {
           bg: '#F7F7F5',
@@ -116,25 +156,28 @@ export default {
           card: '#ffffff',
           secondary: '#F1F5F9',
           tertiary: '#E6E8EC',
-          blue: '#002060',
-          blueHover: '#0A2A63',
-          text: '#002060',
-          muted: '#44506B',
-          faint: '#9AA3B2',
+          blue: 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          blueHover: 'rgb(var(--tw-ink-700) / <alpha-value>)',
+          text: 'rgb(var(--tw-ink-900) / <alpha-value>)',
+          muted: 'rgb(var(--tw-text-body) / <alpha-value>)',
+          faint: 'rgb(var(--tw-text-faint) / <alpha-value>)',
         },
         cyber: {
           cyan: '#7DD3FC',
-          sky: '#60A5FA',
+          sky: 'rgb(var(--tw-blue-400) / <alpha-value>)',
           rose: '#FF5A5A',
-          red: '#F00000',
-          emerald: '#60A5FA',
+          red: 'rgb(var(--tw-gold-500) / <alpha-value>)',
+          emerald: 'rgb(var(--tw-blue-400) / <alpha-value>)',
           purple: '#93C5FD',
-          indigo: '#002060',
+          indigo: 'rgb(var(--tw-ink-900) / <alpha-value>)',
         },
       },
       fontFamily: {
-        heading: ['"Plus Jakarta Sans"', '"Rubik"', 'Inter', '-apple-system', 'sans-serif'],
-        sans: ['"Inter"', '"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
+        /* Both stacks resolve through variables declared in index.css, so the
+           Appearance tab swaps the site's fonts at runtime. The quoted
+           defaults keep the compiled CSS correct even before any JS runs. */
+        heading: ['var(--font-heading)', '"Plus Jakarta Sans"', '"Rubik"', 'Inter', '-apple-system', 'sans-serif'],
+        sans: ['var(--font-body)', '"Inter"', '"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'Menlo', 'Consolas', 'monospace'],
       },
       borderRadius: {
@@ -154,18 +197,18 @@ export default {
         'elevated': '0 1px 2px rgba(11, 18, 32, 0.05), 0 12px 28px -10px rgba(11, 18, 32, 0.14)',
         'premium': '0 2px 4px rgba(11, 18, 32, 0.04), 0 24px 48px -18px rgba(11, 18, 32, 0.22)',
         'specular': 'inset 0 1px 0 rgba(255, 255, 255, 0.22)',
-        'gold': '0 10px 30px -12px rgba(240, 0, 0, 0.45)',
-        'brand': '0 10px 30px -12px rgba(29, 78, 216, 0.55)',
+        'gold': '0 10px 30px -12px rgb(var(--tw-gold-500) / 0.45)',
+        'brand': '0 10px 30px -12px rgb(var(--tw-blue-700) / 0.55)',
         'apple-specular': 'inset 0 1px 0 rgba(255, 255, 255, 0.22)',
         'apple-card': '0 1px 2px rgba(11, 18, 32, 0.05), 0 12px 28px -10px rgba(11, 18, 32, 0.14)',
         'apple-hover': '0 2px 4px rgba(11, 18, 32, 0.04), 0 24px 48px -18px rgba(11, 18, 32, 0.22)',
       },
       backgroundImage: {
-        'aurora-light': 'radial-gradient(900px 420px at 12% -10%, rgba(29,78,216,0.10), transparent 60%), radial-gradient(760px 420px at 88% 0%, rgba(240,0,0,0.10), transparent 62%), linear-gradient(180deg, #FFFFFF 0%, #F7F7F5 100%)',
-        'aurora-ink': 'radial-gradient(820px 420px at 8% -15%, rgba(29,78,216,0.30), transparent 62%), radial-gradient(720px 460px at 92% 10%, rgba(240,0,0,0.16), transparent 60%), linear-gradient(165deg, #001845 0%, #002060 55%, #001C57 100%)',
-        'brand-gradient': 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #0A2A63 100%)',
-        'gold-gradient': 'linear-gradient(135deg, #FF6B6B 0%, #F00000 55%, #C81E1E 100%)',
-        'ink-gradient': 'linear-gradient(165deg, #001845 0%, #001C57 100%)',
+        'aurora-light': 'radial-gradient(900px 420px at 12% -10%, rgb(var(--tw-blue-700) / 0.10), transparent 60%), radial-gradient(760px 420px at 88% 0%, rgb(var(--tw-gold-500) / 0.10), transparent 62%), linear-gradient(180deg, #FFFFFF 0%, #F7F7F5 100%)',
+        'aurora-ink': 'radial-gradient(820px 420px at 8% -15%, rgb(var(--tw-blue-700) / 0.30), transparent 62%), radial-gradient(720px 460px at 92% 10%, rgb(var(--tw-gold-500) / 0.16), transparent 60%), linear-gradient(165deg, rgb(var(--tw-ink-950)) 0%, rgb(var(--tw-ink-900)) 55%, rgb(var(--tw-ink-800)) 100%)',
+        'brand-gradient': 'linear-gradient(135deg, rgb(var(--tw-blue-600)) 0%, rgb(var(--tw-blue-700)) 55%, rgb(var(--tw-ink-700)) 100%)',
+        'gold-gradient': 'linear-gradient(135deg, rgb(var(--tw-gold-400)) 0%, rgb(var(--tw-gold-500)) 55%, rgb(var(--tw-gold-600)) 100%)',
+        'ink-gradient': 'linear-gradient(165deg, rgb(var(--tw-ink-950)) 0%, rgb(var(--tw-ink-800)) 100%)',
       },
       transitionTimingFunction: {
         'spring': 'cubic-bezier(0.16, 1, 0.3, 1)',

@@ -131,10 +131,10 @@ export default function SuccessStoriesPage() {
     : 0;
 
   const controlClass =
-    'p-2.5 rounded-full border border-slate-200 bg-white text-[#002060] hover:border-[#002060]/40 hover:text-[#1D4ED8] shadow-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
+    'p-2.5 rounded-full border border-slate-200 bg-white text-[color:rgb(var(--tw-ink-900))] hover:border-[rgb(var(--tw-ink-900)/40%)] hover:text-[color:rgb(var(--tw-blue-700))] shadow-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[#F00000] selection:text-[#002060] relative">
+    <div className="min-h-screen bg-[#F7F7F5] text-slate-800 font-sans antialiased selection:bg-[rgb(var(--tw-gold-500))] selection:text-[color:rgb(var(--tw-ink-900))] relative">
       <Navbar />
 
       {/* Admin photo strip (Content → Website Images). */}
@@ -143,12 +143,12 @@ export default function SuccessStoriesPage() {
       <main className="pt-28 pb-10">
 
         <TrustMarquee />        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center pt-8 pb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE7E7] border border-[#F00000]/40 text-[#002060] text-xs font-semibold mb-4">
-            <TrendingUp className="w-3.5 h-3.5 text-[#1D4ED8]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-ink-900))] text-xs font-semibold mb-4">
+            <TrendingUp className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
             <span>VERIFIED GRADUATE OUTCOMES</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-[#002060] mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-[color:rgb(var(--tw-ink-900))] mb-6">
             Real Alumni <span className="highlight">Career Transformations</span>
           </h1>
 
@@ -163,17 +163,17 @@ export default function SuccessStoriesPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-left divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
               <div className="pt-4 lg:pt-0 lg:px-4 first:px-0">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Placement Rate</div>
-                <div className="text-xl sm:text-2xl font-display font-black text-[#002060] mt-1">94.2%</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[color:rgb(var(--tw-ink-900))] mt-1">94.2%</div>
                 <div className="text-xs text-slate-500 mt-0.5">Employed within 180 days</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Salary Uplift</div>
-                <div className="text-xl sm:text-2xl font-display font-black text-[#1D4ED8] mt-1">+138%</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[color:rgb(var(--tw-blue-700))] mt-1">+138%</div>
                 <div className="text-xs text-slate-500 mt-0.5">Average compensation gain</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
                 <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hiring Network</div>
-                <div className="text-xl sm:text-2xl font-display font-black text-[#002060] mt-1">100+</div>
+                <div className="text-xl sm:text-2xl font-display font-black text-[color:rgb(var(--tw-ink-900))] mt-1">100+</div>
                 <div className="text-xs text-slate-500 mt-0.5">US & international partners</div>
               </div>
               <div className="pt-4 lg:pt-0 lg:px-4">
@@ -189,7 +189,7 @@ export default function SuccessStoriesPage() {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-12">
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="w-10 h-10 border-4 border-[#002060]/20 border-t-[#002060] rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 border-[rgb(var(--tw-ink-900)/20%)] border-t-[rgb(var(--tw-ink-900))] rounded-full animate-spin" />
             </div>
           ) : stories.length === 0 ? (
             <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center text-sm text-slate-500">
@@ -202,12 +202,12 @@ export default function SuccessStoriesPage() {
               aria-label="Verified alumni success stories"
               tabIndex={0}
               onKeyDown={handleKeyDown}
-              className="rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40"
+              className="rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--tw-blue-700)/40%)]"
             >
               <div className="flex flex-wrap items-end justify-between gap-4 mb-5 text-left">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Alumni Voices</div>
-                  <h2 className="text-lg sm:text-2xl font-display font-extrabold text-[#002060] mt-1">
+                  <h2 className="text-lg sm:text-2xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] mt-1">
                     {stories.length} verified graduate stories
                   </h2>
                 </div>
@@ -263,7 +263,7 @@ export default function SuccessStoriesPage() {
                         className="shrink-0 px-3"
                         style={{ width: `${slideWidth}%` }}
                       >
-                        <article className="h-full bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between text-left shadow-xs hover:border-[#002060]/30 hover:shadow-md transition-all">
+                        <article className="h-full bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between text-left shadow-xs hover:border-[rgb(var(--tw-ink-900)/30%)] hover:shadow-md transition-all">
                           <div>
                             <div className="flex items-center justify-between gap-2 mb-4">
                               <div className="flex items-center gap-1 text-red-400">
@@ -277,7 +277,7 @@ export default function SuccessStoriesPage() {
                                     +{story.salaryHikePercent}% Salary
                                   </span>
                                 )}
-                                <span className="text-[10px] font-semibold text-[#002060] bg-[#FCE7E7] px-2 py-0.5 rounded-full whitespace-nowrap">
+                                <span className="text-[10px] font-semibold text-[color:rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-sand-200))] px-2 py-0.5 rounded-full whitespace-nowrap">
                                   Verified Alumni
                                 </span>
                               </div>
@@ -299,11 +299,11 @@ export default function SuccessStoriesPage() {
                                 image.dataset.fallbackApplied = 'true';
                                 image.src = initialsAvatar(story.studentName);
                               }}
-                              className="w-11 h-11 rounded-full object-cover border-2 border-[#F00000] shrink-0"
+                              className="w-11 h-11 rounded-full object-cover border-2 border-[rgb(var(--tw-gold-500))] shrink-0"
                             />
                             <div className="min-w-0">
-                              <div className="text-xs font-display font-bold text-[#002060] truncate">{story.studentName}</div>
-                              <div className="text-[11px] text-[#1D4ED8] font-semibold truncate">{story.role} @ {story.company}</div>
+                              <div className="text-xs font-display font-bold text-[color:rgb(var(--tw-ink-900))] truncate">{story.studentName}</div>
+                              <div className="text-[11px] text-[color:rgb(var(--tw-blue-700))] font-semibold truncate">{story.role} @ {story.company}</div>
                               <div className="text-[10px] text-slate-500 truncate mt-0.5">{story.course}</div>
                               {story.graduationYear && (
                                 <div className="text-[10px] text-slate-600 truncate mt-0.5">Class of {story.graduationYear}</div>
@@ -320,7 +320,7 @@ export default function SuccessStoriesPage() {
               <div className="mt-5 flex items-center gap-4">
                 <div className="flex-1 h-1.5 rounded-full bg-slate-200 overflow-hidden" aria-hidden="true">
                   <div
-                    className="h-full rounded-full bg-[#1D4ED8] transition-[width] duration-500"
+                    className="h-full rounded-full bg-[rgb(var(--tw-blue-700))] transition-[width] duration-500"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -334,8 +334,8 @@ export default function SuccessStoriesPage() {
 
         {/* Bottom CTA */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="bg-[#002060] text-white border border-[#1D4ED8] rounded-3xl p-6 sm:p-7 text-center shadow-lg">
-            <span className="text-xs font-semibold text-[#FF6B6B] uppercase tracking-wider block mb-2">
+          <div className="bg-[rgb(var(--tw-ink-900))] text-white border border-[rgb(var(--tw-blue-700))] rounded-3xl p-6 sm:p-7 text-center shadow-lg">
+            <span className="text-xs font-semibold text-[color:rgb(var(--tw-gold-400))] uppercase tracking-wider block mb-2">
               ADMISSIONS ARE OPEN
             </span>
             <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-3">
@@ -347,7 +347,7 @@ export default function SuccessStoriesPage() {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 to="/courses"
-                className="py-3 px-7 rounded-full bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-xs font-bold transition-colors shadow-sm"
+                className="py-3 px-7 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-xs font-bold transition-colors shadow-sm"
               >
                 Browse Specialization Tracks &rarr;
               </Link>

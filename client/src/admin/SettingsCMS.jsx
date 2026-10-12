@@ -38,8 +38,16 @@ import {
   ReceiptText,
   Briefcase,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Palette,
+  Type
 } from 'lucide-react';
+import {
+  BODY_FONTS,
+  HEADING_FONTS,
+  DEFAULT_THEME,
+  themeToCssVars,
+} from '../lib/siteTheme';
 import {
   DEFAULT_LEADERSHIP,
   DEFAULT_SISTER_COMPANY,
@@ -100,6 +108,17 @@ const stripNonCmsFields = (settings) => {
   return cms;
 };
 
+/**
+ * The three base colours the Appearance tab derives the whole palette from.
+ * The swatches default to the site's current brand colours — the client
+ * samples a new look here without touching code, and "Reset" puts these back.
+ */
+const THEME_COLOR_FIELDS = [
+  { key: 'primaryColor', label: 'Primary (headings, buttons, links)', hint: 'Drives the blue ramps and every dark section' },
+  { key: 'accentColor', label: 'Accent (CTAs, badges, highlights)', hint: 'Drives the red / gold ramps' },
+  { key: 'textColor', label: 'Body text', hint: 'Drives paragraph, label and border neutrals' },
+];
+
 export default function SettingsCMS() {
   // `?tab=payments` lets other screens (e.g. the billing ledger's "gateway not
   // ready" banner) deep-link straight to the right tab instead of dropping the
@@ -135,6 +154,7 @@ export default function SettingsCMS() {
       linkUrl: '/courses',
     },
     admissionNotice: 'Next Cohort Starts March 2026. Limited to 25 seats per track.',
+    theme: { ...DEFAULT_THEME },
     hero: {
       eyebrowBadgeText: 'AMERICAN FUTURETECH · US ACCREDITED TECHNOLOGY FELLOWSHIPS',
       headline: 'BUILD SKILLS.\nGET CERTIFIED.\nSHAPE YOUR FUTURE.',
@@ -754,6 +774,7 @@ export default function SettingsCMS() {
 
   const tabs = [
     { id: 'general', label: 'General & Identity', icon: Building },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'sections', label: 'Homepage Sections', icon: Eye },
     { id: 'hero', label: 'Homepage Hero', icon: Sparkles },
     { id: 'companies', label: 'Company Logos', icon: Award },
@@ -1003,6 +1024,129 @@ export default function SettingsCMS() {
           )}
 
           {/* ========================================================================= */}
+          {/* TAB: APPEARANCE - site-wide fonts & colours. Three base colours derive
+              every ramp at runtime (lib/siteTheme.js), so the client can rebrand
+              without a rebuild. The preview below sets the same CSS variables on
+              ITS OWN subtree - the admin panel never changes under their fingers
+              before they press Publish. */}
+          {/* ========================================================================= */}
+          {activeTab === 'appearance' && (() => {
+            const theme = { ...DEFAULT_THEME, ...(settings.theme || {}) };
+            const previewVars = themeToCssVars(theme).vars;
+            const setThemeField = (key, value) => setSettings((prev) => ({
+              ...prev,
+              theme: { ...DEFAULT_THEME, ...(prev.theme || {}), [key]: value },
+            }));
+            return (
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-6 backdrop-blur-xl text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                  <div>
+                    <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                      <Palette className="w-4 h-4 text-blue-400" />
+                      Site Appearance — Fonts & Colours
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      Change the website's fonts and brand colours from here — it applies to every page (home, courses, careers, blog, LMS). Press <span className="text-white font-bold">Publish Changes</span> to make it live for all visitors.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSettings((prev) => ({ ...prev, theme: { ...DEFAULT_THEME } }))}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-950 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono transition-colors cursor-pointer shrink-0"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Reset to brand defaults
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* ── Controls ── */}
+                  <div className="space-y-5">
+                    <div className="space-y-3">
+                      <label className="block text-slate-400 uppercase text-xs font-mono flex items-center gap-2">
+                        <Type className="w-3.5 h-3.5" /> Fonts
+                      </label>
+                      <div>
+                        <label className="block text-xs text-slate-500 mb-1.5">Body / paragraph font</label>
+                        <select
+                          value={theme.bodyFont}
+                          onChange={(e) => setThemeField('bodyFont', e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          {BODY_FONTS.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-slate-500 mb-1.5">Heading font (titles, buttons)</label>
+                        <select
+                          value={theme.headingFont}
+                          onChange={(e) => setThemeField('headingFont', e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+                        >
+                          {HEADING_FONTS.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="block text-slate-400 uppercase text-xs font-mono">Brand colours</label>
+                      {THEME_COLOR_FIELDS.map((field) => (
+                        <div key={field.key} className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={theme[field.key]}
+                            onChange={(e) => setThemeField(field.key, e.target.value.toUpperCase())}
+                            className="w-10 h-10 rounded-lg border border-slate-700 bg-slate-950 p-1 cursor-pointer shrink-0"
+                            aria-label={field.label}
+                          />
+                          <div className="min-w-0">
+                            <div className="text-xs text-white font-bold">{field.label}</div>
+                            <div className="text-[11px] text-slate-500 font-mono">{theme[field.key]} · {field.hint}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Live preview (scoped variables only) ── */}
+                  <div
+                    className="rounded-2xl border border-slate-700 overflow-hidden"
+                    style={Object.fromEntries(
+                      Object.entries(previewVars).map(([k, v]) => [k, k.startsWith('--font') ? v : `rgb(${v})`]),
+                    )}
+                  >
+                    <div className="p-5" style={{ background: 'rgb(var(--tw-ink-900))' }}>
+                      <div className="text-[10px] uppercase tracking-widest" style={{ color: 'rgb(var(--tw-gold-400))' }}>Preview</div>
+                      <div className="text-xl font-extrabold mt-1" style={{ color: '#FFFFFF', fontFamily: 'var(--font-heading)' }}>
+                        Build Skills. Get Certified.
+                      </div>
+                    </div>
+                    <div className="p-5 space-y-3" style={{ background: '#FFFFFF' }}>
+                      <p className="text-sm" style={{ color: 'rgb(var(--tw-text-body))', fontFamily: 'var(--font-body)' }}>
+                        Paragraph text uses the body font and the body colour — this is what visitors read on every page.
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="px-3 py-1.5 rounded-lg text-xs font-bold text-white" style={{ background: 'rgb(var(--tw-blue-600))', fontFamily: 'var(--font-heading)' }}>
+                          Primary button
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg text-xs font-bold text-white" style={{ background: 'rgb(var(--tw-gold-500))', fontFamily: 'var(--font-heading)' }}>
+                          Reserve — $99
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ background: 'rgb(var(--tw-blue-100))', color: 'rgb(var(--tw-blue-700))' }}>
+                          Badge
+                        </span>
+                      </div>
+                      <div className="rounded-lg px-3 py-2 text-xs" style={{ background: 'rgb(var(--tw-slate-100))', color: 'rgb(var(--tw-slate-600))', border: '1px solid rgb(var(--tw-slate-200))' }}>
+                        Card surface · border · muted label
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ========================================================================= */}
           {/* TAB: HOMEPAGE SECTION VISIBILITY CONTROLS                                 */}
           {/* ========================================================================= */}
           {activeTab === 'sections' && (
@@ -1023,11 +1167,13 @@ export default function SettingsCMS() {
                     onClick={() => {
                       const allOn = {
                         hero: true,
+                        videoShowcase: true,
                         trustMarquee: true,
                         metrics: true,
                         learningJourney: true,
                         courses: true,
                         personalizedLearning: true,
+                        whatIs: true,
                         tools: true,
                         roadmap: true,
                         whyChooseUs: true,
@@ -1047,17 +1193,19 @@ export default function SettingsCMS() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                 {[
                   { key: 'hero', label: '1. Product Hero & LMS Cockpit', desc: 'Interactive visual cockpit, floating badges, and primary headline' },
-                  { key: 'trustMarquee', label: '2. Enterprise Brand Marquee', desc: 'Infinite loop company logos (Google, Microsoft, AWS, etc.)' },
-                  { key: 'metricsStrip', keyName: 'metrics', label: '3. Institutional Value Metrics Strip', desc: 'Key outcome statistics and telemetry highlights' },
-                  { key: 'learningJourney', label: '4. Pedagogical Learning Journey', desc: 'Learn, Practice, Certify, and Advance 4-phase cards' },
-                  { key: 'courses', label: '5. Career Programs & Course Bento', desc: 'Main course cards, syllabi modals, and credential seals' },
-                  { key: 'personalizedLearning', label: '6. Personalized 1-on-1 Mentorship', desc: 'Dedicated $2,199 private career coaching offering' },
-                  { key: 'tools', label: '7. 40+ Industry Tools & Tech', desc: 'Interactive developer tools, frameworks, and cloud stack grid' },
-                  { key: 'roadmap', label: '8. 6-Step Career Transformation Roadmap', desc: 'Step-by-step pathway from orientation to elite hiring' },
-                  { key: 'whyChooseUs', label: '9. Why Choose Us & Product Showcase', desc: 'Live sandbox terminals, code reviews, and architectural depth' },
-                  { key: 'siteImages', label: '10. Sliding Brand Band', desc: 'The American FutureTech wordmark + disciplines sliding band (Content → Website Images → 3D artwork stays separate)' },
-                  { key: 'faqs', label: '11. Frequently Asked Questions (Accordion)', desc: 'Categorized expandable answers for admissions & placement' },
-                  { key: 'callToAction', label: '12. Selective Admissions Bottom CTA', desc: 'Urgency countdown and final enrollment reservation banner' },
+                  { key: 'videoShowcase', label: '2. Homepage Video Showcase', desc: 'OFF by default — the hero panel already plays the clip; switch on for the extra dark band under the hero' },
+                  { key: 'trustMarquee', label: '3. Enterprise Brand Marquee', desc: 'Infinite loop company logos (Google, Microsoft, AWS, etc.)' },
+                  { key: 'metricsStrip', keyName: 'metrics', label: '4. Institutional Value Metrics Strip', desc: 'Key outcome statistics and telemetry highlights' },
+                  { key: 'learningJourney', label: '5. Pedagogical Learning Journey', desc: 'Learn, Practice, Certify, and Advance 4-phase cards' },
+                  { key: 'courses', label: '6. Career Programs & Course Bento', desc: 'Main course cards, syllabi modals, and credential seals' },
+                  { key: 'personalizedLearning', label: '7. Personalized 1-on-1 Mentorship', desc: 'Dedicated $2,199 private career coaching offering' },
+                  { key: 'whatIs', label: '8. What We Are / Are Not (Myth vs Facts)', desc: 'Common assumptions paired with the facts — trust block mid-page' },
+                  { key: 'tools', label: '9. 40+ Industry Tools & Tech', desc: 'Interactive developer tools, frameworks, and cloud stack grid' },
+                  { key: 'roadmap', label: '10. 6-Step Career Transformation Roadmap', desc: 'Step-by-step pathway from orientation to elite hiring' },
+                  { key: 'whyChooseUs', label: '11. Why Choose Us & Product Showcase', desc: 'Live sandbox terminals, code reviews, and architectural depth' },
+                  { key: 'siteImages', label: '12. Sliding Brand Band', desc: 'The American FutureTech wordmark + disciplines sliding band (Content → Website Images → 3D artwork stays separate)' },
+                  { key: 'faqs', label: '13. Frequently Asked Questions (Accordion)', desc: 'Categorized expandable answers for admissions & placement' },
+                  { key: 'callToAction', label: '14. Selective Admissions Bottom CTA', desc: 'Urgency countdown and final enrollment reservation banner' },
                 ].map(({ key, keyName, label, desc }) => {
                   const prop = keyName || key;
                   const isVisible = settings.sectionVisibility?.[prop] !== false;
@@ -1226,6 +1374,23 @@ export default function SettingsCMS() {
                     })}
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 uppercase mb-1.5">Homepage Video URL (plays in the hero panel)</label>
+                  <input
+                    type="text"
+                    placeholder="/videos/hero.mp4 or a full https link"
+                    value={settings.hero?.videoUrl || ''}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      hero: { ...settings.hero, videoUrl: e.target.value }
+                    })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-blue-500"
+                  />
+                  <p className="mt-1.5 text-xs text-slate-500">
+                    Muted looping promo video shown in the hero cockpit's Flagship Studio frame, in place of the studio photograph — the first thing a visitor sees. Paste a direct .mp4 link, or a site path like /videos/hero.mp4 after dropping the file into client/public/videos/. The frame is tall, so the clip fills it edge to edge: a landscape recording is centre-cropped and the bundled clip's own black letterbox bars are cropped away. Leave it empty to go back to the photograph. The optional dark band under the hero (Section Visibility → "Homepage Video Showcase") plays this same clip; it is off by default.
+                  </p>
                 </div>
               </div>
             </div>

@@ -35,24 +35,24 @@ const toolMonogram = (name) =>
  * card has no image" rather than "nobody has added one".
  */
 const CARD_ART_GRADIENTS = [
-  'from-[#002060] via-[#1E2A4A] to-[#1D4ED8]',
-  'from-[#002060] via-[#123B3A] to-[#1D4ED8]',
+  'from-[rgb(var(--tw-ink-900))] via-[#1E2A4A] to-[rgb(var(--tw-blue-700))]',
+  'from-[rgb(var(--tw-ink-900))] via-[#123B3A] to-[rgb(var(--tw-blue-700))]',
   'from-[#1B0B2A] via-[#3B1063] to-[#7C3AED]',
   'from-[#2A0B1B] via-[#7F1D3A] to-[#BE123C]',
-  'from-[#002060] via-[#1F2A44] to-[#0891B2]',
-  'from-[#2A200B] via-[#78350F] to-[#C81E1E]',
+  'from-[rgb(var(--tw-ink-900))] via-[#1F2A44] to-[#0891B2]',
+  'from-[#2A200B] via-[#78350F] to-[rgb(var(--tw-gold-600))]',
 ];
 
 function ToolLogo({ name, logo }) {
   const [broken, setBroken] = useState(false);
   return (
-    <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-1.5 mb-1.5">
+    <div className="w-12 h-12 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-2 mb-2">
       {logo && !broken ? (
         <img
           src={logo}
           alt=""
           aria-hidden="true"
-          className="w-6 h-6 object-contain"
+          className="w-8 h-8 object-contain"
           loading="lazy"
           onError={() => setBroken(true)}
         />
@@ -131,7 +131,7 @@ export default function CoursesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#001C57] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[rgb(var(--tw-ink-800))] text-slate-900 dark:text-slate-100 font-sans antialiased relative overflow-x-hidden">
       <Navbar onOpenLeadModal={() => setIsLeadModalOpen(true)} />
 
       {/* Admin photo strip (Content → Website Images). Renders nothing until a
@@ -259,17 +259,23 @@ export default function CoursesPage() {
                   className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-blue-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
                   {/* Course image panel — beside the details on desktop, a wide
-                      banner on phones. The panel is sized BY the picture (the
-                      image is never stretched), so the whole artwork shows:
-                      cropping a designed banner to fill a fixed box cut its
-                      baked-in headline in half. A very tall upload is capped and
-                      centred instead of stretching the card. */}
-                  <div className="relative w-full lg:w-[42%] shrink-0 bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+                      banner on phones. It used to be a flex-centered box with the
+                      image at `h-auto`: whenever a banner was taller than the
+                      panel it overflowed and was clipped top and bottom (the
+                      "aadha image cut" report). The panel is now a fixed height and
+                      the picture is `object-cover`, so ANY aspect ratio fills it
+                      edge-to-edge with nothing cut. The trade-off is a centre crop
+                      of the longest edges (~14% off the sides of a 3:2 banner in
+                      this 4:3 box), which is safe for the full-bleed artwork the
+                      CMS holds. If an admin ever uploads a banner with headline
+                      text near an edge, switch that card back to object-contain so
+                      the words stay whole. */}
+                  <div className="relative w-full lg:w-[42%] shrink-0 h-[200px] sm:h-[240px] lg:h-auto lg:min-h-[300px] bg-slate-100 dark:bg-slate-800 overflow-hidden">
                     {cardImage ? (
                       <img
                         src={cardImage}
                         alt={course.title}
-                        className="relative w-full h-auto max-h-[380px] object-contain object-center group-hover:scale-[1.03] transition-transform duration-700"
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700"
                         loading="lazy"
                         decoding="async"
                       />
@@ -282,16 +288,16 @@ export default function CoursesPage() {
                     )}
 
                     {/* Readability veil so a badge or track label never sits on a busy photo */}
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#002060]/75 via-transparent to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[rgb(var(--tw-ink-900)/75%)] via-transparent to-transparent" />
 
                     {course.badge && (
-                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#002060]/85 text-[#FF6B6B] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                      <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[rgb(var(--tw-ink-900)/85%)] text-[color:rgb(var(--tw-gold-400))] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
                         {course.badge}
                       </span>
                     )}
 
                     <span className="absolute bottom-3 left-3 text-white text-[11px] font-bold flex items-center gap-1.5 drop-shadow">
-                      <Clock className="w-3.5 h-3.5 text-[#FF6B6B]" />
+                      <Clock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
                       {course.duration || '6 Months'} · Mentor-led
                     </span>
                   </div>
@@ -417,17 +423,17 @@ export default function CoursesPage() {
                     </div>
 
                     <div className="relative overflow-hidden marquee-mask">
-                      <div className="animate-infinite-marquee items-stretch gap-2.5 py-1">
+                      <div className="animate-infinite-marquee-slow items-stretch gap-3 sm:gap-4 py-2">
                         {track.map((tool, idx) => (
                           <div
                             key={`${tool.name}-${idx}`}
                             // Only the first pass is announced to screen readers;
                             // the repeats exist purely to make the loop seamless.
                             aria-hidden={idx >= cat.tools.length ? 'true' : undefined}
-                            className="group w-[104px] sm:w-[126px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-2.5 text-center hover:border-blue-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
+                            className="group w-[128px] sm:w-[150px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-3 text-center hover:border-blue-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
                           >
                             <ToolLogo name={tool.name} logo={tool.logo} />
-                            <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight truncate w-full">
+                            <span className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300 leading-tight w-full">
                               {tool.name}
                             </span>
                           </div>

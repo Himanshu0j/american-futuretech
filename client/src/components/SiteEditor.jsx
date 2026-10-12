@@ -529,7 +529,7 @@ export default function SiteEditor() {
         className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2 font-sans"
       >
         {openEditor && (
-          <div className="w-[min(92vw,420px)] rounded-2xl border border-blue-500/30 bg-[#002060] p-4 shadow-2xl">
+          <div className="w-[min(92vw,420px)] rounded-2xl border border-blue-500/30 bg-[rgb(var(--tw-ink-900))] p-4 shadow-2xl">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
                 {openEditor.kind === 'text' ? <Pencil className="w-3.5 h-3.5 text-blue-400" /> : <ImageIcon className="w-3.5 h-3.5 text-blue-400" />}
@@ -546,7 +546,7 @@ export default function SiteEditor() {
                 rows={3}
                 value={openEditor.value}
                 onChange={(e) => setOpenEditor((prev) => ({ ...prev, value: e.target.value }))}
-                className="w-full p-2.5 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
+                className="w-full p-2.5 rounded-xl bg-[rgb(var(--tw-ink-950))] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
               />
             ) : (
               <ImageUploadInput
@@ -587,7 +587,7 @@ export default function SiteEditor() {
         )}
 
         {panelOpen && (
-          <div className="w-[min(92vw,420px)] max-h-[70vh] rounded-2xl border border-white/10 bg-[#002060]/98 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="w-[min(92vw,420px)] max-h-[70vh] rounded-2xl border border-white/10 bg-[rgb(var(--tw-ink-900)/98%)] backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-blue-400" />
@@ -607,7 +607,7 @@ export default function SiteEditor() {
                 <select
                   value={PUBLIC_PAGES.some((p) => p.path === route) ? route : ''}
                   onChange={(e) => { if (e.target.value) window.location.href = editorUrlFor(e.target.value); }}
-                  className="mt-1 w-full px-2.5 py-2 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
+                  className="mt-1 w-full px-2.5 py-2 rounded-xl bg-[rgb(var(--tw-ink-950))] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                 >
                   {!PUBLIC_PAGES.some((p) => p.path === route) && (
                     <option value="">{route || 'This page'}</option>
@@ -624,7 +624,7 @@ export default function SiteEditor() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={`Search ${discovered.texts.length} texts on this page…`}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
+                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-[rgb(var(--tw-ink-950))] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
               <div className="flex items-center gap-2 text-[10px] text-slate-400">
@@ -671,7 +671,7 @@ export default function SiteEditor() {
                     onClick={() => jumpTo(item)}
                     onChange={(e) => stageInStore('text', item.key, { original: item.original, value: e.target.value })}
                     onBlur={snapshot}
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#001845] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-[rgb(var(--tw-ink-950))] border border-white/10 text-white text-xs focus:outline-none focus:border-blue-500"
                   />
                 </div>
               ))}
@@ -690,7 +690,7 @@ export default function SiteEditor() {
                           value={item.current}
                           onChange={(e) => stageInStore('image', item.key, { original: item.original, value: e.target.value })}
                           onBlur={snapshot}
-                          className="flex-1 px-2 py-1.5 rounded-lg bg-[#001845] border border-white/10 text-white text-[10px] font-mono focus:outline-none focus:border-blue-500"
+                          className="flex-1 px-2 py-1.5 rounded-lg bg-[rgb(var(--tw-ink-950))] border border-white/10 text-white text-[10px] font-mono focus:outline-none focus:border-blue-500"
                         />
                         <button
                           type="button"

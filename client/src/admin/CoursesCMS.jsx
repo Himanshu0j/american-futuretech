@@ -686,9 +686,9 @@ export default function CoursesCMS() {
       </div>
 
       {/* Course Catalog Table */}
-      <div className="rounded-2xl bg-[#002060]/80 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+      <div className="rounded-2xl bg-[rgb(var(--tw-ink-900)/80%)] backdrop-blur-xl border border-white/[0.08] overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#001845] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
+          <thead className="bg-[rgb(var(--tw-ink-950))] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
             <tr>
               <th className="px-6 py-4 font-bold">Course Title & Category</th>
               <th className="px-6 py-4 font-bold">Theme & Badge</th>
@@ -826,10 +826,10 @@ export default function CoursesCMS() {
       {/* Course & Curriculum Visual Composer Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[#002060] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
+          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-3xl bg-[rgb(var(--tw-ink-900))] border border-white/[0.12] shadow-2xl flex flex-col overflow-hidden text-left">
             
             {/* Modal Header */}
-            <div className="p-6 bg-[#001845] border-b border-white/[0.08] flex items-center justify-between">
+            <div className="p-6 bg-[rgb(var(--tw-ink-950))] border-b border-white/[0.08] flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold text-white">
                   {editingCourse ? `Edit Course: ${editingCourse.title}` : 'Create New Certification Track'}

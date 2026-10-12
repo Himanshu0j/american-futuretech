@@ -373,7 +373,7 @@ export default function LmsCommunications() {
                 type="checkbox"
                 checked={draft.pinned}
                 onChange={(e) => setDraft((prev) => ({ ...prev, pinned: e.target.checked }))}
-                className="rounded border-white/20 bg-[#001C57]"
+                className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
               />
               Pin to the top
             </label>
@@ -382,7 +382,7 @@ export default function LmsCommunications() {
                 type="checkbox"
                 checked={draft.isPublished}
                 onChange={(e) => setDraft((prev) => ({ ...prev, isPublished: e.target.checked }))}
-                className="rounded border-white/20 bg-[#001C57]"
+                className="rounded border-white/20 bg-[rgb(var(--tw-ink-800))]"
               />
               Publish now
             </label>

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Pause, Play, Radio, Target, Users, Video } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import useAlwaysPlayingVideo from '../hooks/useAlwaysPlayingVideo';
 
 /**
  * Homepage video showcase — the dark band that sits directly under the hero.
@@ -29,6 +30,8 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 
 // Bundled master, shipped in this repo at client/public/videos/hero.mp4.
 const BUNDLED_VIDEO = '/videos/hero.mp4';
+// Its own first frame, so the card is never black while the file arrives.
+const BUNDLED_VIDEO_POSTER = '/videos/hero-poster.jpg';
 
 const HIGHLIGHTS = [
   {
@@ -50,37 +53,17 @@ const HIGHLIGHTS = [
 
 export default function HomeVideoShowcase() {
   const { settings } = useSiteSettings();
-  const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
 
   const hero = settings?.hero || {};
   const configured = hero.videoUrl;
   const videoUrl = configured === undefined ? BUNDLED_VIDEO : String(configured || '').trim();
+  const videoPoster = videoUrl === BUNDLED_VIDEO ? BUNDLED_VIDEO_POSTER : '';
 
-  // Reduced-motion visitors keep the first frame instead of a moving loop.
-  useEffect(() => {
-    const node = videoRef.current;
-    if (!node) return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
-      node.pause();
-      setIsPlaying(false);
-    }
-  }, [videoUrl]);
+  // Starts on mount and stays running — including after the tab has been in the
+  // background, where a browser pauses muted autoplay and does not restart it.
+  const { videoRef, isPlaying, toggle: togglePlayback } = useAlwaysPlayingVideo(videoUrl);
 
   if (!videoUrl) return null;
-
-  const togglePlayback = () => {
-    const node = videoRef.current;
-    if (!node) return;
-    if (node.paused) {
-      const attempt = node.play();
-      if (attempt?.catch) attempt.catch(() => {});
-      setIsPlaying(true);
-    } else {
-      node.pause();
-      setIsPlaying(false);
-    }
-  };
 
   const exploreText = hero.secondaryCtaText || 'Explore Programs';
   const exploreLink = hero.secondaryCtaLink || '/courses';
@@ -171,11 +154,12 @@ export default function HomeVideoShowcase() {
                   ref={videoRef}
                   className="block h-auto w-full aspect-[9/5] object-cover"
                   src={videoUrl}
+                  poster={videoPoster || undefined}
                   autoPlay
                   muted
                   loop
                   playsInline
-                  preload="metadata"
+                  preload="auto"
                   disablePictureInPicture
                   disableRemotePlayback
                   aria-label="Short clip recorded inside an active American FutureTech cohort"

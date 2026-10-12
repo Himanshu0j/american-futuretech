@@ -35,6 +35,10 @@ const HERO_WORKSPACE_IMG_TALL = '/images/hero-innovator-tall.jpg';
 // plays in the cockpit's Flagship Studio frame in place of the photograph;
 // Admin → Settings → Homepage Hero → "Homepage Video URL" overrides it.
 const BUNDLED_HERO_VIDEO = '/videos/hero.mp4';
+// The clip's own first frame, so the frame is never black while the file is
+// still arriving. It is only used for the bundled clip: a URL pasted in the CMS
+// gets no poster rather than a frozen frame from a different video.
+const BUNDLED_HERO_POSTER = '/videos/hero-poster.jpg';
 
 // The graduation photograph the client chose for the top of the home page. It
 // is the section's own background now (not a card): a wide crop for desktop and
@@ -46,6 +50,7 @@ const HERO_BANNER_IMG = '/images/hero-graduation.jpg';
 const HERO_BANNER_IMG_PHONE = '/images/hero-graduation-phone.jpg';
 
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import useAlwaysPlayingVideo from '../hooks/useAlwaysPlayingVideo';
 
 export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const { settings } = useSiteSettings();
@@ -65,8 +70,15 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const heroVideoUrl = heroData.videoUrl === undefined
     ? BUNDLED_HERO_VIDEO
     : String(heroData.videoUrl || '').trim();
-  const heroVideoRef = useRef(null);
-  const [heroVideoPlaying, setHeroVideoPlaying] = useState(true);
+  // The clip must be moving the moment the frame appears and must keep moving
+  // whenever the visitor comes back to the tab (see the hook for why
+  // `autoPlay` on its own does not manage that).
+  const {
+    videoRef: heroVideoRef,
+    isPlaying: heroVideoPlaying,
+    toggle: toggleHeroVideo,
+  } = useAlwaysPlayingVideo(heroVideoUrl);
+  const heroVideoPoster = heroVideoUrl === BUNDLED_HERO_VIDEO ? BUNDLED_HERO_POSTER : '';
 
   // Subtle mouse parallax for desktop viewports
   useEffect(() => {
@@ -82,31 +94,6 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-
-  // The hero clip loops, so a visitor who asked their system for reduced motion
-  // gets a frozen first frame instead of movement — the play control is still
-  // there if they want it.
-  useEffect(() => {
-    const node = heroVideoRef.current;
-    if (!node) return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
-      node.pause();
-      setHeroVideoPlaying(false);
-    }
-  }, [heroVideoUrl]);
-
-  const toggleHeroVideo = () => {
-    const node = heroVideoRef.current;
-    if (!node) return;
-    if (node.paused) {
-      const attempt = node.play();
-      if (attempt?.catch) attempt.catch(() => {});
-      setHeroVideoPlaying(true);
-    } else {
-      node.pause();
-      setHeroVideoPlaying(false);
-    }
-  };
 
   const cockpitTabs = [
     { id: 'workspace', label: 'Flagship Studio', icon: Laptop },
@@ -539,6 +526,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                           ref={heroVideoRef}
                           className="absolute left-1/2 top-1/2 aspect-[9/5] h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
                           src={heroVideoUrl}
+                          poster={heroVideoPoster || undefined}
                           autoPlay
                           muted
                           loop

@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, BookOpen, Calendar, GraduationCap, CreditCard,
   Briefcase, FileText, LifeBuoy, Settings, ShieldAlert, HelpCircle,
   ArrowLeft, Image as ImageIcon, DollarSign, Layers, MousePointerClick, Save, CheckCircle2,
-  MessageSquareWarning, Images, PanelBottom, PanelTop, Award
+  MessageSquareWarning, Images, PanelBottom, PanelTop, Award, Palette
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -119,6 +119,8 @@ const SECTIONS = [
       'QUIZ: module ke card par "Add quiz" → questions likho, options ke saamne circle daba kar sahi jawab mark karo, passing % set karo. Student ko us module ke sidebar mein Test button dikhega.',
       'CERTIFICATE: course ke saare lessons poore karne par certificate khud ban jata hai. Jab kisi ne poora kiya par certificate nahi bana (ya offline cohort hai) to Certificates → "Ready to issue" tab → "Issue certificate". Galat certificate ko Revoke kar sakte ho — uske baad public /certificate/<ID> page par saaf likha aayega ki credential withdraw ho gaya hai.',
       'SAFETY: Courses CMS se course/edit karne par yahan banaye gaye lesson ka video ya resources delete nahi honge — sirf admin khud delete karega tab hi hatenge.',
+      'DEMO LESSONS (badge: "demo · hidden from website"): jo lessons seeding/demo data ke roop mein pehle se bhare aate hain, wo yahan normal dikhte hain par **public course page ke syllabus par nahi chhapte** — taki visitors ko demo naam asli syllabus na lage. Us lesson ko edit karke save kar do (title, notes, video — kuch bhi) to badge hat jayega aur lesson website par live ho jayega. Delete karna ho to dustbin. Naye lessons par ye badge kabhi nahi aata.',
+      'LESSON KA TIME: public course page aur student player se lesson duration (45m/40m) hata di gayi hai kyunki wahan sirf default `45m` chhap raha tha. Lesson Editor mein "Video duration" field ab bhi hai — aap chahein to bhar sakte ho.',
     ],
   },
   {
@@ -184,6 +186,13 @@ const SECTIONS = [
     how: 'Admin → Header Menu CMS. "Top bar menu" mein label (jo website par dikhta hai), link, order (up/down arrows) aur eye icon se show/hide karo. "MORE" dropdown ke items neeche wale section mein hain — saare hide kar do to poora MORE button gayab ho jata hai. Kisi item ko top bar se MORE mein (ya wapas) bhejna ho to uske saamne wale dropdown se "Top bar / More menu" chuno. CAREER PROGRAMS ke saamne "Dropdown" button se programs ka mega-panel on/off hota hai. Naya link "Add item" se add karo, hataana ho to dustbin se. Sabse neeche "Save Header Menu" dabao — turant live, koi deploy nahi.',
   },
   {
+    icon: Briefcase,
+    title: '11h. Live Jobs Page (Banner + Stat Cards)',
+    path: '/admin/settings?tab=careersHero',
+    what: 'Live Jobs board (/jobs aur /careers) ke top ka poora banner — badge, heading, description, dono buttons, right panel ka label aur teen stat cards ($128K / 140+ / 94%).',
+    how: 'Admin → Settings → "Live Jobs Page" tab. Koi bhi field khaali chhod do to purana coded text dikhta rahega (khaali box nahi), aur jo likhoge wo turant live ho jata hai — "Publish Changes" dabao. Stat cards: har row mein value ($128K) aur label likho, arrows se order badlo (page par isi order mein dikhte hain), "Show" checkbox hataao to woh card website se hide ho jayega (delete kiye bina), aur "Add Stat Card" se chautha/paanchwa number add karo. "Load default text" dabane se teeno original numbers wapas editor mein aa jate hain (jo aap edit kar chuke ho us par ye kuch nahi badalta). Description mein 1-2 line hi rakho — mobile par hi achha lagta hai.',
+  },
+  {
     icon: Layers,
     title: '12. Website Editor (Har Text Aur Image)',
     path: '/admin/website-editor',
@@ -217,6 +226,13 @@ const SECTIONS = [
     path: '/admin/media',
     what: 'Admin panel se jo bhi image upload hui hai — company logos, course images, job logos, issue screenshots — sab ek jagah. Yahan se dekho ki kaunsi image website par kahan use ho rahi hai, aur jo purani/extra hai use delete kar do.',
     how: 'Har card par badges dekho: "durable" = safely stored (redeploy ke baad bhi rahegi), "disk only" = sirf server disk par hai to next deploy par gayab ho jayegi, "in use ×N" = website par N jagah use ho rahi hai (neeche list bhi dikhti hai). "Copy URL" se poori image link copy ho jati hai — use kisi bhi image field mein paste kar sakte ho. Delete karte waqt: agar image kahin use ho rahi hai to panel pehle batayega ki kahan-kahan, aur tab tak delete nahi karega jab tak aap "Delete anyway" na dabao (warna us jagah image toot jayegi). Jo image kisi kaam ki nahi ("unused") use bina tension delete kar sakte ho — disk aur durable, dono copies mit jati hain.',
+  },
+  {
+    icon: Palette,
+    title: '17. Appearance — Fonts & Brand Colours',
+    path: '/admin/settings?tab=appearance',
+    what: 'Poori website ke fonts aur brand colours — headings, buttons, links, badges, body text. Ek jagah se badlo, har page par lagta hai (home, courses, careers, blog, LMS).',
+    how: 'Admin → Settings & Audit Log → "Appearance" tab. Teen colour swatch par click karke colour picker se rang chuno — Primary (headings, buttons, links), Accent (CTA buttons, badges, highlights) aur Body text (paragraph, labels). Saath mein "Body / paragraph font" aur "Heading font (titles, buttons)" dropdown se font chuno. Right wala preview turant dikhata hai ki naya look kaisa lagega. Galti ho jaye to "Reset to brand defaults", warna neeche "Publish Changes" dabao — tabhi sabhi visitors ko naya look dikhta hai (koi deploy nahi, turant live). Ek hi line ko Settings aur Website Editor dono jagah na badlo — Website Editor ka change upar rehta hai.',
   },
 ];
 

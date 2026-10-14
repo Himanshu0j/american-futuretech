@@ -40,6 +40,7 @@ import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
 import Tilt3D from '../components/Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { DEFAULT_CAREERS_HERO } from '../data/siteContent';
 import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
@@ -61,17 +62,30 @@ export default function CareersPage() {
   const [selectedExp, setSelectedExp] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [selectedCourse, setSelectedCourse] = useState('All');
-  const [selectedDepartment, setSelectedDepartment] = useState('All');
-  const [selectedSalary, setSelectedSalary] = useState('All');
-  const [remoteOnly, setRemoteOnly] = useState(false);
-  const [sortBy, setSortBy] = useState('newest');
 
-  // Server-side pagination: the board shows 8 postings per page and the page
+  // Server-side pagination: the board shows 10 postings per page and the page
   // count is always computed from the FILTERED total, never the whole table.
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ page: 1, pageSize: 8, total: 0, totalPages: 1, hasPrev: false, hasNext: false });
-  const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0, totalPages: 1, hasPrev: false, hasNext: false });
   const jobsListRef = useRef(null);
+
+  /*
+   * The hiring-network banner is fully admin-managed (Admin → Settings →
+   * "Live Jobs Page"). Each field falls back to the coded default ONE BY ONE, so
+   * a section the client has not filled in still shows the original copy instead
+   * of an empty box — and the three stat cards can be renamed, reordered, hidden
+   * or extended without a deploy.
+   */
+  const heroDefaults = DEFAULT_CAREERS_HERO;
+  const heroSaved = settings?.careersHero || {};
+  const heroText = (key) => {
+    const saved = heroSaved[key];
+    return typeof saved === 'string' && saved.trim() ? saved : heroDefaults[key];
+  };
+  const savedStats = Array.isArray(heroSaved.stats) ? heroSaved.stats : [];
+  const heroStats = (savedStats.length > 0 ? savedStats : heroDefaults.stats)
+    .filter((stat) => stat && stat.active !== false && (String(stat.value || '').trim() || String(stat.label || '').trim()))
+    .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 
   // Modals state
   const [selectedJobForDetails, setSelectedJobForDetails] = useState(null);
@@ -111,30 +125,25 @@ export default function CareersPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const salaryBandFor = (value) => salaryBands.find((b) => b.value === value);
-
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const band = salaryBandFor(selectedSalary);
+      // Department / salary / remote / sort controls were removed from the board
+      // at the client's request (they cluttered the panel), so the query only
+      // carries what the remaining filters can actually set.
       const res = await axios.get('/api/jobs', {
         params: {
           page,
-          limit: 8,
-          sort: sortBy,
+          limit: 10,
           search: debouncedSearch || undefined,
-          department: selectedDepartment !== 'All' ? selectedDepartment : undefined,
           employmentType: selectedJobType !== 'All' ? selectedJobType : undefined,
           experience: selectedExp !== 'All' ? selectedExp : undefined,
           location: selectedLocation !== 'All' ? selectedLocation : undefined,
           course: selectedCourse !== 'All' ? selectedCourse : undefined,
-          salaryMin: band && band.min > 0 ? band.min : undefined,
-          remoteOnly: remoteOnly ? 'true' : undefined,
         },
       });
       setJobs(res.data.jobs || []);
       if (res.data.pagination) setPagination(res.data.pagination);
-      if (res.data.facets?.departments) setDepartmentOptions(res.data.facets.departments);
     } catch (err) {
       console.error('Failed to load jobs', err);
     } finally {
@@ -154,24 +163,11 @@ export default function CareersPage() {
   const jobTypes = ['All', 'Full-time', 'Contract', 'Part-time', 'Internship'];
   const experienceLevels = ['All', 'Entry', 'Mid', 'Senior'];
   const locations = ['All', 'Remote', 'New York, NY', 'Austin, TX', 'Dallas, TX', 'Washington, DC', 'On-site', 'Hybrid'];
-  const salaryBands = [
-    { label: 'All Salaries', value: 'All', min: 0 },
-    { label: '$80K+', value: '80', min: 80000 },
-    { label: '$120K+', value: '120', min: 120000 },
-    { label: '$160K+', value: '160', min: 160000 },
-    { label: '$200K+', value: '200', min: 200000 },
-  ];
 
-  // Departments discovered from live job postings
-  // Departments come from the API facets (all published postings), so the
-  // dropdown never shrinks just because a page only holds 8 rows.
-  const departments = ['All', ...departmentOptions];
-
-  // Any change to search/filter/sort starts from page 1 again, so a stale page
+  // Any change to search or a filter starts from page 1 again, so a stale page
   // number can never hide the results the user just asked for.
   const filtersKey = [
-    debouncedSearch, selectedJobType, selectedExp, selectedLocation,
-    selectedCourse, selectedDepartment, selectedSalary, remoteOnly, sortBy,
+    debouncedSearch, selectedJobType, selectedExp, selectedLocation, selectedCourse,
   ].join('|');
   const lastFiltersKey = useRef(filtersKey);
 
@@ -212,10 +208,7 @@ export default function CareersPage() {
     selectedJobType !== 'All' ||
     selectedExp !== 'All' ||
     selectedLocation !== 'All' ||
-    selectedCourse !== 'All' ||
-    selectedDepartment !== 'All' ||
-    selectedSalary !== 'All' ||
-    remoteOnly;
+    selectedCourse !== 'All';
 
   const handleClearFilters = () => {
     setSearchTerm('');
@@ -224,10 +217,6 @@ export default function CareersPage() {
     setSelectedExp('All');
     setSelectedLocation('All');
     setSelectedCourse('All');
-    setSelectedDepartment('All');
-    setSelectedSalary('All');
-    setRemoteOnly(false);
-    setSortBy('newest');
     setPage(1);
   };
 
@@ -320,31 +309,31 @@ export default function CareersPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[rgb(var(--tw-blue-700))]"></span>
                 </span>
-                <span>Corporate Employer Hiring Network • Active Placements</span>
+                <span>{heroText('badgeText')}</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl lg:text-5xl font-display font-extrabold tracking-tight text-[color:rgb(var(--tw-ink-900))] leading-[1.15]">
-                Where Elite Tech Employers Hire{' '}
-                <span className="highlight">Verified Graduate Talent</span>
+                {heroText('heading')}{' '}
+                <span className="highlight">{heroText('headingHighlight')}</span>
               </h1>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
-                Direct hiring partnerships connecting American FutureTech certified fellows with high-growth technology enterprises, defense contractors, and AI engineering studios.
+                {heroText('subtitle')}
               </p>
 
-              <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2">
-                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[color:rgb(var(--tw-ink-900))]">$128K</div>
-                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Avg Placement Comp</div>
-                </div>
-                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[color:rgb(var(--tw-ink-900))]">140+</div>
-                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Corporate Partners</div>
-                </div>
-                <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                  <div className="text-xl sm:text-2xl font-black font-display text-[color:rgb(var(--tw-ink-900))]">94%</div>
-                  <div className="text-[11px] sm:text-xs text-slate-500 font-medium">Placement Rate</div>
-                </div>
+              {/* Stat cards: count, wording, order and visibility all come from
+                  Admin → Settings → "Live Jobs Page". */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
+                {heroStats.map((stat, idx) => (
+                  <div
+                    key={`${stat.value}-${stat.label}-${idx}`}
+                    className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs animate-rise-in"
+                    style={{ animationDelay: `${idx * 90}ms` }}
+                  >
+                    <div className="text-xl sm:text-2xl font-black font-display text-[color:rgb(var(--tw-ink-900))]">{stat.value}</div>
+                    <div className="text-[11px] sm:text-xs text-slate-500 font-medium">{stat.label}</div>
+                  </div>
+                ))}
               </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -352,14 +341,14 @@ export default function CareersPage() {
                   href="#openings"
                   className="py-3 px-7 rounded-full bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-blue-700))] text-[#FFD9D9] font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer hover:shadow-lg"
                 >
-                  <span>Explore Open Positions</span>
+                  <span>{heroText('primaryCtaText')}</span>
                   <ChevronRight className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))]" />
                 </a>
                 <a
                   href="#fast-track"
                   className="py-3 px-6 rounded-full bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200 shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Join Talent Pool</span>
+                  <span>{heroText('secondaryCtaText')}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                 </a>
               </div>
@@ -372,7 +361,7 @@ export default function CareersPage() {
                   <div className="flex items-center justify-between z-10">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[rgb(var(--tw-gold-500))] animate-ping" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[color:rgb(var(--tw-gold-400))]">Partner Network Active</span>
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[color:rgb(var(--tw-gold-400))]">{heroText('panelLabel')}</span>
                     </div>
                     <div className="w-10 h-10">
                       <Lottie animationData={liveRadarLottie} loop autoplay className="w-10 h-10" />
@@ -397,8 +386,8 @@ export default function CareersPage() {
                         <Check className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="text-xs font-bold leading-tight">Direct Talent Introductions</div>
-                        <div className="text-[10px] text-slate-300 font-mono">140+ Partner Tech Employers</div>
+                        <div className="text-xs font-bold leading-tight">{heroText('panelFooterTitle')}</div>
+                        <div className="text-[10px] text-slate-300 font-mono">{heroText('panelFooterMeta')}</div>
                       </div>
                     </div>
                   </div>
@@ -413,7 +402,7 @@ export default function CareersPage() {
         {/* ========================================================================= */}
         <div id="openings" className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          {/* MAIN COLUMN (8 COLS): SEARCH, WORKING FILTERS, 8+ JOB GRID */}
+          {/* MAIN COLUMN (8 COLS): SEARCH, WORKING FILTERS, 10-PER-PAGE JOB GRID */}
           <div className="lg:col-span-8 space-y-4">
             
             {/* Search and Filters Bar */}
@@ -490,61 +479,6 @@ export default function CareersPage() {
                 </div>
               </div>
 
-              {/* Secondary Filters: Department, Salary, Remote, Sort */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Department</label>
-                  <select
-                    aria-label="Department"
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[rgb(var(--tw-ink-900))] truncate"
-                  >
-                    {departments.map(d => <option key={d} value={d}>{d === 'All' ? 'All Departments' : d}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Salary</label>
-                  <select
-                    aria-label="Salary band"
-                    value={selectedSalary}
-                    onChange={(e) => setSelectedSalary(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[rgb(var(--tw-ink-900))]"
-                  >
-                    {salaryBands.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase text-slate-600 font-bold mb-1">Sort By</label>
-                  <select
-                    aria-label="Sort jobs by"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-medium focus:outline-none focus:border-[rgb(var(--tw-ink-900))]"
-                  >
-                    <option value="newest">Recently Added</option>
-                    <option value="salary">Highest Salary</option>
-                    <option value="oldest">Oldest First</option>
-                  </select>
-                </div>
-
-                <div className="flex items-end">
-                  <button
-                    type="button"
-                    onClick={() => setRemoteOnly(!remoteOnly)}
-                    className={`w-full px-2.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
-                      remoteOnly
-                        ? 'bg-[rgb(var(--tw-ink-900))] text-[#FFD9D9] border-[rgb(var(--tw-ink-900))]'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {remoteOnly ? '✓ Remote Only' : 'Remote Only'}
-                  </button>
-                </div>
-              </div>
-
               {/* Active Filter Chips */}
               {hasActiveFilters && (
                 <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -613,7 +547,7 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Job Listings — 8 per page, page count derived from the filtered set */}
+            {/* Job Listings — 10 per page, page count derived from the filtered set */}
             <div ref={jobsListRef} className="scroll-mt-28" />
             {loading ? (
               <div className="flex flex-col items-center justify-center py-12 bg-white rounded-3xl border border-slate-200 shadow-xs">

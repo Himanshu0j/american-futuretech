@@ -181,10 +181,22 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
       if (existing) {
         existing.lessonNumber = t + 1;
         existing.order = t + 1;
-        if (lessonTitle && norm(existing.title) !== norm(lessonTitle)) existing.title = lessonTitle;
+        // A real edit through the Courses CMS is the admin claiming this lesson,
+        // so a seeded placeholder stops being demo content and joins the public
+        // syllabus. Merely re-saving the form (nothing named in it changed)
+        // leaves a placeholder hidden — see utils/demoLessons.js.
+        let claimed = false;
+        if (lessonTitle && norm(existing.title) !== norm(lessonTitle)) {
+          existing.title = lessonTitle;
+          claimed = true;
+        }
         // The admin's Free Preview tick is authoritative — this is the only way
         // to remove the badge the seeder once added automatically.
-        if (isPreview !== undefined) existing.isPreview = isPreview;
+        if (isPreview !== undefined && existing.isPreview !== isPreview) {
+          existing.isPreview = isPreview;
+          claimed = true;
+        }
+        if (claimed) existing.source = 'admin';
         await existing.save();
         usedLessonIds.add(String(existing._id));
         summary.lessons.updated += 1;
@@ -196,6 +208,8 @@ const syncCourseCurriculum = async (courseId, curriculum) => {
           lessonNumber: t + 1,
           order: t + 1,
           isPreview: isPreview === undefined ? false : isPreview,
+          // Named by the admin in the course form → authored content.
+          source: 'admin',
         });
         usedLessonIds.add(String(created._id));
         summary.lessons.created += 1;

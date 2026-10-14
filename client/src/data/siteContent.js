@@ -316,6 +316,32 @@ export const DEFAULT_TOOL_CATEGORIES = [
  * would silently delete the rest from the page the first time the admin saves.
  * It is only a seed for the editor; whatever the admin saves takes over.
  */
+/**
+ * The Live Jobs (/jobs & /careers) hiring-network banner.
+ *
+ * These are the values the page shipped with while they were hard-coded, so an
+ * untouched site renders exactly as before — and Admin → Settings → "Live Jobs
+ * Page" now starts from this same copy, which is what makes every word of the
+ * banner (including the three stat cards) editable by the client.
+ */
+export const DEFAULT_CAREERS_HERO = {
+  badgeText: 'Corporate Employer Hiring Network • Active Placements',
+  heading: 'Where Elite Tech Employers Hire',
+  headingHighlight: 'Verified Graduate Talent',
+  subtitle:
+    'Direct hiring partnerships connecting American FutureTech certified fellows with high-growth technology enterprises, defense contractors, and AI engineering studios.',
+  primaryCtaText: 'Explore Open Positions',
+  secondaryCtaText: 'Join Talent Pool',
+  panelLabel: 'Partner Network Active',
+  panelFooterTitle: 'Direct Talent Introductions',
+  panelFooterMeta: '140+ Partner Tech Employers',
+  stats: [
+    { value: '$128K', label: 'Avg Placement Comp', order: 1, active: true },
+    { value: '140+', label: 'Corporate Partners', order: 2, active: true },
+    { value: '94%', label: 'Placement Rate', order: 3, active: true },
+  ],
+};
+
 export const DEFAULT_CAREER_OPPORTUNITIES = {
   eyebrow: 'Career Opportunities',
   heading: 'Unlock Your Potential — What Can You Become?',

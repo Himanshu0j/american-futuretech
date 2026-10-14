@@ -118,6 +118,15 @@ const run = async () => {
     if (!admin.token) throw new Error('could not authenticate as superadmin');
     const asAdmin = { token: admin.token };
 
+    // Some checks below need to write a document exactly as an older seeder
+    // wrote it (that is, without the `source` field this suite is about).
+    const ensureDb = async () => {
+      if (mongoose.connection.readyState !== 1) {
+        await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+      }
+      return mongoose.connection;
+    };
+
     const stamp = Date.now();
 
     // ── Course + modules + lessons ─────────────────────────────────────────
@@ -208,6 +217,164 @@ const run = async () => {
       adminView.json?.counts?.draftLessons >= 1,
       JSON.stringify(adminView.json?.counts || {})
     );
+
+    // ── Seeded / demo lessons stay off the public syllabus ────────────────
+    // The client asked for the seeder's default curriculum to come off the
+    // public course page. It must disappear from the public read only: the
+    // admin builder and the student player keep every row, and nothing is
+    // deleted. See server/utils/demoLessons.js.
+    section('DEMO CURRICULUM IS NOT PUBLIC');
+
+    const publicCourses = await request('GET', '/api/courses?limit=100');
+    const seededCourse = (publicCourses.json?.courses || []).find(
+      (course) => course.title === 'Data Science with AI Integration'
+    );
+    check('Boot seed left a demo course to inspect', Boolean(seededCourse?._id), seededCourse?.title);
+
+    if (seededCourse?._id) {
+      const seededAdminView = await request('GET', `/api/curriculum/admin/courses/${seededCourse._id}`, asAdmin);
+      const seededPublicView = await request('GET', `/api/curriculum/courses/${seededCourse._id}`);
+      const seededAdminLessons = (seededAdminView.json?.modules || []).flatMap((m) => m.lessons || []);
+      const seededPublicLessons = (seededPublicView.json?.modules || []).flatMap((m) => m.lessons || []);
+
+      check(
+        'The seeded demo lessons still exist for the admin',
+        seededAdminLessons.length > 0,
+        `${seededAdminLessons.length} lessons kept`
+      );
+      check(
+        'Every seeded lesson is flagged as demo content',
+        seededAdminLessons.length > 0 && seededAdminLessons.every((l) => l.source === 'seed'),
+        [...new Set(seededAdminLessons.map((l) => l.source))].join(', ')
+      );
+      check(
+        'The builder is told which rows are demo (for its badge)',
+        seededAdminLessons.length > 0 && seededAdminLessons.every((l) => l.isDemo === true),
+        [...new Set(seededAdminLessons.map((l) => l.isDemo))].join(', ')
+      );
+      check(
+        'The public syllabus prints none of the seeded lessons',
+        seededPublicLessons.length === 0,
+        `${seededPublicLessons.length} leaked`
+      );
+      check(
+        'The public lesson total matches what the page prints',
+        seededPublicView.json?.totalLessons === seededPublicLessons.length,
+        `totalLessons=${seededPublicView.json?.totalLessons} printed=${seededPublicLessons.length}`
+      );
+      check(
+        'The demo course still shows its module titles',
+        (seededPublicView.json?.modules || []).length > 0,
+        `${(seededPublicView.json?.modules || []).length} modules`
+      );
+    }
+
+    // A row written before the `source` field existed is recognised by the
+    // seeder's own boilerplate body, and the first admin save publishes it.
+    const demoModule = await request('POST', '/api/curriculum/modules', {
+      ...asAdmin,
+      body: { course: courseId, moduleNumber: 3, title: 'Legacy demo module', durationHours: 10 },
+    });
+    const demoModuleId = demoModule.json?.module?._id;
+    const legacyTitle = `Legacy placeholder ${stamp}`;
+    const legacyLesson = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: { course: courseId, module: demoModuleId, title: legacyTitle, videoUrl: 'https://www.youtube.com/embed/rfscVS0vtbw' },
+    });
+    const legacyLessonId = legacyLesson.json?.lesson?._id;
+    check('A lesson to age into a legacy row is created', Boolean(legacyLessonId), `HTTP ${legacyLesson.status}`);
+
+    const db = await ensureDb();
+    await db.collection('lessons').updateOne(
+      { _id: new mongoose.Types.ObjectId(legacyLessonId) },
+      {
+        $set: {
+          description: `Hands-on lesson covering ${legacyTitle} with production code walkthroughs and downloadable lab files.`,
+          textContent: `### Overview: ${legacyTitle}\n\nIn this lesson, you will master production principles and real-world architectures. Follow along with the video, complete the lab exercises, and verify your implementation with the resources provided.`,
+        },
+        $unset: { source: '' },
+      }
+    );
+
+    const legacyPublic = await request('GET', `/api/curriculum/courses/${courseId}`);
+    const legacyPublicTitles = (legacyPublic.json?.modules || []).flatMap((m) => (m.lessons || []).map((l) => l.title));
+    check(
+      'A pre-existing seeded row is hidden without any `source` field',
+      !legacyPublicTitles.includes(legacyTitle),
+      legacyPublicTitles.join(' | ')
+    );
+
+    const legacyAdmin = await request('GET', `/api/curriculum/admin/courses/${courseId}`, asAdmin);
+    const legacyAdminLessons = (legacyAdmin.json?.modules || []).flatMap((m) => m.lessons || []);
+    check('The same row is still visible in the admin builder', legacyAdminLessons.some((l) => l.title === legacyTitle));
+    check(
+      'Authored lessons are not marked as demo in the builder',
+      legacyAdminLessons.filter((l) => l.title !== legacyTitle).every((l) => l.isDemo === false),
+      legacyAdminLessons.map((l) => `${l.title}:${l.isDemo}`).join(' | ')
+    );
+
+    const promoted = await request('PUT', `/api/curriculum/lessons/${legacyLessonId}`, {
+      ...asAdmin,
+      body: { title: legacyTitle, description: 'Rewritten by the admin', textContent: 'Real lesson notes.' },
+    });
+    check('An admin save marks the lesson as authored', promoted.json?.lesson?.source === 'admin', String(promoted.json?.lesson?.source));
+
+    const afterPromote = await request('GET', `/api/curriculum/courses/${courseId}`);
+    const afterPromoteTitles = (afterPromote.json?.modules || []).flatMap((m) => (m.lessons || []).map((l) => l.title));
+    check('The edited lesson now appears on the public syllabus', afterPromoteTitles.includes(legacyTitle));
+
+    // The second placeholder shape: a bare stub row ("Hands-on lesson." with no
+    // notes, PDF or resources) is demo content too. The row below it carries the
+    // same stub description but real material, and must stay public — hiding by
+    // the description alone would swallow authored lessons.
+    const stubTitle = `Bare stub ${stamp}`;
+    const stubLesson = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: { course: courseId, module: demoModuleId, title: stubTitle, videoUrl: 'https://www.youtube.com/embed/rfscVS0vtbw' },
+    });
+    const stubLessonId = stubLesson.json?.lesson?._id;
+
+    const realTitle = `Stub description, real material ${stamp}`;
+    const realLesson = await request('POST', '/api/curriculum/lessons', {
+      ...asAdmin,
+      body: {
+        course: courseId,
+        module: demoModuleId,
+        title: realTitle,
+        videoUrl: 'https://www.youtube.com/embed/rfscVS0vtbw',
+        textContent: 'Authored notes for a real lesson.',
+        resources: [{ title: 'Lab worksheet', url: 'https://example.com/lab.pdf', fileType: 'PDF', fileSize: '1 MB' }],
+      },
+    });
+    const realLessonId = realLesson.json?.lesson?._id;
+
+    const lessonsCol = db.collection('lessons');
+    await lessonsCol.updateOne(
+      { _id: new mongoose.Types.ObjectId(stubLessonId) },
+      { $set: { description: 'Hands-on lesson.', textContent: '', pdfUrl: '', resources: [] }, $unset: { source: '' } }
+    );
+    await lessonsCol.updateOne(
+      { _id: new mongoose.Types.ObjectId(realLessonId) },
+      { $set: { description: 'Hands-on lesson.' }, $unset: { source: '' } }
+    );
+
+    const stubPublic = await request('GET', `/api/curriculum/courses/${courseId}`);
+    const stubPublicTitles = (stubPublic.json?.modules || []).flatMap((m) => (m.lessons || []).map((l) => l.title));
+    check('A bare "Hands-on lesson." stub is hidden from the public page', !stubPublicTitles.includes(stubTitle), stubPublicTitles.join(' | '));
+    check(
+      'A stub description over real notes is still published',
+      stubPublicTitles.includes(realTitle),
+      `published: ${stubPublicTitles.join(' | ')}`
+    );
+
+    // …and that same bare stub becomes public the moment the admin writes notes.
+    await request('PUT', `/api/curriculum/lessons/${stubLessonId}`, {
+      ...asAdmin,
+      body: { title: stubTitle, textContent: 'Notes the admin just wrote.' },
+    });
+    const afterStubNotes = await request('GET', `/api/curriculum/courses/${courseId}`);
+    const afterStubTitles = (afterStubNotes.json?.modules || []).flatMap((m) => (m.lessons || []).map((l) => l.title));
+    check('Writing notes on a stub publishes it', afterStubTitles.includes(stubTitle));
 
     // ── Reorder + duplicate ────────────────────────────────────────────────
     section('ORDERING & DUPLICATION');

@@ -5,20 +5,7 @@ import {
   CheckCircle2,
   Pause,
   Play,
-  Award,
-  Calendar,
   Users,
-  Code2,
-  Check,
-  FileCode,
-  Sparkles,
-  ShieldCheck,
-  ExternalLink,
-  Laptop,
-  GraduationCap,
-  BarChart3,
-  Flame,
-  FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -56,9 +43,6 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const { settings } = useSiteSettings();
   const heroData = settings?.hero || {};
 
-  const [activeTab, setActiveTab] = useState('workspace'); // 'workspace' | 'lms' | 'classroom' | 'credential' | 'admin'
-  const [heroCredView, setHeroCredView] = useState('us'); // 'us' | 'microsoft'
-  const [lessonCompleted, setLessonCompleted] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // The client's promo clip fills the Flagship Studio frame — the first thing a
@@ -94,14 +78,6 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-
-  const cockpitTabs = [
-    { id: 'workspace', label: 'Flagship Studio', icon: Laptop },
-    { id: 'lms', label: 'Student LMS', icon: Code2 },
-    { id: 'classroom', label: 'Live Classroom', icon: Play },
-    { id: 'credential', label: 'US Credential', icon: Award },
-    { id: 'admin', label: 'Admin Telemetry', icon: BarChart3 },
-  ];
 
   return (
     <section className="relative pt-8 sm:pt-12 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 bg-aurora-light dark:bg-aurora-ink overflow-hidden">
@@ -387,36 +363,11 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               </div>
             </div>
 
-            {/* Bottom-Right Floating Credential Status Badge with Official Gold Seal Asset */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-lg absolute -bottom-3 -right-2 z-20 animate-float-delayed">
-              <img
-                src="/images/gold-seal-medal.webp"
-                alt="Gold Medal Seal"
-                className="w-8 h-8 object-contain shrink-0 drop-shadow-sm"
-              />
-              <div className="text-left">
-                <div className="text-xs font-bold text-slate-900 dark:text-white">Accredited US Diploma</div>
-                <div className="text-[10px] font-mono text-blue-600 dark:text-blue-400 font-bold">AFT-CERT-AI9821 Verified</div>
-              </div>
-            </div>
-
-            {/* Bottom-Left Floating Interactive Cloud Lab Visual Asset */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-xl absolute -bottom-4 -left-3 z-20 animate-float-slow">
-              <div className="w-10 h-9 rounded-xl overflow-hidden bg-slate-900 shrink-0 border border-slate-700 shadow-inner">
-                <img
-                  src="/images/floating-laptop-code.webp"
-                  alt="Live Code Lab"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-left">
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>Cloud GPU Lab</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
-                </div>
-                <div className="text-[10px] font-mono text-slate-500">PyTorch & Agentic RAG</div>
-              </div>
-            </div>
+            {/* The two credential pins that used to hang off the panel's lower
+                corners (Cloud GPU Lab / Accredited US Diploma) are gone: the clip
+                is the panel's full width now, so they only sat on top of the
+                caption. The upper two pins stay — they label the fellowship and
+                the track without covering any video. */}
 
             {/* Sourced unDraw Hero Illustration Banner */}
             <motion.div
@@ -453,465 +404,94 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
               </div>
             </motion.div>
 
-            <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-left transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] relative z-10">
-              
-              {/* Cockpit Window Header & View Switcher */}
-              <div className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 p-3 sm:p-4">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-blue-400" />
-                    <span className="ml-2 font-mono text-[11px] text-slate-500 truncate hidden sm:inline">
-                      lms.americanfuturetech.com/cockpit
+                        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-left relative z-10">
+              {/* The hero is the client's promo clip and nothing else.
+
+                  On the live page the clip sat inside a fake browser window: a
+                  traffic-light + URL header, a "Live Product Ecosystem" chip, a
+                  five-view tab strip, a row of three info tiles and a Reserve /
+                  Browse button pair underneath. Every one of those was marked out
+                  and asked to go ("sirf video dekhe"), along with the four other
+                  tab views that only that strip could reach — see git history if
+                  they are ever wanted back.
+
+                  What is left is the panel's full width as a true 16:9 rectangle.
+                  The clip is 1080x608 (already 1.78:1), so `object-cover` in this
+                  frame shows every pixel with no letterboxing and no side-cropping,
+                  and it renders larger than the old tall 9:5 box ever could. */}
+              <div className="relative w-full aspect-video bg-slate-950">
+                {heroVideoUrl ? (
+                  <video
+                    ref={heroVideoRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    src={heroVideoUrl}
+                    poster={heroVideoPoster || undefined}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    aria-label="Promo clip: instructors and fellows inside a live American FutureTech cohort session"
+                  />
+                ) : (
+                  /* No clip configured in the CMS: the studio photograph keeps the
+                     same 16:9 shape, so the panel is never an empty black box.
+                     `block h-full` matters on an inline <picture>: without it the
+                     image's `h-full` resolves to auto and the photo grows past the
+                     frame instead of filling it. */
+                  <picture className="block h-full">
+                    <source media="(min-width: 1024px)" srcSet={HERO_WORKSPACE_IMG} />
+                    <img
+                      src={HERO_WORKSPACE_IMG_TALL}
+                      alt="A professional working on a laptop — American FutureTech fellows train for exactly this work"
+                      width="1300"
+                      height="1721"
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                      className="w-full h-full object-cover object-[50%_40%] sm:object-[50%_16%] lg:object-[50%_50%]"
+                    />
+                  </picture>
+                )}
+
+                {/* Scrim + caption: the clip fills the panel edge to edge now, so
+                    the caption needs the gradient to stay readable over any frame.
+                    Both are pointer-events-none so they cannot swallow clicks. */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 pointer-events-none">
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
+                      Live Silicon Valley Ecosystem
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-500/30 text-[10px] font-mono font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                      Active Cohort
                     </span>
                   </div>
-
-                  <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold border border-blue-200 dark:border-blue-800/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                    <span>Live Product Ecosystem</span>
-                  </div>
+                  <h3 className="text-white font-bold text-lg sm:text-2xl font-heading drop-shadow-lg">
+                    American FutureTech Innovation Lab
+                  </h3>
+                  <p className="text-slate-200 text-xs sm:text-sm mt-1 max-w-lg">
+                    Enterprise cloud environments, dedicated workstations, and live 1-on-1 faculty coaching.
+                  </p>
                 </div>
 
-                {/* 5 Interactive Segmented Control Tabs */}
-                <div className="grid grid-cols-5 gap-1 p-1 bg-slate-200/80 dark:bg-slate-800 rounded-xl">
-                  {cockpitTabs.map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        // The label is visually hidden below the `sm` breakpoint, which
-                        // left these icon-only buttons with no accessible name. The
-                        // aria-label keeps them announced at every width.
-                        aria-label={tab.label}
-                        aria-pressed={isActive}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                          isActive
-                            ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs'
-                            : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-white/50'
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate hidden sm:inline">{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                {/* Pause / play — the clip loops, so WCAG 2.2.2 asks for a visible
+                    way to stop the motion. */}
+                {heroVideoUrl && (
+                  <button
+                    type="button"
+                    onClick={toggleHeroVideo}
+                    aria-label={heroVideoPlaying ? 'Pause the hero video' : 'Play the hero video'}
+                    className="absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                  >
+                    {heroVideoPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                  </button>
+                )}
               </div>
-
-              {/* Cockpit Dynamic Views */}
-              <div className="p-5 sm:p-6 bg-white dark:bg-slate-900 min-h-[380px] flex flex-col justify-between">
-                
-                {/* VIEW 0: FLAGSHIP WORKSPACE & STUDIO */}
-                {activeTab === 'workspace' && (
-                  <div className="space-y-4 animate-in fade-in duration-200 text-left">
-                    {/* This frame is the first thing a visitor looks at, so it is
-                        deliberately the largest element in the cockpit: a tall,
-                        full-bleed media box instead of the old 240px strip. The
-                        client's promo clip plays in it; the studio photograph is
-                        the fallback when no video URL is configured. */}
-                    <div className="relative h-[22rem] sm:h-[26rem] lg:h-[30rem] rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-xl group bg-slate-950">
-                      {heroVideoUrl ? (
-                        /* The clip was recorded landscape (1920×1080) and exported
-                           into a vertical 1080×1920 canvas with pure-black bars
-                           top and bottom, so plain `object-cover` would show those
-                           bars inside this frame. The element is therefore shaped
-                           9:5 — the exact shape of the footage between the bars —
-                           and centred, which lets the frame crop the sides instead
-                           of showing letterboxing. */
-                        <video
-                          ref={heroVideoRef}
-                          className="absolute left-1/2 top-1/2 aspect-[9/5] h-full w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
-                          src={heroVideoUrl}
-                          poster={heroVideoPoster || undefined}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload="auto"
-                          disablePictureInPicture
-                          disableRemotePlayback
-                          aria-label="Promo clip: instructors and fellows inside a live American FutureTech cohort session"
-                        />
-                      ) : (
-                      /* The photograph keeps the frame's shape, so clearing the
-                         video URL in the CMS never leaves an empty box. `block
-                         h-full` matters here: on an inline <picture> the image's
-                         `h-full` resolves to auto, and the photo then grew past
-                         the frame and got clipped instead of cropped. */
-                      <picture className="block h-full">
-                        <source media="(min-width: 1024px)" srcSet={HERO_WORKSPACE_IMG} />
-                        <img
-                          src={HERO_WORKSPACE_IMG_TALL}
-                            alt="A professional working on a laptop — American FutureTech fellows train for exactly this work"
-                            width="1300"
-                            height="1721"
-                            loading="eager"
-                            // Lowercase on purpose: React 18.3 does not map
-                            // `fetchPriority` and warns about the camelCase prop.
-                            fetchpriority="high"
-                            decoding="async"
-                            // The crop carries the headroom now, so the anchor is
-                            // only here for the frames whose shape differs from the
-                            // crop's: from `sm` up to `lg` the frame is much wider
-                            // than the 0.76 portrait, and `object-cover` can only
-                            // show a horizontal slice of it — the default 46%
-                            // centred on the man's chest and cut his head off.
-                            className="anim-cockpit-drift w-full h-full object-cover object-[50%_40%] sm:object-[50%_16%] lg:object-[50%_50%]"
-                          />
-                        </picture>
-                      )}
-                      {/* Soft, bottom-anchored scrim: the media carries the section,
-                          so the gradient only exists to keep the caption legible. */}
-                      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent" />
-                      <div className="absolute inset-0 flex flex-col justify-end p-5">
-                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
-                            Live Silicon Valley Ecosystem
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-mono font-semibold flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                            Active Cohort
-                          </span>
-                        </div>
-                        <h3 className="text-white font-bold text-xl sm:text-2xl font-heading drop-shadow-lg">
-                          American FutureTech Innovation Lab
-                        </h3>
-                        <p className="text-slate-200 text-xs sm:text-sm mt-1 max-w-md">
-                          Enterprise cloud environments, dedicated workstations, and live 1-on-1 faculty coaching.
-                        </p>
-                      </div>
-
-                      {/* Pause / play — the clip loops, so WCAG 2.2.2 asks for a
-                          visible way to stop the motion. */}
-                      {heroVideoUrl && (
-                        <button
-                          type="button"
-                          onClick={toggleHeroVideo}
-                          aria-label={heroVideoPlaying ? 'Pause the hero video' : 'Play the hero video'}
-                          className="absolute top-3 right-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                        >
-                          {heroVideoPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 pt-1">
-                      <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Tuition Model</div>
-                        <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">$99 Reservation</div>
-                        <div className="text-[10px] text-slate-500">Refundable deposit</div>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Curriculum</div>
-                        <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">6-Month Training</div>
-                        <div className="text-[10px] text-slate-500">Or 1-on-1 Track</div>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono uppercase">Placement</div>
-                        <div className="text-xs font-bold text-blue-700 dark:text-blue-400 mt-0.5">Live Job Board</div>
-                        <div className="text-[10px] text-slate-500">Direct hiring pipeline</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-1">
-                      <Link
-                        to="/checkout?tier=deposit"
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
-                      >
-                        <span>Reserve Seat for $99</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={onExploreCourses}
-                        className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-colors"
-                      >
-                        Browse Courses
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* VIEW 1: STUDENT LMS DASHBOARD */}
-                {activeTab === 'lms' && (
-                  <div className="space-y-4 animate-in fade-in duration-200">
-                    {/* Visual Fellow Context Banner */}
-                    <div className="relative rounded-xl overflow-hidden h-24 border border-slate-200 dark:border-slate-700 group">
-                      <img
-                        src="/images/hero-technologist.jpg"
-                        alt="Applied Technology Lab Fellow"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-transparent flex items-center p-3.5">
-                        <div className="text-left space-y-0.5">
-                          <span className="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-mono font-bold uppercase">
-                            Active Academic Term
-                          </span>
-                          <div className="text-white font-bold text-sm font-heading">Applied AI & Cloud Systems Lab</div>
-                          <div className="text-blue-200 text-[10px]">Cohort Track: 6-Month AI Systems & Cloud</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs font-mono">
-                          EH
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900 dark:text-white">Ethan Hunt</div>
-                          <div className="text-[10px] text-slate-500 font-mono">Fellow ID: AFT-2026-8819</div>
-                        </div>
-                      </div>
-                      <span className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 text-[10px] font-bold">
-                        Enrolled
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500 font-medium">Primary Specialization:</span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">68% Complete</span>
-                      </div>
-                      <div className="text-sm font-bold text-slate-900 dark:text-white">
-                        6-Month Career Track: Data Science with AI Integration
-                      </div>
-                      <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full w-[68%]" />
-                      </div>
-                      <div className="flex justify-between items-center pt-1 text-[11px] text-slate-500">
-                        <span>Current: Module 4 (Agentic RAG & LangGraph)</span>
-                        <Link to="/courses/data-science-with-ai-integration" className="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
-                          <span>Resume</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 pt-1">
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 font-mono">NEXT LIVE LAB</div>
-                        <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">Saturday, 10:00 AM EST</div>
-                        <div className="text-[10px] text-slate-500">Multi-Agent Orchestration</div>
-                      </div>
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 font-mono">FACULTY OFFICE HOURS</div>
-                        <div className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">1-on-1 Code Review</div>
-                        <div className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">Booked for Thursday</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* VIEW 2: CLASSROOM PLAYER */}
-                {activeTab === 'classroom' && (
-                  <div className="space-y-4 animate-in fade-in duration-200">
-                    <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-950 flex flex-col justify-between p-4 border border-slate-800">
-                      <div className="flex items-center justify-between text-white/80 text-xs">
-                        <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-white/20">Lesson 4.2</span>
-                        <span className="text-[10px]">34:12 / 48:00</span>
-                      </div>
-                      <div className="flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                          <Play className="w-5 h-5 ml-0.5" />
-                        </div>
-                      </div>
-                      <div className="text-left text-white">
-                        <div className="text-xs font-bold font-heading">Production Fine-Tuning with LoRA & vLLM</div>
-                        <div className="text-[10px] text-slate-400">Instructor: Dr. Marcus Vance, Ex-Staff Research Scientist</div>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-1.5 text-left border border-slate-800">
-                      <div className="text-[10px] text-slate-500 flex items-center justify-between border-b border-slate-800 pb-1">
-                        <span>main.py — Live Cloud Container</span>
-                        <span className="text-blue-400">Python 3.11</span>
-                      </div>
-                      <div className="text-blue-400">import torch, vllm</div>
-                      <div className="text-slate-300">from langchain.agents import initialize_agent</div>
-                      <div className="text-slate-400"># Model initialized with FlashAttention-2</div>
-                      <div className="text-blue-300">agent = initialize_agent(tools, llm, verbose=True)</div>
-                    </div>
-
-                    <button
-                      onClick={() => setLessonCompleted(!lessonCompleted)}
-                      className={`w-full py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer ${
-                        lessonCompleted
-                          ? 'bg-blue-100 text-blue-900 dark:bg-blue-900/60 dark:text-blue-200'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      {lessonCompleted ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>Module Completed & Progress Synced</span>
-                        </>
-                      ) : (
-                        <span>Mark Lesson as Completed</span>
-                      )}
-                    </button>
-                  </div>
-                )}
-
-                {/* VIEW 3: US CREDENTIAL & MICROSOFT PARTNER VERIFICATION */}
-                {activeTab === 'credential' && (
-                  <div className="space-y-3 animate-in fade-in duration-200">
-                    {/* View Switcher Bar */}
-                    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => setHeroCredView('us')}
-                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
-                          heroCredView === 'us'
-                            ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                      >
-                        <Award className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                        <span>US Institute Diploma</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHeroCredView('microsoft')}
-                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
-                          heroCredView === 'microsoft'
-                            ? 'bg-blue-600 text-white shadow-xs'
-                            : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                        }`}
-                      >
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Microsoft Certified</span>
-                      </button>
-                    </div>
-
-                    {heroCredView === 'us' ? (
-                      <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-blue-50/40 dark:from-slate-800 dark:via-slate-850 dark:to-blue-950/30 border-2 border-blue-500/20 text-center relative overflow-hidden shadow-inner">
-                        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-700 pb-2.5 mb-3">
-                          <div className="text-left">
-                            <div className="text-[10px] font-bold text-blue-900 dark:text-blue-300 uppercase tracking-widest font-heading">
-                              AMERICAN FUTURETECH
-                            </div>
-                            <div className="text-[9px] text-slate-500 font-mono">Registry of Digital Credentials · Wyoming</div>
-                          </div>
-                          <img
-                            src="/images/gold-seal-medal.webp"
-                            alt="Gold Medal Seal"
-                            className="w-8 h-8 object-contain"
-                          />
-                        </div>
-
-                        <div className="text-[11px] text-slate-500 uppercase tracking-widest font-mono">
-                          This Certifies That
-                        </div>
-                        <div className="text-base font-bold text-slate-900 dark:text-white font-heading mt-0.5">
-                          Ethan Hunt
-                        </div>
-                        <div className="text-[10px] text-slate-600 dark:text-slate-300 max-w-xs mx-auto mt-0.5 leading-relaxed">
-                          has successfully completed the 24-week (6-month) professional fellowship in
-                        </div>
-                        <div className="text-xs font-bold text-blue-600 dark:text-blue-400 font-heading mt-0.5">
-                          Applied Artificial Intelligence & Machine Learning Systems
-                        </div>
-
-                        <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-[9px] font-mono text-slate-500">
-                          <span>ID: AFT-CERT-AI9821</span>
-                          <span className="text-blue-600 dark:text-blue-400 font-bold">STATUS: ACCREDITED</span>
-                          <span>ISSUED: 2026</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-3.5 rounded-2xl bg-slate-900 border-2 border-blue-500/30 text-center relative overflow-hidden shadow-inner space-y-2.5">
-                        <div className="relative rounded-xl overflow-hidden border border-blue-400/40 bg-white max-h-40 flex items-center justify-center">
-                          <img
-                            src="/images/certificates/ms-cert-sc100.png"
-                            alt="Microsoft Certified SC-100"
-                            className="w-full h-auto max-h-36 object-contain"
-                          />
-                          <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-blue-900/90 text-blue-200 text-[9px] font-mono font-bold">
-                            SC-100 EXPERT
-                          </div>
-                        </div>
-
-                        <div className="text-left space-y-0.5 px-1">
-                          <div className="text-xs font-bold text-white font-heading truncate">
-                            Microsoft Certified: Cybersecurity Architect Expert
-                          </div>
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                            <span>Conferred to: Ethan Hunt</span>
-                            <span className="text-blue-400 font-bold">VERIFIED ACTIVE</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <Link
-                      to="/certificate/AFT-CERT-AI9821"
-                      className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <span>Open Cryptographic Registry Record</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                )}
-
-                {/* VIEW 4: ADMIN TELEMETRY */}
-                {activeTab === 'admin' && (
-                  <div className="space-y-3 animate-in fade-in duration-200 text-left">
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
-                      <div>
-                        <div className="text-[10px] text-slate-500 font-mono uppercase">Current Cohort Enrollment</div>
-                        <div className="text-lg font-bold text-slate-900 dark:text-white">142 Fellows Active</div>
-                      </div>
-                      <span className="px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-[10px] font-bold font-mono">
-                        98.7% Retention
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 font-mono">AVERAGE COMPLETION</div>
-                        <div className="text-base font-bold text-blue-600 dark:text-blue-400 font-mono mt-0.5">84.2%</div>
-                        <div className="text-[10px] text-slate-500">Across 6 flagship labs</div>
-                      </div>
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
-                        <div className="text-[10px] text-slate-500 font-mono">PLACEMENT VELOCITY</div>
-                        <div className="text-base font-bold text-blue-600 dark:text-blue-400 font-mono mt-0.5">89%</div>
-                        <div className="text-[10px] text-slate-500">Hired within 90 days</div>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-1">
-                      <div className="text-[10px] text-slate-500 font-mono uppercase">Partner Employer Inquiries</div>
-                      <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        Google Cloud, Databricks, Snowflake & CrowdStrike active hiring pipelines.
-                      </div>
-                    </div>
-
-                    <Link
-                      to="/admin/login"
-                      className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Launch Staff Admin Console</span>
-                    </Link>
-                  </div>
-                )}
-
-                {/* Footer Software Assurance */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
-                  <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
-                    Real Production Architecture
-                  </span>
-                  <span className="font-mono text-[10px]">v4.2 Enterprise</span>
-                </div>
-              </div>
-
-            </div>
+</div>
           </div>
 
         </div>

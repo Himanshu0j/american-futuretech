@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Academy / LMS — Complete Client Guide</title>
+<style>
+  :root { --ink: #12362f; --ink-soft: #1f4a41; --gold: #a97c22; --line: #d8ddd9; --muted: #5b6764; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0; color: #1c2321; background: #fff;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.55;
+  }
+  .content { padding: 0; }
+
+  /* ── Cover ─────────────────────────────────────────────────────────────── */
+  .cover {
+    height: 250mm; display: flex; flex-direction: column; justify-content: center;
+    padding: 0 6mm; page-break-after: always; border-top: 6px solid var(--ink);
+  }
+  .cover .eyebrow { font-size: 9pt; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+  .cover h1 { font-size: 30pt; line-height: 1.15; margin: 10px 0 14px; color: var(--ink); letter-spacing: -0.01em; }
+  .cover .tagline { font-size: 12.5pt; color: var(--ink-soft); margin: 0 0 8px; font-weight: 600; }
+  .cover .meta { margin-top: 26px; font-size: 9.5pt; color: var(--muted); }
+  .cover .rule { width: 86px; height: 4px; background: var(--gold); margin: 18px 0 4px; }
+
+  /* ── Headings ──────────────────────────────────────────────────────────── */
+  h1 { font-size: 19pt; color: var(--ink); margin: 0 0 14px; }
+  h2 {
+    font-size: 15.5pt; color: var(--ink); margin: 0 0 12px; padding-bottom: 7px;
+    border-bottom: 2px solid var(--ink); break-before: page; break-after: avoid;
+  }
+  h2:first-of-type { break-before: auto; }
+  h3 { font-size: 12.5pt; color: var(--ink-soft); margin: 20px 0 8px; break-after: avoid; }
+  h4 { font-size: 11pt; color: var(--ink-soft); margin: 16px 0 6px; break-after: avoid; }
+  p { margin: 0 0 9px; }
+  strong { color: #122a24; }
+  a { color: #0f5a8c; text-decoration: none; word-break: break-word; }
+  code {
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    font-size: 9pt; background: #f2f4f2; border: 1px solid #e2e6e3;
+    border-radius: 3px; padding: 1px 4px;
+  }
+
+  /* ── Tables ────────────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 9.5pt; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  th {
+    background: var(--ink); color: #fff; text-align: left; font-weight: 700;
+    padding: 7px 9px; border: 1px solid var(--ink);
+  }
+  td { padding: 6px 9px; border: 1px solid var(--line); vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #f6f8f6; }
+
+  /* ── Lists ─────────────────────────────────────────────────────────────── */
+  ul, ol { margin: 4px 0 12px; padding-left: 20px; }
+  li { margin: 3px 0; }
+  li > p { margin: 0; }
+
+  /* ── Quotes, rules, code blocks ────────────────────────────────────────── */
+  blockquote {
+    margin: 10px 0 14px; padding: 9px 13px; background: #f4f7f4;
+    border-left: 4px solid var(--gold); break-inside: avoid;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+  pre {
+    background: #f6f8f6; border: 1px solid var(--line); border-radius: 5px;
+    padding: 11px 13px; margin: 8px 0 14px; break-inside: avoid; overflow: visible;
+  }
+  pre code {
+    background: none; border: 0; padding: 0; font-size: 8.6pt; line-height: 1.45;
+    white-space: pre-wrap; display: block;
+  }
+</style>
+</head>
+<body>
+  <section class="cover">
+    <div class="eyebrow">Client Documentation</div>
+    <h1>Academy / LMS — Complete Client Guide</h1>
+    <div class="rule"></div>
+    <p class="tagline">American FutureTech · Learning Management System</p>
+    <p class="meta">American FutureTech &middot; Client documentation &middot; 2026-10-13</p>
+  </section>
+  <main class="content">
+<p>Ye ek hi document hai jo batata hai: <strong>LMS poora kaise chalta hai, admin side se kaise chalate hain, aur student ko kya-kya dikhta hai.</strong></p>
+<p>Aap (ya aapki team) is document ko padh kar poora LMS khud chala sakte hain — <strong>bina developer, bina code.</strong></p>
+<blockquote><p><strong>Isko kis ke liye diya ja sakta hai:</strong> AFT team (Super Admin / Counselor / Instructor) — aur jo bhi staff LMS ka daily kaam karega.</p></blockquote>
+<hr />
+<h2>0. 60-second summary</h2>
+<p>LMS 3 hisson me chalta hai:</p>
+<table>
+<thead><tr><th>#</th><th>Hissa</th><th>Kaun chalata hai</th><th>Kahan</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>Content banane wala</strong> (course → module → lesson/video/notes/resources → quiz)</td><td>Admin / Instructor</td><td>Admin → <strong>Academy / LMS</strong> → Curriculum Builder + Assessments</td></tr>
+<tr><td>2</td><td><strong>Access dene wala</strong> (student ko course dena, progress, certificate, notice)</td><td>Admin / Counselor</td><td>Admin → <strong>Academy / LMS</strong> ke baaki pages</td></tr>
+<tr><td>3</td><td><strong>Padhne wala</strong> (video, notes, resources, test, certificate)</td><td>Student</td><td><code>/student/login</code> portal</td></tr>
+</tbody></table>
+<p><strong>Ek line me poora flow:</strong></p>
+<pre><code>
+Admin course + module + lesson banata hai
+        ↓  (publish)
+Admin/Counselor student ka account banata hai
+        ↓
+Student ko course ENROLL karta hai  →  student ko turant course dikhne lagta hai
+        ↓
+Student video dekhta hai, notes padhta hai, resources download karta hai
+        ↓  har lesson "Mark as Complete"
+Student module ka quiz deta hai  →  score turant (pass mark ke saath)
+        ↓  jab saare published lessons complete
+CERTIFICATE khud-ba-khud ban jata hai  →  /certificate/&lt;ID&gt; par verify ho sakta hai
+        ↓
+Admin Progress / Certificates / Communications se sab monitor karta hai
+</code></pre>
+<hr />
+<h2>1. Links aur logins</h2>
+<table>
+<thead><tr><th>Kya</th><th>Link</th></tr></thead>
+<tbody>
+<tr><td><strong>Admin Login</strong></td><td>https://americanfuturetechllc.com/admin/login</td></tr>
+<tr><td>Admin → LMS Overview</td><td>https://americanfuturetechllc.com/admin/lms</td></tr>
+<tr><td>Admin → How to Use Admin (in-built manual)</td><td>https://americanfuturetechllc.com/admin/guide</td></tr>
+<tr><td><strong>Student Login</strong></td><td>https://americanfuturetechllc.com/student/login</td></tr>
+<tr><td><strong>Certificate Verification (public, bina login)</strong></td><td>https://americanfuturetechllc.com/certificate/&lt;certificate-id&gt;</td></tr>
+<tr><td>Server health</td><td>https://americanfuturetechllc.com/api/health</td></tr>
+</tbody></table>
+<p><strong>Local (development) par:</strong> admin <code>http://localhost:5173/admin/login</code>, student <code>http://localhost:5173/student/login</code>.</p>
+<blockquote><p>Passwords kabhi email/WhatsApp par plain text me na bhejein — password manager link ya sealed sheet (<code>docs/credentials.local.md</code>) use karein.</p></blockquote>
+<hr />
+<h2>2. LMS ka structure (ekdum basic)</h2>
+<p>Sabse chhoti unit se badi unit tak:</p>
+<table>
+<thead><tr><th>Level</th><th>Kya hota hai</th><th>Kahan banate hain</th></tr></thead>
+<tbody>
+<tr><td><strong>Course</strong></td><td>Ek program (jaise “AI Engineering Fellowship”)</td><td>Curriculum &amp; Courses CMS (ya LMS Curriculum Builder se course chuno)</td></tr>
+<tr><td><strong>Module</strong></td><td>Course ke andar ek hissa (jaise “Foundations”, 20 hours)</td><td>Admin → LMS → Curriculum Builder → Add module</td></tr>
+<tr><td><strong>Lesson</strong></td><td>Module ke andar ek class — video link, notes, resources</td><td>Curriculum Builder → Add lesson</td></tr>
+<tr><td><strong>Quiz</strong></td><td>Module ke aakhir me test (pass mark, time limit)</td><td>Curriculum Builder → Add quiz / Assessments page</td></tr>
+<tr><td><strong>Student</strong></td><td>Person jiska account + enrollment ho</td><td>Admin → Enrolled Students</td></tr>
+<tr><td><strong>Enrollment</strong></td><td>“Is student ko ye course mila hai” — access ka switch</td><td>Admin → LMS → Enrollments &amp; Access</td></tr>
+<tr><td><strong>Progress</strong></td><td>Kitne % lessons complete hue</td><td>Student khud complete karta hai; admin override kar sakta hai</td></tr>
+<tr><td><strong>Certificate</strong></td><td>100% par auto-ban new credential</td><td>Admin → LMS → Certificates</td></tr>
+<tr><td><strong>Announcement</strong></td><td>Notice jo student dashboard par dikhta hai</td><td>Admin → LMS → Communications</td></tr>
+</tbody></table>
+<h3>2.1 Sabse zaroori do lafz</h3>
+<ul>
+<li><strong>Published (Live):</strong> student ko <strong>turant</strong> dikhta hai.</li>
+<li><strong>Draft:</strong> sirf admin ko dikhta hai, student ko kabhi nahi.</li>
+</ul>
+<p>Galti ho jaye to kisi bhi lesson/module ko <strong>Draft</strong> kar dein — student se chhup jayega, delete karne ki zaroorat nahi.</p>
+<hr />
+<h2>3. Pehli baar setup — recommended order (30–60 min)</h2>
+<ol>
+<li><strong>LMS Settings</strong> (<code>/admin/lms/settings</code>) — apni defaults set karein: lesson duration, quiz pass mark, certificate ki wording aur accreditation body.</li>
+<li><strong>Curriculum Builder</strong> (<code>/admin/lms/curriculum</code>) — course chunein → modules banayein → har module me lessons daalein (<strong>video link + notes + resources</strong>).</li>
+<li>Har module ka <strong>Quiz</strong> banayein (Curriculum Builder → Add quiz, ya Assessments page).</li>
+<li><strong>Enrolled Students</strong> (<code>/admin/students</code> → <strong>Add Student</strong>) se ek <strong>test student account</strong> banayein.</li>
+<li><strong>Enrollments &amp; Access</strong> se us student ko course dein.</li>
+<li>Us test student se <strong>poora flow khud chala kar dekhein</strong> — video chala? notes dikhe? resources download huye? quiz submit hua? certificate bana?</li>
+<li><strong>Communications</strong> se pehla announcement publish karein.</li>
+<li><strong>Staff &amp; Security RBAC</strong> me team ko sirf zaroori LMS permissions dein.</li>
+</ol>
+<hr />
+<h2>4. Admin side — 8 pages ka poora tareeka</h2>
+<p>Sidebar → <strong>Academy / LMS</strong> group.</p>
+<table>
+<thead><tr><th>#</th><th>Sidebar naam</th><th>Link</th><th>Kaam</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>LMS Overview</td><td><code>/admin/lms</code></td><td>Aankhon ke saamne ke numbers + shortcuts</td></tr>
+<tr><td>2</td><td>Curriculum Builder</td><td><code>/admin/lms/curriculum</code></td><td>Course → module → lesson (video, notes, PDF, resources)</td></tr>
+<tr><td>3</td><td>Assessments &amp; Quizzes</td><td><code>/admin/lms/quizzes</code></td><td>Quiz banao + student scores dekho</td></tr>
+<tr><td>4</td><td>Enrollments &amp; Access</td><td><code>/admin/lms/enrollments</code></td><td>Student ko course dena / rokna / hatana</td></tr>
+<tr><td>5</td><td>Progress &amp; Completion</td><td><code>/admin/lms/progress</code></td><td>Kitna poora hua, reset, force-complete</td></tr>
+<tr><td>6</td><td>Certificates</td><td><code>/admin/lms/certificates</code></td><td>Issue / revoke / reinstate + verify</td></tr>
+<tr><td>7</td><td>Communications</td><td><code>/admin/lms/communications</code></td><td>Announcement + support desk</td></tr>
+<tr><td>8</td><td>LMS Settings</td><td><code>/admin/lms/settings</code></td><td>Defaults aur certificate wording</td></tr>
+</tbody></table>
+<hr />
+<h3>4.1 LMS Overview — sabse pehle yahi kholna</h3>
+<p><strong>Kahan:</strong> Sidebar → Academy / LMS → <strong>LMS Overview</strong></p>
+<p>Upar ke cards ek nazar me batate hain:</p>
+<ul>
+<li><strong>Students</strong> — kitne students + kitne active enrollments</li>
+<li><strong>Curriculum</strong> — kitne lessons / courses / quizzes</li>
+<li><strong>Average progress</strong> — average kitne % (0% ka matlab: abhi koi progress record nahi)</li>
+<li><strong>Quiz pass rate</strong> — kitne % pass + kitne attempts</li>
+<li><strong>Certificates issued</strong> — kitne issue + kitne revoked</li>
+<li><strong>Open support tickets</strong> — kitni student queries pending hain</li>
+</ul>
+<p>Neeche <strong>Recent enrollments</strong> table (latest students + course + status), right side <strong>Manage the LMS</strong> shortcuts aur <strong>Latest announcements</strong> hain.</p>
+<blockquote><p><strong>Confusion na karein:</strong> “0” ka matlab hota hai “abhi data nahi hai”, kharabi nahi. Jaise pass rate 0% tab tak jab tak koi quiz submit na kare.</p></blockquote>
+<hr />
+<h3>4.2 Curriculum Builder — LMS ka dil</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Curriculum Builder</strong></p>
+<h4>Step 1 — Course chunein</h4>
+<p>Top-right <strong>“Select course”</strong> dropdown. Draft course ke saath <code>(draft)</code> likha aayega.</p>
+<p>Neeche badge row: <code>X modules</code>, <code>Y lessons</code>, <code>Z quizzes</code>, aur agar koi lesson draft hai to <code>N drafts</code>.</p>
+<h4>Step 2 — Module banein</h4>
+<p><strong>Add module</strong> → naya module ban jayega. Har module card me:</p>
+<table>
+<thead><tr><th>Element</th><th>Kaam</th></tr></thead>
+<tbody>
+<tr><td><strong>⬆ ⬇</strong></td><td>Module ka order upar/neeche (save ho jata hai)</td></tr>
+<tr><td><strong>Title</strong></td><td>Module ka naam</td></tr>
+<tr><td><strong>Hours</strong></td><td>Kitne ghante ka module hai</td></tr>
+<tr><td><strong>Live / Draft</strong></td><td>Student ko dikhana ya chhupana</td></tr>
+<tr><td><strong>Save</strong></td><td>Title + hours + publish status save</td></tr>
+<tr><td><strong>Add quiz / Edit quiz</strong></td><td>Us module ka test</td></tr>
+<tr><td><strong>🗑</strong></td><td>Module delete (agar lessons/quiz hain to confirmation me saaf likha aata hai)</td></tr>
+</tbody></table>
+<h4>Step 3 — Lesson banayein (VIDEO yahan dalna hai)</h4>
+<p>Module ke andar <strong>“Add lesson”</strong> → Lesson Editor khulega:</p>
+<table>
+<thead><tr><th>Field</th><th>Kya bharein</th></tr></thead>
+<tbody>
+<tr><td><strong>Lesson title</strong></td><td>Lesson ka naam — <strong>zaroori</strong></td></tr>
+<tr><td><strong>Lesson type</strong></td><td>Video / Written notes / PDF reading / Interactive lab (sirf label)</td></tr>
+<tr><td><strong>Video link</strong></td><td>👇 rules neeche</td></tr>
+<tr><td><strong>Displayed duration</strong></td><td>Student ko list me dikhne wala duration (jaise <code>45m</code>)</td></tr>
+<tr><td><strong>Short description</strong></td><td>Lesson ke upar ek line</td></tr>
+<tr><td><strong>Lesson notes</strong></td><td>Jo student video ke saath padhega. <strong>Khaali line = naya paragraph</strong></td></tr>
+<tr><td><strong>Reading / PDF link</strong></td><td>Slide deck ya reading ka link (optional)</td></tr>
+<tr><td><strong>Lab resources</strong></td><td>Download list — title, URL, file type, size. <strong>Add resource</strong> se extra row, 🗑 se delete</td></tr>
+<tr><td><strong>Published to students</strong></td><td>Tick = student turant dekh sakta hai. Untick = draft</td></tr>
+<tr><td><strong>Free preview</strong></td><td>Tick = enrollment se pehle bhi preview (LMS Settings se on/off)</td></tr>
+</tbody></table>
+<p><strong>VIDEO LINK — sabse important niyam:</strong></p>
+<p>✅ <strong>Ye chalega:</strong></p>
+<ul>
+<li><code>https://www.youtube.com/watch?v=XXXXXXXX</code></li>
+<li><code>https://youtu.be/XXXXXXXX</code></li>
+<li><code>https://vimeo.com/123456789</code></li>
+</ul>
+<p>Sistem khud inko player-friendly embed form me badal deta hai. Field ke neeche <strong>YouTube/Vimeo badge</strong>, <strong>“stored as …”</strong> aur <strong>live preview</strong> dikh jata hai — <strong>preview chala to hi Save karein.</strong></p>
+<p>❌ <strong>Ye nahi chalega:</strong></p>
+<ul>
+<li><code>http://…</code> (sirf <strong>https</strong> — warna player khaali)</li>
+<li>Koi random website link (sirf tab chalega jab wo site iframe allow kare; Google Drive private / bade news sites aksar nahi karte)</li>
+</ul>
+<blockquote><p>⚠️ <strong>Video file upload abhi available nahi hai.</strong> Video pehle <strong>YouTube ya Vimeo</strong> (unlisted bhi chalega) par daalein, phir link yahan paste karein.</p></blockquote>
+<p><strong>Save</strong> → “Lesson saved.” message aur lesson list me turant entry.</p>
+<h4>Step 4 — Lesson row ke buttons</h4>
+<table>
+<thead><tr><th>Icon</th><th>Kaam</th></tr></thead>
+<tbody>
+<tr><td>✏️ pencil</td><td>Lesson edit (video, notes, resources sab)</td></tr>
+<tr><td>👁 eye</td><td>Publish ↔ Unpublish (draft)</td></tr>
+<tr><td>📄 copy</td><td>Lesson <strong>duplicate</strong> (video + resources saath) — doosre module me wahi lesson chahiye to best</td></tr>
+<tr><td>🗑 trash</td><td>Lesson delete</td></tr>
+</tbody></table>
+<p>Row par ek nazar me: video linked hai ya <strong>“no video”</strong>, kitne <strong>resources</strong>, aur <strong>“notes ✓”</strong>.</p>
+<h4>Step 5 — Order badalna (drag &amp; drop)</h4>
+<ul>
+<li><strong>Lesson</strong> ko handle se <strong>kheench kar</strong> usi module me ya <strong>doosre module me</strong> drop karein — naya order save ho jata hai. Drag karte waqt module ke neeche likha aata hai: <em>“Drop here to move the lesson into this module”</em>.</li>
+<li><strong>Module</strong> ka order <strong>⬆ ⬇</strong> se.</li>
+</ul>
+<blockquote><p><strong>Data safety:</strong> jis lesson me video/notes/PDF/resources bhare hain, wo <strong>Course CMS se course edit karne par delete nahi hota</strong>. Pehle ye bug tha (video ud jata tha) — ab fix hai. Sirf aapka khud ka 🗑 delete karta hai.</p></blockquote>
+<hr />
+<h3>4.3 Assessments &amp; Quizzes — module ka test</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Assessments &amp; Quizzes</strong></p>
+<h4>Quiz banana</h4>
+<ol>
+<li>Upar <strong>Select course</strong> chunein.</li>
+<li>Module card se <strong>“Add quiz”</strong> (Curriculum Builder me), ya isi page ke <strong>“Modules without a quiz:”</strong> buttons se.</li>
+<li>Popup me bharein:</li>
+</ol>
+<ul>
+<li><strong>Quiz title</strong> (zaroori), <strong>Description</strong></li>
+<li><strong>Time limit (minutes)</strong> — default 15</li>
+<li><strong>Passing score (%)</strong> — default 70</li>
+<li><strong>Question</strong> + <strong>Options</strong> (4 rows ready) → jis option ko <strong>sahi jawab</strong> banana hai uske <strong>gol circle</strong> par click (green ho jayega)</li>
+<li><strong>Explanation</strong> — grading ke baad student ko dikhta hai</li>
+<li><strong>Add question</strong> se aur sawaal; 🗑 se delete</li>
+</ul>
+<ol>
+<li><strong>Create quiz / Save quiz</strong>.</li>
+</ol>
+<h4>Student ko kya dikhta hai</h4>
+<p>Us module ke sidebar me <strong>Test</strong> button. Student submit kare → score turant calculate → pass/fail + detailed breakdown + har question ka explanation. Pass hone par confetti 🎉.</p>
+<h4>Scores dekhna</h4>
+<p>Neeche <strong>Recent attempts</strong> table: Student, Quiz (+course), <strong>Score</strong> (<code>correct/total · %</code>), <strong>Result</strong> (Passed/Failed), <strong>Submitted</strong> time. Upar badge me <strong>pass rate</strong>.</p>
+<p><strong>Zaadtiyaan:</strong> Quiz save hone ke liye kam se kam 2 options chahiye; sahi jawab khaali chhoda to save nahi hoga (error aayega).</p>
+<hr />
+<h3>4.4 Enrollments &amp; Access — student ko course dena</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Enrollments &amp; Access</strong></p>
+<blockquote><p><strong>Pehla step (bahut zaroori):</strong> student ka <strong>account</strong> banana padta hai — <strong>Admin → Enrolled Students → Add Student</strong> se. Public self-registration <strong>band</strong> hai by design, taaki program access hamesha staff ke assignment se ho (student register page par counselor se contact karne ka message dikhta hai).</p></blockquote>
+<h4>Naya enrollment</h4>
+<ol>
+<li>Top-right <strong>“Enroll student”</strong>.</li>
+<li>Popup: <strong>Student</strong> chunein → <strong>Course</strong> chunein → <strong>Batch</strong> (optional, live cohort) → <strong>Status</strong> (<code>Active</code>).</li>
+<li><strong>Enroll</strong> → student ko turant LMS me course dikhne lagta hai.</li>
+</ol>
+<h4>Table samajhna</h4>
+<p>Filters: <strong>Course</strong>, <strong>Status</strong>, <strong>Search</strong> (naam/email).</p>
+<p>Columns: <strong>Student</strong> (naam + email), <strong>Course</strong>, <strong>Batch</strong>, <strong>Progress</strong> bar, <strong>Status</strong>, <strong>Actions</strong>.</p>
+<p>Actions:</p>
+<ul>
+<li><strong>Status dropdown</strong> — <code>Active</code> / <code>Completed</code> / <code>Suspended</code> / <code>Cancelled</code>.</li>
+</ul>
+<p><em>Course rokna hai → <code>Suspended</code> (progress bacha rehta hai). Hamesha ke liye hatana → 🗑.</em></p>
+<ul>
+<li><strong>🗑 Remove access</strong> — student ka course <strong>aur uski progress</strong> dono hat jate hain.</li>
+</ul>
+<p><strong>Note:</strong> same student ko same course dobara enroll karna galti nahi — duplicate nahi banta.</p>
+<hr />
+<h3>4.5 Progress &amp; Completion</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Progress &amp; Completion</strong></p>
+<p>Filters: <strong>Course</strong> (ya All courses) + <strong>Refresh</strong>. Upar badges: <code>N tracked students</code>, <code>N completed</code>, <code>average X%</code>.</p>
+<p>Table: <strong>Student</strong> (complete hone par 🏅), <strong>Course</strong>, <strong>Lessons</strong> (<code>completed / total</code>), <strong>Progress</strong> bar, <strong>Last activity</strong> (aur completion date), <strong>Actions</strong>:</p>
+<table>
+<thead><tr><th>Button</th><th>Kya karta hai</th><th>Kab use karein</th></tr></thead>
+<tbody>
+<tr><td><strong>Complete</strong></td><td>Course ke saare lessons complete mark + 100% + completion date. Student <strong>certificate-eligible</strong> ban jata hai</td><td>Offline/batch me padha, ya record update nahi hua</td></tr>
+<tr><td><strong>Reset</strong></td><td>Completed lessons, % aur completion date saaf — student shuru se</td><td>Galti se complete ho gaya, ya student dobara kar raha hai</td></tr>
+</tbody></table>
+<blockquote><p><code>Complete</code> button already-completed row par disabled rehta hai.</p></blockquote>
+<hr />
+<h3>4.6 Certificates</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Certificates</strong></p>
+<p>Tabs: <strong>Issued</strong> | <strong>Ready to issue</strong> | <strong>Revoked</strong>. Search (certificate ID / student / course) + Course filter.</p>
+<h4>Kaise kaam karta hai</h4>
+<ul>
+<li>Student jab course ke <strong>saare published lessons</strong> complete kar leta hai → certificate <strong>khud-ba-khud</strong> ban jata hai.</li>
+<li>Kisi wajah se auto nahi bana? <strong>Ready to issue</strong> tab me student dikhega → <strong>“Issue certificate”</strong> dabayein.</li>
+<li>Certificate ID format: <code>AFT-CERT-XXXXXXXX</code>. Public verify page: <strong><code>/certificate/&lt;ID&gt;</code></strong>.</li>
+<li>Certificate par <strong>grade</strong> (jaise Honor Distinction) aur <strong>accreditation body</strong> LMS Settings se aate hain.</li>
+</ul>
+<h4>Issued tab</h4>
+<p>Columns: <strong>Certificate</strong> (ID + <code>sample</code>/<code>revoked</code> badge), <strong>Student</strong>, <strong>Course</strong>, <strong>Issued</strong>, <strong>Actions</strong> → <strong>Verify</strong> (public page naye tab me).</p>
+<h4>Revoke (dhyan se)</h4>
+<p><strong>Revoke</strong> → popup me <strong>Reason</strong> likhein (audit log me jayega) → <strong>Revoke certificate</strong>.</p>
+<p>Public page par saaf likha aata hai: <em>“This credential has been withdrawn by American FutureTech and is no longer valid.”</em></p>
+<p>Certificate <strong>delete nahi hota</strong> — record rehta hai (kaun, kab, kyun) — isliye <strong>Reinstate</strong> bhi possible hai.</p>
+<h4>Reinstate</h4>
+<p><strong>Revoked</strong> tab → <strong>Reinstate</strong> → certificate phir valid.</p>
+<blockquote><p><strong>Privacy:</strong> public certificate page par student ka <strong>email nahi dikhta</strong> — sirf naam, course, grade, accreditation body aur validity.</p></blockquote>
+<hr />
+<h3>4.7 Communications — announcement + support desk</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>Communications</strong></p>
+<h4>Announcement publish karna</h4>
+<ol>
+<li><strong>“New announcement”</strong>.</li>
+<li><strong>Title</strong> (zaroori), <strong>Message</strong>, <strong>Audience</strong>:</li>
+</ol>
+<ul>
+<li><strong>All Students</strong> — saare enrolled students</li>
+<li><strong>Course</strong> — sirf us course ke students</li>
+<li><strong>Batch</strong> — sirf us cohort ke students</li>
+</ul>
+<ol>
+<li><strong>Pin to the top</strong> (dashboard par sabse upar) aur <strong>Publish now</strong> tick.</li>
+<li><strong>Save announcement</strong>.</li>
+</ol>
+<p>Student ko ye <strong>LMS dashboard ke “Notice Board”</strong> me dikhta hai. Admin list me badges (pinned / published–draft / audience) aur 👁 publish-unpublish, ✏️ edit, 🗑 delete buttons hote hain.</p>
+<blockquote><p>Do notices ek hi student ko? Wahi announcement <strong>All Students</strong> aur ek <strong>Course</strong> dono par bhejne ki zaroorat nahi — audience ek chunein. Notice doosre course ko target karta hai to us course ke bahar wale students ko <strong>nahi</strong> dikhega.</p></blockquote>
+<h4>Support desk</h4>
+<p>Right side card: kitne <strong>open tickets</strong> hain + latest tickets → <strong>“Open the full support desk”</strong> se poora support module (reply + status change). Staff reply student ke <strong>Student Support</strong> page par dikhta hai.</p>
+<hr />
+<h3>4.8 LMS Settings — defaults aur wording</h3>
+<p><strong>Kahan:</strong> Sidebar → <strong>LMS Settings</strong> → badlaav ke baad top-right <strong>Save settings</strong>.</p>
+<table>
+<thead><tr><th>Group</th><th>Setting</th><th>Default</th><th>Matlab</th></tr></thead>
+<tbody>
+<tr><td><strong>Curriculum defaults</strong></td><td>Default lesson duration</td><td><code>45m</code></td><td>Naya lesson banate waqt pehle se bhara</td></tr>
+<tr><td></td><td>Default module hours</td><td><code>20</code></td><td>Naya module kitne ghante ka</td></tr>
+<tr><td></td><td>Default quiz time limit</td><td><code>15</code> min</td><td>Naya quiz ka time</td></tr>
+<tr><td></td><td>Default passing score</td><td><code>70%</code></td><td>Naya quiz ka pass mark</td></tr>
+<tr><td><strong>Certificates</strong></td><td>Default grade / distinction</td><td><code>Honor Distinction</code></td><td>Manual issue par certificate par chhapta hai</td></tr>
+<tr><td></td><td>Accreditation body</td><td><code>American FutureTech Institute of Advanced Technologies (Wyoming, USA)</code></td><td>Certificate par likhi body</td></tr>
+<tr><td><strong>Student experience</strong></td><td>Welcome message</td><td><code>Welcome back. Pick up where you left off.</code></td><td>Student dashboard ka greeting</td></tr>
+<tr><td></td><td>Allow free-preview lessons</td><td>✅ on</td><td>Preview lessons enrollment se pehle dikhein</td></tr>
+<tr><td></td><td>Show announcements on the student dashboard</td><td>✅ on</td><td><strong>Off</strong> karne par student ko koi announcement nahi dikhega (notices preserve rehte hain)</td></tr>
+</tbody></table>
+<blockquote><p>Ye settings <strong>sach me</strong> student par lagti hain — jaise preview off karne par lesson public curriculum se hat jata hai, aur welcome message student dashboard par change ho jata hai. Isi liye setting badalne ke baad ek baar student view check kar lena acchi practice hai.</p></blockquote>
+<hr />
+<h2>5. Student side — student ko exactly kya dikhta hai</h2>
+<p>Student <code>https://americanfuturetechllc.com/student/login</code> se login karta hai. Sidebar me 6 page hain:</p>
+<table>
+<thead><tr><th>#</th><th>Student ka page</th><th>Wahan kya hota hai</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>Dashboard</strong></td><td>Welcome message, 4 stat cards (Enrolled Courses, Average Completion, Certificates Earned, Quizzes &amp; Labs Completed), enrolled programs + progress bar + “Resume” button, earned credentials, aur <strong>Notice Board</strong></td></tr>
+<tr><td>2</td><td><strong>My Courses</strong></td><td>Saare enrolled programs — category, % complete, progress bar, <strong>“Launch Course Player”</strong></td></tr>
+<tr><td>3</td><td><strong>Certificates</strong></td><td>US diplomas (verify + print PDF + share link) aur Microsoft-aligned credentials</td></tr>
+<tr><td>4</td><td><strong>Invoices &amp; Receipts</strong></td><td>Total settled, invoice list, receipt print/download</td></tr>
+<tr><td>5</td><td><strong>Student Support</strong></td><td>Ticket banayein (category + priority), faculty se conversation</td></tr>
+<tr><td>6</td><td><strong>Profile Settings</strong></td><td>Naam, phone, password etc.</td></tr>
+</tbody></table>
+<h3>5.1 Course Player screen (student ka asli classroom)</h3>
+<ul>
+<li><strong>Left sidebar:</strong> Course Curriculum — Module 01, 02… ke andar lessons, jahan <strong>✓ tick</strong> = complete. Module ke neeche <strong>Test</strong> button (quiz).</li>
+<li><strong>Center:</strong> video player (YouTube/Vimeo embed). Video nahi hai to “Video content ready for playback.”</li>
+<li><strong>Neeche:</strong> <code>Previous</code> / <code>Next</code> buttons aur <strong>Mark as Complete</strong>.</li>
+<li><strong>Right/nichla tabs:</strong> <strong>Lesson Overview &amp; Notes</strong> (description + notes, paragraphs ke saath) aur <strong>Lab Resources (N)</strong> — har resource ke saath <strong>Download</strong> button. Kuch nahi diya to saaf likha aata hai: “No resources attached to this lesson”.</li>
+<li><strong>Top bar:</strong> course title, “Lesson X of Y”, <strong>Course Progress %</strong> bar. 100% hone par <strong>Claim Certificate</strong>.</li>
+</ul>
+<h3>5.2 Quiz lene ka tareeka (student)</h3>
+<p>Module sidebar → <strong>Test</strong> → saare questions ek page par → option select (sahi/select hua option highlight) → <strong>Submit Assessment for Grading</strong> → turant result: score %, correct count, passed/failed, phir <strong>Detailed Question Breakdown</strong> (har question ✅/❌ + explanation) → <strong>Retake Assessment</strong> button.</p>
+<h3>5.3 Certificate kab milta hai</h3>
+<p>Saare <strong>published</strong> lessons 100% complete → certificate auto-issue → <strong>Certificates</strong> page par “View &amp; Verify”, “Print PDF”, “Share Link”. Employer/parent koi bhi <strong><code>/certificate/&lt;ID&gt;</code></strong> khol kar bina login verify kar sakta hai.</p>
+<h3>5.4 Admin ka kaam → student ko kahan dikhta hai</h3>
+<table>
+<thead><tr><th>Admin ne kya kiya</th><th>Student ko kahan dikhta hai</th></tr></thead>
+<tbody>
+<tr><td>Course enroll kiya</td><td>My Courses me course card, Dashboard me progress</td></tr>
+<tr><td>Lesson + video daala</td><td>Course player me video, neeche notes</td></tr>
+<tr><td>Lab resources daale</td><td>Lesson ke <strong>Lab Resources</strong> tab me Download</td></tr>
+<tr><td>Quiz banaya</td><td>Module ke sidebar me <strong>Test</strong></td></tr>
+<tr><td>Lesson complete kiya</td><td>Progress % badhta hai (Dashboard + admin Progress page)</td></tr>
+<tr><td>Saare lessons complete</td><td>Certificate auto-issue → Certificates page + public verify</td></tr>
+<tr><td>Announcement publish</td><td>Dashboard ka <strong>Notice Board</strong></td></tr>
+<tr><td>Ticket ka reply</td><td>Student Support page par conversation</td></tr>
+<tr><td>Enrollment <strong>Suspended</strong></td><td>Course player “Curriculum Unavailable” — access band</td></tr>
+</tbody></table>
+<hr />
+<h2>6. Ek poora cycle — naye batch ka example (step by step)</h2>
+<p>Maan lijiye naya batch “AI Engineering — March Cohort” shuru ho raha hai:</p>
+<ol>
+<li><strong>LMS Settings</strong> check karein — pass mark 70%, welcome message, certificate wording.</li>
+<li><strong>Curriculum Builder</strong> → course chunein → agar pehle se modules hain to unme lessons bharein; naye modules <strong>Add module</strong> se.</li>
+<li>Har lesson me <strong>video link paste → preview chala confirm → notes + resources → Published tick → Save</strong>.</li>
+<li>Har module ka <strong>quiz</strong> banayein (Assessments) — sahi jawab ka green circle check karein.</li>
+<li><strong>Enrolled Students → Add Student</strong> se 20 students ke accounts banayein (naam, email, phone, password).</li>
+<li><strong>Batches &amp; Urgency</strong> me cohort banayein (optional) — phir enrollment me batch assign karein.</li>
+<li><strong>Enrollments &amp; Access → Enroll student</strong> — 20 students × course, batch = March cohort, status <code>Active</code>.</li>
+<li><strong>Communications → New announcement</strong> — “Batch Monday se shuru, pehla module ready hai”, audience = us course/ batch, <strong>pinned</strong>.</li>
+<li>Batch ke dauran: <strong>LMS Overview</strong> roz check karein; <strong>Progress &amp; Completion</strong> se pata chale kaun peeche hai; <strong>Assessments → Recent attempts</strong> se scores.</li>
+<li>Jis student ne sab poora kar liya → <strong>Certificates → Issued</strong> me uska certificate; verify link usko bhej dein.</li>
+<li>Koi student rokna ho (fees pending / leave) → <strong>Enrollments</strong> me status <code>Suspended</code> — progress safe rehta hai, wapas <code>Active</code> karte hi access laut aata hai.</li>
+<li>Course update karna ho → naya lesson <strong>Draft</strong> me banayein, taiyar hone par publish karein. Student ko draft kabhi nahi dikhta.</li>
+</ol>
+<hr />
+<h2>7. Kaun kya kar sakta hai (permissions)</h2>
+<p><strong>Kahan:</strong> Admin → <strong>Staff &amp; Security RBAC</strong> → staff member → module <strong>“LMS / Academy Control”</strong>.</p>
+<table>
+<thead><tr><th>Permission</th><th>Isse kya allow hota hai</th></tr></thead>
+<tbody>
+<tr><td><code>LMS_VIEW</code></td><td>Academy/LMS section dekhna (sab pages read)</td></tr>
+<tr><td><code>LMS_CONTENT_EDIT</code></td><td>Lessons, video/link, notes, resources, settings</td></tr>
+<tr><td><code>LMS_QUIZ_EDIT</code></td><td>Quiz banana + attempts dekhna</td></tr>
+<tr><td><code>LMS_ENROLL_EDIT</code></td><td>Student enroll / unenroll / status</td></tr>
+<tr><td><code>LMS_PROGRESS_EDIT</code></td><td>Progress reset / force-complete</td></tr>
+<tr><td><code>LMS_CERTIFICATE_ISSUE</code></td><td>Certificate manually issue / reinstate</td></tr>
+<tr><td><code>LMS_CERTIFICATE_REVOKE</code></td><td>Certificate revoke</td></tr>
+<tr><td><code>LMS_COMMS_EDIT</code></td><td>Announcement aur ticket reply</td></tr>
+</tbody></table>
+<p><strong>Rules:</strong></p>
+<ul>
+<li><strong>SuperAdmin</strong> ko sab kuch automatically.</li>
+<li><strong>Counselor</strong> — enrollment + announcements (+ dekhna).</li>
+<li><strong>Instructor</strong> — lessons/quizzes + progress control.</li>
+<li><strong>Read-only staff</strong> sirf dekh sakta hai — koi bhi Save/Issue <strong>API level par bhi</strong> refuse hota hai (button chhupana hi security nahi hai).</li>
+<li>Naye staff ke liye presets ready hain: <strong>Admissions Counselor</strong>, <strong>Career &amp; Placement Officer</strong>, <strong>Read-Only Auditor</strong>.</li>
+</ul>
+<hr />
+<h2>8. Troubleshooting — jo aksar pucha jata hai</h2>
+<table>
+<thead><tr><th>Problem</th><th>Wajah / Fix</th></tr></thead>
+<tbody>
+<tr><td><strong>Video khaali/kala dikh raha hai</strong></td><td>Link <code>https://</code> se shuru hona chahiye aur YouTube/Vimeo ka hona chahiye. Lesson Editor me paste karein — preview turant dikhega; preview nahi chala to student ke paas bhi nahi chalega</td></tr>
+<tr><td><strong>Lesson student ko nahi dikh raha</strong></td><td>Lesson ya module <strong>Draft</strong> hai. 👁 ya module ka Live/Draft button se publish karein</td></tr>
+<tr><td><strong>Student ko course hi nahi dikh raha</strong></td><td>Enrollment nahi hai. <strong>Enrollments &amp; Access</strong> me row check karein — status <code>Active</code> hona chahiye</td></tr>
+<tr><td><strong>Student login nahi kar pa raha</strong></td><td>Account <strong>Enrolled Students</strong> se bana hai? Email/password theek? Chahain to <strong>Reset password</strong> use karein</td></tr>
+<tr><td><strong>Certificate nahi bana</strong></td><td>Saare <strong>published</strong> lessons complete hone chahiye. <strong>Certificates → Ready to issue</strong> me student dikhega → <strong>Issue certificate</strong></td></tr>
+<tr><td><strong>Announcement student ko nahi dikha</strong></td><td>Audience sahi chuni? Publish tick hai? <strong>LMS Settings</strong> me “Show announcements” ON hai?</td></tr>
+<tr><td><strong>Quiz submit nahi ho raha</strong></td><td>Student ne saare questions ke jawab nahi chune — button tab tak disabled rehta hai</td></tr>
+<tr><td><strong>Save nahi ho raha / “could not save”</strong></td><td>Lesson title khaali hai, ya video link <code>https://</code> ke bajay kuch aur hai. Dono theek karein</td></tr>
+<tr><td><strong>Course edit karne ke baad lesson update nahi dikha</strong></td><td>Page <strong>Refresh</strong> karein — naya curriculum save hote hi live ho jata hai</td></tr>
+<tr><td><strong>Purana lesson ka video gayab</strong></td><td>Aisa ab nahi hota (authored lesson composer se delete nahi hota). Sirf khud ka 🗑 delete karta hai</td></tr>
+<tr><td><strong>Student ka progress 100% dikha raha hai par usne kiya nahi</strong></td><td>Kisi ne <strong>Complete</strong> button dabaya tha. <strong>Reset</strong> se zero karein</td></tr>
+</tbody></table>
+<hr />
+<h2>9. Do's &amp; Don'ts</h2>
+<p><strong>Karo</strong></p>
+<ul>
+<li>Naya lesson pehle <strong>Draft</strong> me banao, poora bhar kar publish karo.</li>
+<li>Video ka <strong>preview field me chalna confirm</strong> karo, tab hi save karo.</li>
+<li>Certificate revoke karne se pehle <strong>reason</strong> likho — audit me usi se pata chalta hai.</li>
+<li>Course rokna ho to <strong>Suspended</strong> karo (delete nahi) — progress bacha rehta hai.</li>
+<li>Har publish ke baad ek <strong>test student</strong> se ek baar dekh lo.</li>
+</ul>
+<p><strong>Mat karo</strong></p>
+<ul>
+<li><code>http://</code> link <strong>mat</strong> daalo — player block kar dega.</li>
+<li>Jis lesson me video/notes bhare hain usko bina soche <strong>delete mat karo</strong> (undo nahi hai).</li>
+<li>Announcements <strong>off</strong> karne se pehle soch lo — student dashboard se saare notices gayab ho jayenge.</li>
+<li>Ek hi student ko <strong>Enrolled Students</strong> aur <strong>Enrollments</strong> dono jagah baar-baar enroll karne ki zaroorat nahi — duplicate nahi banta.</li>
+<li>Ek hi batch ko ek hi announcement do baar (All Students + Course) <strong>mat</strong> bhejo — audience ek chuno.</li>
+</ul>
+<hr />
+<h2>10. Kya kaam karta hai — aur kya abhi nahi</h2>
+<p><strong>✅ Kaam karta hai</strong></p>
+<ul>
+<li>Course → module → lesson authoring: video embed (YouTube/Vimeo), notes, PDF/reading link, lab resources</li>
+<li>Lesson drag &amp; drop ordering, duplicate, draft/publish, free preview</li>
+<li>Module-wise quizzes: time limit, pass mark, explanation, instant grading, attempt history</li>
+<li>Student portal: dashboard, course player, notes, resources download, quizzes, certificates, invoices, support tickets, profile</li>
+<li>Enrollments (add / suspend / reactivate / remove), progress tracking + admin override</li>
+<li>Auto certificate issue, manual issue, revoke + reinstate, public verification page</li>
+<li>Announcements (all / course / batch, pinned), support desk with staff replies</li>
+<li>Permissions (RBAC) + audit: LMS ki har sensitive action staff identity ke saath log hoti hai</li>
+<li>Inventory-level proof: <code>npm run verify:lms</code> poore LMS surface ka regression suite chalata hai</li>
+</ul>
+<p><strong>❌ Abhi nahi hai (aage add ho sakta hai)</strong></p>
+<ul>
+<li><strong>Direct video file upload</strong> — video YouTube/Vimeo link se lagti hai</li>
+<li>Assignments + manual grading (abhi sirf MCQ quizzes)</li>
+<li>Live class / attendance modules</li>
+<li>Student analytics dashboard (abhi progress numbers hain, deep analytics nahi)</li>
+</ul>
+<hr />
+<h2>11. Verification — is guide ki buniyad</h2>
+<p>Har cheez jo is document me likhi hai, code aur test se verify ki gayi hai:</p>
+<table>
+<thead><tr><th>Kya verify hua</th><th>Kaise</th></tr></thead>
+<tbody>
+<tr><td>LMS admin surface (content, enrollments, progress, certificates, announcements, settings)</td><td><code>npm run verify:lms</code> — real API + throwaway database, har page ka flow</td></tr>
+<tr><td>Lesson video link normalisation (YouTube short/watch/Vimeo → embed), <code>http://</code> aur junk link ka refusal</td><td>Same suite ka “CONTENT &amp; MEDIA DISCIPLINE” section</td></tr>
+<tr><td>Authored lessons course composer se safe rehna (video delete na ho)</td><td>Same suite ka “COMPOSER DATA SAFETY” section</td></tr>
+<tr><td>Public certificate registry: sirf allow-list fields, email/staff/reason kabhi leak na ho</td><td>Same suite ke public-registry checks</td></tr>
+<tr><td>Read-only staff ka koi bhi mutating endpoint refuse hona</td><td>Same suite ke RBAC assertions</td></tr>
+<tr><td>Free preview on/off aur welcome message sach me student tak pahunchna</td><td>Same suite ke setting-to-surface checks</td></tr>
+</tbody></table>
+<p><strong>Dobara chalane ke liye:</strong> project root par</p>
+<pre><code>
+npm run verify:lms
+</code></pre>
+<p>(Iske liye MongoDB <code>127.0.0.1:27018</code> par chalti honi chahiye — suite apna throwaway database khud banata aur delete karta hai.)</p>
+<hr />
+<p><em>Koi cheez samajh na aaye, ya LMS me kuch aur chahiye ho (video upload, assignments + grading, live classes, student analytics) to bata dijiye — sab add kiya ja sakta hai.</em></p>
+  </main>
+</body>
+</html>

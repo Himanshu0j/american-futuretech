@@ -126,6 +126,8 @@ export default function CoursesCMS() {
   const [tools, setTools] = useState([]);
   // Optional image shown at the top of this course's card on /courses.
   const [cardImage, setCardImage] = useState('');
+  // Logo for the header's CAREER PROGRAMS mega-menu (see Navbar).
+  const [menuLogo, setMenuLogo] = useState('');
   // Rectangle image shown above the course title in the course hero.
   const [heroImage, setHeroImage] = useState('');
   // Artwork for the six "Why Get … Certification" advantage cards, index-aligned
@@ -224,6 +226,7 @@ export default function CoursesCMS() {
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
     setCardImage(course.cardImage || course.thumbnail || '');
+    setMenuLogo(course.menuLogo || '');
     setHeroImage(course.heroImage || '');
     setAdvantageImages(Array.isArray(course.advantageImages) ? course.advantageImages : []);
     setCredentialLogo(course.credentialLogo || '');
@@ -459,6 +462,7 @@ export default function CoursesCMS() {
       // Card image + hero image + advantage-card artwork + per-course "Tools
       // Covered" block + capstone cards.
       thumbnail: cardImage,
+      menuLogo: String(menuLogo || '').trim(),
       heroImage: String(heroImage || '').trim(),
       advantageImages: advantageImages.map((url) => String(url || '').trim()),
       credentialLogo: String(credentialLogo || '').trim(),
@@ -945,6 +949,14 @@ export default function CoursesCMS() {
                   onChange={setCardImage}
                   placeholder="https://… or upload a JPG / PNG / WebP from your computer"
                   previewSize="w-24 h-16"
+                />
+
+                <ImageUploadInput
+                  label="Menu Logo — header ke CAREER PROGRAMS dropdown me dikhta hai"
+                  value={menuLogo}
+                  onChange={setMenuLogo}
+                  placeholder="Square logo (about 200×200) — URL or upload. Khaali chhodne par card image dikhegi."
+                  previewSize="w-14 h-14"
                 />
 
                 <ImageUploadInput

@@ -3,10 +3,12 @@
  *
  *   npm run verify:jobs
  *
- * The client's requirement is exact: 8 postings per page, and the page count
- * must be recalculated from the FILTERED result set (search "Cloud" + Remote on
- * a 100-job board → 13 matches → 2 pages, never "2 of 100"). It also covers the
- * posted-time field, admin CRUD, duplicate-as-draft and active/inactive hiding.
+ * The client's requirement is exact: 10 postings per page (the board shipped
+ * with 8 and the client asked for 10, so the public page now requests
+ * `limit=10`), and the page count must be recalculated from the FILTERED result
+ * set (search "Cloud" + Remote on a 100-job board → 13 matches → 2 pages, never
+ * "2 of 100"). It also covers the posted-time field, admin CRUD,
+ * duplicate-as-draft and active/inactive hiding.
  *
  * Runs against a throwaway database, so production client content is untouched.
  */
@@ -22,7 +24,7 @@ const BASE = `http://127.0.0.1:${PORT}`;
 const SEED_ADMIN_PASSWORD = 'Vertex-Jobs-Check-2026!z';
 const DB_NAME = `aft_jobstest_${Date.now()}`;
 const MONGO_URI = `mongodb://127.0.0.1:27018/${DB_NAME}`;
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 
 const results = [];
 const check = (name, passed, detail = '') => {
@@ -165,14 +167,16 @@ const run = async () => {
     check('Admin can publish jobs through the API', createAll.length === 25);
 
     const expectedPages = (total) => Math.max(Math.ceil(total / PAGE_SIZE), 1);
+    // The boundaries straddle the page size: a full page, one row over (a second
+    // page holding a single posting), two full pages, and so on up to the 25
+    // postings this suite creates.
     const scenarios = [
       { total: 1, pages: 1 },
-      { total: 8, pages: 1 },
-      { total: 9, pages: 2 },
-      { total: 16, pages: 2 },
-      { total: 17, pages: 3 },
-      { total: 24, pages: 3 },
-      { total: 25, pages: 4 },
+      { total: 10, pages: 1 },
+      { total: 11, pages: 2 },
+      { total: 20, pages: 2 },
+      { total: 21, pages: 3 },
+      { total: 25, pages: 3 },
     ];
 
     for (const scenario of scenarios) {
@@ -254,18 +258,18 @@ const run = async () => {
     }));
     check('Board prepared with 13 Cloud + 12 other postings', cloudJobs.length === 13 && otherJobs.length === 12);
 
-    const filtered = await request('GET', '/api/jobs?limit=8&page=1&search=Cloud&remoteOnly=true');
+    const filtered = await request('GET', `/api/jobs?limit=${PAGE_SIZE}&page=1&search=Cloud&remoteOnly=true`);
     const fp = filtered.json?.pagination || {};
     check(
       'Search "Cloud" + Remote recalculates pagination from the 13 matches',
-      fp.total === 13 && fp.totalPages === 2 && filtered.json?.count === 8,
+      fp.total === 13 && fp.totalPages === 2 && filtered.json?.count === PAGE_SIZE,
       `total=${fp.total} pages=${fp.totalPages} count=${filtered.json?.count}`,
     );
 
-    const filteredPage2 = await request('GET', '/api/jobs?limit=8&page=2&search=Cloud&remoteOnly=true');
+    const filteredPage2 = await request('GET', `/api/jobs?limit=${PAGE_SIZE}&page=2&search=Cloud&remoteOnly=true`);
     check(
-      'Filtered page 2 holds the remaining 5 matches',
-      filteredPage2.json?.count === 5 && filteredPage2.json?.pagination?.hasNext === false,
+      'Filtered page 2 holds the remaining 3 matches',
+      filteredPage2.json?.count === 3 && filteredPage2.json?.pagination?.hasNext === false,
       `count=${filteredPage2.json?.count}`,
     );
 
@@ -283,10 +287,10 @@ const run = async () => {
       `total=${typeFilter.json?.pagination?.total} pages=${typeFilter.json?.pagination?.totalPages}`,
     );
 
-    const cleared = await request('GET', '/api/jobs?limit=8&page=1');
+    const cleared = await request('GET', `/api/jobs?limit=${PAGE_SIZE}&page=1`);
     check(
       'Clearing every filter returns the full board again',
-      cleared.json?.pagination?.total === 25 && cleared.json?.pagination?.totalPages === 4,
+      cleared.json?.pagination?.total === 25 && cleared.json?.pagination?.totalPages === 3,
       `total=${cleared.json?.pagination?.total} pages=${cleared.json?.pagination?.totalPages}`,
     );
 

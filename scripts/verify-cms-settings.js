@@ -525,6 +525,51 @@ const run = async () => {
       && grownRoles[3]?.color === 'from-red-500 to-yellow-500',
       `${grownRoles.length} roles, last "${grownRoles[3]?.name}"`);
 
+    // 12b. Live Jobs (/jobs & /careers) hero — the banner the client could not
+    //      edit at all (their complaint was specifically about the "140+
+    //      Corporate Partners" stat card). Every string on it, plus the stat
+    //      cards themselves (add / rename / hide), must round-trip through
+    //      /api/settings and come back to an anonymous visitor.
+    const careersHeroPayload = {
+      careersHero: {
+        badgeText: 'Contract Check Hiring Network',
+        heading: 'Hire From Our Bench',
+        headingHighlight: 'Verified Fellows',
+        subtitle: 'Written by the CMS round-trip test.',
+        primaryCtaText: 'See Open Roles',
+        secondaryCtaText: 'Send My CV',
+        panelLabel: 'Network Online',
+        panelFooterTitle: 'Direct Introductions',
+        panelFooterMeta: '150+ Partner Employers',
+        stats: [
+          { value: '$150K', label: 'Avg Comp', order: 1, active: true },
+          { value: '150+', label: 'Enterprise Partners', order: 2, active: true },
+          { value: '90%', label: 'Hidden Stat', order: 3, active: false },
+          { value: '48h', label: 'Interview Turnaround', order: 4, active: true },
+        ],
+      },
+    };
+    const careersHeroSave = await request('PUT', '/api/settings', { token, body: careersHeroPayload });
+    check('Live Jobs hero save reports no ignored fields',
+      careersHeroSave.status === 200 && (careersHeroSave.json?.ignoredPaths || []).length === 0,
+      `ignoredPaths: ${JSON.stringify(careersHeroSave.json?.ignoredPaths || [])}`);
+
+    const careersHeroPublic = await request('GET', '/api/settings');
+    const heroBlock = careersHeroPublic.json?.settings?.careersHero || {};
+    check('Every visitor receives the edited Live Jobs banner copy',
+      heroBlock.badgeText === 'Contract Check Hiring Network'
+      && heroBlock.heading === 'Hire From Our Bench'
+      && heroBlock.headingHighlight === 'Verified Fellows'
+      && heroBlock.primaryCtaText === 'See Open Roles'
+      && heroBlock.panelFooterMeta === '150+ Partner Employers',
+      `badge "${heroBlock.badgeText}", heading "${heroBlock.heading}"`);
+    check('Live Jobs stat cards keep their wording, order and visibility',
+      heroBlock.stats?.length === 4
+      && heroBlock.stats?.[1]?.value === '150+'
+      && heroBlock.stats?.[1]?.label === 'Enterprise Partners'
+      && heroBlock.stats?.[2]?.active === false
+      && heroBlock.stats?.[3]?.label === 'Interview Turnaround');
+
     // 12. Per-course page blocks: card image, "Tools Covered" grid and the
     //     course's own capstone cards. Every course used to render the same
     //     hard-coded Data Science tool grid and the same capstone projects.

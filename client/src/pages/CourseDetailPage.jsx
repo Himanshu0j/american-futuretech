@@ -329,6 +329,17 @@ export default function CourseDetailPage() {
     'from-blue-600 to-blue-500',
   ];
 
+  /* Colour accents for the "Who Can Apply" criteria rows: the list used to be a
+     stack of identical grey cards, which is why it read as flat next to the
+     rest of the page. One accent per row, cycling. */
+  const eligibilityAccents = [
+    'from-[rgb(var(--tw-blue-700))] to-[rgb(var(--tw-blue-500))]',
+    'from-[rgb(var(--tw-gold-500))] to-[rgb(var(--tw-gold-400))]',
+    'from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))]',
+    'from-[rgb(var(--tw-gold-600))] to-[rgb(var(--tw-gold-500))]',
+    'from-[rgb(var(--tw-blue-600))] to-[rgb(var(--tw-ink-900))]',
+  ];
+
   // "Choose your learning experience" — the admin ticks decide which cards show.
   const showGroupBatch = course?.viewOptions?.groupBatch !== false;
   const showPersonalizedMentor = course?.viewOptions?.personalizedMentor !== false;
@@ -911,165 +922,237 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {/* 4. Who Can Apply for this Course */}
+        {/* 4. Who Can Apply for this Course — colourful, high-contrast panel.
+            The client asked for this block to be re-designed: a coloured shell,
+            gradient number badges, an accent rail per row and a staggered
+            entrance so the criteria read as a real section instead of a grey
+            list. Content still comes from the course's own field (CMS) with the
+            coded fallback for a course nobody has edited yet. */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-center">
-            {/* Left: Numbered Criteria */}
-            <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-3">
-                <Users className="w-3.5 h-3.5 text-blue-700" />
-                {eligibility.eyebrow || 'Eligibility & Candidate Profile'}
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight mb-4">
-                {eligibility.title || 'Who Can Apply for this Course?'}
-              </h2>
-              <p className="text-slate-600 text-base mb-8 leading-relaxed">
-                {eligibility.subtitle || 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.'}
-              </p>
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-br from-[rgb(var(--tw-blue-700)/8%)] via-white to-[rgb(var(--tw-gold-500)/12%)] p-5 sm:p-8 lg:p-9 shadow-lg">
+            {/* Soft colour glows so the panel is not a flat white box */}
+            <div className="absolute -top-24 -right-16 w-72 h-72 rounded-full bg-[rgb(var(--tw-gold-500)/18%)] blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-[rgb(var(--tw-blue-700)/14%)] blur-3xl pointer-events-none" />
 
-              <div className="space-y-4">
-                {eligibilityPoints.map((point, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:border-[rgb(var(--tw-ink-900)/40%)] transition-colors"
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-[rgb(var(--tw-ink-900))] text-[color:rgb(var(--tw-gold-400))] font-display font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
-                      {idx + 1}
-                    </div>
-                    <p className="text-sm text-slate-700 leading-relaxed font-medium pt-0.5">
-                      {point}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: Globally Recognised Certification Card + Audience Pills */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[#1f4223] to-[rgb(var(--tw-ink-900))] text-white p-6 sm:p-6 shadow-2xl border border-[rgb(var(--tw-blue-700))] relative overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-[rgb(var(--tw-gold-500)/20%)] rounded-full blur-2xl pointer-events-none" />
-                <div className="w-12 h-12 rounded-2xl bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/40%)] text-[color:rgb(var(--tw-gold-400))] flex items-center justify-center mb-5">
-                  <Award className="w-7 h-7" />
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-start">
+              {/* Left: numbered criteria, one colour accent per row */}
+              <div className="lg:col-span-7">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white text-xs font-bold uppercase tracking-wider mb-4 shadow-md">
+                  <Users className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
+                  {eligibility.eyebrow || 'Eligibility & Candidate Profile'}
                 </div>
-                <h3 className="text-2xl font-bold font-display text-white mb-3">
-                  {eligibility.certificationTitle || 'Globally Recognised Certification'}
-                </h3>
-                <p className="text-sm text-blue-100/90 leading-relaxed mb-6">
-                  {eligibility.certificationText || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.'}
+                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight mb-3">
+                  {eligibility.title || 'Who Can Apply for this Course?'}
+                </h2>
+                {/* The client wanted the heading visibly "highlighted" — a short
+                    brand-red block under the words, like the homepage highlight. */}
+                <span className="block h-1.5 w-24 rounded-full bg-gradient-to-r from-[rgb(var(--tw-gold-500))] to-[rgb(var(--tw-gold-400))] mb-5" />
+                <p className="text-slate-600 text-base mb-7 leading-relaxed">
+                  {eligibility.subtitle || 'Our fellowship is designed to bridge learners from diverse professional and academic backgrounds into high-tier technology roles.'}
                 </p>
 
-                <div className="space-y-2.5 text-xs text-blue-200 font-medium pt-2 border-t border-[rgb(var(--tw-blue-700))]">
-                  {certificationPoints.map((point, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
-                      <span>{point}</span>
+                <div className="space-y-3.5">
+                  {eligibilityPoints.map((point, idx) => (
+                    <div
+                      key={idx}
+                      className="group relative flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-white border-2 border-slate-200 shadow-xs hover:shadow-xl hover:-translate-y-0.5 hover:border-[rgb(var(--tw-ink-900)/45%)] transition-all duration-300 animate-rise-in overflow-hidden"
+                      style={{ animationDelay: `${idx * 90}ms` }}
+                    >
+                      {/* Accent rail — the row's own colour, thicker on hover */}
+                      <span
+                        className={`absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b ${eligibilityAccents[idx % eligibilityAccents.length]} opacity-80 group-hover:w-2.5 transition-all duration-300`}
+                      />
+                      <div
+                        className={`w-10 h-10 rounded-xl bg-gradient-to-br ${eligibilityAccents[idx % eligibilityAccents.length]} text-white font-display font-black text-sm flex items-center justify-center shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300`}
+                      >
+                        {idx + 1}
+                      </div>
+                      <p className="text-sm text-slate-700 leading-relaxed font-semibold pt-1.5">
+                        {point}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Audience Category Badges */}
-              <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Target Audiences Welcomed:</div>
-                <div className="flex flex-wrap gap-2.5">
-                  {audienceTags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${
-                        eligibility.audiences?.length
-                          ? audienceColors[i % audienceColors.length]
-                          : (audiencePills[i]?.color || audienceColors[i % audienceColors.length])
-                      } text-white text-xs font-bold shadow-xs`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
+              {/* Right: certification card + audience pills */}
+              <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-28">
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[rgb(var(--tw-ink-800))] to-[rgb(var(--tw-blue-700))] text-white p-6 shadow-2xl ring-1 ring-[rgb(var(--tw-gold-500)/45%)] animate-rise-in">
+                  <div className="absolute -top-12 -right-12 w-48 h-48 bg-[rgb(var(--tw-gold-500)/25%)] rounded-full blur-2xl pointer-events-none" />
+                  <div className="relative z-10 w-12 h-12 rounded-2xl bg-[rgb(var(--tw-gold-500)/25%)] border border-[rgb(var(--tw-gold-500)/50%)] text-[color:rgb(var(--tw-gold-400))] flex items-center justify-center mb-5 animate-accent-pulse">
+                    <Award className="w-7 h-7" />
+                  </div>
+                  <h3 className="relative z-10 text-2xl font-bold font-display text-white mb-3">
+                    {eligibility.certificationTitle || 'Globally Recognised Certification'}
+                  </h3>
+                  <p className="relative z-10 text-sm text-blue-100/90 leading-relaxed mb-6">
+                    {eligibility.certificationText || 'Earn a verified credential recognized by Fortune 500 employers across the United States, Europe, and Asia. Accelerate your career with measurable credentials.'}
+                  </p>
+
+                  <div className="relative z-10 space-y-2.5 text-xs text-blue-100 font-semibold pt-3 border-t border-white/20">
+                    {certificationPoints.map((point, idx) => (
+                      <div key={idx} className="flex items-center gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-[rgb(var(--tw-gold-500)/25%)] flex items-center justify-center shrink-0">
+                          <Check className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
+                        </span>
+                        <span>{point}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Audience category badges — colourful, one gradient per tag */}
+                <div className="p-6 rounded-2xl bg-white border-2 border-slate-200 shadow-sm animate-rise-in" style={{ animationDelay: '120ms' }}>
+                  <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Target Audiences Welcomed:</div>
+                  <div className="flex flex-wrap gap-2.5">
+                    {audienceTags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className={`px-4 py-2 rounded-full bg-gradient-to-r ${
+                          eligibility.audiences?.length
+                            ? audienceColors[i % audienceColors.length]
+                            : (audiencePills[i]?.color || audienceColors[i % audienceColors.length])
+                        } text-white text-xs font-bold shadow-md hover:scale-105 transition-transform duration-200`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Detailed Curriculum Section (Preserved & Enhanced) */}
+        {/* Detailed Curriculum Section — restyled module rows (accent rail, a
+            gradient module number, pill meta) so every program's syllabus reads
+            as a designed block instead of a plain list.
+
+            Two defaults were removed here at the client's request:
+              • the lesson TIME ("40m", "45m"…). Those came from the lesson
+                model's own `45m` fallback / seeder data, not from the admin, so
+                they told the visitor nothing. The field still exists for the
+                LMS and the admin builder; the public syllabus prints no clock.
+              • the invented lesson COUNT (`mod.lessons?.length || 4` used to
+                claim "4 Lessons" for a module with none). The row now shows the
+                real count and hides the pill when the module has no lessons, so
+                nothing on the page is a placeholder. */}
         <section className="bg-[#f7f9f6] border-y border-slate-200/70 py-10 sm:py-12 mb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Centered like every other section heading on this page */}
             <div className="flex flex-col items-center text-center gap-1 mb-10 pb-6 border-b border-slate-200">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-[color:rgb(var(--tw-ink-900))] text-xs font-bold uppercase tracking-wider mb-2">
-                <BookOpen className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white text-xs font-bold uppercase tracking-wider mb-2 shadow-md">
+                <BookOpen className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
                 Structured Syllabus
               </div>
               <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))]">
                 {course.title} Course Curriculum
               </h2>
-              <p className="text-slate-600 text-sm mt-1">
+              <span className="block h-1.5 w-24 rounded-full bg-gradient-to-r from-[rgb(var(--tw-gold-500))] to-[rgb(var(--tw-gold-400))] mt-3" />
+              <p className="text-slate-600 text-sm mt-3">
                 {curriculum.length} enterprise modules aligned with real production workflows.
               </p>
             </div>
 
             {/* Accordion List */}
-            <div className="space-y-3.5 max-w-4xl mx-auto">
+            <div className="space-y-4 max-w-4xl mx-auto">
               {curriculum.map((mod, index) => {
                 const isOpen = openModuleIndex === index;
+                const lessonCount = (mod.lessons || []).length;
                 return (
                   <div
                     key={mod._id || index}
-                    className="rounded-2xl bg-white border border-slate-200 overflow-hidden transition-all shadow-xs hover:border-[rgb(var(--tw-ink-900)/40%)]"
+                    className={`group relative overflow-hidden rounded-2xl bg-white border-2 transition-all duration-300 animate-rise-in ${
+                      isOpen
+                        ? 'border-[rgb(var(--tw-ink-900)/55%)] shadow-xl'
+                        : 'border-slate-200 shadow-xs hover:border-[rgb(var(--tw-ink-900)/45%)] hover:shadow-lg hover:-translate-y-0.5'
+                    }`}
+                    style={{ animationDelay: `${index * 70}ms` }}
                   >
+                    {/* Accent rail in the brand pair (blue → red) */}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-[rgb(var(--tw-blue-700))] to-[rgb(var(--tw-gold-500))] transition-opacity duration-300 ${
+                        isOpen ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'
+                      }`}
+                    />
+
                     <button
                       onClick={() => setOpenModuleIndex(isOpen ? -1 : index)}
-                      className="w-full p-5 text-left flex items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors cursor-pointer"
+                      aria-expanded={isOpen}
+                      className="w-full p-5 pl-7 text-left flex items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="w-11 h-11 rounded-xl bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] font-display font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        <span className="w-12 h-12 rounded-xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white font-display font-black text-sm flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform duration-300">
                           {index + 1 < 10 ? `0${index + 1}` : index + 1}
                         </span>
                         <div className="min-w-0">
-                          <h3 className="text-base sm:text-lg font-bold text-[color:rgb(var(--tw-ink-900))] truncate leading-tight">
+                          <h3 className="text-base sm:text-lg font-black text-[color:rgb(var(--tw-ink-900))] leading-tight">
                             {mod.title}
                           </h3>
-                          <div className="text-xs text-slate-500 mt-1 flex items-center gap-3">
-                            <span>{mod.lessons?.length || 4} Lessons</span>
+                          <div className="mt-2 flex flex-wrap items-center gap-2">
+                            {lessonCount > 0 && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-[color:rgb(var(--tw-blue-700))] text-[11px] font-bold border border-blue-100">
+                                <Play className="w-3 h-3" />
+                                {lessonCount} {lessonCount === 1 ? 'Lesson' : 'Lessons'}
+                              </span>
+                            )}
                             {mod.quiz && (
-                              <>
-                                <span>•</span>
-                                <span className="text-[color:rgb(var(--tw-blue-700))] font-semibold">1 Assessment</span>
-                              </>
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] text-[11px] font-bold border border-[rgb(var(--tw-gold-500)/40%)]">
+                                <ShieldCheck className="w-3 h-3" />
+                                Assessment
+                              </span>
+                            )}
+                            {lessonCount === 0 && !mod.quiz && mod.description && (
+                              <span className="text-[11px] font-medium text-slate-500">Module overview</span>
                             )}
                           </div>
                         </div>
                       </div>
-                      <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
-                        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          isOpen
+                            ? 'bg-[rgb(var(--tw-ink-900))] text-white rotate-180'
+                            : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                        }`}
+                      >
+                        <ChevronDown className="w-4 h-4" />
                       </div>
                     </button>
 
                     {isOpen && (
-                      <div className="px-5 pb-5 pt-1 border-t border-slate-100 space-y-2.5 bg-[#fafbf9]">
+                      <div className="px-5 pb-5 pt-3 border-t border-slate-100 space-y-3 bg-gradient-to-b from-[#f8fafc] to-white">
                         {mod.description && (
-                          <p className="text-xs text-slate-600 py-2 leading-relaxed">{mod.description}</p>
+                          <p className="text-xs sm:text-sm text-slate-600 py-1 leading-relaxed">{mod.description}</p>
                         )}
-                        <div className="space-y-2">
-                          {(mod.lessons || []).map((lesson, lIdx) => (
-                            <div
-                              key={lesson._id || lIdx}
-                              className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <Play className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))] shrink-0" />
-                                <span className="truncate font-medium">{lesson.title}</span>
-                              </div>
-                              <div className="flex items-center gap-2.5 shrink-0 text-slate-500">
-                                <span>{lesson.videoDuration || '45m'}</span>
+                        {lessonCount > 0 ? (
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {(mod.lessons || []).map((lesson, lIdx) => (
+                              <div
+                                key={lesson._id || lIdx}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 hover:border-[rgb(var(--tw-ink-900)/40%)] hover:shadow-xs transition-all duration-200"
+                              >
+                                <span className="w-7 h-7 rounded-lg bg-blue-50 text-[color:rgb(var(--tw-blue-700))] flex items-center justify-center shrink-0">
+                                  {lesson.contentType === 'pdf' || lesson.contentType === 'text'
+                                    ? <FileText className="w-3.5 h-3.5" />
+                                    : (lesson.contentType === 'interactive'
+                                        ? <Monitor className="w-3.5 h-3.5" />
+                                        : <Play className="w-3.5 h-3.5" />)}
+                                </span>
+                                <span className="truncate font-semibold flex-1">{lesson.title}</span>
                                 {lesson.isPreview && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))]">
+                                  <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] border border-[rgb(var(--tw-gold-500)/40%)]">
                                     Free Preview
                                   </span>
                                 )}
                               </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-500 bg-white border border-dashed border-slate-300 rounded-xl p-3">
+                            This module's lesson list is being finalised by the academic team.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1079,63 +1162,73 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {/* 5. Capstone Projects: compact cards, 3 per row */}
+        {/* 5. Capstone Projects — the client asked for this block to be framed,
+            given larger type and animated. It now sits inside a tinted panel, the
+            project titles/descriptions are a step bigger and each card rises in
+            with a small stagger and lifts on hover. */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-4">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-2">
-              <Layers className="w-3.5 h-3.5 text-blue-700" />
-              Build &amp; Showcase
+          <div className="relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white via-[#f7f9ff] to-[rgb(var(--tw-blue-700)/10%)] p-5 sm:p-8 shadow-lg">
+            <div className="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[rgb(var(--tw-blue-700)/12%)] blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-16 w-72 h-72 rounded-full bg-[rgb(var(--tw-gold-500)/12%)] blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white text-xs font-bold uppercase tracking-wider mb-3 shadow-md">
+                <Layers className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
+                Build &amp; Showcase
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
+                Capstone Projects
+              </h2>
+              <span className="block h-1.5 w-24 mx-auto rounded-full bg-gradient-to-r from-[rgb(var(--tw-gold-500))] to-[rgb(var(--tw-gold-400))] mt-4" />
+              <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Hands-on enterprise projects covering the full end-to-end learning lifecycle. Deploy real systems to showcase to hiring managers.
+              </p>
             </div>
-            <h2 className="text-xl sm:text-2xl font-display font-extrabold text-[color:rgb(var(--tw-ink-900))] tracking-tight">
-              Capstone Projects
-            </h2>
-            <p className="mt-2 text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Hands-on enterprise projects covering the full end-to-end learning lifecycle. Deploy real systems to showcase to hiring managers.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {capstones.map((proj, idx) => (
-              <div
-                key={idx}
-                className="rounded-xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col group"
-              >
-                {/* Colored Top Accent Banner.
-                    `bg-brand-700` is the base coat: it paints when the gradient
-                    below it cannot (an unknown/typo'd class coming from the CMS
-                    produces background-image: none). Without it the badge was
-                    white text on a white card — the level label "disappeared". */}
-                <div className={`h-0.5 w-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'}`} />
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {capstones.map((proj, idx) => (
+                <div
+                  key={idx}
+                  className="group relative rounded-2xl bg-white border-2 border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[rgb(var(--tw-ink-900)/45%)] transition-all duration-300 overflow-hidden flex flex-col animate-rise-in"
+                  style={{ animationDelay: `${idx * 80}ms` }}
+                >
+                  {/* Colored Top Accent Banner.
+                      `bg-brand-700` is the base coat: it paints when the gradient
+                      below it cannot (an unknown/typo'd class coming from the CMS
+                      produces background-image: none). Without it the badge was
+                      white text on a white card — the level label "disappeared". */}
+                  <div className={`h-1.5 w-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'}`} />
 
-                <div className="p-3.5 flex-1">
-                  <span className={`inline-block px-2 py-0.5 rounded-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'} text-white text-[9px] font-bold uppercase tracking-wider mb-1.5 shadow-xs`}>
-                    {proj.tag}
-                  </span>
+                  <div className="p-5 flex-1">
+                    <span className={`inline-block px-3 py-1 rounded-full bg-brand-700 bg-gradient-to-r ${proj.color || 'from-brand-600 to-ink-900'} text-white text-[11px] font-bold uppercase tracking-wider mb-3 shadow-xs`}>
+                      {proj.tag}
+                    </span>
 
-                  <h3 className="text-[13px] font-bold text-slate-900 mb-1 group-hover:text-[color:rgb(var(--tw-ink-900))] transition-colors font-display leading-snug line-clamp-1">
-                    {proj.title}
-                  </h3>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 group-hover:text-[color:rgb(var(--tw-blue-700))] transition-colors font-display leading-snug">
+                      {proj.title}
+                    </h3>
 
-                  <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2">
-                    {proj.desc}
-                  </p>
-                </div>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {proj.desc}
+                    </p>
+                  </div>
 
-                {/* Tech Stack Chips */}
-                <div className="px-3.5 pb-3 pt-2 border-t border-slate-100">
-                  <div className="flex flex-wrap gap-1">
-                    {(proj.stack || []).slice(0, 4).map((tech, sIdx) => (
-                      <span
-                        key={sIdx}
-                        className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[9px] font-semibold whitespace-nowrap"
-                      >
-                        {tech}
-                      </span>
-                    ))}
+                  {/* Tech Stack Chips */}
+                  <div className="px-5 pb-4 pt-3 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-1.5">
+                      {(proj.stack || []).slice(0, 4).map((tech, sIdx) => (
+                        <span
+                          key={sIdx}
+                          className="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-semibold whitespace-nowrap"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 

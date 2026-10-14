@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Award,
   ShieldCheck,
+  Sparkles,
   Users,
   ZoomIn,
   Eye
@@ -326,28 +327,42 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   <img src={getCourseIllustration(flagship)} alt="" className="w-full h-full object-contain" />
                 </div>
                 <div>
-                  <div className="flex items-center justify-between gap-4 mb-2 pr-0 sm:pr-24">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                      {flagship.category || 'Executive Engineering Track'}
-                    </span>
-                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
-                      Admissions Open · Capped at 30 Fellows
-                    </span>
+                  {/* Program identity block. The client circled exactly this
+                      area on the live page ("yaha thoda UI and Box daliye") and
+                      asked for a real box around it instead of loose text
+                      floating on white, so the eyebrow, title and summary sit on
+                      their own tinted panel. The /courses page carries the same
+                      treatment — see client/src/pages/CoursesPage.jsx. */}
+                  <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-900/40 p-4">
+                    {/* The status chip stays on one line: inside the new box it
+                        has less room than it did in the open column, and it used
+                        to wrap to two lines at this width. */}
+                    <div className="flex items-center justify-between gap-3 mb-2 flex-wrap pr-0 sm:pr-24">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 min-w-0 truncate">
+                        {flagship.category || 'Executive Engineering Track'}
+                      </span>
+                      <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800 whitespace-nowrap shrink-0">
+                        Admissions Open · Capped at 30 Fellows
+                      </span>
+                    </div>
+
+                    <Link to={`/courses/${flagship.slug}`}>
+                      <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                        {flagship.title}
+                      </h3>
+                    </Link>
+
+                    <p className="mt-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {flagship.shortDescription || flagship.description}
+                    </p>
                   </div>
 
-                  <Link to={`/courses/${flagship.slug}`}>
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
-                      {flagship.title}
-                    </h3>
-                  </Link>
-
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {flagship.shortDescription || flagship.description}
-                  </p>
-
-                  {/* 3 Structured Curriculum Highlights */}
-                  <div className="mt-5 space-y-2.5 border-t border-b border-slate-100 dark:border-slate-800 py-4">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+                  {/* 3 Structured Curriculum Highlights — boxed and labelled,
+                      matching the identity panel above so the card reads as two
+                      deliberate blocks rather than one long column of text. */}
+                  <div className="mt-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                       Curriculum Highlights
                     </div>
                     {getHighlightBullets(flagship).map((highlight, hIdx) => (
@@ -363,7 +378,12 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   {/* Tech Stack Pills */}
                   <div className="mt-4 flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-mono text-slate-500 mr-1">Stack:</span>
-                    {(flagship.skills?.slice(0, 6) || ['Python 3.12', 'PyTorch', 'Docker', 'LangChain', 'AWS']).map(
+                    {/* `skills?.` alone was not enough: a course whose skills list
+                        saved as an empty array is truthy, so `[] || defaults`
+                        kept the empty array and the row rendered a bare "Stack:"
+                        label with no pills under it (the live home page did
+                        exactly that). */}
+                    {(flagship.skills?.length ? flagship.skills.slice(0, 6) : ['Python 3.12', 'PyTorch', 'Docker', 'LangChain', 'AWS']).map(
                       (skill, sIdx) => (
                         <span
                           key={sIdx}

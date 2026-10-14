@@ -129,6 +129,15 @@
   --hairline: #E6E8EC;
   --hairline-strong: #D5D9E0;
 
+  /* ── Box definition ────────────────────────────────────────────────
+     Client request ("pure website me jitne box hai, sabka outline define
+     ho — boxes highlight dikhe"). Every neutral card / panel / tile is
+     outlined with these two washes instead of the near-invisible #E6E8EC
+     hairline, so a box reads as a box on any background. See the global
+     box rule further down; a box opts out with the `aft-plain` class. */
+  --box-outline: rgba(2, 8, 23, 0.3);
+  --box-outline-hover: rgba(2, 8, 23, 0.62);
+
   --text-strong: rgb(var(--tw-text-strong));
   --text-body: rgb(var(--tw-text-body));
   --text-muted: rgb(var(--tw-text-muted));
@@ -235,6 +244,62 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   BODY COPY IS BLACK
+   ═══════════════════════════════════════════════════════════════
+   The client's note on the home page: "website ke saare text black color kar
+   dijiye, body part wale". Body copy used to be a blue-tinted slate
+   (--tw-text-body #444F6B, and a few hundred `text-slate-500/600/700`
+   paragraphs), which is why the page read as washed out next to the navy
+   headings.
+
+   Two changes, together, cover every paragraph without editing ~600 class
+   strings:
+     1. the shipped body channel is now near-black (index.css and the theme
+        engine's default channel in client/src/lib/siteTheme.js); and
+     2. the slate *and* gray text utilities body copy actually uses are
+        repainted.
+
+   Both ramps are covered because the site kept both: sections added later
+   (the home page's lead paragraphs, plan cards) reach for `text-gray-600`,
+   which is Tailwind's stock grey and an even lighter #4B5563.
+
+   These rules are plain CSS AFTER `@tailwind utilities`, so they only win a
+   tie against the same-named utility. Anything with a `dark:` variant (e.g.
+   `dark:text-slate-300`) or a hover/focus variant still wins on specificity,
+   which is what keeps white-on-navy copy and dark-mode surfaces untouched.
+   slate-400 and lighter are deliberately left alone: they carry placeholder,
+   icon and disabled states, where black would read as enabled text. */
+:root {
+  --tw-text-body: 11 13 18;
+}
+
+.text-slate-800,
+.text-slate-700,
+.text-slate-600,
+.text-slate-500,
+.text-gray-800,
+.text-gray-700,
+.text-gray-600,
+.text-gray-500 {
+  color: #0B0D12;
+}
+
+/* On a dark surface the same utilities have nothing to darken into, so they
+   fall back to a readable light grey instead of invisible black. Nothing sets
+   `.dark` on the root today, so this pair waits for the day the theme toggle is
+   wired up; every `dark:` variant in the codebase is in the same position. */
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-gray-500 {
+  color: rgb(var(--tw-slate-300));
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DISTINCTIVE HIGHLIGHT & ACCENT UTILITIES
    ═══════════════════════════════════════════════════════════════ */
 
@@ -258,7 +323,7 @@
 .elms-card, .aft-card, .apple-card, .glass-card {
   position: relative;
   background-color: var(--surface);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--box-outline);
   border-radius: 18px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -278,9 +343,49 @@
 }
 
 .elms-card:hover, .aft-card:hover, .apple-card:hover, .glass-card:hover {
-  border-color: var(--hairline-strong);
+  border-color: var(--box-outline-hover);
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL BOX DEFINITION
+   ═══════════════════════════════════════════════════════════════
+   Every white / soft-tinted box that already carries a border now gets a
+   visible outline, and that outline deepens on hover — so the whole site
+   shows "sare boxes highlighted" without touching hundreds of classNames.
+
+   How it works: an attribute selector on the class string (rounded + white
+   surface + bordered) outranks the single Tailwind utility that set the pale
+   `border-slate-200`, and outranks its `hover:` variant too (3 class-level
+   matches vs 2), so the hover state is re-declared here rather than lost.
+
+   Excluded on purpose:
+     • `aft-plain`  → keep this box's own border treatment (used for tinted
+       accent pills, which must stay blue/red, not navy).
+     • coloured surfaces (`bg-blue-50`, `bg-red-500`…) never match, so accent
+       chips and dark panels are unaffected.
+   The `.dark` variants keep dark mode readable, where a navy outline on a
+   slate-900 panel would be invisible.
+   ---------------------------------------------------------------- */
+[class*="rounded-"][class*="bg-white"][class*="border"]:not(.aft-plain),
+[class*="rounded-"][class*="bg-slate-50"][class*="border"]:not(.aft-plain) {
+  border-color: var(--box-outline);
+}
+
+[class*="rounded-"][class*="bg-white"][class*="border"]:not(.aft-plain):hover,
+[class*="rounded-"][class*="bg-slate-50"][class*="border"]:not(.aft-plain):hover {
+  border-color: var(--box-outline-hover);
+}
+
+.dark [class*="rounded-"][class*="bg-white"][class*="border"]:not(.aft-plain),
+.dark [class*="rounded-"][class*="bg-slate-50"][class*="border"]:not(.aft-plain) {
+  border-color: rgba(255, 255, 255, 0.26);
+}
+
+.dark [class*="rounded-"][class*="bg-white"][class*="border"]:not(.aft-plain):hover,
+.dark [class*="rounded-"][class*="bg-slate-50"][class*="border"]:not(.aft-plain):hover {
+  border-color: rgba(255, 255, 255, 0.46);
 }
 
 .elms-card-dark {
@@ -800,6 +905,20 @@
   .animate-infinite-marquee-slow,
   .animate-infinite-marquee-slower {
     animation: none;
+  }
+}
+
+/* The idle animations added for the box / card reveals (float, glow pulse,
+   edge shine, entrance rise) also stand still for a visitor who prefers
+   reduced motion — the content stays, only the movement goes. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-soft,
+  .animate-accent-pulse,
+  .animate-edge-shine,
+  .animate-rise-in,
+  .aft-lift-on-hover {
+    animation: none;
+    transition: none;
   }
 }
 

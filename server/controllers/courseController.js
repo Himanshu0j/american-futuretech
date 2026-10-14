@@ -90,7 +90,7 @@ const getCourseBySlug = async (req, res) => {
 // @access  Private (SuperAdmin, Counselor)
 const createCourse = async (req, res) => {
   try {
-    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail, heroImage, advantageImages, credentialLogo, credentialTitle, credentialSubtitle, certificateImage, careerRoles, careerRolesHeading, careerRolesSubtitle } = req.body;
+    const { title, slug, category, badge, cardTheme, duration, pricing, highlights, curriculum, brochureUrl, isPublished, seatsUrgencyText, viewOptions, eligibility, tools, toolsTitle, toolsSubtitle, capstoneProjects, thumbnail, menuLogo, heroImage, advantageImages, credentialLogo, credentialTitle, credentialSubtitle, certificateImage, careerRoles, careerRolesHeading, careerRolesSubtitle } = req.body;
 
     // Without a title this used to throw on `title.toLowerCase()` and answer
     // 500; an incomplete form is the caller's mistake and must be a 400.
@@ -129,6 +129,9 @@ const createCourse = async (req, res) => {
       // Per-course card image, hero image, advantage-card artwork + "Tools
       // Covered" block + capstone cards.
       thumbnail,
+      // Logo for the header's CAREER PROGRAMS mega-menu (falls back to the card
+      // image and then to a title monogram when it is empty).
+      menuLogo,
       heroImage,
       advantageImages,
       // Hero credential block (partner mark + wording + certificate artwork).

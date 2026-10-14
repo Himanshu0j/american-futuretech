@@ -455,6 +455,15 @@ export default function CurriculumBuilder() {
                         {lesson.title}
                         {lesson.isPublished === false && <Badge tone="amber">draft</Badge>}
                         {lesson.isPreview && <Badge tone="indigo">preview</Badge>}
+                        {/* Seeded placeholder: the public course page skips these
+                            until the admin edits and saves one, so say it here
+                            rather than leaving the admin guessing why the
+                            syllabus looks empty on the website. */}
+                        {lesson.isDemo && (
+                          <span title="Demo lesson from the seed script. It is stored here as usual but the public course page does not print it until you edit and save it.">
+                            <Badge tone="amber">demo · hidden from website</Badge>
+                          </span>
+                        )}
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
                         <Badge tone="slate">{contentTypeLabel[lesson.contentType] || lesson.contentType}</Badge>

@@ -53,6 +53,8 @@ Yeh page poore LMS ka dil hai. Yahan se aap course ke andar **modules** aur unke
 Top-right me **“Select course”** dropdown hai → apna program chuno (jo course draft hai uske saath `(draft)` likha aayega).
 Iske neeche badge row dikhegi: `X modules`, `Y lessons`, `Z quizzes`, aur agar koi lesson draft hai to `N drafts`.
 
+> **`demo · hidden from website` badge:** program chalane ke liye jo demo lessons pehle se bhare hue aate hain, un par ye badge dikhta hai. Wo lesson builder me normal tarah save/edit/delete ho sakta hai, lekin **public course page par nahi chhapta** — taki visitors ko demo naam asli syllabus na lage. Us lesson par apne notes/video save karo, ya delete kar do — jaise hi aap use edit karke save karoge, badge hat jayega aur lesson website par live ho jayega.
+
 ### 2.2 Module banao / badlo
 
 - **Add module** (top-right) → naya module `Module N` naam se ban jayega.
@@ -307,6 +309,7 @@ Student `https://american-futuretech.vercel.app/student/login` se login karta ha
 |---|---|
 | **Video khaali/kala dikh raha hai** | Link `https://` se shuru hona chahiye aur YouTube/Vimeo ka hona chahiye. Link field me paste karo → neeche **preview** turant dikhega; agar preview nahi dikha to video student ke paas bhi nahi chalega. |
 | **Lesson student ko nahi dikh raha** | Lesson ya module **Draft** hai. Curriculum Builder me 👁 (ya module ka Live/Draft) button se publish kar do. |
+| **Course page par syllabus me lesson ke naam nahi aa rahe** | Wo lesson **demo content** hai (Curriculum Builder me `demo · hidden from website` badge). Public page par demo lessons nahi dikhte. Us lesson ko edit karke save kar do (title/notes/video kuch bhi) — badge hat jayega aur syllabus par aa jayega. Naye lessons par ye badge kabhi nahi aata. |
 | **Student ko course hi nahi dikh raha** | Enrollment nahi hai. **Enrollments & Access** → student ka row check karo, status `Active` hona chahiye. |
 | **Certificate nahi bana** | Saare **published** lessons complete hone chahiye. **Certificates → Ready to issue** tab me student dikhega → **Issue certificate**. |
 | **Announcement student ko nahi dikha** | Audience check karo (Course/Batch sahi chuna?), Publish tick hai?, aur **LMS Settings** me “Show announcements on the student dashboard” ON hai? |
@@ -314,6 +317,7 @@ Student `https://american-futuretech.vercel.app/student/login` se login karta ha
 | **Save nahi ho raha / “could not save”** | Lesson title khaali hai, ya video link `https://` ke bajay kuch aur hai. Title bharo, link theek karo. |
 | **Course edit karne ke baad lesson update nahi dikha** | Page **Refresh** karo. Naya curriculum save hote hi live ho jata hai. |
 | **Purana lesson ka video gayab** | Aisa ab nahi hota — authored lesson composer se delete nahi hota. Agar kisi ne 🗑 daba diya to lesson hamesha ke liye chala jayega. |
+| **Lesson ka time (45m/40m) kahan gaya** | Public course page aur student player se lesson duration hata di gayi hai (jo default `45m` har jagah chhapta tha). Curriculum Builder / Lesson Editor me field ab bhi hai — aap chahein to bhar sakte ho. |
 
 ---
 

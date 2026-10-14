@@ -642,14 +642,22 @@ export default function CheckoutPage() {
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-xs font-bold text-[color:rgb(var(--tw-ink-900))] uppercase tracking-wider">{checkoutCopy.seatTitle || 'Seat Reservation'}</span>
+                    <div className="flex items-start gap-3 mb-3">
+                      <span
+                        aria-hidden="true"
+                        className={`mt-0.5 w-4 h-4 rounded-full border-2 shrink-0 transition-colors ${
+                          tier === 'deposit' ? 'border-[rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-ink-900))]' : 'border-slate-300'
+                        }`}
+                      />
+                      <div className="min-w-0">
+                        <span className="block text-xs font-semibold text-[color:rgb(var(--tw-ink-900))] uppercase tracking-wider">{checkoutCopy.seatTitle || 'Seat Reservation'}</span>
+                        {checkoutCopy.seatDescription && (
+                          <p className="text-xs text-slate-700 leading-relaxed mt-1.5">
+                            {checkoutCopy.seatDescription}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    {checkoutCopy.seatDescription && (
-                      <p className="text-xs text-slate-600 leading-relaxed mb-3">
-                        {checkoutCopy.seatDescription}
-                      </p>
-                    )}
                     {/* The two seat deposits — tap to switch. $2,499 and $4,499
                         have their own cards below, so they are not repeated here. */}
                     <div className="flex flex-wrap items-center gap-2">
@@ -685,49 +693,73 @@ export default function CheckoutPage() {
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold text-[color:rgb(var(--tw-blue-700))] uppercase tracking-wider">
-                        {checkoutCopy.careerTitle || 'Group Batch Enroll Now'}
-                      </span>
-                      <span className="text-2xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <span
+                          aria-hidden="true"
+                          className={`mt-0.5 w-4 h-4 rounded-full border-2 shrink-0 transition-colors ${
+                            tier === 'full' ? 'border-[rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-ink-900))]' : 'border-slate-300'
+                          }`}
+                        />
+                        <div className="min-w-0">
+                          <span className="block text-xs font-semibold text-[color:rgb(var(--tw-ink-900))] uppercase tracking-wider">
+                            {checkoutCopy.careerTitle || 'Group Batch Enroll Now'}
+                          </span>
+                          {checkoutCopy.careerDescription && (
+                            <p className="text-xs text-slate-700 leading-relaxed mt-1.5">
+                              {checkoutCopy.careerDescription}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-2xl font-display font-semibold text-[color:rgb(var(--tw-ink-900))] shrink-0 tabular-nums">
                         ${selectedCourse?.pricing?.discountedPrice || 499}
                       </span>
                     </div>
-                    {checkoutCopy.careerDescription && (
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        {checkoutCopy.careerDescription}
-                      </p>
-                    )}
                   </div>
 
                   {/* Personalized 1-on-1 Option */}
                   <div
                     onClick={() => { setTier('personalized'); resetCoupon(); }}
-                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden ${
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
                       tier === 'personalized'
-                        ? 'bg-[#fffdf7] border-red-500 shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-red-300'
+                        ? 'bg-[#F2F6FF] border-[rgb(var(--tw-ink-900))] shadow-xs'
+                        : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    <span className="absolute top-0 right-0 bg-gradient-to-l from-red-500 to-red-500 text-white text-[9px] font-black uppercase tracking-wider px-3 py-1 rounded-bl-lg">
-                      Independent
-                    </span>
-                    <div className="flex justify-between items-start mb-2 pr-14">
-                      <span className="text-xs font-bold text-red-700 uppercase tracking-wider">{checkoutCopy.personalizedTitle || 'Personalized Mentorship'}</span>
-                      <span className="text-2xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">
+                    {/* This row used to shout: a red "INDEPENDENT" corner badge
+                        and bold red type on the title, price and label. The
+                        client asked for that emphasis to come off and the row to
+                        match the other two, so the selection is shown by the same
+                        radio dot everywhere and the type weight is even. */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <span
+                          aria-hidden="true"
+                          className={`mt-0.5 w-4 h-4 rounded-full border-2 shrink-0 transition-colors ${
+                            tier === 'personalized' ? 'border-[rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-ink-900))]' : 'border-slate-300'
+                          }`}
+                        />
+                        <div className="min-w-0">
+                          <span className="block text-xs font-semibold text-[color:rgb(var(--tw-ink-900))] uppercase tracking-wider">
+                            {checkoutCopy.personalizedTitle || 'Personalized Mentorship'}
+                          </span>
+                          {checkoutCopy.personalizedDescription && (
+                            <p className="text-xs text-slate-700 leading-relaxed mt-1.5">
+                              {checkoutCopy.personalizedDescription}
+                            </p>
+                          )}
+                          {checkoutCopy.personalizedMeta && (
+                            <div className="text-[10px] font-mono text-slate-600 mt-1">
+                              {checkoutCopy.personalizedMeta}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-2xl font-display font-semibold text-[color:rgb(var(--tw-ink-900))] shrink-0 tabular-nums">
                         ${personalizedPrice.toLocaleString()}
                       </span>
                     </div>
-                    {checkoutCopy.personalizedDescription && (
-                      <p className="text-xs text-slate-600 leading-relaxed mb-2">
-                        {checkoutCopy.personalizedDescription}
-                      </p>
-                    )}
-                    {checkoutCopy.personalizedMeta && (
-                      <div className="text-[10px] font-mono text-slate-500">
-                        {checkoutCopy.personalizedMeta}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

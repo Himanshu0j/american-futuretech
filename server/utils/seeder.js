@@ -672,6 +672,10 @@ const autoSeedIfEmpty = async () => {
                 isPreview: lIdx === 1,
                 order: lIdx,
                 isPublished: true,
+                // Demo data: the public syllabus skips these placeholders until
+                // the admin edits them (see server/utils/demoLessons.js) while
+                // the builder and the student player still show them.
+                source: 'seed',
               });
               lIdx++;
             }

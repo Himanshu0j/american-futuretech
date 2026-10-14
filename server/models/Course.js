@@ -125,6 +125,15 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  // Program logo shown in the header's CAREER PROGRAMS mega-menu (the client's
+  // "logo yahan dikhe jo admin se lag paye"). Square artwork works best; the
+  // menu crops it to a rounded tile. Left blank, the menu falls back to the
+  // course card image and then to a monogram of the program title, so a naive
+  // course never shows an empty slot.
+  menuLogo: {
+    type: String,
+    default: '',
+  },
   // Rectangle course image shown above the title in the course hero (requested
   // in the client's course-format document: "course image add kariye").
   heroImage: {

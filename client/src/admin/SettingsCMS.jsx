@@ -52,7 +52,8 @@ import {
   DEFAULT_LEADERSHIP,
   DEFAULT_SISTER_COMPANY,
   DEFAULT_PEDAGOGY,
-  DEFAULT_CAREER_OPPORTUNITIES
+  DEFAULT_CAREER_OPPORTUNITIES,
+  DEFAULT_CAREERS_HERO
 } from '../data/siteContent';
 
 /** Badge gradients offered for the career-position rows (must stay Tailwind utilities). */
@@ -313,7 +314,14 @@ export default function SettingsCMS() {
     },
     // "Career Paths" — the target-role checklist every program page shows.
     // `roles: []` means "keep each track's coded list".
-    careerOpportunities: { ...DEFAULT_CAREER_OPPORTUNITIES, roles: [] }
+    careerOpportunities: { ...DEFAULT_CAREER_OPPORTUNITIES, roles: [] },
+    // "Live Jobs Page" — the hiring-network banner on /jobs & /careers. The
+    // coded defaults are pre-loaded so the client edits real copy instead of
+    // typing it from a blank form.
+    careersHero: {
+      ...DEFAULT_CAREERS_HERO,
+      stats: DEFAULT_CAREERS_HERO.stats.map((stat) => ({ ...stat }))
+    }
   });
 
   // Audit logs state
@@ -411,6 +419,15 @@ export default function SettingsCMS() {
               ...prev.careerOpportunities,
               ...(res.data.settings.careerOpportunities || {}),
               roles: res.data.settings.careerOpportunities?.roles || prev.careerOpportunities.roles
+            },
+            careersHero: {
+              ...prev.careersHero,
+              ...(res.data.settings.careersHero || {}),
+              // An empty saved list is not an instruction to delete the cards —
+              // it means "not edited yet", so the form keeps its prefilled rows.
+              stats: res.data.settings.careersHero?.stats?.length
+                ? res.data.settings.careersHero.stats
+                : prev.careersHero.stats
             }
           }));
         }
@@ -514,6 +531,59 @@ export default function SettingsCMS() {
       ...DEFAULT_CAREER_OPPORTUNITIES,
       ...prev.careerOpportunities,
       roles: DEFAULT_CAREER_OPPORTUNITIES.roles.map((role) => ({ ...role }))
+    }
+  }));
+
+  // ── "Live Jobs Page" helpers — the three stat cards + banner copy ──
+  const handleAddCareerHeroStat = () => setSettings((prev) => {
+    const stats = prev.careersHero?.stats || [];
+    return {
+      ...prev,
+      careersHero: {
+        ...prev.careersHero,
+        stats: [
+          ...stats,
+          { value: 'New stat', label: 'What it measures', order: stats.length + 1, active: true }
+        ]
+      }
+    };
+  });
+
+  const handleUpdateCareerHeroStat = (index, field, value) => setSettings((prev) => {
+    const stats = [...(prev.careersHero?.stats || [])];
+    stats[index] = { ...stats[index], [field]: value };
+    return { ...prev, careersHero: { ...prev.careersHero, stats } };
+  });
+
+  const handleDeleteCareerHeroStat = (index) => setSettings((prev) => ({
+    ...prev,
+    careersHero: {
+      ...prev.careersHero,
+      stats: (prev.careersHero?.stats || []).filter((_, i) => i !== index)
+    }
+  }));
+
+  const handleMoveCareerHeroStat = (index, direction) => setSettings((prev) => {
+    const stats = [...(prev.careersHero?.stats || [])];
+    const target = index + direction;
+    if (target < 0 || target >= stats.length) return prev;
+    [stats[index], stats[target]] = [stats[target], stats[index]];
+    return {
+      ...prev,
+      careersHero: { ...prev.careersHero, stats: stats.map((stat, i) => ({ ...stat, order: i + 1 })) }
+    };
+  });
+
+  // "Load default stat cards" — the three numbers the page shipped with, as
+  // real editable rows (an existing edit is never overwritten).
+  const handleLoadDefaultCareerHeroText = () => setSettings((prev) => ({
+    ...prev,
+    careersHero: {
+      ...DEFAULT_CAREERS_HERO,
+      ...prev.careersHero,
+      stats: (prev.careersHero?.stats || []).length
+        ? prev.careersHero.stats
+        : DEFAULT_CAREERS_HERO.stats.map((stat) => ({ ...stat }))
     }
   }));
 
@@ -780,6 +850,7 @@ export default function SettingsCMS() {
     { id: 'companies', label: 'Company Logos', icon: Award },
     { id: 'courses', label: 'Career Programs', icon: Award },
     { id: 'career', label: 'Career Paths', icon: Briefcase },
+    { id: 'careersHero', label: 'Live Jobs Page', icon: Compass },
     { id: 'personalized', label: 'Personalized ($5,499)', icon: DollarSign },
     { id: 'team', label: 'Team & Alliances', icon: Users },
     { id: 'capstone', label: 'Capstone & Tools', icon: Cpu },
@@ -1708,6 +1779,246 @@ export default function SettingsCMS() {
                             onClick={() => handleDeleteCareerRole(idx)}
                             className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-slate-900 cursor-pointer"
                             aria-label={`Remove career position ${idx + 1}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================================= */}
+          {/* LIVE JOBS PAGE CMS — the hiring-network banner on /jobs & /careers   */}
+          {/* ========================================================================= */}
+          {activeTab === 'careersHero' && (
+            <div className="space-y-6">
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="max-w-3xl">
+                    <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
+                      <Compass className="w-4 h-4 text-blue-400" />
+                      Live Jobs banner (top of /jobs &amp; /careers)
+                    </h3>
+                    <p className="text-xs text-slate-400 font-mono mt-1.5">
+                      Yeh poora banner — badge, heading, description, dono buttons aur{' '}
+                      <span className="text-blue-300">teen stat cards ($128K / 140+ / 94%)</span> — ab yahan se
+                      editable hai. Har field khaali chhodo to coded default dikhta rahega (khaali box nahi).
+                      Stat card ka <span className="text-white">Show</span> hataao to woh card hide ho jayega
+                      bina delete kiye, aur "Add Stat Card" se chautha ya paanchwa number bhi add kar sakte ho.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleLoadDefaultCareerHeroText}
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold hover:bg-slate-700 cursor-pointer"
+                    >
+                      Load default text
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddCareerHeroStat}
+                      className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-blue-500/30 cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Stat Card</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-xs font-mono">
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Status badge text</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.badgeText || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, badgeText: e.target.value }
+                      })}
+                      placeholder="Corporate Employer Hiring Network • Active Placements"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Heading line 1</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.heading || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, heading: e.target.value }
+                      })}
+                      placeholder="Where Elite Tech Employers Hire"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Heading line 2 (red highlight)</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.headingHighlight || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, headingHighlight: e.target.value }
+                      })}
+                      placeholder="Verified Graduate Talent"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Right panel label</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.panelLabel || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, panelLabel: e.target.value }
+                      })}
+                      placeholder="Partner Network Active"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-slate-400 uppercase mb-1.5">Description</label>
+                    <textarea
+                      rows={3}
+                      value={settings.careersHero?.subtitle || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, subtitle: e.target.value }
+                      })}
+                      placeholder="Direct hiring partnerships connecting American FutureTech certified fellows…"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Primary button label</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.primaryCtaText || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, primaryCtaText: e.target.value }
+                      })}
+                      placeholder="Explore Open Positions"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Secondary button label</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.secondaryCtaText || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, secondaryCtaText: e.target.value }
+                      })}
+                      placeholder="Join Talent Pool"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Panel badge title</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.panelFooterTitle || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, panelFooterTitle: e.target.value }
+                      })}
+                      placeholder="Direct Talent Introductions"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 uppercase mb-1.5">Panel badge sub-title</label>
+                    <input
+                      type="text"
+                      value={settings.careersHero?.panelFooterMeta || ''}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        careersHero: { ...settings.careersHero, panelFooterMeta: e.target.value }
+                      })}
+                      placeholder="140+ Partner Tech Employers"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-sans focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Stat cards — value + label, in the order shown on the page */}
+              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3 backdrop-blur-xl">
+                <h3 className="text-sm font-bold text-white font-heading">Stat cards</h3>
+                {(settings.careersHero?.stats || []).length === 0 ? (
+                  <div className="text-xs text-slate-400 font-mono bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    Abhi koi stat card set nahi hai — page par coded default ($128K / 140+ / 94%) dikh rahe hain.
+                    <span className="text-white font-bold"> "Add Stat Card"</span> se apne cards banao (ya
+                    "Load default text" dabao, teeno cards editor me aa jayenge).
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {(settings.careersHero?.stats || []).map((stat, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center gap-2"
+                      >
+                        <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs font-mono flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={stat.value || ''}
+                          onChange={(e) => handleUpdateCareerHeroStat(idx, 'value', e.target.value)}
+                          placeholder="140+"
+                          aria-label={`Stat card ${idx + 1} value`}
+                          className="sm:w-32 px-2.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500"
+                        />
+                        <input
+                          type="text"
+                          value={stat.label || ''}
+                          onChange={(e) => handleUpdateCareerHeroStat(idx, 'label', e.target.value)}
+                          placeholder="Corporate Partners"
+                          aria-label={`Stat card ${idx + 1} label`}
+                          className="flex-1 px-2.5 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500"
+                        />
+                        <label className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono cursor-pointer whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={stat.active !== false}
+                            onChange={(e) => handleUpdateCareerHeroStat(idx, 'active', e.target.checked)}
+                            className="rounded bg-slate-900 border-white/20 text-blue-500"
+                          />
+                          Show
+                        </label>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleMoveCareerHeroStat(idx, -1)}
+                            disabled={idx === 0}
+                            className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                            aria-label={`Move stat card ${idx + 1} up`}
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMoveCareerHeroStat(idx, 1)}
+                            disabled={idx === (settings.careersHero?.stats || []).length - 1}
+                            className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                            aria-label={`Move stat card ${idx + 1} down`}
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCareerHeroStat(idx)}
+                            className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-slate-900 cursor-pointer"
+                            aria-label={`Remove stat card ${idx + 1}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

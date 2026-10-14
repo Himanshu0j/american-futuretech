@@ -212,7 +212,11 @@ const DEFAULT_CHANNELS = {
   '--tw-slate-950': '2 6 23',
 
   '--tw-text-strong': '0 32 96',
-  '--tw-text-body': '68 80 107',
+  // Body copy ships near-black (the client's "saare text black color kar
+  // dijiye, body part wale"). It was a blue-tinted #444F6B, which made every
+  // paragraph read as washed out beside the navy headings. Admin → Settings →
+  // Appearance still overrides it through "Body text colour".
+  '--tw-text-body': '11 13 18',
   '--tw-text-muted': '107 114 128',
   '--tw-text-faint': '154 163 178',
 };

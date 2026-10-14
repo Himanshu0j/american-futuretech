@@ -279,7 +279,14 @@ export default function LessonPlayer() {
                           )}
                           <span className="truncate">{lesson.title}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 shrink-0">{lesson.videoDuration || '45m'}</span>
+                        {/* No lesson clock here any more: the duration shown used
+                            to be the model's `45m` default rather than anything
+                            the academic team had entered (client request: the
+                            time should not appear). The status icon already tells
+                            the student where they are. */}
+                        {isDone && (
+                          <span className="text-[10px] font-bold text-[color:rgb(var(--tw-blue-700))] shrink-0">Done</span>
+                        )}
                       </button>
                     );
                   })}

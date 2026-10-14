@@ -5,6 +5,7 @@ const Course = require('../models/Course');
 const { sendError } = require('../utils/apiError');
 const { normalizeVideoUrl } = require('../utils/videoUrl');
 const LmsSetting = require('../models/LmsSetting');
+const { splitDemoLessons, isDemoLesson } = require('../utils/demoLessons');
 
 const httpError = (status, message) => {
   const error = new Error(message);
@@ -81,7 +82,12 @@ const getCourseCurriculum = async (req, res) => {
     const modules = await Module.find({ course: course._id, isPublished: true }).sort({ order: 1, moduleNumber: 1 });
     const moduleIds = modules.map(m => m._id);
 
-    const lessons = await Lesson.find({ course: course._id, isPublished: true }).sort({ order: 1, lessonNumber: 1 });
+    // Demo lessons the seeder generated are dropped here (see
+    // utils/demoLessons.js): to a visitor the generated titles look like a real
+    // syllabus while nothing behind them is the client's material. The admin
+    // builder and the student player still get every lesson.
+    const allLessons = await Lesson.find({ course: course._id, isPublished: true }).sort({ order: 1, lessonNumber: 1 });
+    const { visible: lessons } = splitDemoLessons(allLessons);
     const quizzes = await Quiz.find({ course: course._id, isPublished: true });
 
     // LMS Settings → "Allow free-preview lessons". When it is off, the public
@@ -175,7 +181,9 @@ const deleteModule = async (req, res) => {
 // @access  Private (Admin)
 const createLesson = async (req, res) => {
   try {
-    const newLesson = await Lesson.create(sanitizeLessonPayload(req.body));
+    // Anything the builder writes is authored content: `source: 'admin'` is also
+    // what lifts a seeded demo lesson onto the public syllabus once it is saved.
+    const newLesson = await Lesson.create({ ...sanitizeLessonPayload(req.body), source: 'admin' });
     return res.status(201).json({ success: true, lesson: newLesson });
   } catch (error) {
     return sendError(res, error);
@@ -187,10 +195,14 @@ const createLesson = async (req, res) => {
 // @access  Private (Admin)
 const updateLesson = async (req, res) => {
   try {
-    const updated = await Lesson.findByIdAndUpdate(req.params.id, sanitizeLessonPayload(req.body), {
-      new: true,
-      runValidators: true,
-    });
+    const updated = await Lesson.findByIdAndUpdate(
+      req.params.id,
+      { ...sanitizeLessonPayload(req.body), source: 'admin' },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!updated) return res.status(404).json({ success: false, message: 'Lesson not found' });
     return res.status(200).json({ success: true, lesson: updated });
   } catch (error) {
@@ -218,6 +230,9 @@ const duplicateLesson = async (req, res) => {
     clone.title = `${source.title} (copy)`;
     clone.order = nextOrder;
     clone.lessonNumber = nextOrder;
+    // A duplicate is the admin's own row even when the original was demo data:
+    // duplicating a lesson is how the builder turns a placeholder into a draft.
+    clone.source = 'admin';
 
     const created = await Lesson.create(clone);
     return res.status(201).json({ success: true, lesson: created });
@@ -240,9 +255,14 @@ const getAdminCourseCurriculum = async (req, res) => {
       Quiz.find({ course: course._id }),
     ]);
 
+    // `isDemo` marks the generated placeholder lessons the public syllabus skips
+    // (see utils/demoLessons.js). The builder shows it as a badge so an admin can
+    // see at a glance why a lesson is not on the website and what to do about it.
     const structuredModules = modules.map((mod) => ({
       ...mod.toObject(),
-      lessons: lessons.filter((lesson) => String(lesson.module) === String(mod._id)),
+      lessons: lessons
+        .filter((lesson) => String(lesson.module) === String(mod._id))
+        .map((lesson) => ({ ...lesson.toObject(), isDemo: isDemoLesson(lesson) })),
       quiz: quizzes.find((quiz) => quiz.module && String(quiz.module) === String(mod._id)) || null,
     }));
 

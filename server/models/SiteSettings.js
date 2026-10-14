@@ -346,6 +346,37 @@ const CareerOpportunitiesSchema = new mongoose.Schema({
   roles: { type: [CareerOpportunityRoleSchema], default: [] },
 }, { _id: false });
 
+// ── Live Jobs (/jobs & /careers) hero CMS ───────────────────────────────────
+// The hiring-network banner at the top of the Live Jobs board used to be coded
+// into CareersPage.jsx, so the client could not touch a single word of it —
+// including the three stat cards ("$128K / 140+ / 94%"), which was their
+// specific complaint. Every string on that banner is now a settings field,
+// editable in Admin → Settings → "Live Jobs Page".
+//   • blank field        → the coded default below is used (never a blank box)
+//   • stat.active false  → that stat card is hidden without deleting the row
+const CareersHeroStatSchema = new mongoose.Schema({
+  value: { type: String, default: '' },
+  label: { type: String, default: '' },
+  order: { type: Number, default: 1 },
+  active: { type: Boolean, default: true },
+}, { _id: false });
+
+const CareersHeroSchema = new mongoose.Schema({
+  badgeText: { type: String, default: 'Corporate Employer Hiring Network • Active Placements' },
+  heading: { type: String, default: 'Where Elite Tech Employers Hire' },
+  headingHighlight: { type: String, default: 'Verified Graduate Talent' },
+  subtitle: {
+    type: String,
+    default: 'Direct hiring partnerships connecting American FutureTech certified fellows with high-growth technology enterprises, defense contractors, and AI engineering studios.',
+  },
+  primaryCtaText: { type: String, default: 'Explore Open Positions' },
+  secondaryCtaText: { type: String, default: 'Join Talent Pool' },
+  panelLabel: { type: String, default: 'Partner Network Active' },
+  panelFooterTitle: { type: String, default: 'Direct Talent Introductions' },
+  panelFooterMeta: { type: String, default: '140+ Partner Tech Employers' },
+  stats: { type: [CareersHeroStatSchema], default: [] },
+}, { _id: false });
+
 // ── Header / top-bar menu CMS ───────────────────────────────────────────────
 // The main navigation used to be hard-coded in Navbar.jsx, so every label or
 // order change (CERTIFICATIONS → SUCCESS STORIES and similar requests) needed
@@ -507,6 +538,13 @@ const SiteSettingsSchema = new mongoose.Schema({
   // One editable list of target job titles for every program page.
   careerOpportunities: {
     type: CareerOpportunitiesSchema,
+    default: () => ({}),
+  },
+
+  // 🌟 LIVE JOBS HERO — Admin → Settings → "Live Jobs Page".
+  // Banner copy + the three stat cards on /jobs & /careers.
+  careersHero: {
+    type: CareersHeroSchema,
     default: () => ({}),
   },
 

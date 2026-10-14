@@ -223,10 +223,32 @@ export default {
           '0%': { transform: 'translateX(-120%)' },
           '100%': { transform: 'translateX(120%)' },
         },
+        /* Gentle idle float — capstone / eligibility cards breathe instead of
+           sitting dead still. Disabled again by the reduced-motion block in
+           index.css. */
+        floatSoft: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        /* A badge / icon corner that keeps a slow, soft glow so a section reads
+           as "live" without flashing. */
+        accentPulse: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.78', transform: 'scale(1.06)' },
+        },
+        /* Sweep of light across a card edge — the highlight the client asked
+           for on the curriculum rows. */
+        edgeShine: {
+          '0%': { transform: 'translateX(-110%)' },
+          '60%, 100%': { transform: 'translateX(210%)' },
+        },
       },
       animation: {
         'rise-in': 'riseIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both',
         'sheen': 'sheen 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
+        'float-soft': 'floatSoft 6s ease-in-out infinite',
+        'accent-pulse': 'accentPulse 3.4s ease-in-out infinite',
+        'edge-shine': 'edgeShine 3.6s ease-in-out infinite',
       },
     },
   },

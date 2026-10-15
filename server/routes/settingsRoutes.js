@@ -12,6 +12,7 @@ const {
   getPaymentGatewayStatus,
   updatePaymentGateway,
   testPaymentGatewayConnection,
+  repairPaymentGatewayWebhook,
 } = require('../controllers/settingsController');
 const { protect, identifyUser, checkPermission } = require('../middleware/auth');
 const guardImages = require('../middleware/blockExternalImages');
@@ -54,6 +55,17 @@ const gatewayTestLimiter = rateLimit({
   message: { success: false, message: 'Too many gateway tests this minute. Please wait a moment and try again.' },
 });
 router.post('/payment-gateway/test', protect, checkPermission('SETTINGS_EDIT'), gatewayTestLimiter, testPaymentGatewayConnection);
+
+// "Repair webhook" writes to the Stripe account (create / update endpoints), so
+// it needs the WRITE permission and the same rate limit as the connection test:
+// a mis-click must never burn the gateway's API quota or churn endpoints.
+router.post(
+  '/payment-gateway/repair-webhook',
+  protect,
+  checkPermission('SETTINGS_EDIT'),
+  gatewayTestLimiter,
+  repairPaymentGatewayWebhook,
+);
 
 // ── Whole-site settings document ─────────────────────────────────────────────
 // `identifyUser` is not authorization — the route stays public. It only lets the

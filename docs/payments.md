@@ -104,6 +104,58 @@ Tuition & Billing Ledger shows a **Re-check** button on Pending rows.
 - A late `expired` / `failed` event can never downgrade a settled payment.
 - New students receive a **cryptographically random** temporary password, delivered by email only — never in an API response.
 
+## When the webhook stops arriving (the domain-move incident)
+
+Stripe delivers to a URL that lives in **its** dashboard, so nothing here can see
+it. That is how a real outage hid for nine days: the site moved to its custom
+domain and the live-mode endpoint stayed pointed at `test.americanfuturetechllc.com`,
+a subdomain that no longer serves the app at all — its TLS handshake never even
+completes (`openssl s_client` answers `tlsv1 alert internal error`, alert 80, with
+no peer certificate; plain HTTP there returns a foreign 403 page). Every delivery
+failed, Stripe mailed a warning, and paid orders stopped confirming themselves.
+
+**Symptoms.** Stripe's "webhook endpoint is failing" email; the Tuition & Billing
+Ledger showing Pending orders whose checkout was paid; the webhook health panel
+empty of recent events.
+
+**Diagnose.** Admin → Settings → Payment Gateway → **Test connection** calls
+Stripe and reports which endpoints exist, whether one points at *our* URL, its
+status, and any missing events. From a terminal, the two facts that matter are:
+
+```bash
+# Does the URL Stripe has even speak TLS? ("alert internal error" = no)
+echo | openssl s_client -connect <host>:443 -servername <host> 2>&1 | grep -E "subject=|alert|Verify"
+# Does our own endpoint answer? (400 signature error = healthy; only Stripe POSTs are accepted)
+curl -s -X POST -H 'Content-Type: application/json' -d '{}' https://<domain>/api/payments/webhook
+```
+
+**Fix — one button.** Admin → Settings → Payment Gateway → **"Webhook khud theek
+karo"** runs the whole repair through Stripe's API:
+
+- creates the endpoint at **our** URL with all five settlement events when there is
+  none (or only leftovers from an older domain),
+- adds missing events to a matching endpoint, keeping any the client added by hand
+  and never narrowing a `*` subscription,
+- re-enables an endpoint Stripe disabled after repeated failures,
+- stores the signing secret Stripe returns **once** at creation — encrypted, with
+  `setRuntimeSecrets` applied immediately, so the very next delivery verifies,
+- and probes our own URL from the server, so "Stripe can deliver here" is checked
+  rather than assumed.
+
+The checkbox (on by default) also **disables** the leftover endpoints from old
+domains so their failure notices stop. Nothing is ever deleted: disabling is
+reversible from the dashboard, and removing someone else's configuration is not
+our call. A second click is a no-op (`unchanged`) and stores no second secret.
+
+**Manual route (if you prefer the dashboard):** Stripe → Developers → Webhooks →
+the failing endpoint → change its URL to `https://<your-domain>/api/payments/webhook`,
+keep the five events above, then paste its signing secret into the panel. Fix the
+subdomain's SSL instead only if you actually want a second, separate endpoint.
+
+**Recover the missed orders:** a payment that was really paid still shows Pending.
+Admin → **Tuition & Billing Ledger → Re-check** re-reads that order from Stripe and
+settles it — the same path the webhook would have taken.
+
 ## Live smoke test (the owner's end-to-end proof)
 
 Admin → **Settings → Payment Gateway → Live smoke test** takes one real charge on
@@ -252,7 +304,7 @@ If `STRIPE_SECRET_KEY` is missing, checkout returns `503 PAYMENTS_NOT_CONFIGURED
 npm run verify:payments
 ```
 
-Runs 167 checks: pricing/voucher math, temp-password strength, webhook signature
+Runs 204 checks: pricing/voucher math, temp-password strength, webhook signature
 enforcement (missing, forged, tampered payloads), a full end-to-end settlement
 against a throwaway local MongoDB (settlement, receipt-to-account linking,
 idempotent replays, failed/expired handling, forged-webhook rejection), the
@@ -262,6 +314,20 @@ its stuck-order list), the re-check guards, the instalment policy (per-tier amou
 mistaking an offered list for the method that was used, and the admin panel's
 read-only instalment block), and the admin setup contract (key/mode
 auto-alignment, webhook URL + event checklist).
+
+The webhook **repair** is driven against a fake Stripe client — no network, no
+live key, no real endpoint — which asserts both what it does and what it
+deliberately does not: create at our URL with every settlement event, add only
+the missing events, keep the client's own choices, never narrow a wildcard,
+re-enable a disabled endpoint without duplicating it, leave an already-healthy
+endpoint completely untouched (zero writes), disable only the *enabled* leftovers
+and never our own, surface a create that returned no secret instead of
+pretending, and classify reachability in plain language (a TLS handshake failure
+is named as one, not buried). The fake has no delete API at all, so a stray
+removal would crash the suite. Source assertions then pin the shipped wiring: the
+route needs an admin with `SETTINGS_EDIT`, is rate-limited, stores the secret
+encrypted, applies it to the running process, writes an audit entry, and never
+echoes the secret in its reply.
 
 The live smoke test is covered with the Stripe calls **stubbed**: the fixed
 amount (a forged body is ignored), the typed-confirmation gate, the cost rails

@@ -23,6 +23,7 @@ import {
   FlaskConical,
   RotateCcw,
   CircleDollarSign,
+  Wrench,
 } from 'lucide-react';
 
 const authHeaders = () => {
@@ -462,6 +463,11 @@ export default function PaymentGatewayPanel() {
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState(null);
+  // The webhook repair writes to the Stripe account, so its own state is kept
+  // apart from the read-only connection test.
+  const [repairing, setRepairing] = useState(false);
+  const [repairResult, setRepairResult] = useState(null);
+  const [disableStaleEndpoints, setDisableStaleEndpoints] = useState(true);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [secretKey, setSecretKey] = useState('');
   const [webhookSecret, setWebhookSecret] = useState('');
@@ -551,6 +557,44 @@ export default function PaymentGatewayPanel() {
       );
     } finally {
       setTesting(false);
+    }
+  };
+
+  /**
+   * One button for the webhook Stripe is supposed to deliver to.
+   *
+   * The endpoint lives in the Stripe dashboard, so a URL that stops working —
+   * a domain migration leaves it pointing at a host that no longer serves the
+   * app, exactly what happened here — used to be unfixable from this panel. The
+   * API creates or repairs the endpoint at OUR url, keeps the events the client
+   * added by hand, re-enables one Stripe disabled, stores the signing secret
+   * Stripe hands back once, and (optionally) silences the leftovers from older
+   * domains whose failure notices keep arriving.
+   */
+  const repairWebhook = async () => {
+    setRepairing(true);
+    setRepairResult(null);
+    try {
+      const payload = { disableOthers: disableStaleEndpoints };
+      if (secretKey.trim()) payload.secretKey = secretKey.trim();
+      const res = await axios.post(
+        '/api/settings/payment-gateway/repair-webhook',
+        payload,
+        { headers: authHeaders() },
+      );
+      setRepairResult(res.data);
+      // The setup checklist and the status strip both change after a repair, so
+      // re-read them instead of leaving a stale "missing" on screen.
+      await load();
+    } catch (err) {
+      setRepairResult(
+        err.response?.data || {
+          ok: false,
+          message: err.message || 'The repair request failed.',
+        },
+      );
+    } finally {
+      setRepairing(false);
     }
   };
 
@@ -856,6 +900,95 @@ export default function PaymentGatewayPanel() {
           </span>
         </div>
 
+        {/* ── Webhook repair ────────────────────────────────────────────────
+            The failing endpoint cannot be fixed from this panel by hand, so
+            this does it through Stripe's API instead: create at our URL, add
+            missing events, re-enable a disabled one, store the signing secret
+            Stripe hands back once, and silence the stale domains. */}
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={repairWebhook}
+              disabled={repairing}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 text-blue-100 border border-blue-500/40 font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              {repairing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Wrench className="w-3.5 h-3.5" />}
+              {repairing ? 'Webhook theek kar rahe hain…' : 'Webhook khud theek karo'}
+            </button>
+            <span className="text-[11px] text-slate-400">
+              Stripe ke account me endpoint create/repair karta hai, aur signing secret khud save kar deta hai.
+            </span>
+          </div>
+
+          <label className="flex items-start gap-2 text-[11px] text-slate-300">
+            <input
+              type="checkbox"
+              checked={disableStaleEndpoints}
+              onChange={(e) => setDisableStaleEndpoints(e.target.checked)}
+              className="mt-0.5 accent-blue-500"
+            />
+            <span>
+              Purane endpoints (jo is domain par nahi hain) disable karo — unke failure notices band ho jayenge.
+              Kuch delete nahi hota, Stripe dashboard se dobara enable ho sakte hain.
+            </span>
+          </label>
+        </div>
+
+        {repairResult && (
+          <div
+            className={`p-4 rounded-xl border text-xs space-y-2 ${
+              repairResult.ok
+                ? 'bg-blue-500/10 border-blue-500/30 text-blue-100'
+                : 'bg-amber-500/10 border-amber-500/30 text-amber-100'
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              {repairResult.ok ? (
+                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              )}
+              <span className="font-semibold">{repairResult.message}</span>
+            </div>
+
+            {repairResult.repair && (
+              <div className="font-mono text-[11px] text-slate-200 space-y-1">
+                <div>
+                  Endpoint:{' '}
+                  {repairResult.repair.action === 'created'
+                    ? '🆕 naya banaya gaya'
+                    : repairResult.repair.action === 'repaired'
+                      ? '🔧 repair ho gaya'
+                      : '✅ pehle se theek tha'}
+                  {repairResult.webhook?.expectedUrl ? ` — ${repairResult.webhook.expectedUrl}` : ''}
+                </div>
+                {repairResult.webhook?.secretStored && (
+                  <div>Signing secret save ho gaya (encrypted) — ab deliveries verify hongi.</div>
+                )}
+                {repairResult.repair.addedEvents?.length > 0 && (
+                  <div>Add kiye events: {repairResult.repair.addedEvents.join(', ')}</div>
+                )}
+                {repairResult.repair.reEnabled && (
+                  <div>Stripe ne ise repeated failures ke baad disable kar diya tha — dobara enable kar diya.</div>
+                )}
+                {repairResult.repair.disabledOthers?.length > 0 && (
+                  <div>Purane endpoints disable kiye: {repairResult.repair.disabledOthers.join(', ')}</div>
+                )}
+                {repairResult.probe && (
+                  <div className={repairResult.probe.reachable ? 'text-blue-200' : 'text-amber-200'}>
+                    Humara URL: {repairResult.probe.reachable ? 'reachable ✅' : 'reachable nahi ⚠️'} —{' '}
+                    {repairResult.probe.message}
+                  </div>
+                )}
+                {(repairResult.repair.notes || []).map((note) => (
+                  <div key={note} className="text-slate-400">• {note}</div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {testResult && (
           <div
             className={`p-4 rounded-xl border text-xs space-y-2 ${
@@ -900,8 +1033,10 @@ export default function PaymentGatewayPanel() {
                   </div>
                 )}
                 {testResult.webhook.otherEndpoints?.length > 0 && (
-                  <div className="text-slate-400">
-                    Other endpoints on this account: {testResult.webhook.otherEndpoints.join(', ')}
+                  <div className={testResult.webhook.registered ? 'text-slate-400' : 'text-amber-200'}>
+                    {testResult.webhook.registered
+                      ? `Is account par ye aur endpoints bhi hain: ${testResult.webhook.otherEndpoints.join(', ')}`
+                      : `Hamare URL par koi endpoint nahi hai — events inhi endpoints par ja rahe hain: ${testResult.webhook.otherEndpoints.join(', ')}. Upar "Webhook khud theek karo" ise theek kar deta hai.`}
                   </div>
                 )}
               </div>

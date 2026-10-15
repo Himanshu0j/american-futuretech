@@ -2,6 +2,11 @@ const crypto = require('crypto');
 const SiteSettings = require('../models/SiteSettings');
 const AuditLog = require('../models/AuditLog');
 const { encryptSecret, decryptSecret, maskSecret } = require('../utils/secretVault');
+const {
+  planWebhookRepair,
+  applyWebhookRepair,
+  probeWebhookUrl,
+} = require('../utils/stripeWebhookRepair');
 const { sendError } = require('../utils/apiError');
 const publicCache = require('../utils/publicCache');
 const {
@@ -1132,6 +1137,180 @@ const testPaymentGatewayConnection = async (req, res) => {
 };
 
 /**
+ * "Fix the webhook" — the one button that repairs the endpoint Stripe is
+ * supposed to be delivering to.
+ *
+ * The endpoint itself lives in the Stripe dashboard, so before this existed the
+ * panel could only report the problem ("no webhook points at our URL") and leave
+ * the client to fix it by hand. When the site moved to its own domain the live
+ * endpoint stayed pointed at a subdomain that no longer serves the app, whose
+ * TLS handshake does not even complete — nine days of failed deliveries and no
+ * way to fix it from here.
+ *
+ * This route does the whole repair through Stripe's API: create the endpoint at
+ * OUR url with every settlement event, add events a matching endpoint is
+ * missing, re-enable one Stripe disabled, and disable the stale endpoints from
+ * older domains so their failure notices stop. The signing secret Stripe
+ * returns ONCE at creation is stored encrypted here — that is the step a
+ * dashboard visit cannot avoid and the one most likely to be skipped.
+ *
+ * It writes to the Stripe account, so it is admin + WRITE only and rate-limited
+ * like the connection test. No secret ever leaves in the reply: the panel learns
+ * only whether one was stored.
+ */
+const repairPaymentGatewayWebhook = async (req, res) => {
+  try {
+    const body = req.body || {};
+    const settings = await SiteSettings.findOne();
+    const gateway = settings?.paymentGateway || {};
+    const expectedUrl = `${publicApiOrigin(req)}${WEBHOOK_PATH}`;
+
+    const pastedKey = String(body.secretKey || '').trim();
+    if (pastedKey && !pastedKey.startsWith('sk_')) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'INVALID_SECRET_KEY',
+        message: 'That does not look like a Stripe secret key — it must start with "sk_".',
+      });
+    }
+
+    // Same resolution order as "Test connection": a key that has not been saved
+    // yet can still be used, then the saved one, then the environment.
+    const keyToUse = pastedKey
+      || decryptSecret(gateway.secretKeyEncrypted)
+      || String(process.env.STRIPE_SECRET_KEY || '').trim();
+    if (!keyToUse) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'NO_KEY',
+        message: 'Save or paste your Stripe secret key first, then repair the webhook.',
+        webhook: { expectedUrl, requiredEvents: REQUIRED_WEBHOOK_EVENTS },
+      });
+    }
+
+    let stripe = null;
+    try {
+      const Stripe = require('stripe');
+      stripe = pastedKey
+        ? new Stripe(pastedKey, { maxNetworkRetries: 1, timeout: 15000 })
+        : getStripe();
+    } catch (sdkError) {
+      stripe = null;
+    }
+    if (!stripe) {
+      return res.status(400).json({
+        success: false,
+        ok: false,
+        code: 'STRIPE_UNAVAILABLE',
+        message: 'Stripe could not be initialised with that key. Check the key and try again.',
+      });
+    }
+
+    // What Stripe has right now. A failure here is reported, not thrown: the
+    // admin needs to read why.
+    let endpoints = [];
+    try {
+      const list = await stripe.webhookEndpoints.list({ limit: 100 });
+      endpoints = (list?.data || []).map((endpoint) => ({
+        id: endpoint.id,
+        url: endpoint.url,
+        status: endpoint.status,
+        enabled_events: endpoint.enabled_events || [],
+      }));
+    } catch (error) {
+      return res.status(200).json({
+        success: true,
+        ok: false,
+        code: 'STRIPE_LIST_FAILED',
+        message: `Stripe refused the request: ${error.message}`,
+        webhook: { expectedUrl, requiredEvents: REQUIRED_WEBHOOK_EVENTS },
+      });
+    }
+
+    const plan = planWebhookRepair({
+      endpoints,
+      expectedUrl,
+      requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+      // The stale endpoints are leftovers from domains we no longer serve, so
+      // silencing them is the default — the checkbox exists to keep them alive.
+      disableOthers: body.disableOthers !== false,
+    });
+    const report = await applyWebhookRepair({ stripe, plan });
+
+    let secretStored = false;
+    if (report.secret && report.secret.startsWith('whsec_')) {
+      const doc = settings || new SiteSettings();
+      doc.paymentGateway = doc.paymentGateway || {};
+      doc.paymentGateway.webhookSecretEncrypted = encryptSecret(report.secret);
+      doc.paymentGateway.webhookSecretHint = maskSecret(report.secret);
+      doc.paymentGateway.lastUpdatedBy = req.user?.email || req.user?.name || 'admin';
+      doc.paymentGateway.lastUpdatedAt = new Date();
+      await doc.save();
+      // The public settings reply embeds the gateway hints, and the runtime
+      // accessor must verify deliveries with the NEW secret immediately — no
+      // restart, or the first events after a repair would be rejected.
+      publicCache.invalidate();
+      setRuntimeSecrets({ webhookSecret: report.secret });
+      secretStored = true;
+    }
+
+    // Reachability of our own URL, so "Stripe will deliver here" is a claim the
+    // panel has actually checked rather than assumed.
+    const probe = await probeWebhookUrl(expectedUrl);
+    const payments = getPaymentStatus();
+
+    const problems = [];
+    if (!secretStored && !payments.webhookConfigured) {
+      problems.push('No webhook signing secret is stored, so paid orders still cannot be confirmed automatically.');
+    }
+    if (!probe.reachable) problems.push(probe.message);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Admin',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'PAYMENT_WEBHOOK_REPAIRED',
+      entity: 'SiteSettings',
+      entityId: String(settings?._id || ''),
+      details: `Stripe webhook ${report.action} at ${expectedUrl}${report.disabledOthers.length ? `; disabled ${report.disabledOthers.join(', ')}` : ''}${secretStored ? ' (signing secret stored)' : ''}`,
+    }).catch(() => {});
+
+    // Built from the saved document, not the pre-repair copy, so the checklist
+    // reflects what was just stored.
+    const saved = (await SiteSettings.findOne()) || {};
+
+    return res.status(200).json({
+      success: true,
+      ok: problems.length === 0,
+      message: problems.length
+        ? problems[0]
+        : `Stripe webhook ready${report.action === 'created' ? ' — endpoint created at our URL' : report.action === 'repaired' ? ' — existing endpoint repaired' : ' — nothing needed changing'}.`,
+      webhook: {
+        expectedUrl,
+        requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+        endpointId: report.endpointId,
+        secretStored,
+      },
+      repair: {
+        action: report.action,
+        addedEvents: report.addedEvents,
+        reEnabled: report.reEnabled,
+        disabledOthers: report.disabledOthers,
+        notes: report.notes,
+      },
+      probe,
+      problems,
+      payments,
+      setup: buildGatewaySetup({ gateway: saved.paymentGateway || {}, payments, req }),
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+/**
  * Boot-time loader: decrypt the admin-stored gateway secrets into memory so the
  * sync gateway accessors keep working, and apply the admin's currency.
  */
@@ -1161,6 +1340,7 @@ module.exports = {
   getPaymentGatewayStatus,
   updatePaymentGateway,
   testPaymentGatewayConnection,
+  repairPaymentGatewayWebhook,
   loadPaymentGatewaySecrets,
   getAuditLogs,
   getSiteEditorOverrides,

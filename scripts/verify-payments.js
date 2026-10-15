@@ -12,6 +12,10 @@
  *          that a smoke charge never creates a student or counts as revenue
  * Level 4  admin-panel setup contract (key/mode alignment, webhook checklist,
  *          smoke-test route gating and cost rails)
+ * Level 4b the Stripe webhook repair — create at our URL, keep the client's
+ *          events, re-enable a disabled endpoint, store the one-time signing
+ *          secret, and leave every other endpoint untouched. Run against a fake
+ *          Stripe client, so no network and no real endpoint is necessary.
  *
  * Any real Stripe keys already present in server/.env are ignored — the script
  * forces test-only dummy credentials so it can never touch live money.
@@ -1142,6 +1146,235 @@ const run = async () => {
     'otherwise the page localises the price and silently drops the instalment methods');
   check('The smoke test keeps its own behaviour (a $1 charge is not a sale)',
     !/createSmokeTestSession = async[\s\S]{0,4000}?adaptive_pricing/.test(gatewaySource));
+
+  // ───────────────────────────────────────────────────────────────────────
+  // ── Webhook repair: the endpoint nobody could fix by hand ───────────────
+  // Real incident, reproduced on the live domain while writing this: the site
+  // moved to its own domain and the Stripe endpoint stayed pointed at a
+  // subdomain whose TLS handshake does not even complete (openssl: "tlsv1 alert
+  // internal error", no certificate). 15 deliveries failed and paid orders
+  // stopped confirming themselves, and the panel could only say "add the
+  // endpoint in Stripe" — a dashboard visit the client never made. So the API
+  // repairs it: create at OUR url, keep the events the client added by hand,
+  // re-enable one Stripe disabled, store the signing secret Stripe returns ONCE,
+  // and leave everything else exactly as it was.
+  section('LEVEL 4b · The Stripe webhook repairs itself (create / update / disable)');
+
+  const repair = require(path.join(__dirname, '..', 'server', 'utils', 'stripeWebhookRepair'));
+  const OUR_URL = 'https://americanfuturetechllc.com/api/payments/webhook';
+  const STALE_URL = 'https://test.americanfuturetechllc.com/api/payments/webhook';
+
+  // A fake Stripe that records every write. It deliberately exposes NO delete
+  // method: the repair can only ever list, create and update, so a call to
+  // remove someone else's endpoint would crash here instead of shipping.
+  const fakeStripe = ({ endpoints = [], createdSecret = 'whsec_created_once' } = {}) => {
+    const calls = [];
+    return {
+      calls,
+      client: {
+        webhookEndpoints: {
+          list: async () => { calls.push({ op: 'list' }); return { data: endpoints }; },
+          create: async (payload) => { calls.push({ op: 'create', payload }); return { id: 'we_new', secret: createdSecret }; },
+          update: async (id, payload) => { calls.push({ op: 'update', id, payload }); return { id }; },
+        },
+      },
+    };
+  };
+
+  const planOnlyStale = repair.planWebhookRepair({
+    endpoints: [{ id: 'we_old', url: STALE_URL, status: 'enabled', enabled_events: ['*'] }],
+    expectedUrl: OUR_URL,
+    requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+    disableOthers: true,
+  });
+  check('No endpoint at our URL → the plan creates one',
+    planOnlyStale.action === 'created' && planOnlyStale.expectsSecret === true, planOnlyStale.action);
+  check('The endpoint it creates gets every settlement event',
+    REQUIRED_WEBHOOK_EVENTS.every((name) => planOnlyStale.enabledEvents.includes(name))
+      && planOnlyStale.enabledEvents.length === REQUIRED_WEBHOOK_EVENTS.length);
+  check('The leftover endpoint on the old domain is named, not guessed at',
+    planOnlyStale.others.length === 1 && planOnlyStale.notes.join(' ').includes(STALE_URL));
+  check('That leftover is scheduled for disabling (never deletion)',
+    planOnlyStale.staleToDisable.length === 1 && planOnlyStale.staleToDisable[0].id === 'we_old');
+
+  const createRun = fakeStripe();
+  const createdReport = await repair.applyWebhookRepair({ stripe: createRun.client, plan: planOnlyStale });
+  check('Apply creates the endpoint at OUR url',
+    createRun.calls.some((call) => call.op === 'create' && call.payload.url === OUR_URL),
+    JSON.stringify(createRun.calls.map((call) => call.op)));
+  check('The one-time signing secret is handed back to the caller',
+    createdReport.secret === 'whsec_created_once');
+  check('Nothing is ever deleted (the fake has no delete API to call)',
+    createRun.calls.every((call) => ['list', 'create', 'update'].includes(call.op)));
+  // A fresh endpoint at our URL does not stop the old domain's failure notices
+  // on its own, and that mailbox filling up is half of why this repair exists.
+  // This check caught exactly that: the create path used to return before the
+  // sweep, so the live repair would have created the endpoint and left the two
+  // leftovers enabled.
+  check('Creating the endpoint also silences the leftover domains',
+    createRun.calls.filter((call) => call.op === 'update' && call.payload?.disabled === true).length === 1
+      && createRun.calls.some((call) => call.op === 'update' && call.id === 'we_old' && call.payload.disabled === true),
+    JSON.stringify(createRun.calls.filter((call) => call.op === 'update').map((call) => call.id)));
+
+  const noSecretRun = fakeStripe({ createdSecret: '' });
+  const noSecretReport = await repair.applyWebhookRepair({ stripe: noSecretRun.client, plan: planOnlyStale });
+  check('A create that returned no secret is surfaced, not stored as empty success',
+    noSecretReport.secret === '' && noSecretReport.notes.join(' ').includes('paste it from the dashboard'));
+
+  // An endpoint that already points at us but lost events: repaired in place.
+  // Stripe only ever returns a signing secret at creation, so a repair must not
+  // pretend it received one — the panel would then show a saved secret that
+  // does not exist.
+  const planRepair = repair.planWebhookRepair({
+    endpoints: [{
+      id: 'we_ours',
+      url: OUR_URL,
+      status: 'enabled',
+      enabled_events: ['checkout.session.completed', 'customer.created'],
+    }],
+    expectedUrl: OUR_URL,
+    requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+  });
+  check('A matching endpoint missing events is repaired, not recreated',
+    planRepair.action === 'repaired' && planRepair.endpointId === 'we_ours');
+  check('Repair keeps the events the client added by hand',
+    planRepair.enabledEvents.includes('customer.created'));
+  check('Repair adds exactly the missing settlement events',
+    planRepair.missingEvents.length === REQUIRED_WEBHOOK_EVENTS.length - 1
+      && planRepair.missingEvents.includes('checkout.session.expired'),
+    planRepair.missingEvents.join(', '));
+  check('Repair never expects a new signing secret, and says so',
+    planRepair.expectsSecret === false
+      && planRepair.notes.join(' ').includes('does not change its signing secret'));
+  check('Without the opt-in nothing else on the account is touched',
+    planRepair.staleToDisable.length === 0, 'the safe default for any caller that forgets the flag');
+
+  const repairRun = fakeStripe();
+  const repairedReport = await repair.applyWebhookRepair({ stripe: repairRun.client, plan: planRepair });
+  const repairUpdate = repairRun.calls.find((call) => call.op === 'update');
+  check('Apply sends the union of events (never a narrowed list)',
+    repairUpdate?.payload?.enabled_events?.includes('customer.created')
+      && repairUpdate?.payload?.enabled_events?.includes('checkout.session.expired'));
+  check('Apply never creates a second endpoint when one matches',
+    !repairRun.calls.some((call) => call.op === 'create'));
+  check('A repaired endpoint reports no secret at all', repairedReport.secret === '');
+
+  const planWildcard = repair.planWebhookRepair({
+    endpoints: [{ id: 'we_all', url: OUR_URL, status: 'enabled', enabled_events: ['*'] }],
+    expectedUrl: OUR_URL,
+    requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+  });
+  check('A wildcard subscription is left alone (repair must not narrow it)',
+    planWildcard.action === 'unchanged' && planWildcard.missingEvents.length === 0);
+
+  const noopRun = fakeStripe();
+  const noopReport = await repair.applyWebhookRepair({ stripe: noopRun.client, plan: planWildcard });
+  check('A healthy endpoint means zero writes to the Stripe account',
+    noopRun.calls.every((call) => call.op === 'list') && noopReport.action === 'unchanged',
+    JSON.stringify(noopRun.calls.map((call) => call.op)));
+
+  // Disabled by Stripe after repeated failures — where this incident ends if
+  // nothing is done. Re-enabling must not mint a duplicate endpoint.
+  const planDisabled = repair.planWebhookRepair({
+    endpoints: [{ id: 'we_off', url: OUR_URL, status: 'disabled', enabled_events: REQUIRED_WEBHOOK_EVENTS }],
+    expectedUrl: OUR_URL,
+    requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+  });
+  check('A disabled endpoint is re-enabled, not duplicated',
+    planDisabled.action === 'repaired' && planDisabled.reEnable === true && planDisabled.missingEvents.length === 0);
+  const reEnableRun = fakeStripe();
+  const reEnableReport = await repair.applyWebhookRepair({ stripe: reEnableRun.client, plan: planDisabled });
+  check('Apply re-enables it with disabled:false and changes nothing else',
+    reEnableRun.calls.some((call) => call.op === 'update' && call.payload.disabled === false
+      && call.payload.enabled_events === undefined)
+      && reEnableReport.reEnabled === true);
+
+  const planDisableOthers = repair.planWebhookRepair({
+    endpoints: [
+      { id: 'we_ours3', url: OUR_URL, status: 'enabled', enabled_events: ['*'] },
+      { id: 'we_stale', url: STALE_URL, status: 'enabled', enabled_events: ['*'] },
+      { id: 'we_already_off', url: 'https://old.example.com/hook', status: 'disabled', enabled_events: ['*'] },
+    ],
+    expectedUrl: OUR_URL,
+    requiredEvents: REQUIRED_WEBHOOK_EVENTS,
+    disableOthers: true,
+  });
+  check('Only ENABLED leftovers are disabled (an already-off one is left alone)',
+    planDisableOthers.staleToDisable.length === 1 && planDisableOthers.staleToDisable[0].id === 'we_stale');
+  const disableRun = fakeStripe();
+  const disableReport = await repair.applyWebhookRepair({ stripe: disableRun.client, plan: planDisableOthers });
+  check('Apply disables them by id and reports which URLs went quiet',
+    disableRun.calls.some((call) => call.op === 'update' && call.id === 'we_stale' && call.payload.disabled === true)
+      && disableReport.disabledOthers.length === 1 && disableReport.disabledOthers[0] === STALE_URL);
+  check('Our own endpoint is never caught by the leftover sweep',
+    !disableRun.calls.some((call) => call.id === 'we_ours3'));
+
+  // Reachability: the panel has to be able to say "Stripe cannot deliver here"
+  // instead of leaving a TLS failure invisible. The fixture is the real error
+  // this incident produced: openssl reported "tlsv1 alert internal error" and
+  // no peer certificate was ever offered for the test subdomain.
+  const tlsProbe = repair.classifyWebhookProbe({ error: new Error('tlsv1 alert internal error') });
+  check('A TLS handshake failure is reported as unreachable, in plain language',
+    tlsProbe.reachable === false && tlsProbe.code === 'tls'
+      && /certificate|SSL/i.test(tlsProbe.message)
+      && /point the webhook at the domain/i.test(tlsProbe.message),
+    tlsProbe.message);
+  check('A hostname that does not resolve is called out as DNS',
+    repair.classifyWebhookProbe({
+      error: Object.assign(new Error('getaddrinfo ENOTFOUND test.example.com'), { code: 'ENOTFOUND' }),
+    }).code === 'dns');
+  check('A request that never answers is reported as unreachable',
+    repair.classifyWebhookProbe({
+      error: Object.assign(new Error('The operation was aborted'), { code: 'ETIMEDOUT' }),
+    }).code === 'unreachable');
+  check('Our own 404 on a GET still counts as reachable (only a signed POST is accepted)',
+    repair.classifyWebhookProbe({ status: 404 }).reachable === true);
+
+  const probeCalls = [];
+  const probeResult = await repair.probeWebhookUrl(OUR_URL, {
+    fetchImpl: async (url, options) => {
+      probeCalls.push({ url, method: options?.method, redirect: options?.redirect });
+      return { status: 404 };
+    },
+  });
+  check('The reachability probe GETs our own URL and never follows a redirect',
+    probeCalls.length === 1 && probeCalls[0].url === OUR_URL
+      && probeCalls[0].method === 'GET' && probeCalls[0].redirect === 'manual',
+    JSON.stringify(probeCalls));
+  check('The probe reports the classified answer',
+    probeResult.reachable === true && probeResult.code === 'reachable');
+
+  // ── Shipped wiring: the route is admin-only and the secret never leaves ──
+  const settingsRoutesSource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'routes', 'settingsRoutes.js'),
+    'utf8',
+  );
+  const repairRouteBlock = settingsRoutesSource
+    .split('router.')
+    .find((block) => block.includes("'/payment-gateway/repair-webhook'")) || '';
+  check('The repair route exists', Boolean(repairRouteBlock));
+  check('The repair route needs an admin with the WRITE permission',
+    repairRouteBlock.includes('protect') && repairRouteBlock.includes("'SETTINGS_EDIT'"));
+  check('The repair route is rate-limited like the connection test',
+    repairRouteBlock.includes('gatewayTestLimiter'));
+
+  const settingsControllerSource = fs.readFileSync(
+    path.join(__dirname, '..', 'server', 'controllers', 'settingsController.js'),
+    'utf8',
+  );
+  const repairControllerSource = (settingsControllerSource
+    .split('const repairPaymentGatewayWebhook')[1] || '')
+    .split('\nconst ')[0];
+  check('The repair stores the new signing secret encrypted',
+    repairControllerSource.includes('webhookSecretEncrypted = encryptSecret('));
+  check('The repair applies it to the running process immediately',
+    repairControllerSource.includes('setRuntimeSecrets({ webhookSecret:'),
+    'or the first events after a repair would be rejected');
+  check('The repair reply never carries the secret itself',
+    repairControllerSource.includes('secretStored')
+      && !/secret:\s*(report|repair)\.secret/.test(repairControllerSource));
+  check('The repair is written to the audit log',
+    repairControllerSource.includes('PAYMENT_WEBHOOK_REPAIRED'));
 
   // ───────────────────────────────────────────────────────────────────────
   const failedChecks = results.filter((r) => !r.passed);

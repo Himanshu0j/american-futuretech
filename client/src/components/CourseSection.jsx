@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Check,
+  Clock,
   Calendar,
   ArrowRight,
   Award,
@@ -12,6 +13,7 @@ import {
   Eye
 } from 'lucide-react';
 import api from '../lib/api';
+import { sortCoursesByOrder } from '../lib/courseOrder';
 import { MICROSOFT_CERTIFICATES } from '../data/microsoftCertificates';
 import CertificateModal from './CertificateModal';
 import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
@@ -175,12 +177,14 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
       try {
         const res = await api.get('/courses');
         if (res.data.success && res.data.courses.length > 0) {
-          setCourses(res.data.courses);
+          // The admin's program sequence (Admin → Courses → Move up/down) is
+          // what decides "kon pehle, kon niche" here and on /courses.
+          setCourses(sortCoursesByOrder(res.data.courses));
         } else {
-          setCourses(defaultCoursesFallback);
+          setCourses(sortCoursesByOrder(defaultCoursesFallback));
         }
       } catch (err) {
-        setCourses(defaultCoursesFallback);
+        setCourses(sortCoursesByOrder(defaultCoursesFallback));
       } finally {
         setLoading(false);
       }
@@ -275,49 +279,48 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-blue-500/20 dark:border-blue-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12">
-              {/* Left Visual Column */}
-              {/* Fixed heights on mobile, not aspect-[16/10]: a min-height on an
-                  aspect-ratio box back-computes the WIDTH (220 × 16/10 = 352px), which
-                  overflows a 315px column and silently clips ~20px off the right edge on
-                  360px phones. At lg the column is wide enough that aspect-auto + min-h
-                  behaves, so we restore that there. */}
-              <div className="lg:col-span-5 relative min-w-0 h-[220px] sm:h-[260px] lg:h-auto lg:min-h-[330px] overflow-hidden bg-slate-950">
-                {/* The artwork is a wide 3:2 photo. object-contain letterboxed it into
-                    this near-square panel, leaving dark bars and pinning the badge and
-                    cohort labels off the picture — the client's "cut" look. object-cover
-                    fills the panel edge-to-edge instead. It trims the left/right edges
-                    (~29% for a 3:2 photo in a 5:4 box), which is safe here because these
-                    are full-bleed photographic textures with no baked-in headline text.
-                    If an admin ever uploads a banner with text, switch that card back to
-                    object-contain so the words don't get clipped. */}
-                <img
-                  src={getCourseCardImage(flagship)}
-                  alt={flagship.title}
-                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 opacity-95 group-hover:opacity-100"
-                  decoding="async"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-slate-950/40 lg:to-slate-950" />
+              {/* Left Visual Column — the SAME artwork treatment the /courses
+                  catalogue card uses. The client compared the two pages side by
+                  side: the catalogue showed the whole banner while the homepage
+                  was cropping it ("image cut ho raha hai"), because this panel is
+                  a near-square frame and `object-cover` trimmed roughly 29% of a
+                  3:2 photo — straight through the headline baked into the
+                  artwork. So: soft tinted panel, 4:3 frame, `object-contain`, and
+                  every course's image fits in full on both pages. */}
+              <div className="lg:col-span-5 relative min-w-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800 flex flex-col">
+                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800">
+                  <img
+                    src={getCourseCardImage(flagship)}
+                    alt={flagship.title}
+                    className="absolute inset-0 w-full h-full object-contain object-center group-hover:scale-[1.02] transition-transform duration-700"
+                    loading="lazy"
+                    decoding="async"
+                  />
 
-                {/* Floating Top Badges */}
-                <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-10">
-                  <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider border border-blue-400/30 shadow-md">
-                    6-Month Career Training
-                  </span>
-                  <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono font-medium">
+                  {flagship.badge && (
+                    <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-[rgb(var(--tw-ink-900)/88%)] text-[color:rgb(var(--tw-gold-400))] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
+                      {flagship.badge}
+                    </span>
+                  )}
+
+                  <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-[rgb(var(--tw-ink-900)/88%)] text-white text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-xs">
+                    <Clock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
                     {flagship.duration || '6 Months · Weekend Masterclasses + Labs'}
                   </span>
                 </div>
 
-                {/* Bottom Left Overlay Info */}
-                <div className="absolute bottom-4 left-4 right-4 z-10 text-white space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs text-blue-300 font-mono font-semibold">
-                    <Calendar className="w-3.5 h-3.5" />
+                {/* Cohort + faculty used to be printed over the photo. On a
+                    letterboxed artwork they would sit on the empty frame rather
+                    than on the picture, so they now sit under it on the panel. */}
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                     <span>{flagship.cohort || 'Next Cohort: Oct 15, 2026'}</span>
-                  </div>
-                  <div className="text-xs text-slate-300 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-slate-400" />
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-slate-500" />
                     <span>{flagship.faculty || 'Silicon Valley & Fortune 500 Faculty'}</span>
-                  </div>
+                  </span>
                 </div>
               </div>
 
@@ -330,10 +333,11 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   {/* Program identity block. The client circled exactly this
                       area on the live page ("yaha thoda UI and Box daliye") and
                       asked for a real box around it instead of loose text
-                      floating on white, so the eyebrow, title and summary sit on
-                      their own tinted panel. The /courses page carries the same
+                      floating on white, then for that box to carry a light
+                      colour so it reads as a highlight rather than a white card
+                      on a white page. The /courses page carries the same
                       treatment — see client/src/pages/CoursesPage.jsx. */}
-                  <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-900/40 p-4">
+                  <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50 via-sky-50/70 to-white p-4 shadow-xs dark:border-blue-900/50 dark:from-blue-950/40 dark:via-slate-900 dark:to-slate-900/40">
                     {/* The status chip stays on one line: inside the new box it
                         has less room than it did in the open column, and it used
                         to wrap to two lines at this width. */}

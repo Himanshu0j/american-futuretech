@@ -4,6 +4,8 @@ import {
   Plus,
   Edit2,
   Trash2,
+  ArrowUp,
+  ArrowDown,
   Eye,
   EyeOff,
   CheckCircle,
@@ -21,6 +23,9 @@ import {
 import api from '../lib/api';
 import ListItemsEditor from './components/ListItemsEditor';
 import ImageUploadInput from './components/ImageUploadInput';
+// The Menu Logo field carries its own live header preview (and the shared tile),
+// so what the client uploads can be judged before the course is saved.
+import MenuLogoField from './components/MenuLogoField';
 import { getDetailedCourseData } from '../data/courseContentData';
 import { GRADIENT_CHOICES, DEFAULT_GRADIENT, gradientOptionsFor } from './components/gradientChoices';
 
@@ -96,6 +101,10 @@ export default function CoursesCMS() {
   const [badge, setBadge] = useState('Most Popular');
   const [cardTheme, setCardTheme] = useState('cyan');
   const [duration, setDuration] = useState('6 Months');
+  // Where this program sits in the site's running order (Admin → Courses →
+  // ↑/↓ below, or this field). The homepage, the /courses catalogue and the
+  // header CAREER PROGRAMS menu all read it.
+  const [displayOrder, setDisplayOrder] = useState(1);
   const [basePrice, setBasePrice] = useState(1299);
   const [discountedPrice, setDiscountedPrice] = useState(499);
   const [highlights, setHighlights] = useState(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
@@ -181,6 +190,9 @@ export default function CoursesCMS() {
     setBadge('');
     setCardTheme('cyan');
     setDuration('6 Months');
+    // A brand-new program starts at the end of the sequence rather than
+    // jumping to the front of the homepage.
+    setDisplayOrder(courses.length + 1);
     setBasePrice(2499);
     setDiscountedPrice(1899);
     setHighlights(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
@@ -222,6 +234,7 @@ export default function CoursesCMS() {
     setBadge(course.badge || '');
     setCardTheme(course.cardTheme || 'cyan');
     setDuration(course.duration || '6 Months');
+    setDisplayOrder(course.displayOrder || 1);
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
@@ -389,6 +402,40 @@ export default function CoursesCMS() {
     }
   };
 
+  /**
+   * Move a program one place up or down in the site's running order.
+   *
+   * The whole list is sent rather than "put this one at position 3", so two
+   * admins reordering at the same time can never interleave into a half-applied
+   * sequence, and the server's reply replaces the table with the saved order.
+   * The row moves immediately for feedback; a failed save puts the old order
+   * back from the API instead of leaving the screen telling a different story.
+   */
+  const handleMoveCourse = async (course, direction) => {
+    const current = courses.findIndex((c) => c._id === course._id);
+    const target = current + direction;
+    if (current < 0 || target < 0 || target >= courses.length) return;
+
+    const reordered = [...courses];
+    [reordered[current], reordered[target]] = [reordered[target], reordered[current]];
+    setCourses(reordered.map((c, idx) => ({ ...c, displayOrder: idx + 1 })));
+
+    try {
+      const res = await api.patch('/courses/reorder', { order: reordered.map((c) => c._id) });
+      if (Array.isArray(res.data?.courses)) setCourses(res.data.courses);
+      setSaveFeedback({
+        type: 'success',
+        message: res.data?.message || 'Program order saved.',
+      });
+    } catch (err) {
+      setSaveFeedback({
+        type: 'error',
+        message: `Could not save the new order: ${err.response?.data?.message || err.message}`,
+      });
+      fetchCourses();
+    }
+  };
+
   // ── Capstone helpers (shared site-wide showcase cards) ──
   const addCapstone = () => {
     setCapstoneProjects((prev) => [
@@ -452,6 +499,7 @@ export default function CoursesCMS() {
       badge,
       cardTheme,
       duration,
+      displayOrder: Number(displayOrder) || 1,
       pricing: {
         basePrice: Number(basePrice),
         discountedPrice: Number(discountedPrice),
@@ -676,7 +724,8 @@ export default function CoursesCMS() {
             Course & Curriculum CMS
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Author courses, visually compose curriculum modules, and toggle badges on the live landing page.
+            Author courses, set the order they appear in on the site, visually compose curriculum modules, and toggle
+            badges on the live landing page.
           </p>
         </div>
 
@@ -694,6 +743,7 @@ export default function CoursesCMS() {
         <table className="w-full text-left text-xs">
           <thead className="bg-[rgb(var(--tw-ink-950))] text-slate-400 uppercase text-[10px] tracking-wider border-b border-white/[0.08]">
             <tr>
+              <th className="px-4 py-4 font-bold">Site Order</th>
               <th className="px-6 py-4 font-bold">Course Title & Category</th>
               <th className="px-6 py-4 font-bold">Theme & Badge</th>
               <th className="px-6 py-4 font-bold">Duration</th>
@@ -717,8 +767,38 @@ export default function CoursesCMS() {
                 </tr>
               ))
             )}
-            {courses.map((course) => (
+            {courses.map((course, index) => (
               <tr key={course._id} className="hover:bg-slate-800/30 transition-colors">
+                {/* Site order — first program at the top, exactly what the
+                    homepage, /courses and the header menu render. */}
+                <td className="px-4 py-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-6 h-6 rounded-lg bg-slate-800 border border-white/10 text-[11px] font-bold text-blue-300 flex items-center justify-center font-mono">
+                      {index + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveCourse(course, -1)}
+                      disabled={index === 0}
+                      aria-label={`Move ${course.title} one place earlier on the site`}
+                      title="Show this program one place earlier on the site"
+                      className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveCourse(course, 1)}
+                      disabled={index === courses.length - 1}
+                      aria-label={`Move ${course.title} one place later on the site`}
+                      title="Show this program one place later on the site"
+                      className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+
                 {/* Title */}
                 <td className="px-6 py-4">
                   <div className="font-bold text-white text-sm">{course.title}</div>
@@ -916,6 +996,20 @@ export default function CoursesCMS() {
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Site Order (position)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={displayOrder}
+                    onChange={(e) => setDisplayOrder(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    1 = first program on the homepage, the catalogue and the header menu.
+                  </p>
+                </div>
               </div>
 
               {/* Pricing */}
@@ -951,12 +1045,12 @@ export default function CoursesCMS() {
                   previewSize="w-24 h-16"
                 />
 
-                <ImageUploadInput
-                  label="Menu Logo — header ke CAREER PROGRAMS dropdown me dikhta hai"
+                <MenuLogoField
                   value={menuLogo}
                   onChange={setMenuLogo}
-                  placeholder="Square logo (about 200×200) — URL or upload. Khaali chhodne par card image dikhegi."
-                  previewSize="w-14 h-14"
+                  cardImage={cardImage}
+                  title={title}
+                  duration={duration}
                 />
 
                 <ImageUploadInput

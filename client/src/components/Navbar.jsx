@@ -3,6 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useCompanyInfo from '../hooks/useCompanyInfo';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+// The mega-menu tile and its monogram live in one place: the admin's Menu Logo
+// preview renders the same component, so the two can never disagree.
+import MenuLogoTile from './MenuLogoTile';
+import { sortCoursesByOrder } from '../lib/courseOrder';
 import {
   Menu,
   X,
@@ -56,20 +60,6 @@ const DEFAULT_MORE_LINKS = [
 
 const sortByOrder = (items) =>
   [...items].sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
-
-/**
- * Two initials for a program with no logo set, so the mega-menu tile is never
- * an empty square ("Data Science with AI Integration" → DS).
- */
-const programMonogram = (title) =>
-  String(title || '?')
-    .split(/[\s&/-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) || '?';
 
 // One shape for both the admin-saved rows and the shipped fallbacks, so the
 // desktop nav, the MORE dropdown and the mobile drawer share the same data.
@@ -131,7 +121,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     axios.get('/api/courses')
       .then(res => {
         if (isMounted && res.data?.courses?.length > 0) {
-          setDbCourses(res.data.courses);
+          // The admin's program sequence (Admin → Courses → Move up/down) drives
+          // this menu too, so the dropdown reads the same as the homepage and
+          // the catalogue instead of insertion order.
+          setDbCourses(sortCoursesByOrder(res.data.courses));
         }
       })
       .catch(() => {
@@ -365,25 +358,11 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                           onClick={() => setCoursesDropdown(false)}
                           className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group/item"
                         >
-                          {/* Program logo (Admin → Courses → "Menu Logo"). The
-                              card image is the fallback and a monogram the last
-                              resort, so an admin who has set nothing still sees
-                              a tidy tile instead of a broken image. */}
-                          <span className="w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
-                            {prog.logo ? (
-                              <img
-                                src={prog.logo}
-                                alt=""
-                                className="w-full h-full object-contain p-0.5"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            ) : (
-                              <span className="text-[11px] font-bold font-mono text-[color:rgb(var(--tw-ink-900))] dark:text-white">
-                                {programMonogram(prog.title)}
-                              </span>
-                            )}
-                          </span>
+                          {/* Program logo (Admin → Courses → "Menu Logo"), with
+                              the card image as the fallback and a monogram last
+                              — all three inside the shared tile, which is also
+                              what the admin previews before saving. */}
+                          <MenuLogoTile src={prog.logo} title={prog.title} />
 
                           <span className="min-w-0 flex-1">
                             <span className="flex items-center justify-between text-xs font-bold text-[color:rgb(var(--tw-ink-900))] dark:text-slate-100 group-hover/item:text-[color:rgb(var(--tw-blue-700))] dark:group-hover/item:text-[color:rgb(var(--tw-gold-400))]">
@@ -553,15 +532,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     onClick={() => handleNavClick(`/courses/${prog.slug}`)}
                     className="w-full flex items-center gap-3 p-2 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-left"
                   >
-                    <span className="w-7 h-7 rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
-                      {prog.logo ? (
-                        <img src={prog.logo} alt="" className="w-full h-full object-contain p-0.5" loading="lazy" decoding="async" />
-                      ) : (
-                        <span className="text-[10px] font-bold font-mono text-[color:rgb(var(--tw-ink-900))] dark:text-white">
-                          {programMonogram(prog.title)}
-                        </span>
-                      )}
-                    </span>
+                    <MenuLogoTile src={prog.logo} title={prog.title} size="sm" />
                     <span className="truncate pr-2 flex-1">{prog.title}</span>
                     <span className="text-[10px] font-mono text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded shrink-0">{prog.duration}</span>
                   </button>

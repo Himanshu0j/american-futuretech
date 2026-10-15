@@ -21,6 +21,13 @@
  * The front-end half of the contract (which image renders in the tile) lives in
  * client/src/components/Navbar.jsx: `c.menuLogo || c.thumbnail || monogram`.
  *
+ * The tile itself is one component — client/src/components/MenuLogoTile.jsx —
+ * rendered by the header AND by the admin field's live preview, so the client
+ * judges the artwork against the real thing before saving. Section 4 pins that
+ * arrangement at the source level: a second, inlined copy of the tile in the
+ * header would leave the preview rendering a tile the website no longer uses,
+ * and nothing an API call can see would notice.
+ *
  * Boots the API against a throwaway database and cleans up after itself.
  */
 
@@ -259,6 +266,33 @@ const run = async () => {
 
     check('No credentials or tokens leaked into the boot log',
       !serverLog.includes(SEED_ADMIN_PASSWORD) && !/eyJ[A-Za-z0-9_-]{10,}/.test(serverLog));
+
+    // ── The tile the admin previews IS the tile the header draws ────────────
+    // Admin → Courses now previews this tile beside the field, which only means
+    // anything while both places render the same component. Give the header its
+    // own inlined markup back and the preview keeps rendering happily while
+    // silently no longer matching the website — the exact drift it exists to
+    // prevent, and one no API-level check can see. Hence the source check.
+    section('4. One tile component, rendered by both the header and the preview');
+    const readSource = (rel) => fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
+    const navbarSource = readSource('client/src/components/Navbar.jsx');
+    const tileSource = readSource('client/src/components/MenuLogoTile.jsx');
+    const fieldSource = readSource('client/src/admin/components/MenuLogoField.jsx');
+    const coursesCmsSource = readSource('client/src/admin/CoursesCMS.jsx');
+    const tileUsages = (navbarSource.match(/<MenuLogoTile\b/g) || []).length;
+
+    check('The header renders the shared tile',
+      /import MenuLogoTile from '\.\/MenuLogoTile'/.test(navbarSource) && tileUsages >= 2,
+      `${tileUsages} usage(s) — desktop dropdown + mobile drawer`);
+    check('The header keeps no copy of the tile markup of its own',
+      !/object-contain p-0\.5/.test(navbarSource),
+      'the tile lives in components/MenuLogoTile.jsx only');
+    check('The admin Menu Logo field previews that same tile',
+      /<MenuLogoTile\b/.test(fieldSource) && /from '\.\.\/\.\.\/components\/MenuLogoTile'/.test(fieldSource));
+    check('Admin → Courses uses the field, and feeds it the fallback chain',
+      /<MenuLogoField\b/.test(coursesCmsSource) && /cardImage=\{cardImage\}/.test(coursesCmsSource) && /title=\{title\}/.test(coursesCmsSource));
+    check('The tile contains (never crops) the artwork and falls back to the monogram',
+      /object-contain/.test(tileSource) && /programMonogram/.test(tileSource));
   } finally {
     section('Cleanup');
     await stopServer();

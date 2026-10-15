@@ -16,13 +16,21 @@ const publicCache = require('../utils/publicCache');
 // edited course is visible immediately.
 const PUBLISHED_COURSES_TTL_MS = 30 * 1000;
 
+// The sequence the client asked for ("kon pehle, kon niche") — one admin-owned
+// number per course, edited in Admin → Courses. Every list of programs sorts by
+// it: the homepage Fellowship section, the /courses catalogue and the header's
+// CAREER PROGRAMS mega-menu, so the three can never drift apart. `createdAt` is
+// the tie-break for the courses nobody has reordered yet (they all default to
+// displayOrder 1, which is exactly what the old insertion order produced).
+const COURSE_ORDER = { displayOrder: 1, createdAt: 1 };
+
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
 // @access  Public
 const getPublishedCourses = async (req, res) => {
   try {
     const { body } = await publicCache.read(publicCache.CACHE_KEYS.publishedCourses, PUBLISHED_COURSES_TTL_MS, async () => {
-      const courses = await Course.find({ isPublished: true }).sort({ createdAt: 1 });
+      const courses = await Course.find({ isPublished: true }).sort(COURSE_ORDER);
       return { success: true, count: courses.length, courses };
     });
 
@@ -41,7 +49,7 @@ const getPublishedCourses = async (req, res) => {
 // @access  Private
 const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 });
+    const courses = await Course.find().sort(COURSE_ORDER);
 
     // The module count must come from the real curriculum collection, not the
     // embedded mirror — otherwise the CMS listed "0 Modules" for courses whose
@@ -262,6 +270,79 @@ const toggleBadge = async (req, res) => {
   }
 };
 
+// @desc    Save the admin's program sequence (Admin → Courses → Move up / Move down)
+// @route   PATCH /api/courses/reorder
+// @access  Private (COURSES_EDIT)
+//
+// The body is the full list of course ids in the order they should be shown.
+// A whole list rather than "move this one to position 3" keeps the sequence
+// consistent: two admins reordering at once can never interleave into a
+// half-applied order, and a course that is missing from the list keeps its
+// relative place after the ones that were sent instead of being dropped to 0.
+const reorderCourses = async (req, res) => {
+  try {
+    const requested = Array.isArray(req.body?.order) ? req.body.order.map(String).filter(Boolean) : [];
+    if (requested.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Send the course ids in the order you want them displayed.',
+      });
+    }
+    if (new Set(requested).size !== requested.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'The same course appears twice in that order — reload the page and try again.',
+      });
+    }
+
+    const existing = await Course.find().select('_id displayOrder').lean();
+    const known = new Set(existing.map((c) => String(c._id)));
+    const unknown = requested.filter((id) => !known.has(id));
+    if (unknown.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'That list contains a course that no longer exists — reload the page and try again.',
+      });
+    }
+
+    const leftovers = existing
+      .filter((c) => !requested.includes(String(c._id)))
+      .sort((a, b) => (Number(a.displayOrder) || 0) - (Number(b.displayOrder) || 0))
+      .map((c) => String(c._id));
+    const finalOrder = [...requested, ...leftovers];
+
+    await Course.bulkWrite(
+      finalOrder.map((id, index) => ({
+        updateOne: { filter: { _id: id }, update: { $set: { displayOrder: index + 1 } } },
+      })),
+    );
+
+    // The public feed is cached for 30 s; without this the admin saves a new
+    // order and the site keeps serving the old one for half a minute.
+    publicCache.invalidate(publicCache.CACHE_KEYS.publishedCourses);
+
+    await AuditLog.create({
+      actor: req.user?._id,
+      actorName: req.user?.name || 'Administrator',
+      actorRole: req.user?.role || 'ADMIN',
+      action: 'COURSES_REORDERED',
+      entity: 'Course',
+      details: `Program order saved: ${finalOrder.length} course(s)`,
+    });
+
+    const courses = await Course.find().sort(COURSE_ORDER);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Program order saved — the homepage, the catalogue and the header menu all follow it.',
+      count: courses.length,
+      courses,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
 // @desc    Delete course
 // @route   DELETE /api/courses/:id
 // @access  Private (SuperAdmin)
@@ -319,6 +400,7 @@ const deleteCourse = async (req, res) => {
 module.exports = {
   getPublishedCourses,
   getAllCourses,
+  reorderCourses,
   getCourseBySlug,
   createCourse,
   updateCourse,

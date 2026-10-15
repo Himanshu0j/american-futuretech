@@ -11,6 +11,7 @@ import SyllabusModal from '../components/SyllabusModal';
 import PersonalizedLearningSection from '../components/PersonalizedLearningSection';
 import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
+import { compareCoursesByOrder, sortCoursesByOrder } from '../lib/courseOrder';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
@@ -73,7 +74,11 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('popular');
+  // 'featured' is the admin's own program sequence (Admin → Courses → Move
+  // up/down). It is the default so the catalogue opens in the order the client
+  // asked for — Data Science, then Cyber, with the visitor's own sorting one
+  // choice away.
+  const [sortBy, setSortBy] = useState('featured');
   const [selectedCourseForModal, setSelectedCourseForModal] = useState(null);
   const location = useLocation();
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -97,7 +102,7 @@ export default function CoursesPage() {
   const fetchCourses = async () => {
     try {
       const res = await axios.get('/api/courses');
-      setCourses(res.data.courses || []);
+      setCourses(sortCoursesByOrder(res.data.courses || []));
     } catch (err) {
       console.error('Failed to load courses', err);
     } finally {
@@ -123,6 +128,7 @@ export default function CoursesPage() {
     const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   }).sort((a, b) => {
+    if (sortBy === 'featured') return compareCoursesByOrder(a, b);
     if (sortBy === 'popular') return (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0);
     if (sortBy === 'price-low') return (a.pricing?.discountedPrice || 0) - (b.pricing?.discountedPrice || 0);
     if (sortBy === 'price-high') return (b.pricing?.discountedPrice || 0) - (a.pricing?.discountedPrice || 0);
@@ -175,6 +181,7 @@ export default function CoursesPage() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:border-blue-500 transition-colors"
               >
+                <option value="featured">Featured Order</option>
                 <option value="popular">Most Popular</option>
                 <option value="rating">Highest Rated</option>
                 <option value="price-low">Tuition: Low to High</option>
@@ -300,9 +307,9 @@ export default function CoursesPage() {
                   <div className="min-w-0">
                     {/* Program identity block. The client circled this area on the
                         live page and asked for a real box around it instead of
-                        loose text floating on white, so the eyebrow, title and
-                        summary sit on their own tinted panel. */}
-                    <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-900/40 p-4">
+                        loose text floating on white — and for that box to carry
+                        a light colour. Same treatment as the homepage card. */}
+                    <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50 via-sky-50/70 to-white p-4 shadow-xs dark:border-blue-900/50 dark:from-blue-950/40 dark:via-slate-900 dark:to-slate-900/40">
                     <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-[11px] font-mono text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full font-bold truncate min-w-0 max-w-[70%] border border-blue-200/50 dark:border-blue-800/50">
                         {course.category}

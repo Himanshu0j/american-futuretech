@@ -31,6 +31,7 @@
     "verify:issues": "node scripts/verify-issue-reports.js",
     "verify:media": "node scripts/verify-media-library.js",
     "verify:megamenu-logo": "node scripts/verify-megamenu-logo.js",
+    "verify:program-order": "node scripts/verify-program-order.js",
     "verify:coupons": "node scripts/verify-coupons.js",
     "verify:students": "node scripts/verify-student-access.js",
     "verify:analytics": "node scripts/verify-analytics-honesty.js",

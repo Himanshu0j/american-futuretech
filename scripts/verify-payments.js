@@ -929,6 +929,18 @@ const run = async () => {
   check('The canonical CLIENT_URL beats a leftover admin subdomain',
     canonical === 'https://americanfuturetechllc.com', canonical);
 
+  // The live deployment's CLIENT_URL was found set to the retired `test.`
+  // subdomain. Taking it at face value is what made the panel hand Stripe a
+  // webhook URL that answers nothing — so a retired value must be ignored in
+  // favour of the canonical domain, whatever the request Host says.
+  process.env.CLIENT_URL = 'https://test.americanfuturetechllc.com/';
+  const retiredEnv = settingsTest.publicApiOrigin(
+    fakeReq({ host: 'test.americanfuturetechllc.com', 'x-forwarded-proto': 'https' }),
+  );
+  delete process.env.CLIENT_URL;
+  check('A retired CLIENT_URL is ignored, even with a matching request host',
+    retiredEnv === 'https://americanfuturetechllc.com', retiredEnv);
+
   const setupShape = settingsTest.buildGatewaySetup({
     gateway: { enabled: true, mode: 'live', secretKeyEncrypted: 'v1:x', webhookSecretEncrypted: 'v1:y' },
     payments: { ready: true },

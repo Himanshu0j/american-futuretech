@@ -9,6 +9,7 @@ const {
 } = require('../utils/stripeWebhookRepair');
 const { sendError } = require('../utils/apiError');
 const publicCache = require('../utils/publicCache');
+const { CANONICAL_SITE_ORIGIN, isRetiredOrigin } = require('../config/site');
 const {
   getPaymentStatus,
   setRuntimeSecrets,
@@ -683,8 +684,19 @@ const publicApiOrigin = (req) => {
    * the domain the deployment itself advertises, so the endpoint Stripe is given
    * is the one that will answer.
    */
-  const configured = String(process.env.CLIENT_URL || '').trim().replace(/\/+$/, '');
-  if (configured && /^https?:\/\//i.test(configured)) return configured;
+  /*
+   * The deployment's declared site origin, unless that value points at a host we
+   * retired. This used to be CLIENT_URL directly — and the live CLIENT_URL was
+   * found set to `https://test.americanfuturetechllc.com`, a Hostinger leftover
+   * that serves no app. Every call to Stripe therefore named a dead webhook URL,
+   * while the domain customers buy on had no endpoint at all. A retired host is
+   * now skipped rather than trusted.
+   */
+  const explicitSite = String(process.env.PUBLIC_SITE_ORIGIN || '').trim().replace(/\/+$/, '');
+  if (explicitSite) return explicitSite;
+
+  const clientUrl = String(process.env.CLIENT_URL || '').trim().replace(/\/+$/, '');
+  if (clientUrl && /^https?:\/\//i.test(clientUrl) && !isRetiredOrigin(clientUrl)) return clientUrl;
 
   const host = String(req?.headers?.['x-forwarded-host'] || req?.get?.('host') || '')
     .split(',')[0]
@@ -698,7 +710,13 @@ const publicApiOrigin = (req) => {
   // Stripe must not be http or the webhook will never arrive.
   const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
   const proto = forwardedProto || (isLocal ? req?.protocol || 'http' : 'https');
-  return `${proto}://${host}`.replace(/\/+$/, '');
+  const candidate = `${proto}://${host}`.replace(/\/+$/, '');
+
+  // Same rule for the request itself: if the panel was opened on a retired
+  // subdomain, derive nothing from it. The canonical domain is the only URL
+  // Stripe can actually reach.
+  if (!isLocal && isRetiredOrigin(candidate)) return CANONICAL_SITE_ORIGIN;
+  return candidate;
 };
 
 /**

@@ -14,7 +14,7 @@
  * deploy instead of being a report nobody reads.
  */
 
-const DEFAULT_BASE = 'https://american-futuretech-api.onrender.com';
+const DEFAULT_BASE = 'https://americanfuturetechllc.com';
 
 const results = [];
 const check = (name, passed, detail = '') => {

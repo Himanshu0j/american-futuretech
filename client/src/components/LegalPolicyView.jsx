@@ -61,6 +61,22 @@ export default function LegalPolicyView({ policyKey, label, Icon }) {
           <span className="text-slate-900 font-semibold">{label || policy.title}</span>
         </div>
 
+        {/* Re-open the consent sheet from the page that explains it. The banner
+            is dismissed for months at a time, so without this a visitor would
+            have to clear site data to change their mind. */}
+        {policyKey === 'cookies' && (
+          <div className="mb-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('aft:open-cookie-settings'))}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-blue-700))] text-white text-xs font-bold transition-colors"
+            >
+              {Icon ? <Icon className="w-3.5 h-3.5" /> : null}
+              Change my cookie choices
+            </button>
+          </div>
+        )}
+
         {/* Header — title words centred + bold */}
         <div className="border-b border-slate-200 pb-8 mb-10 text-center">
           {policy.badge && (

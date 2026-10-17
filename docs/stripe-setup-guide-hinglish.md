@@ -39,7 +39,7 @@ Webhook ke bina Stripe paisa to le lega, par student ko **turant access nahi mil
 1. Payment Gateway page par **webhook URL** ka box hai — **Copy URL** dabayein.
 2. Stripe → **Developers → Webhooks → Add endpoint**:
    - **Endpoint URL**: page se copy kiya hua URL
-     (`https://american-futuretech-api.onrender.com/api/payments/webhook`)
+     (`https://americanfuturetechllc.com/api/payments/webhook`)
    - **Events**: page par diye gaye **5 events** — "Copy events" se sab copy ho
      jate hain, ya individually select karein:
      - `checkout.session.completed`

@@ -4,7 +4,7 @@
  * admin panel into a single local JSON file.
  *
  *   node scripts/export-live-content.js
- *   API_BASE=https://american-futuretech-api.onrender.com node scripts/export-live-content.js
+ *   API_BASE=https://americanfuturetechllc.com node scripts/export-live-content.js
  *
  * Credentials: tries the seeded staff accounts, or pass your own:
  *   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=secret node scripts/export-live-content.js
@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE = (process.env.API_BASE || 'https://american-futuretech-api.onrender.com').replace(/\/$/, '');
+const BASE = (process.env.API_BASE || 'https://americanfuturetechllc.com').replace(/\/$/, '');
 const OUT_DIR = path.join(__dirname, '..', 'backups');
 
 // Pass real credentials once the seeded defaults have been rotated:

@@ -20,7 +20,7 @@
  *   LIVE_API_URL=http://127.0.0.1:5050 node scripts/verify-live-qa.js
  */
 
-const API = (process.env.LIVE_API_URL || 'https://american-futuretech-api.onrender.com').replace(/\/+$/, '');
+const API = (process.env.LIVE_API_URL || 'https://americanfuturetechllc.com').replace(/\/+$/, '');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@americanfuturetech.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.SEED_ADMIN_PASSWORD || 'admin123';
 

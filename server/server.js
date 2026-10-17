@@ -169,6 +169,13 @@ app.get('/api/health', (req, res) => {
   if (authStatus && authStatus.warning) warnings.push(authStatus.warning);
   if (payments.warning) warnings.push(payments.warning);
 
+  // The client's stale-build check reads `build.commit` from here
+  // (client/src/lib/deployFreshness.js). A cached copy of THIS answer would make
+  // a fresh document look stale (or hide a real one), so it must never be stored
+  // by a browser or an edge.
+  res.setHeader('Cache-Control', 'no-store, must-revalidate');
+  res.setHeader('CDN-Cache-Control', 'no-store');
+
   res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
@@ -193,8 +200,22 @@ app.use('/api/curriculum', require('./routes/curriculumRoutes'));
 app.use('/api/lms', require('./routes/lmsRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
+// API JSON changes the instant an admin saves; an edge copy of it is stale
+// content by definition. Uploads are exempt (they set their own immutable
+// headers), so this only covers the JSON half.
+app.use('/api', (req, res, next) => {
+  // Inside a mounted middleware `req.path` is relative to the mount, so the
+  // upload check is '/upload/…', not '/api/upload/…'.
+  if (!/^\/upload\//.test(req.path)) {
+    res.setHeader('CDN-Cache-Control', 'no-store');
+  }
+  next();
+});
+
 app.use('/api/leads/apply', applyLimiter);
 app.use('/api/leads', require('./routes/leadRoutes'));
+// The cookie banner's decision — public write, staff-only read (see the route file).
+app.use('/api/consent', require('./routes/consentRoutes'));
 app.use('/api/batches', require('./routes/batchRoutes'));
 app.use('/api/students', require('./routes/studentRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));
@@ -296,6 +317,13 @@ const serveClientHtml = async (req, res, next) => {
     }
 
     res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    // `Cache-Control` is a browser instruction; a CDN/edge in front of the app
+    // reads its own header first and would happily keep serving yesterday's
+    // document — which is how a brand-new phone painted old content while the
+    // client's own laptop (which had the new build) looked correct. These two
+    // tell the whole chain not to store this response at all.
+    res.setHeader('CDN-Cache-Control', 'no-store');
+    res.setHeader('Surrogate-Control', 'no-store');
     if (!snapshot && !overrides) return res.type('html').send(html);
 
     /*

@@ -171,16 +171,25 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             {/* ============================================================
                 PHONE BAND (< sm): the copy reads ON the photograph.
 
-                The photo is the column's own background for its top part, so
-                no fixed offset is needed: the column's padding-top is the
-                space the photo gets to itself (clear of the badge), and the
-                copy then sits on its veiled lower half. It is full-bleed (the
-                section's padding is cancelled) and pulled up under the header,
-                and a negative z-index keeps it behind the copy while staying
-                inside the column's stacking context.
+                The photo is the column's own background for its top part: the
+                column's padding-top is the space the photo gets to itself
+                (clear of the badge), and the copy then sits on its veiled lower
+                half. It is full-bleed (the section's padding is cancelled) and
+                starts exactly at the header's lower edge — the header is
+                `fixed`, so anything above that line is hidden behind it (see
+                the offset note on the band itself). A negative z-index keeps
+                the band behind the copy while staying inside the column's
+                stacking context.
                 ============================================================ */}
+            {/* The band sits exactly at the header's lower edge — no negative
+                margin. It used to carry `-mt-8`, which pulled the top 16px of the
+                crop behind the fixed header; the portrait crop only leaves ~6%
+                headroom above the crowns, so those 16px were the graduates'
+                heads being cut off (the client's circled screenshot). Measured at
+                390x844 the column's own top IS the header's edge, so the band
+                simply starts there and the whole photograph is on screen. */}
             <div
-              className="anim-hero-banner sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 -mt-8 h-[calc(58vw_+_272px)] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
+              className="anim-hero-banner sm:hidden -z-10 absolute inset-x-0 top-0 -mx-4 h-[calc(58vw_+_272px)] overflow-hidden pointer-events-none bg-[url('/images/hero-graduation-phone.jpg')] bg-cover bg-top bg-no-repeat sm:bg-none"
               aria-hidden="true"
             >
               {/* The band's height is tied to the copy rather than to a fixed
@@ -212,8 +221,8 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             {/* Staggered Eyebrow Badge */}
             <div className="anim-hero-eyebrow">
               <div className="section-eyebrow section-eyebrow-on-photo shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 pulse-mint-dot" />
-                <span>
+                <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-blue-500 pulse-mint-dot" />
+                <span className="min-w-0 break-words">
                   {heroData.eyebrowBadgeText || heroData.eyebrow || 'AMERICAN FUTURETECH · 6-MONTH CAREER TRAINING & FELLOWSHIPS'}
                 </span>
               </div>

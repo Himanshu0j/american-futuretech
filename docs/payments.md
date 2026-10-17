@@ -275,7 +275,7 @@ An environment variable always wins over a key saved in the panel.
 
 1. Stripe dashboard → **Developers → API keys** → copy the secret key.
 2. **Developers → Webhooks → Add endpoint**
-   - URL: `https://american-futuretech-api.onrender.com/api/payments/webhook`
+   - URL: `https://americanfuturetechllc.com/api/payments/webhook`
      (the panel prints the correct URL for whichever API host serves it)
    - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
      `checkout.session.async_payment_failed`, `checkout.session.expired`, `payment_intent.payment_failed`

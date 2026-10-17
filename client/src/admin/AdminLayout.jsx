@@ -32,6 +32,7 @@ import {
   SlidersHorizontal,
   MessageSquareWarning,
   Images,
+  Cookie,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import useAutoFieldLabels from '../hooks/useAutoFieldLabels';
@@ -84,6 +85,9 @@ export default function AdminLayout() {
     // Gated by the media permissions the RBAC matrix already defines, so an
     // account without MEDIA_VIEW is not offered a screen that answers 403.
     { name: 'Media Library', path: '/admin/media', icon: Images, permission: 'MEDIA_VIEW' },
+    // Same reasoning as the issue board: the client asked to keep the consent
+    // record, and a missing permission id would hide the screen from them.
+    { name: 'Cookie Consents', path: '/admin/consent', icon: Cookie, permission: null },
     { name: 'Settings & Audit Log', path: '/admin/settings', icon: Settings, permission: 'SETTINGS_VIEW' },
     { name: 'Staff & Security RBAC', path: '/admin/users', icon: ShieldAlert, permission: 'ADMIN_MANAGEMENT_VIEW' },
     { name: 'How to Use Admin', path: '/admin/guide', icon: HelpCircle, permission: null },

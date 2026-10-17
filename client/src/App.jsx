@@ -23,6 +23,7 @@ import PersonalizedLearningSection from './components/PersonalizedLearningSectio
 import FaqAccordion from './components/common/FaqAccordion';
 import WhatsAppButton from './components/WhatsAppButton';
 import AIChatbox from './components/AIChatbox';
+import CookieConsent from './components/CookieConsent';
 import SiteEditor from './components/SiteEditor';
 import SiteOverridesApplier from './components/SiteOverridesApplier';
 import useCompanyInfo from './hooks/useCompanyInfo';
@@ -83,6 +84,7 @@ const StaffRBAC = lazy(() => import('./admin/StaffRBAC'));
 const AdminGuide = lazy(() => import('./admin/AdminGuide'));
 const IssueReports = lazy(() => import('./admin/IssueReports'));
 const MediaLibrary = lazy(() => import('./admin/MediaLibrary'));
+const CookieConsents = lazy(() => import('./admin/CookieConsents'));
 
 // Academy / LMS control centre
 const LmsDashboard = lazy(() => import('./admin/lms/LmsDashboard'));
@@ -403,6 +405,7 @@ export default function App() {
                 <Route path="website-editor" element={<WebsiteEditor />} />
                 <Route path="issues" element={<IssueReports />} />
                 <Route path="media" element={<MediaLibrary />} />
+                <Route path="consent" element={<CookieConsents />} />
                 <Route path="guide" element={<AdminGuide />} />
                 <Route path="users" element={<StaffRBAC />} />
 
@@ -424,6 +427,9 @@ export default function App() {
 
           {/* Global Floating Admissions & Support Widgets (public + LMS only) */}
           <PublicFloatingWidgets />
+
+          {/* Cookie choice — it records the decision, it never blocks the page */}
+          <CookieConsent />
 
           {/* Shows the maintenance screen to visitors when the admin switches it on */}
           <MaintenanceScreen />

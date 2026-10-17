@@ -898,14 +898,14 @@ const run = async () => {
   const fakeReq = (headers = {}) => ({ headers, protocol: 'http', get: (name) => headers.host || '' });
 
   const proxied = settingsTest.publicApiOrigin(
-    fakeReq({ host: 'american-futuretech-api.onrender.com', 'x-forwarded-proto': 'https' }),
+    fakeReq({ host: 'americanfuturetechllc.com', 'x-forwarded-proto': 'https' }),
   );
   check('A proxied production request yields an https API origin',
-    proxied === 'https://american-futuretech-api.onrender.com', proxied);
+    proxied === 'https://americanfuturetechllc.com', proxied);
 
-  const noForwardedProto = settingsTest.publicApiOrigin(fakeReq({ host: 'example.onrender.com' }));
+  const noForwardedProto = settingsTest.publicApiOrigin(fakeReq({ host: 'example.com' }));
   check('Without a forwarded proto a public host is still assumed https',
-    noForwardedProto === 'https://example.onrender.com', noForwardedProto);
+    noForwardedProto === 'https://example.com', noForwardedProto);
 
   const local = settingsTest.publicApiOrigin(fakeReq({ host: '127.0.0.1:5050' }));
   check('A local host keeps http (no bogus TLS assumption in dev)',
@@ -916,6 +916,18 @@ const run = async () => {
   delete process.env.PUBLIC_API_URL;
   check('PUBLIC_API_URL overrides the derived origin (trailing slash trimmed)',
     overridden === 'https://api.example.com', overridden);
+
+  // The client still owns leftover Hostinger sites (testapi.…, api.…). Opening
+  // the admin panel on one of those used to make the panel hand Stripe a webhook
+  // URL at that host — an endpoint that then fails every delivery while the real
+  // domain has none. CLIENT_URL is the canonical origin, so it must win.
+  process.env.CLIENT_URL = 'https://americanfuturetechllc.com/';
+  const canonical = settingsTest.publicApiOrigin(
+    fakeReq({ host: 'testapi.americanfuturetechllc.com', 'x-forwarded-proto': 'https' }),
+  );
+  delete process.env.CLIENT_URL;
+  check('The canonical CLIENT_URL beats a leftover admin subdomain',
+    canonical === 'https://americanfuturetechllc.com', canonical);
 
   const setupShape = settingsTest.buildGatewaySetup({
     gateway: { enabled: true, mode: 'live', secretKeyEncrypted: 'v1:x', webhookSecretEncrypted: 'v1:y' },

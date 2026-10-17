@@ -11,7 +11,7 @@ alag se bhejne ki zaroorat nahi — sirf `CLIENT-GUIDE.md` bhejein.
 ## Bhejne se pehle (developer checklist — ye section client ko na bhejein)
 
 1. **Deploy ho gaya ho:** `git push` ke baad Render + Vercel auto-deploy (~5 minute). Confirm karein:
-   - https://american-futuretech-api.onrender.com/api/health → 200
+   - https://americanfuturetechllc.com/api/health → 200
    - https://american-futuretech.vercel.app/admin/login → khulta ho
 2. **Password:** `docs/credentials.local.md` (git-ignored) mein teen logins ki email + password column bhar lein
    (values repo root ki `admin-credentials.local` se lein), phir client ko **secure channel** se bhejein.

@@ -212,6 +212,22 @@ pehle usi par test kar lo.
 3. Domain ke DNS Hostinger nameservers par hi hain to kuch manual karne ki zaroorat
    nahi; warna A record us hosting IP par point karo.
 
+### 4b. Kaun si website rakhein, kaun si delete karein
+
+Ab website aur API ek hi app hain, isliye Hostinger par **ek hi website** rakhi
+jaati hai. Client ke hPanel me jo entries dikhti hain unka matlab:
+
+| Website | Kya hai | Kya karein |
+|---|---|---|
+| `americanfuturetechllc.com` | **asli site + API** (yahi live domain hai) | **rakhein** — isi par Git deploy, env vars, SSL aur cron lage hain |
+| `api.americanfuturetechllc.com` | purana "API alag rakho" wala setup | delete / suspend — koi app isse call nahi karta |
+| `testapi.americanfuturetechllc.com` | purana test API subdomain | delete / suspend — Stripe webhook isi par galat laga hua tha |
+| `bipfuturetech.com` | doosra brand/domain, is project se juda nahi | apna faisla — is site ke kaam ka nahi |
+
+Delete karne se pehle sirf ek baat check kar lein: us subdomain par koi **email
+mailbox** attach na ho (hPanel → Emails), warna mailbox bhi chala jayega. Website
+delete karne se main domain ka app, database ya Stripe keys par koi asar nahi padta.
+
 ---
 
 ## 5. Verify karo (2 minute)
@@ -253,10 +269,21 @@ Render ke URL se nahi).
 
 | Tarika | Kya karna | `whsec_` | Admin panel me |
 |---|---|---|---|
-| **A (recommended)** | purane endpoint ki **URL edit** karo (Render URL → naya domain) | **same rehta hai** | kuch nahi badalna |
-| B | **naya endpoint** banao | **naya secret** milta hai | naya `whsec_` Admin → Payment Gateway me paste karna **zaroori** — warna paisa to katega par enrollment auto-confirm nahi hoga (`webhookConfigured: false` warning aayegi) |
+| **A (recommended — ek click)** | Admin → Settings → Payment Gateway → **Webhook khud theek karo** | naya endpoint banne par panel khud save kar leta hai | kuch nahi — panel secret store kar leta hai |
+| B | Stripe dashboard me **manually** naya endpoint banao | **naya secret** milta hai | naya `whsec_` Admin → Payment Gateway me paste karna **zaroori** — warna paisa to katega par enrollment auto-confirm nahi hoga (`webhookConfigured: false` warning aayegi) |
 
-Dono endpoints thodi der saath chal sakte hain — handler idempotent hai (`event.id` + payment status guard), duplicate events safe hain. Cutover confirm hone ke baad Render wala endpoint delete kar do. Deploy ke baad Stripe → Webhooks → **Recent deliveries** me 200 dekho.
+**Ek click wala repair kya karta hai:** `https://<domain>/api/payments/webhook` par
+endpoint banata hai (ya jo hai usme missing events add karta hai), aur **purane
+domain wale endpoints ko disable** kar deta hai — isliye `testapi.…` aur Render
+endpoint ki failure emails band ho jaati hain. Ek important detail: ab webhook ka
+origin request ke `Host` se nahi, balki `CLIENT_URL` se banta hai — is liye admin
+panel kisi bhi purane subdomain se kholne par bhi endpoint **hamesha main domain**
+par hi banta hai.
+
+Repair ke baad Stripe → Developers → Webhooks me sirf **ek** endpoint dikhna chahiye
+(main domain, Active, 5 events), aur Recent deliveries me **200** aana chahiye. Jo
+orders 11 Oct ke baad paid hue par Pending hain, unhe Tuition & Billing Ledger →
+**Re-check** se settle kar lena hai.
 
 ---
 

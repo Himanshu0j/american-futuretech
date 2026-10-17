@@ -260,10 +260,16 @@ export default function CoursesPage() {
                   .join('')
                   .toUpperCase();
 
+                // Warm brand shadow, matching the home page's cards: the client
+                // asked for "thoda red shadow har box" on the catalogue too. Two
+                // layers — a close contact shadow for the card's edge and a wide,
+                // soft red bloom — so it reads as depth, not a red glow. The hover
+                // state deepens the same two layers instead of switching to a grey
+                // shadow, which used to snap the colour away under the pointer.
                 return (
                 <div
                   key={course._id}
-                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm hover:border-blue-500/40 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
+                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-[0_1px_2px_rgba(15,23,42,0.06),0_22px_48px_-22px_rgba(190,24,43,0.42)] hover:border-red-300/70 dark:hover:border-red-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_32px_70px_-26px_rgba(190,24,43,0.55)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
                   {/* Course image panel — a clean RECTANGLE beside the details on
                       desktop, a wide banner on phones, and the picture is

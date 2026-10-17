@@ -952,6 +952,13 @@
   border: 1px solid rgb(var(--tw-blue-600) / 0.14);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
+  /* A long eyebrow (the default one names the program length and the
+     fellowships) is wider than a phone. Without these two lines the pill kept
+     its nowrap line box and ran off the right edge, cutting the last words in
+     half — the client's first screenshot. It now wraps inside the column, and
+     `max-width` is what gives it a column to wrap in. */
+  max-width: 100%;
+  white-space: normal;
 }
 
 /* The phone hero lays its copy across the graduation photograph (see the phone
@@ -966,6 +973,18 @@
   .section-eyebrow-on-photo {
     background: rgba(255, 255, 255, 0.96);
     border-color: rgb(var(--tw-blue-600) / 0.3);
+    /* A wrapped two-line chip reads better as a card than as a 999px pill: the
+       fully rounded ends clip the second line's first word. */
+    border-radius: 14px;
+    align-items: flex-start;
+    line-height: 1.45;
+    letter-spacing: 0.1em;
+    padding: 0.45rem 0.7rem;
+  }
+
+  /* The dot lines up with the first line, not the chip's vertical centre. */
+  .section-eyebrow-on-photo > span:first-child {
+    margin-top: 0.35rem;
   }
 }
 

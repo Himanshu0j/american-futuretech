@@ -670,6 +670,22 @@ const publicApiOrigin = (req) => {
   const override = String(process.env.PUBLIC_API_URL || '').trim();
   if (override) return override.replace(/\/+$/, '');
 
+  /*
+   * The site's own canonical origin, when the deployment declares one.
+   *
+   * This is the important one for Stripe: the panel used to derive the webhook
+   * URL from whatever `Host` the admin happened to load the page on. The client
+   * still has leftover Hostinger sites (testapi.…, api.…), so opening the panel
+   * on one of those would have CREATED a webhook at
+   * `https://testapi.…/api/payments/webhook` — which then fails every delivery,
+   * and is exactly the state their Stripe dashboard was in: two endpoints, both
+   * erroring, and none at the domain that actually serves the site. CLIENT_URL is
+   * the domain the deployment itself advertises, so the endpoint Stripe is given
+   * is the one that will answer.
+   */
+  const configured = String(process.env.CLIENT_URL || '').trim().replace(/\/+$/, '');
+  if (configured && /^https?:\/\//i.test(configured)) return configured;
+
   const host = String(req?.headers?.['x-forwarded-host'] || req?.get?.('host') || '')
     .split(',')[0]
     .trim();

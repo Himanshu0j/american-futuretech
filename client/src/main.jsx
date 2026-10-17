@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 import axios from 'axios';
+import { startDeployFreshnessWatch } from './lib/deployFreshness';
 
 // NOTE: there is deliberately no global `axios.defaults.baseURL` here.
 //
@@ -25,6 +26,14 @@ axios.interceptors.request.use((config) => {
   }
   return config;
 });
+
+/*
+ * If this document is older than the server's build (a CDN or carrier copy of
+ * index.html still pointing at the previous bundle), reload it once with a
+ * cache-busting query. See lib/deployFreshness.js for why a fresh phone was
+ * seeing old content while the client's own laptop looked current.
+ */
+startDeployFreshnessWatch();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Check,
@@ -12,8 +12,7 @@ import {
   ZoomIn,
   Eye
 } from 'lucide-react';
-import api from '../lib/api';
-import { sortCoursesByOrder } from '../lib/courseOrder';
+import { usePublicCourses } from '../lib/publicCourses';
 import { MICROSOFT_CERTIFICATES } from '../data/microsoftCertificates';
 import CertificateModal from './CertificateModal';
 import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
@@ -33,66 +32,6 @@ function getCourseIllustration(course) {
   if (text.includes('data') || text.includes('analytics')) return dataScienceIllustration;
   return aiIllustration;
 }
-
-const defaultCoursesFallback = [
-  {
-    _id: 'default-1',
-    title: 'Data Science with AI Integration',
-    slug: 'data-science-with-ai-integration',
-    category: 'Artificial Intelligence & Analytics',
-    duration: '6 Months · Weekend Masterclasses + Lab',
-    shortDescription:
-      'Master modern machine learning, deep neural architectures, PyTorch, and end-to-end vector pipeline deployment on cloud infrastructure.',
-    pricing: { discountedPrice: 499, originalPrice: 1299 },
-    badge: 'Flagship Track',
-    cohort: 'Next Cohort: Oct 15, 2026',
-    faculty: 'Silicon Valley ML Practitioners',
-    curriculumHighlights: [
-      'Deep learning with PyTorch, CUDA acceleration, and tensor operations',
-      'Production LLM architectures, RAG vector indexing, and LangChain agents',
-      'Enterprise capstone: deploy low-latency inference pipelines on AWS/GCP'
-    ],
-    skills: ['Python 3.12', 'PyTorch', 'LangChain', 'Vector DBs', 'MLOps', 'Docker']
-  },
-  {
-    _id: 'default-2',
-    title: 'Cyber Security with Ethical Hacking',
-    slug: 'cyber-security-with-ethical-hacking',
-    category: 'Information Security & Offensive Operations',
-    duration: '6 Months · 150+ Hands-on Labs',
-    shortDescription:
-      'Offensive penetration testing, vulnerability assessment, threat intelligence, and digital forensics in dedicated Kali Linux virtual sandboxes.',
-    pricing: { discountedPrice: 499, originalPrice: 1299 },
-    badge: 'High Demand',
-    cohort: 'Next Cohort: Oct 22, 2026',
-    faculty: 'Active US Red Team Operators',
-    curriculumHighlights: [
-      'Offensive network penetration, Metasploit, and Burp Suite Pro testing',
-      'Active Directory exploitation, privilege escalation, and evasion techniques',
-      'SIEM telemetry, SOC operations, and NIST cybersecurity framework'
-    ],
-    skills: ['Kali Linux', 'Metasploit', 'Burp Suite', 'Network Defense', 'SIEM', 'Wireshark']
-  },
-  {
-    _id: 'default-3',
-    title: 'Cyber Security & Artificial Intelligence Hybrid',
-    slug: 'cyber-security-and-artificial-intelligence',
-    category: 'Information Security & Offensive Operations',
-    duration: '6 Months · Dual Specialization',
-    shortDescription:
-      'Dual-specialization combining offensive penetration testing with machine learning-driven threat detection and AI red teaming.',
-    pricing: { discountedPrice: 599, originalPrice: 1499 },
-    badge: 'Executive Track',
-    cohort: 'Next Cohort: Nov 05, 2026',
-    faculty: 'AI Security Researchers & CISOs',
-    curriculumHighlights: [
-      'Adversarial ML attacks: prompt injection, model inversion, jailbreaking',
-      'Automated SOC defense with autonomous security agent workflows',
-      'Zero-trust cloud architecture & cryptographically signed workloads'
-    ],
-    skills: ['AI Red Teaming', 'Adversarial ML', 'Cloud Security', 'Automated Defense', 'Python']
-  }
-];
 
 function getCourseImage(course) {
   const text = ((course.slug || '') + ' ' + (course.title || '') + ' ' + (course.category || '')).toLowerCase();
@@ -166,32 +105,15 @@ function getHighlightBullets(course) {
 }
 
 export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  /*
+   * The catalogue comes from the shared loader: the HTML snapshot (or the last
+   * API reply) paints immediately, and a failed request keeps that instead of
+   * swapping in the demo programmes this section used to carry.
+   */
+  const { courses, loading, failed, refresh } = usePublicCourses();
   const [activeFilter, setActiveFilter] = useState('All');
   const [activeCertIdx, setActiveCertIdx] = useState(0);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await api.get('/courses');
-        if (res.data.success && res.data.courses.length > 0) {
-          // The admin's program sequence (Admin → Courses → Move up/down) is
-          // what decides "kon pehle, kon niche" here and on /courses.
-          setCourses(sortCoursesByOrder(res.data.courses));
-        } else {
-          setCourses(sortCoursesByOrder(defaultCoursesFallback));
-        }
-      } catch (err) {
-        setCourses(sortCoursesByOrder(defaultCoursesFallback));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, []);
 
   const filterCategories = [
     'All Programs',
@@ -273,6 +195,34 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             whole story (curriculum highlights, stack, tuition, CTAs) beside it.
             The map parameter is deliberately named `flagship` so every course
             renders through the card markup below unchanged. */}
+        {/* Nothing real to show is stated plainly. The section used to answer
+            a failed request with hardcoded demo programmes, which is how a
+            phone ended up showing titles and artwork the admin had long since
+            replaced — worse than an honest retry. */}
+        {failed && !courses.length && (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center dark:border-slate-800 dark:bg-slate-900/60">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              The programme catalogue could not be loaded.
+            </p>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              Check your connection and try again — nothing is being shown rather than out-of-date content.
+            </p>
+            <button
+              type="button"
+              onClick={() => refresh()}
+              className="mt-4 px-4 py-2 rounded-full bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {loading && !courses.length && (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center text-xs font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
+            Loading the programme catalogue…
+          </div>
+        )}
+
         {filteredCourses.map((flagship) => (
           <div
             key={flagship._id || flagship.slug}

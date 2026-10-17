@@ -498,6 +498,36 @@ const run = async () => {
     check('Served HTML ships the route override snapshot', hasOverrideBlock,
       hasOverrideBlock ? '' : 'no route override snapshot in the served HTML');
 
+    /*
+     * The catalogue rides in the same document, for the same reason and with a
+     * louder history: the homepage, the /courses catalogue and the header menu
+     * repainted from hardcoded demo programmes whenever their own
+     * `/api/courses` request failed, so a phone showed a catalogue the admin had
+     * replaced months earlier. A deploy that loses this block re-opens that bug,
+     * so it is checked against the API's answer, not just for presence.
+     */
+    const coursesTag = (fresh.text.match(/<script id="aft-courses-bootstrap"[^>]*>([\s\S]*?)<\/script>/) || [])[1] || '';
+    let courseSnapshot = null;
+    try {
+      courseSnapshot = JSON.parse(coursesTag);
+    } catch (error) {
+      courseSnapshot = null;
+    }
+    check('Served HTML ships the first-paint course snapshot', Boolean(courseSnapshot?.courses?.length),
+      courseSnapshot?.courses?.length ? `courses=${courseSnapshot.courses.length}` : 'no course snapshot in the served HTML — a failed /api/courses on a phone would repaint old programmes');
+
+    if (courseSnapshot?.courses?.length) {
+      const apiCoursesRes = await request(`${API}/api/courses`);
+      const apiCourses = apiCoursesRes.json?.courses || [];
+      const sameFirst = String(courseSnapshot.courses[0]?._id) === String(apiCourses[0]?._id)
+        && courseSnapshot.courses[0]?.title === apiCourses[0]?.title;
+      check('First-paint course snapshot matches what the API serves right now',
+        sameFirst && courseSnapshot.courses.length === apiCourses.length,
+        sameFirst
+          ? `first="${apiCourses[0]?.title}" (${apiCourses.length})`
+          : `html "${courseSnapshot.courses[0]?.title}" (${courseSnapshot.courses.length}) vs api "${apiCourses[0]?.title}" (${apiCourses.length})`);
+    }
+
     if (snapshot?.settings) {
       const settingsRes = await request(`${API}/api/settings`);
       const apiText = settingsRes.json?.settings?.announcementBanner?.text || '';

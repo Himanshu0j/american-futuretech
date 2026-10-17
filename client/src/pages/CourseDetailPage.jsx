@@ -8,6 +8,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import axios from 'axios';
+import { loadPublicCourses, getInitialCourses } from '../lib/publicCourses';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
@@ -43,8 +44,11 @@ export default function CourseDetailPage() {
   const fetchCourseDetails = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/courses');
-      const courses = res.data.courses || [];
+      // The shared loader: the catalogue embedded in this document (or the last
+      // reply the API actually gave) is used when the request fails, so a weak
+      // mobile connection cannot turn a real programme into "Program Not Found".
+      const loaded = await loadPublicCourses();
+      const courses = loaded || getInitialCourses();
 
       // Flexible slug matching: handles slug string, mongo _id, numeric id (e.g. "8"), or title keyword
       let found = courses.find(c =>

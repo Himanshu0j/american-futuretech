@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import useCompanyInfo from '../hooks/useCompanyInfo';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { usePublicCourses } from '../lib/publicCourses';
 // The mega-menu tile and its monogram live in one place: the admin's Menu Logo
 // preview renders the same component, so the two can never disagree.
 import MenuLogoTile from './MenuLogoTile';
-import { sortCoursesByOrder } from '../lib/courseOrder';
 import {
   Menu,
   X,
@@ -22,17 +21,6 @@ import {
   Compass,
   DollarSign
 } from 'lucide-react';
-
-const DEFAULT_7_PROGRAMS = [
-  { title: 'Data Science with AI Integration', slug: 'data-science-with-ai-integration', badge: 'High Demand', duration: '6 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'Cyber Security with Ethical Hacking', slug: 'cyber-security-with-ethical-hacking', badge: 'Top Rated', duration: '6 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'Cyber Security & AI Hybrid', slug: 'cyber-security-and-artificial-intelligence', badge: 'Flagship', duration: '6 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'Advanced Generative & Agentic AI', slug: 'advanced-generative-and-agentic-ai-master-program', badge: 'Cutting-Edge', duration: '6 Months', color: 'text-red-700 bg-red-50 dark:bg-red-950/60 dark:text-red-300' },
-  { title: 'DevOps, Kubernetes & Cloud with AI', slug: 'devops-and-cloud-with-ai', badge: 'Enterprise Standard', duration: '6 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'AI Product Manager with Agentic AI', slug: 'ai-product-manager', badge: 'High Impact', duration: '4 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'Governance, Risk, and Compliance (GRC)', slug: 'governance-risk-and-compliance-grc-with-ai', badge: 'Enterprise Security', duration: '4 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-  { title: 'Placement Support', slug: 'placement-support', badge: 'Career Accelerator', duration: '3 Months', color: 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300' },
-];
 
 // Shipped fallback for the navigation menu. The live header menu comes from
 // Admin → Header Menu CMS (`settings.headerMenu`); these values are only used
@@ -98,7 +86,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [coursesDropdown, setCoursesDropdown] = useState(false);
   const [moreDropdown, setMoreDropdown] = useState(false);
-  const [dbCourses, setDbCourses] = useState([]);
+  // The header menu reads the same shared loader as the homepage and the
+  // catalogue, so this dropdown cannot disagree with them (or show the shipped
+  // placeholder list while a slow phone network answers `/api/courses` late).
+  const { courses: dbCourses } = usePublicCourses();
   const [isWide, setIsWide] = useState(() => (
     typeof window !== 'undefined' && typeof window.matchMedia === 'function'
       ? window.matchMedia(WIDE_QUERY).matches
@@ -113,24 +104,6 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Fetch real database courses for Career Programs dropdown
-  useEffect(() => {
-    let isMounted = true;
-    axios.get('/api/courses')
-      .then(res => {
-        if (isMounted && res.data?.courses?.length > 0) {
-          // The admin's program sequence (Admin → Courses → Move up/down) drives
-          // this menu too, so the dropdown reads the same as the homepage and
-          // the catalogue instead of insertion order.
-          setDbCourses(sortCoursesByOrder(res.data.courses));
-        }
-      })
-      .catch(() => {
-        // Fallback to default programs if network is offline
-      });
-    return () => { isMounted = false; };
   }, []);
 
   // Re-evaluate how many links the desktop bar can hold as the viewport crosses
@@ -183,7 +156,10 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const moreLinks = [...mainLinks.slice(topBarLimit), ...savedMoreLinks];
   const drawerNavLinks = mainLinks;
 
-  // Merge DB courses with formatting
+  // Merge DB courses with formatting. When no catalogue could be loaded at all
+  // the menu stays empty and the dropdown says so: the shipped placeholder list
+  // used to stand in here, which is how a phone showed programme names, badges
+  // and durations that no longer exist in the database.
   const programList = dbCourses.length > 0
     ? dbCourses.map((c, i) => ({
         title: c.title,
@@ -198,7 +174,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
           ? 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300'
           : 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300'
       }))
-    : DEFAULT_7_PROGRAMS;
+    : [];
 
   const handleNavClick = (path) => {
     setMobileMenuOpen(false);
@@ -351,6 +327,16 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                         <span className="text-blue-600 dark:text-blue-400 font-sans font-bold text-[10px]">All with $99 Deposit</span>
                       </div>
                       
+                      {programList.length === 0 && (
+                        <Link
+                          to="/courses"
+                          onClick={() => setCoursesDropdown(false)}
+                          className="block p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                        >
+                          Programme list could not be loaded — browse all courses
+                        </Link>
+                      )}
+
                       {programList.map((prog) => (
                         <Link
                           key={prog.slug}
@@ -524,8 +510,18 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3 flex items-center justify-between">
                   <span>Flagship Tracks</span>
-                  <span className="text-[color:rgb(var(--tw-blue-700))] dark:text-[color:rgb(var(--tw-gold-400))] font-bold">8 Programs</span>
+                  <span className="text-[color:rgb(var(--tw-blue-700))] dark:text-[color:rgb(var(--tw-gold-400))] font-bold">
+                    {programList.length ? `${programList.length} Programs` : ''}
+                  </span>
                 </div>
+                {programList.length === 0 && (
+                  <button
+                    onClick={() => handleNavClick('/courses')}
+                    className="w-full p-3 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-left"
+                  >
+                    Programme list could not be loaded — browse all courses
+                  </button>
+                )}
                 {programList.map((prog) => (
                   <button
                     key={prog.slug}

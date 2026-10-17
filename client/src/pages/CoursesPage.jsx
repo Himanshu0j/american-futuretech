@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, Clock, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import axios from 'axios';
+import { usePublicCourses } from '../lib/publicCourses';
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
 import Footer from '../components/Footer';
@@ -11,7 +11,7 @@ import SyllabusModal from '../components/SyllabusModal';
 import PersonalizedLearningSection from '../components/PersonalizedLearningSection';
 import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
-import { compareCoursesByOrder, sortCoursesByOrder } from '../lib/courseOrder';
+import { compareCoursesByOrder } from '../lib/courseOrder';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
@@ -70,8 +70,10 @@ function ToolLogo({ name, logo }) {
 }
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Same shared loader as the homepage and the header menu: the first paint uses
+  // the server's snapshot, and a failed request keeps the last real list instead
+  // of emptying the catalogue.
+  const { courses, loading, failed, refresh } = usePublicCourses();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   // 'featured' is the admin's own program sequence (Admin → Courses → Move
@@ -85,10 +87,6 @@ export default function CoursesPage() {
   const [isSyllabusModalOpen, setIsSyllabusModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  useEffect(() => {
     if (location.hash) {
       const elem = document.querySelector(location.hash);
       if (elem) {
@@ -98,17 +96,6 @@ export default function CoursesPage() {
       }
     }
   }, [location.hash]);
-
-  const fetchCourses = async () => {
-    try {
-      const res = await axios.get('/api/courses');
-      setCourses(sortCoursesByOrder(res.data.courses || []));
-    } catch (err) {
-      console.error('Failed to load courses', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const categories = [
     'All',
@@ -223,6 +210,17 @@ export default function CoursesPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : failed && courses.length === 0 ? (
+            /* A failed catalogue request says so and offers a retry. Rendering
+               the demo list here is what showed phones a stale catalogue. */
+            <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-6 shadow-sm">
+              <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Catalogue unavailable</h3>
+              <p className="text-slate-500 text-xs mb-4">The programmes could not be loaded. Nothing stale is being shown in their place.</p>
+              <button onClick={() => refresh()} className="elms-btn-primary !text-xs !py-2 !px-4">
+                Retry
+              </button>
             </div>
           ) : filteredCourses.length === 0 ? (
             <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md mx-auto p-6 shadow-sm">

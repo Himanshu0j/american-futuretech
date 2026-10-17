@@ -302,13 +302,16 @@ const serveClientHtml = async (req, res, next) => {
   try {
     const html = readClientHtml(clientDist);
     const { getBootstrapSettings, getBootstrapOverrides } = require('./controllers/settingsController');
+    const { getBootstrapCourses } = require('./controllers/courseController');
     const at = Date.now();
     let snapshot = null;
     let overrides = null;
+    let courses = null;
     try {
-      [snapshot, overrides] = await Promise.all([
+      [snapshot, overrides, courses] = await Promise.all([
         getBootstrapSettings(),
         getBootstrapOverrides(req.path),
+        getBootstrapCourses(),
       ]);
     } catch (error) {
       // The page must still load when the settings read fails; the app then
@@ -324,7 +327,7 @@ const serveClientHtml = async (req, res, next) => {
     // tell the whole chain not to store this response at all.
     res.setHeader('CDN-Cache-Control', 'no-store');
     res.setHeader('Surrogate-Control', 'no-store');
-    if (!snapshot && !overrides) return res.type('html').send(html);
+    if (!snapshot && !overrides && !courses) return res.type('html').send(html);
 
     /*
      * The payloads ride in `type="application/json"` tags, NOT as inline JS.
@@ -347,6 +350,18 @@ const serveClientHtml = async (req, res, next) => {
       // The inline editor's own text/image edits for THIS route — the half of the
       // page the settings snapshot does not cover.
       scripts.push(`<script id="aft-overrides-bootstrap" type="application/json">${escape({ ...overrides, at })}</script>`);
+    }
+    if (courses?.courses) {
+      /*
+       * The programme catalogue, for the same reason as the settings snapshot:
+       * the homepage cards and the header menu used to repaint from the
+       * client's hardcoded demo list whenever `/api/courses` was slow or
+       * blocked (mobile networks, carrier proxies), so a phone could show
+       * months-old titles and artwork while a laptop on the same site showed
+       * the current catalogue. With the real list in the document, the first
+       * frame is the admin's data or nothing — never an invented fallback.
+       */
+      scripts.push(`<script id="aft-courses-bootstrap" type="application/json">${escape({ courses: courses.courses, count: courses.count, at })}</script>`);
     }
     const injected = `${scripts.join('\n')}\n`;
     return res.type('html').send(html.includes('</head>') ? html.replace('</head>', `${injected}</head>`) : html + injected);

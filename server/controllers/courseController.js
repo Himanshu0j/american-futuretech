@@ -24,15 +24,35 @@ const PUBLISHED_COURSES_TTL_MS = 30 * 1000;
 // displayOrder 1, which is exactly what the old insertion order produced).
 const COURSE_ORDER = { displayOrder: 1, createdAt: 1 };
 
+/**
+ * The published catalogue, exactly as `GET /api/courses` answers it.
+ *
+ * Used for two things: the JSON reply, and the first-paint snapshot the server
+ * embeds in the HTML (see server.js). The snapshot matters because a device with
+ * a cold or flaky network used to fail the `/api/courses` request and silently
+ * render the client's hardcoded demo programmes — old titles, old artwork, old
+ * faculty lines — which is what "dusre mobile pe purana data" looked like. Both
+ * halves read this one loader, so they can never disagree.
+ */
+const loadPublishedCourses = () =>
+  publicCache.read(publicCache.CACHE_KEYS.publishedCourses, PUBLISHED_COURSES_TTL_MS, async () => {
+    const courses = await Course.find({ isPublished: true }).sort(COURSE_ORDER);
+    return { success: true, count: courses.length, courses };
+  });
+
+// @desc    The catalogue snapshot embedded in the served HTML (first paint)
+// @access  Internal (server-rendered document)
+const getBootstrapCourses = async () => {
+  const { body } = await loadPublishedCourses();
+  return body || null;
+};
+
 // @desc    Get published courses for landing page
 // @route   GET /api/courses
 // @access  Public
 const getPublishedCourses = async (req, res) => {
   try {
-    const { body } = await publicCache.read(publicCache.CACHE_KEYS.publishedCourses, PUBLISHED_COURSES_TTL_MS, async () => {
-      const courses = await Course.find({ isPublished: true }).sort(COURSE_ORDER);
-      return { success: true, count: courses.length, courses };
-    });
+    const { body } = await loadPublishedCourses();
 
     // `no-cache` means "store it, but revalidate before reuse": the browser's
     // own copy then costs a bodiless 304 instead of another 73 kB download.
@@ -399,6 +419,7 @@ const deleteCourse = async (req, res) => {
 
 module.exports = {
   getPublishedCourses,
+  getBootstrapCourses,
   getAllCourses,
   reorderCourses,
   getCourseBySlug,

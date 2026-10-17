@@ -133,13 +133,16 @@ Booting API on port ${PORT} against ${DB_NAME}`);
     if (!token) throw new Error('could not authenticate as admin');
 
     // The seeder writes the demo catalogue in the background: wait for it to
-    // settle before reading the feed, or the sequence is a moving target.
+    // settle before reading the feed, or the sequence is a moving target. It is
+    // not enough for the count to repeat once — a count of 1 repeated while the
+    // seeder was still running failed this suite on the very next line — so the
+    // wait ends only at a stable catalogue of the three programs it needs.
     let feed = [];
     let previous = -1;
     for (let attempt = 0; attempt < 40; attempt += 1) {
       const res = await request('GET', '/api/courses');
       feed = res.json?.courses || [];
-      if (feed.length > 0 && feed.length === previous) break;
+      if (feed.length >= 3 && feed.length === previous) break;
       previous = feed.length;
       await sleep(900);
     }
@@ -254,15 +257,31 @@ Booting API on port ${PORT} against ${DB_NAME}`);
     check('The comparator lives in one module (display order, then creation order)',
       orderLib.includes('export function compareCoursesByOrder')
       && orderLib.includes('displayOrder') && orderLib.includes('createdAt'));
-    check('The homepage section sorts by the admin sequence',
-      courseSection.includes("from '../lib/courseOrder'")
-      && courseSection.includes('setCourses(sortCoursesByOrder(res.data.courses))'));
-    check('The catalogue sorts by it too, and opens on that order',
-      coursesPage.includes("from '../lib/courseOrder'")
+    /*
+     * All three surfaces now read the catalogue from ONE loader, and that loader
+     * is where the admin's sequence is applied. That change is deliberate: each
+     * surface used to fetch `/api/courses` alone and the homepage answered a
+     * failed request with hardcoded demo programmes, which is how other people's
+     * phones showed a catalogue the admin had already replaced. So the checks
+     * below assert the shared loader AND its ordering, instead of the three
+     * separate call sites that produced the stale content.
+     */
+    const publicCourses = readSource('client/src/lib/publicCourses.js');
+    check('The shared course loader applies the admin sequence',
+      publicCourses.includes("from './courseOrder'")
+      && publicCourses.includes('sortCoursesByOrder(value)'));
+    check('The homepage section reads that loader, and carries no demo catalogue',
+      courseSection.includes("from '../lib/publicCourses'")
+      && courseSection.includes('usePublicCourses()')
+      && !courseSection.includes('defaultCoursesFallback')
+      && !courseSection.includes('Flagship Track'));
+    check('The catalogue reads it too, and opens on the admin order',
+      coursesPage.includes("from '../lib/publicCourses'")
       && coursesPage.includes("useState('featured')")
       && coursesPage.includes('<option value="featured">'));
-    check('The header mega-menu sorts by it (the odd $99-between-$499 order)',
-      navbar.includes('sortCoursesByOrder(res.data.courses)'));
+    check('The header mega-menu reads the same list (the odd $99-between-$499 order)',
+      navbar.includes("from '../lib/publicCourses'")
+      && navbar.includes('usePublicCourses()'));
 
     section('5. Both card layouts draw the artwork the same way');
     const hasCoverClass = (src) => /className="[^"]*object-cover/.test(src);

@@ -12,6 +12,8 @@ import PersonalizedLearningSection from '../components/PersonalizedLearningSecti
 import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { compareCoursesByOrder } from '../lib/courseOrder';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatSeatDeposit } from '../lib/seatDeposit';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
@@ -74,6 +76,9 @@ export default function CoursesPage() {
   // the server's snapshot, and a failed request keeps the last real list instead
   // of emptying the catalogue.
   const { courses, loading, failed, refresh } = usePublicCourses();
+  // Settings → Deposit, the same figure the header menu and the home page print.
+  const { settings } = useSiteSettings() || {};
+  const depositAmount = formatSeatDeposit(settings);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   // 'featured' is the admin's own program sequence (Admin → Courses → Move
@@ -146,7 +151,7 @@ export default function CoursesPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-            Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable $99 deposit.
+            Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable {depositAmount} deposit.
           </p>
 
           {/* Search & Filter Bar */}
@@ -373,7 +378,7 @@ export default function CoursesPage() {
                         <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>
                       </div>
                       <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                        Reserve with $99
+                        Reserve with {depositAmount}
                       </span>
                     </div>
 
@@ -388,7 +393,7 @@ export default function CoursesPage() {
                         to={`/checkout?courseId=${course._id}&tier=deposit`}
                         className="elms-btn-primary !text-xs !py-2 !px-3 text-center justify-center font-bold"
                       >
-                        Reserve $99 →
+                        Reserve {depositAmount} →
                       </Link>
                     </div>
                   </div>

@@ -261,7 +261,7 @@ function LandingPage() {
               <FaqAccordion
                 showCategoryFilter={true}
                 title="Frequently Asked Questions"
-                subtitle="Everything you need to know about our curriculum, $99 reservation, 1-on-1 mentorship, and corporate hiring."
+                subtitle="Everything you need to know about our curriculum, the seat reservation, 1-on-1 mentorship, and corporate hiring."
               />
             </div>
           </section>

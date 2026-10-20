@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useCompanyInfo from '../hooks/useCompanyInfo';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { usePublicCourses } from '../lib/publicCourses';
+import { formatSeatDeposit, seatDepositLabel } from '../lib/seatDeposit';
 // The mega-menu tile and its monogram live in one place: the admin's Menu Logo
 // preview renders the same component, so the two can never disagree.
 import MenuLogoTile from './MenuLogoTile';
@@ -76,6 +77,11 @@ const WIDE_QUERY = '(min-width: 1280px)';
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const company = useCompanyInfo();
   const { settings } = useSiteSettings() || {};
+  // Admin → Settings → Deposit. The header menu is on every page, so it must
+  // print the amount the checkout will charge — not a typed-in constant that
+  // could differ from the home page's own cards.
+  const depositAmount = formatSeatDeposit(settings);
+  const depositBadge = seatDepositLabel(settings);
   // Admin → Settings → General → "Global Top Announcement Banner".
   // `enabled` / `linkUrl` are the schema names; the legacy `active` / `link` are
   // still honoured so an older saved document keeps working.
@@ -324,7 +330,11 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                     >
                       <div className="px-3 py-1.5 text-[10px] uppercase font-mono font-bold text-[color:rgb(var(--tw-ink-900))] dark:text-[color:rgb(var(--tw-gold-400))] tracking-widest border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <span>Flagship Career Programs</span>
-                        <span className="text-blue-600 dark:text-blue-400 font-sans font-bold text-[10px]">All with $99 Deposit</span>
+                        {/* data-no-edit: this amount is derived from Settings →
+                            Deposit. A saved inline edit here used to outrank the
+                            setting, which is how the same menu read $499 on the
+                            home page and $99 on Live Jobs. */}
+                        <span data-no-edit="true" className="text-blue-600 dark:text-blue-400 font-sans font-bold text-[10px]">All with {depositAmount} Deposit</span>
                       </div>
                       
                       {programList.length === 0 && (
@@ -359,8 +369,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                               <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md ${prog.color}`}>
                                 {prog.badge}
                               </span>
-                              <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                                $99 Deposit
+                              <span data-no-edit="true" className="text-[10px] font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
+                                {depositBadge}
                               </span>
                             </span>
                           </span>
@@ -506,7 +516,8 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                 ))}
               </div>
 
-              {/* Programs Quick List (All 8 Programs with $99 Deposit Badge) */}
+              {/* Programs Quick List (every program, same seat-deposit badge as
+                  the desktop menu) */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                 <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 px-3 flex items-center justify-between">
                   <span>Flagship Tracks</span>

@@ -37,11 +37,15 @@ const HERO_BANNER_IMG = '/images/hero-graduation.jpg';
 const HERO_BANNER_IMG_PHONE = '/images/hero-graduation-phone.jpg';
 
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatSeatDeposit } from '../lib/seatDeposit';
 import useAlwaysPlayingVideo from '../hooks/useAlwaysPlayingVideo';
 
 export default function Hero({ onOpenLeadModal, onExploreCourses }) {
   const { settings } = useSiteSettings();
   const heroData = settings?.hero || {};
+  // Settings → Deposit: the hero ledger and the fallback CTA label print the
+  // amount the checkout charges, not a typed-in constant.
+  const depositAmount = formatSeatDeposit(settings);
 
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -294,7 +298,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 to={heroData.primaryCtaLink || '/checkout?tier=deposit'}
                 className="elms-btn-gold sheen overflow-hidden !py-4 !px-8 !text-sm cursor-pointer group !rounded-xl flex items-center justify-center gap-2"
               >
-                <span>{heroData.primaryCtaText || 'Reserve Your Seat — $99'}</span>
+                <span>{heroData.primaryCtaText || `Reserve Your Seat — ${depositAmount}`}</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
 
@@ -323,7 +327,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <div className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">$99 Deposit</div>
+                  <div className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">{depositAmount} Deposit</div>
                   <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
                 </div>
               </div>

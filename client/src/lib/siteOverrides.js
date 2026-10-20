@@ -26,6 +26,25 @@ export const isEditorUi = (node) => {
   return false;
 };
 
+/**
+ * Text the page owns, not the editor: `data-no-edit="true"` marks a value that
+ * is DERIVED from settings (the seat deposit, for instance).
+ *
+ * Why: those values were editable like any other sentence, and a saved edit
+ * outranks the live setting — which is exactly how the header menu ended up
+ * saying "$499 Deposit" on the home page while the same menu said "$99" on the
+ * Live Jobs page. A derived amount must never be hand-edited, so it is skipped
+ * by the editor and by the applier below.
+ */
+export const isLockedText = (node) => {
+  let el = node.nodeType === 3 ? node.parentElement : node;
+  while (el) {
+    if (el.dataset && el.dataset.noEdit === 'true') return true;
+    el = el.parentElement;
+  }
+  return false;
+};
+
 /** Stable-ish key derived from the element's position in the tree. */
 export const pathKey = (node) => {
   const el = node.nodeType === 3 ? node.parentElement : node;
@@ -56,6 +75,7 @@ export const collectTextNodes = () => {
       parent &&
       !SKIP_TAGS.has(parent.tagName) &&
       !isEditorUi(node) &&
+      !isLockedText(node) &&
       node.nodeValue &&
       node.nodeValue.trim().length > 1
     ) {
@@ -127,6 +147,25 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
   const resolvedImageKeys = new Set();
 
   const allTextNodes = collectTextNodes();
+
+  /*
+   * A saved edit that points at locked text is dead, and it must stay dead.
+   * Resolving its key here keeps the orphan pass at the bottom of this function
+   * from "rescuing" it onto some other copy of the same wording elsewhere on
+   * the page — which would put the hand-typed amount straight back into the
+   * menu one node over from where it was refused.
+   */
+  if (typeof document !== 'undefined') {
+    const lockedWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let lockedNode = lockedWalker.nextNode();
+    while (lockedNode) {
+      if (isLockedText(lockedNode)) {
+        const lockedKey = pathKey(lockedNode);
+        if (lockedKey) resolvedKeys.add(lockedKey);
+      }
+      lockedNode = lockedWalker.nextNode();
+    }
+  }
 
   allTextNodes.forEach((node) => {
     const key = pathKey(node);

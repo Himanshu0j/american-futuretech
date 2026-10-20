@@ -13,6 +13,8 @@ import {
   Eye
 } from 'lucide-react';
 import { usePublicCourses } from '../lib/publicCourses';
+import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatSeatDeposit } from '../lib/seatDeposit';
 import { MICROSOFT_CERTIFICATES } from '../data/microsoftCertificates';
 import CertificateModal from './CertificateModal';
 import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
@@ -111,6 +113,11 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
    * swapping in the demo programmes this section used to carry.
    */
   const { courses, loading, failed, refresh } = usePublicCourses();
+  // Settings → Deposit. The card CTA and the fine print beside it print the
+  // amount checkout charges, so the home page can never disagree with the
+  // header menu (or with /courses).
+  const { settings } = useSiteSettings() || {};
+  const depositAmount = formatSeatDeposit(settings);
   const [activeFilter, setActiveFilter] = useState('All');
   const [activeCertIdx, setActiveCertIdx] = useState(0);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
@@ -165,7 +172,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             </h2>
 
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-              Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for $99.
+              Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for {depositAmount}.
             </p>
           </div>
 
@@ -237,7 +244,13 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   3:2 photo — straight through the headline baked into the
                   artwork. So: soft tinted panel, 4:3 frame, `object-contain`, and
                   every course's image fits in full on both pages. */}
-              <div className="lg:col-span-5 relative min-w-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800 flex flex-col">
+              {/* The column is as tall as the story beside it, so the artwork
+                  used to sit pinned to the top and leave a lopsided empty band
+                  below the cohort line ("niche jada space, odd lag raha"). The
+                  whole visual block — frame plus cohort/faculty — is centred in
+                  the column instead, giving the even breathing room the
+                  /courses catalogue card already has. */}
+              <div className="lg:col-span-5 relative min-w-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800 flex flex-col justify-center">
                 <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800">
                   <img
                     src={getCourseCardImage(flagship)}
@@ -367,7 +380,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                         to={`/checkout?tier=deposit&courseId=${flagship._id}`}
                         className="text-xs font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded hover:underline"
                       >
-                        Reserve with $99
+                        Reserve with {depositAmount}
                       </Link>
                     </div>
                   </div>
@@ -380,7 +393,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       to={`/checkout?tier=deposit&courseId=${flagship._id}`}
                       className="elms-btn-primary group"
                     >
-                      <span>Reserve Seat — $99</span>
+                      <span>Reserve Seat — {depositAmount}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>

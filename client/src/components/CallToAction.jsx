@@ -5,10 +5,13 @@ import ctaLaunchSvg from '../assets/illustrations/misc/cta-launch.svg';
 import { CTAIllustration } from './illustrations/VectorIllustrations';
 import Tilt3D from './Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatSeatDeposit } from '../lib/seatDeposit';
 import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
 
 export default function CallToAction({ onOpenLeadModal }) {
   const { settings } = useSiteSettings();
+  // Settings → Deposit, the same figure the header menu and the cards print.
+  const depositAmount = formatSeatDeposit(settings);
   // Admin → Content → Website Images → "3D artwork": an uploaded PNG/JPG here
   // replaces the shipped drawing, an empty slot keeps it.
   const art = illustrationImageFor(settings, 'cta-launch');
@@ -35,14 +38,14 @@ export default function CallToAction({ onOpenLeadModal }) {
               </h2>
 
               <p className="text-base sm:text-lg text-[#FFD9D9]/90 max-w-2xl leading-relaxed">
-                Cohorts are strictly capped at 25 fellows per specialization to maintain intensive 1-on-1 faculty code reviews. Schedule a consultation with an academic advisor or secure your cohort seat with a $99 deposit.
+                Cohorts are strictly capped at 25 fellows per specialization to maintain intensive 1-on-1 faculty code reviews. Schedule a consultation with an academic advisor or secure your cohort seat with a {depositAmount} deposit.
               </p>
 
               {/* High-Impact Guarantees */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-[#FFD9D9]">
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10">
                   <CheckCircle2 className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
-                  <span className="font-semibold">$99 Seat Deposit Guarantee</span>
+                  <span className="font-semibold">{depositAmount} Seat Deposit Guarantee</span>
                 </div>
                 <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10">
                   <CheckCircle2 className="w-4 h-4 text-[color:rgb(var(--tw-gold-400))] shrink-0" />
@@ -68,7 +71,7 @@ export default function CallToAction({ onOpenLeadModal }) {
                   to="/checkout"
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-white hover:text-[#FFD9D9] font-bold text-sm transition-all border-2 border-white/30 hover:border-white rounded-full text-center w-full sm:w-auto hover:bg-white/10"
                 >
-                  <span>Reserve Seat Online ($99)</span>
+                  <span>Reserve Seat Online ({depositAmount})</span>
                 </Link>
               </div>
             </div>

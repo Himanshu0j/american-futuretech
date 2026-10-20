@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatSeatDeposit } from '../lib/seatDeposit';
 import BulletContent from './common/BulletContent';
 
 const DEFAULT_STEPS = [
@@ -73,6 +74,8 @@ const ICON_MAP = {
 
 export default function PlacementRoadmap({ onOpenLeadModal }) {
   const { settings } = useSiteSettings();
+  // Settings → Deposit, the same figure the header menu and the cards print.
+  const depositAmount = formatSeatDeposit(settings);
   const roadmap = settings?.roadmap || {};
 
   const activeSteps = (roadmap.steps && roadmap.steps.length > 0
@@ -163,7 +166,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
               Ready to Accelerate Your Career Transformation?
             </h4>
             <p className="text-xs text-[#FFD9D9]/80 leading-relaxed">
-              Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only $99 deposit.
+              Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only {depositAmount} deposit.
             </p>
           </div>
 
@@ -172,7 +175,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
               to="/checkout?tier=deposit"
               className="px-5 py-2.5 rounded-full bg-[rgb(var(--tw-gold-600))] hover:bg-[rgb(var(--tw-gold-600))] text-white text-xs font-bold transition-colors shadow-sm"
             >
-              Reserve Seat with $99
+              Reserve Seat with {depositAmount}
             </Link>
             <Link
               to="/careers"

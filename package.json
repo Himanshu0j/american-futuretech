@@ -46,7 +46,8 @@
     "verify:deploy": "node scripts/verify-deploy.js",
     "audit:a11y": "node scripts/audit-accessibility.js",
     "audit:browser": "node scripts/audit-live-browser.js",
-    "audit:testdata": "node scripts/audit-test-data.js"
+    "audit:testdata": "node scripts/audit-test-data.js",
+    "verify:deposit": "node scripts/verify-seat-deposit.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

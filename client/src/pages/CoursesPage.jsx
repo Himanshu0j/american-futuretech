@@ -151,7 +151,7 @@ export default function CoursesPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-            Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable {depositAmount} deposit.
+            {`Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable ${depositAmount} deposit.`}
           </p>
 
           {/* Search & Filter Bar */}
@@ -377,8 +377,8 @@ export default function CoursesPage() {
                         <span className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">${course.pricing?.discountedPrice || 499}</span>
                         <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                        Reserve with {depositAmount}
+                      <span data-no-edit="true" className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                        {`Reserve with ${depositAmount}`}
                       </span>
                     </div>
 
@@ -391,9 +391,10 @@ export default function CoursesPage() {
                       </Link>
                       <Link
                         to={`/checkout?courseId=${course._id}&tier=deposit`}
+                        data-no-edit="true"
                         className="elms-btn-primary !text-xs !py-2 !px-3 text-center justify-center font-bold"
                       >
-                        Reserve {depositAmount} →
+                        {`Reserve ${depositAmount} →`}
                       </Link>
                     </div>
                   </div>

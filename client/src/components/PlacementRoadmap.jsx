@@ -166,16 +166,17 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
               Ready to Accelerate Your Career Transformation?
             </h4>
             <p className="text-xs text-[#FFD9D9]/80 leading-relaxed">
-              Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only {depositAmount} deposit.
+              {`Explore open positions on our Live Jobs Board or reserve your fellowship cohort seat today with only ${depositAmount} deposit.`}
             </p>
           </div>
 
           <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <Link
               to="/checkout?tier=deposit"
+              data-no-edit="true"
               className="px-5 py-2.5 rounded-full bg-[rgb(var(--tw-gold-600))] hover:bg-[rgb(var(--tw-gold-600))] text-white text-xs font-bold transition-colors shadow-sm"
             >
-              Reserve Seat with {depositAmount}
+              {`Reserve Seat with ${depositAmount}`}
             </Link>
             <Link
               to="/careers"

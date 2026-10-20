@@ -172,7 +172,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             </h2>
 
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-              Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for {depositAmount}.
+              {`Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for ${depositAmount}.`}
             </p>
           </div>
 
@@ -376,11 +376,18 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                       <span className="text-sm text-slate-500 line-through font-mono">
                         ${flagship.pricing?.originalPrice || 1299}
                       </span>
+                      {/* One text node, and data-no-edit. "Reserve with
+                          {depositAmount}" splits the label into two text nodes,
+                          and a saved inline edit keyed to the old single node
+                          then lands on the fragment: the live cards read
+                          "Reserve with $499 $99". A template string keeps the
+                          node whole and the lock keeps the amount honest. */}
                       <Link
                         to={`/checkout?tier=deposit&courseId=${flagship._id}`}
+                        data-no-edit="true"
                         className="text-xs font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded hover:underline"
                       >
-                        Reserve with {depositAmount}
+                        {`Reserve with ${depositAmount}`}
                       </Link>
                     </div>
                   </div>
@@ -391,9 +398,10 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
                     <Link
                       to={`/checkout?tier=deposit&courseId=${flagship._id}`}
+                      data-no-edit="true"
                       className="elms-btn-primary group"
                     >
-                      <span>Reserve Seat — {depositAmount}</span>
+                      <span>{`Reserve Seat — ${depositAmount}`}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>

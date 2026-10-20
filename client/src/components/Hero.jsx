@@ -327,7 +327,7 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <div className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">{depositAmount} Deposit</div>
+                  <div data-no-edit="true" className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">{`${depositAmount} Deposit`}</div>
                   <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
                 </div>
               </div>

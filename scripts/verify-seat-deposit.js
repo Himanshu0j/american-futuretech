@@ -65,6 +65,19 @@ const request = async (method, url, { token, body } = {}) => {
 
 const readSource = (rel) => fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
 
+/**
+ * Source with comments removed.
+ *
+ * The prose above these labels quotes the broken amounts ("Reserve with $499
+ * $99"), and a literal-amount check that reads comments fails on its own
+ * explanation of the bug it guards against.
+ */
+const readCode = (rel) => readSource(rel)
+  .replace(/\/\*[\s\S]*?\*\//g, ' ')
+  .split('\n')
+  .map((line) => (/^\s*(\/\/|\*)/.test(line) ? '' : line))
+  .join('\n');
+
 const run = async () => {
   console.log(`\nBooting API on port ${PORT} against ${DB_NAME}`);
 
@@ -195,9 +208,10 @@ const run = async () => {
 
     for (const [label, file] of Object.entries(surfaces)) {
       const source = readSource(file);
+      const code = readCode(file);
       const usesHelper = source.includes("from '../lib/seatDeposit'") && source.includes('formatSeatDeposit');
       check(`${label} reads the shared deposit helper`, usesHelper);
-      const typedIn = /\$\d+\s*Deposit|Reserve (Seat|with)?\s*—?\s*\$\d+/.test(source);
+      const typedIn = /\$\d+\s*Deposit|Reserve (Seat|with)?\s*—?\s*\$\d+/.test(code);
       check(`${label} no longer types a deposit amount into the markup`, !typedIn);
     }
 
@@ -221,6 +235,29 @@ const run = async () => {
     check('The menu marks the header line and every row badge as derived',
       (navbarSource.match(/data-no-edit="true"/g) || []).length >= 2,
       `${(navbarSource.match(/data-no-edit="true"/g) || []).length} locked node(s)`);
+
+    // "Reserve with {depositAmount}" is TWO text nodes. A saved edit keyed to
+    // the old single node then landed on the fragment and the live cards read
+    // "Reserve with $499 $99". A template string keeps one node, and the lock
+    // stops any stored edit touching it at all.
+    const depositLabels = {
+      'home program cards': 'client/src/components/CourseSection.jsx',
+      '/courses cards': 'client/src/pages/CoursesPage.jsx',
+      'hero ledger': 'client/src/components/Hero.jsx',
+      'closing CTA strip': 'client/src/components/CallToAction.jsx',
+      'placement roadmap': 'client/src/components/PlacementRoadmap.jsx',
+    };
+
+    for (const [label, file] of Object.entries(depositLabels)) {
+      const code = readCode(file);
+      const locked = (code.match(/data-no-edit="true"/g) || []).length;
+      // `${depositAmount}` is one node; `{depositAmount}` next to a word splits
+      // the label into fragments that a stored edit can corrupt.
+      const splitLabel = /(^|[^$])\{\s*depositAmount\s*\}/.test(code);
+      check(`${label}: deposit labels are locked and kept in one text node`,
+        locked >= 1 && !splitLabel,
+        `${locked} locked node(s), split label=${splitLabel}`);
+    }
   } finally {
     await stopServer();
   }

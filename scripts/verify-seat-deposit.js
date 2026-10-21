@@ -189,6 +189,35 @@ const run = async () => {
     const quoteRestored = await quoteAt({});
     check('The restored deposit is charged again', quoteRestored === 99, `$${quoteRestored}`);
 
+    section('2b. A single program can carry its own reservation fee');
+
+    // The client's four-month tracks (CISSP, AI Product Manager, GRC) quote a
+    // $499 seat reservation while every other program keeps the $99 default, so
+    // the fee has to live on the course. This drives the real admin route and
+    // the real quote endpoint — the browser can only print what they agree on.
+    const publicFeed = await request('GET', '/api/courses');
+    const courseDoc = (publicFeed.json?.courses || []).find((c) => String(c._id) === courseId);
+    const saveFee = await request('PUT', `/api/courses/${courseId}`, {
+      token,
+      body: { pricing: { ...(courseDoc?.pricing || {}), reservationFee: 499 } },
+    });
+    check('Admin → Courses can save a $499 fee on one program',
+      saveFee.status === 200 && Number(saveFee.json?.course?.pricing?.reservationFee) === 499,
+      `HTTP ${saveFee.status}`);
+
+    const feedAfterFee = await request('GET', '/api/courses');
+    const listed = (feedAfterFee.json?.courses || []).find((c) => String(c._id) === courseId);
+    check('The public feed carries the fee, so the cards and the menu can print it',
+      Number(listed?.pricing?.reservationFee) === 499, 'pricing.reservationFee=499');
+
+    const courseQuote = await quoteAt({});
+    check('An unrequested deposit follows the program fee, not the $99 site default',
+      courseQuote === 499, `$${courseQuote}`);
+
+    const explicit99 = await quoteAt({ depositAmount: 99 });
+    check('An explicit $99 reservation is still accepted (the course page offers both)',
+      explicit99 === 99, `$${explicit99}`);
+
     section('3. One helper, used by every surface that prints a deposit');
 
     const helper = readSource('client/src/lib/seatDeposit.js');
@@ -196,6 +225,31 @@ const run = async () => {
       && helper.includes('99') && helper.includes('499'));
     check('A missing or off-menu value resolves to the $99 fallback',
       helper.includes('FALLBACK_SEAT_DEPOSIT') && helper.includes('includes(configured)'));
+    check('A course can override the site default with its own fee',
+      helper.includes('resolveCourseSeatDeposit')
+      && helper.includes('pricing?.reservationFee')
+      && /perCourse/.test(helper),
+      'course fee wins over the site default');
+
+    // The four-month programs (CISSP, AI Product Manager, GRC) reserve at $499
+    // while the rest keep the site default, so the fee has to live on the
+    // course — and the checkout must preselect it, not the global number.
+    const courseModel = readSource('server/models/Course.js');
+    check('The Course schema stores a per-program reservation fee',
+      courseModel.includes('reservationFee'), 'pricing.reservationFee');
+    const serverPricing = readSource('server/utils/pricing.js');
+    check('The server prices an unrequested deposit from the course first',
+      serverPricing.includes('resolveCourseReserveAmount')
+      && /perCourse[\s\S]{0,120}depositPriceUSD/.test(serverPricing),
+      'course → settings → $99');
+    const checkout = readSource('client/src/pages/CheckoutPage.jsx');
+    check('Checkout preselects the program\'s own fee',
+      checkout.includes('resolveSeatDeposit(settings, course)'),
+      'a $499 card cannot open a $99 checkout');
+    const coursesCms = readSource('client/src/admin/CoursesCMS.jsx');
+    check('Admin → Courses can edit the reservation fee',
+      coursesCms.includes('reservationFee') && coursesCms.includes('Reservation fee'),
+      'per-course control, so the fee is editable without a deploy');
 
     const surfaces = {
       'the header mega-menu (every page)': 'client/src/components/Navbar.jsx',
@@ -209,17 +263,27 @@ const run = async () => {
     for (const [label, file] of Object.entries(surfaces)) {
       const source = readSource(file);
       const code = readCode(file);
-      const usesHelper = source.includes("from '../lib/seatDeposit'") && source.includes('formatSeatDeposit');
+      // The menu prints a per-program badge, so it reads `seatDepositLabel`
+      // (which resolves the course's own fee first) instead of
+      // `formatSeatDeposit`; every other surface still formats one amount.
+      const usesHelper = source.includes("from '../lib/seatDeposit'")
+        && (source.includes('formatSeatDeposit') || source.includes('seatDepositLabel'));
       check(`${label} reads the shared deposit helper`, usesHelper);
       const typedIn = /\$\d+\s*Deposit|Reserve (Seat|with)?\s*—?\s*\$\d+/.test(code);
       check(`${label} no longer types a deposit amount into the markup`, !typedIn);
     }
 
+    // The catalogue can now mix $99 and $499 reservations, so the header quotes
+    // the lowest fee (through the same helper) and every row prints ITS OWN
+    // course fee. Both must come from seatDeposit.js — never a literal.
     const navbarSource = readSource('client/src/components/Navbar.jsx');
-    check('The menu header and each row print the SAME figure',
-      navbarSource.includes('All with {depositAmount} Deposit')
-      && navbarSource.includes('{depositBadge}'),
-      'header + row badges share one value');
+    check('The menu header quotes the catalogue floor through the helper',
+      navbarSource.includes('Deposits from {depositFrom}')
+      && navbarSource.includes('lowestSeatDeposit'),
+      'header + rows resolve through seatDeposit.js');
+    check('Each menu row prints its own program\'s reservation fee',
+      navbarSource.includes('{seatDepositLabel(settings, prog)}'),
+      'per-course badge, not one catalogue-wide number');
 
     section('4. A saved inline edit can no longer outrank the setting');
 

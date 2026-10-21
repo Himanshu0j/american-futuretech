@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useCompanyInfo from '../hooks/useCompanyInfo';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { usePublicCourses } from '../lib/publicCourses';
-import { formatSeatDeposit, seatDepositLabel } from '../lib/seatDeposit';
+import { formatDepositAmount, lowestSeatDeposit, seatDepositLabel } from '../lib/seatDeposit';
 // The mega-menu tile and its monogram live in one place: the admin's Menu Logo
 // preview renders the same component, so the two can never disagree.
 import MenuLogoTile from './MenuLogoTile';
@@ -77,11 +77,6 @@ const WIDE_QUERY = '(min-width: 1280px)';
 export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
   const company = useCompanyInfo();
   const { settings } = useSiteSettings() || {};
-  // Admin → Settings → Deposit. The header menu is on every page, so it must
-  // print the amount the checkout will charge — not a typed-in constant that
-  // could differ from the home page's own cards.
-  const depositAmount = formatSeatDeposit(settings);
-  const depositBadge = seatDepositLabel(settings);
   // Admin → Settings → General → "Global Top Announcement Banner".
   // `enabled` / `linkUrl` are the schema names; the legacy `active` / `link` are
   // still honoured so an older saved document keeps working.
@@ -176,11 +171,21 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
         logo: c.menuLogo || c.thumbnail || '',
         badge: c.badge || (i === 0 ? 'High Demand' : i === 1 ? 'Top Rated' : 'Enterprise'),
         duration: c.duration || '6 Months',
+        // Carried through so each row prints this program's own reservation
+        // fee (Admin → Courses → Reservation fee), not one catalogue-wide
+        // number: the four-month tracks reserve at $499, the rest at the site
+        // default.
+        pricing: c.pricing,
         color: i % 2 === 0
           ? 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300'
           : 'text-blue-700 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-300'
       }))
     : [];
+
+  // Admin → Settings → Deposit is the floor: once a program charges $499, the
+  // menu header can no longer claim every row is $99, so it prints the lowest
+  // fee and each row prints its own.
+  const depositFrom = formatDepositAmount(lowestSeatDeposit(settings, programList));
 
   const handleNavClick = (path) => {
     setMobileMenuOpen(false);
@@ -334,7 +339,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                             Deposit. A saved inline edit here used to outrank the
                             setting, which is how the same menu read $499 on the
                             home page and $99 on Live Jobs. */}
-                        <span data-no-edit="true" className="text-blue-600 dark:text-blue-400 font-sans font-bold text-[10px]">All with {depositAmount} Deposit</span>
+                        <span data-no-edit="true" className="text-blue-600 dark:text-blue-400 font-sans font-bold text-[10px]">Deposits from {depositFrom}</span>
                       </div>
                       
                       {programList.length === 0 && (
@@ -370,7 +375,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
                                 {prog.badge}
                               </span>
                               <span data-no-edit="true" className="text-[10px] font-bold text-blue-700 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800">
-                                {depositBadge}
+                                {seatDepositLabel(settings, prog)}
                               </span>
                             </span>
                           </span>
@@ -457,7 +462,7 @@ export default function Navbar({ onOpenLeadModal, onNavigateSection }) {
 
             <Link
               to="/checkout"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-gradient shadow-brand border border-white/15 hover:brightness-110 transition-all hover:-translate-y-px"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-800))] shadow-[0_10px_22px_-16px_rgba(0,32,96,0.85)] border border-white/15 transition-all hover:-translate-y-px"
             >
               <span>REGISTER NOW — $499</span>
               <ArrowRight className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />

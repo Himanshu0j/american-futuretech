@@ -202,6 +202,14 @@ const CourseSchema = new mongoose.Schema({
     basePrice: { type: Number, default: 2499 },
     discountedPrice: { type: Number, default: 1899 },
     currency: { type: String, default: '$' },
+    // Seat reservation fee for THIS program: 99 or 499 (Admin → Courses →
+    // "Reservation fee"). 0 means "inherit the site default" from
+    // Settings → depositPriceUSD, which is what every course used before the
+    // four-month programs (CISSP, AI Product Manager, GRC) started charging
+    // $499. Off-menu numbers are ignored at read time by
+    // server/utils/pricing.js and client/src/lib/seatDeposit.js, so a bad row
+    // can never print or charge an amount the checkout does not offer.
+    reservationFee: { type: Number, default: 0, min: 0 },
   },
   instructor: {
     name: { type: String, default: 'Dr. Marcus Vance' },

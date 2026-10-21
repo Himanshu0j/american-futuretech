@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
   Shield, Lock, CheckCircle2, ArrowRight, CreditCard, Tag, AlertCircle,
@@ -10,6 +10,7 @@ import Navbar from '../components/Navbar';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { resolveSeatDeposit } from '../lib/seatDeposit';
 
 const POLL_INTERVAL_MS = 2500;
 const MAX_POLLS = 24; // ~60 seconds — long enough for a slow webhook or 3-D Secure step
@@ -168,6 +169,25 @@ export default function CheckoutPage() {
   };
 
   const selectedCourse = courses.find((c) => c._id === selectedCourseId) || courses[0];
+
+  /*
+   * Carry the program's own reservation fee into checkout.
+   *
+   * Arriving from a card ("Reserve Seat — $499") names only the course, so the
+   * $99 site default used to be preselected even for a program that quotes
+   * $499 — the customer saw a different price than the button they clicked.
+   * This syncs once per course; an explicit ?deposit= (the course page offers
+   * both amounts) still wins, and a choice made on this page is never undone.
+   */
+  const depositSyncedFor = useRef('');
+  useEffect(() => {
+    if (!selectedCourseId || RESERVE_OPTIONS.includes(requestedDeposit)) return;
+    if (depositSyncedFor.current === selectedCourseId) return;
+    const course = courses.find((c) => c._id === selectedCourseId);
+    if (!course) return;
+    depositSyncedFor.current = selectedCourseId;
+    setDepositAmount(resolveSeatDeposit(settings, course));
+  }, [selectedCourseId, courses, settings, requestedDeposit]);
 
   /**
    * The server owns the price. The browser only renders what POST

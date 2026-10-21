@@ -13,7 +13,7 @@ import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { compareCoursesByOrder } from '../lib/courseOrder';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { formatSeatDeposit } from '../lib/seatDeposit';
+import { formatDepositAmount, formatSeatDeposit, lowestSeatDeposit } from '../lib/seatDeposit';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
 
@@ -76,9 +76,11 @@ export default function CoursesPage() {
   // the server's snapshot, and a failed request keeps the last real list instead
   // of emptying the catalogue.
   const { courses, loading, failed, refresh } = usePublicCourses();
-  // Settings → Deposit, the same figure the header menu and the home page print.
+  // Settings → Deposit plus each program's own Reservation fee (Admin →
+  // Courses). The catalogue mixes $99 and $499 reservations, so the intro
+  // sentence quotes the lowest fee and every card prints its own.
   const { settings } = useSiteSettings() || {};
-  const depositAmount = formatSeatDeposit(settings);
+  const depositFrom = formatDepositAmount(lowestSeatDeposit(settings, courses));
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   // 'featured' is the admin's own program sequence (Admin → Courses → Move
@@ -151,7 +153,7 @@ export default function CoursesPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-            {`Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable ${depositAmount} deposit.`}
+            {`Live instructor-led engineering tracks featuring production capstone builds, dedicated 1-on-1 mentorship, and guaranteed placement support. Reserve any program with a refundable seat deposit from ${depositFrom}.`}
           </p>
 
           {/* Search & Filter Bar */}
@@ -255,6 +257,9 @@ export default function CoursesPage() {
                 const artGradient = CARD_ART_GRADIENTS[
                   Math.abs(String(course.slug || course.title || '').length) % CARD_ART_GRADIENTS.length
                 ];
+                // This program's reservation fee — its own $499 when Admin →
+                // Courses set one, otherwise the site default.
+                const courseDeposit = formatSeatDeposit(settings, course);
                 const artInitials = String(course.title || '')
                   .split(/[\s&/]+/)
                   .filter(Boolean)
@@ -272,7 +277,7 @@ export default function CoursesPage() {
                 return (
                 <div
                   key={course._id}
-                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-[0_1px_2px_rgba(15,23,42,0.06),0_22px_48px_-22px_rgba(190,24,43,0.42)] hover:border-red-300/70 dark:hover:border-red-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_32px_70px_-26px_rgba(190,24,43,0.55)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
+                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.05),0_20px_44px_-28px_rgba(0,32,96,0.38)] hover:border-[rgb(var(--tw-ink-900)/22%)] dark:hover:border-blue-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_26px_56px_-30px_rgba(0,32,96,0.45)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
                   {/* Course image panel — a clean RECTANGLE beside the details on
                       desktop, a wide banner on phones, and the picture is
@@ -378,7 +383,7 @@ export default function CoursesPage() {
                         <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>
                       </div>
                       <span data-no-edit="true" className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                        {`Reserve with ${depositAmount}`}
+                        {`Reserve with ${courseDeposit}`}
                       </span>
                     </div>
 
@@ -394,7 +399,7 @@ export default function CoursesPage() {
                         data-no-edit="true"
                         className="elms-btn-primary !text-xs !py-2 !px-3 text-center justify-center font-bold"
                       >
-                        {`Reserve ${depositAmount} →`}
+                        {`Reserve ${courseDeposit} →`}
                       </Link>
                     </div>
                   </div>

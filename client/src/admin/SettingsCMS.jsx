@@ -3549,7 +3549,7 @@ export default function SettingsCMS() {
             <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-xl">
               <h3 className="text-base font-bold text-white font-heading flex items-center gap-2">
                 <Zap className="w-4 h-4 text-blue-400" />
-                Contextual $99 Reservation CTAs & Urgency Notices
+                Reservation Deposit, CTAs & Urgency Notices
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
@@ -3566,16 +3566,30 @@ export default function SettingsCMS() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 uppercase mb-1.5">Deposit Amount ($)</label>
-                  <input
-                    type="number"
-                    value={settings.globalCtas?.reserveSeatPrice || 99}
+                  <label className="block text-slate-400 uppercase mb-1.5">Site-wide Seat Deposit</label>
+                  {/*
+                    * This field used to write `globalCtas.reserveSeatPrice`, a
+                    * legacy key nothing on the public site reads — which is why
+                    * changing it here never moved the "$99" on a single card.
+                    * The figure every surface prints comes from
+                    * `depositPriceUSD`, so the control now edits that. A program
+                    * can still override it in Courses → Reservation fee.
+                    */}
+                  <select
+                    value={[99, 499].includes(Number(settings.depositPriceUSD)) ? Number(settings.depositPriceUSD) : 99}
                     onChange={(e) => setSettings({
                       ...settings,
-                      globalCtas: { ...settings.globalCtas, reserveSeatPrice: Number(e.target.value) }
+                      depositPriceUSD: Number(e.target.value)
                     })}
                     className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono focus:outline-none focus:border-blue-500"
-                  />
+                  >
+                    <option value={99}>$99 — default for every program</option>
+                    <option value={499}>$499 — default for every program</option>
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1 normal-case tracking-normal leading-relaxed">
+                    Used by every program that has no fee of its own. Set a program-specific fee in
+                    Courses → Reservation fee.
+                  </p>
                 </div>
                 <div>
                   <label className="block text-slate-400 uppercase mb-1.5">Destination URL</label>

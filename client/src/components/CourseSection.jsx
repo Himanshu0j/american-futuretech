@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { usePublicCourses } from '../lib/publicCourses';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { formatSeatDeposit } from '../lib/seatDeposit';
+import { formatDepositAmount, formatSeatDeposit, lowestSeatDeposit } from '../lib/seatDeposit';
 import { MICROSOFT_CERTIFICATES } from '../data/microsoftCertificates';
 import CertificateModal from './CertificateModal';
 import aiIllustration from '../assets/illustrations/programs/ai-intelligence.svg';
@@ -117,7 +117,11 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   // amount checkout charges, so the home page can never disagree with the
   // header menu (or with /courses).
   const { settings } = useSiteSettings() || {};
-  const depositAmount = formatSeatDeposit(settings);
+  // The lowest fee in the catalogue, for the intro sentence. Each card prints
+  // its OWN program's fee: the four-month tracks (CISSP, AI Product Manager,
+  // GRC) reserve at $499 while the six-month tracks keep the site default, so
+  // one page-wide number would misquote most of the cards.
+  const depositFrom = formatDepositAmount(lowestSeatDeposit(settings, courses));
   const [activeFilter, setActiveFilter] = useState('All');
   const [activeCertIdx, setActiveCertIdx] = useState(0);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
@@ -172,7 +176,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             </h2>
 
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-              {`Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track for ${depositAmount}.`}
+              {`Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track from ${depositFrom}.`}
             </p>
           </div>
 
@@ -230,10 +234,14 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           </div>
         )}
 
-        {filteredCourses.map((flagship) => (
+        {filteredCourses.map((flagship) => {
+          /* This card's reservation fee: the course's own $499 (Admin →
+             Courses → Reservation fee) or the site default. */
+          const depositAmount = formatSeatDeposit(settings, flagship);
+          return (
           <div
             key={flagship._id || flagship.slug}
-            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-blue-500/20 dark:border-blue-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden text-left group"
+            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_24px_54px_-34px_rgba(0,32,96,0.5)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_30px_64px_-36px_rgba(0,32,96,0.58)] transition-all duration-300 overflow-hidden text-left group"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column — the SAME artwork treatment the /courses
@@ -409,7 +417,8 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
 
 
         {/* Official Microsoft Partner Credential Showcase */}

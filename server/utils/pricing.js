@@ -33,9 +33,27 @@ const toMoney = (value) => Math.round(Number(value) * 100) / 100;
  * full         → the course's discounted tuition
  * personalized → the separate Personalized 1-on-1 track fee (independent price)
  */
-const resolveReserveAmount = (settings, requested) => {
+/**
+ * The reservation fee saved on one course, or null when it inherits the site
+ * default. Admin → Courses → "Reservation fee" is the only writer.
+ */
+const resolveCourseReserveAmount = (course) => {
+  const configured = Number(course?.pricing?.reservationFee);
+  return RESERVE_OPTIONS_USD.includes(configured) ? configured : null;
+};
+
+/**
+ * What a seat reservation costs, most specific source first:
+ *   1. the amount the browser explicitly asked for (a $99 or $499 button),
+ *   2. this course's own fee (Admin → Courses),
+ *   3. the site default (Admin → Settings → depositPriceUSD),
+ *   4. $99.
+ */
+const resolveReserveAmount = (settings, requested, course) => {
   const asked = Number(requested);
   if (RESERVE_OPTIONS_USD.includes(asked)) return asked;
+  const perCourse = resolveCourseReserveAmount(course);
+  if (perCourse) return perCourse;
   const configured = Number(settings?.depositPriceUSD);
   if (RESERVE_OPTIONS_USD.includes(configured)) return configured;
   return DEPOSIT_FALLBACK_USD;
@@ -50,7 +68,7 @@ const resolveOrderAmount = ({ course, tier, settings, depositAmount }) => {
   let label;
 
   if (requestedTier === 'deposit') {
-    amount = resolveReserveAmount(settings, depositAmount);
+    amount = resolveReserveAmount(settings, depositAmount, course);
     originalPrice = amount;
     label = `Cohort Seat Reservation Deposit ($${amount.toLocaleString('en-US')})`;
   } else if (requestedTier === 'personalized') {

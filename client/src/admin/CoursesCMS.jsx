@@ -107,6 +107,11 @@ export default function CoursesCMS() {
   const [displayOrder, setDisplayOrder] = useState(1);
   const [basePrice, setBasePrice] = useState(1299);
   const [discountedPrice, setDiscountedPrice] = useState(499);
+  // Seat reservation fee for this program: 0 = inherit the site default
+  // (Admin → Settings), otherwise 99 or 499. The four-month tracks (CISSP,
+  // AI Product Manager, GRC) reserve at $499 and the six-month tracks at $99,
+  // so this is where the customer-facing "Reserve Seat — $…" figure is chosen.
+  const [reservationFee, setReservationFee] = useState(0);
   const [highlights, setHighlights] = useState(['AI & ML Capstones', 'Real Data Projects', 'Placement Assistance']);
 
   // Which "ways to learn" this course offers, and the per-course "Who Can Apply" block.
@@ -237,6 +242,7 @@ export default function CoursesCMS() {
     setDisplayOrder(course.displayOrder || 1);
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
+    setReservationFee(Number(course.pricing?.reservationFee) || 0);
     setHighlights(Array.isArray(course.highlights) ? course.highlights : (course.highlights ? [course.highlights] : []));
     setCardImage(course.cardImage || course.thumbnail || '');
     setMenuLogo(course.menuLogo || '');
@@ -503,6 +509,9 @@ export default function CoursesCMS() {
       pricing: {
         basePrice: Number(basePrice),
         discountedPrice: Number(discountedPrice),
+        // 0 = use the site default; 99/499 override it on every surface that
+        // prints this program's reservation fee.
+        reservationFee: Number(reservationFee) || 0,
       },
       highlights: formattedHighlights,
       curriculum: formattedModules,
@@ -832,6 +841,13 @@ export default function CoursesCMS() {
                   <span className="text-slate-400 line-through ml-2 text-[10px]">
                     ${course.pricing?.basePrice || 2499}
                   </span>
+                  {/* Reservation fee, visible without opening the editor: this
+                      is the figure customers ask about ("in 3 courses 499"). */}
+                  <div className="text-[10px] text-blue-300 font-mono mt-1">
+                    {[99, 499].includes(Number(course.pricing?.reservationFee))
+                      ? `Reserve $${course.pricing.reservationFee}`
+                      : 'Reserve: site default'}
+                  </div>
                 </td>
 
                 {/* Curriculum summary */}
@@ -1013,7 +1029,7 @@ export default function CoursesCMS() {
               </div>
 
               {/* Pricing */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Base Tuition ($)</label>
                   <input
@@ -1032,6 +1048,23 @@ export default function CoursesCMS() {
                     onChange={(e) => setDiscountedPrice(e.target.value)}
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Reservation fee ($)</label>
+                  <select
+                    value={reservationFee}
+                    onChange={(e) => setReservationFee(Number(e.target.value))}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  >
+                    <option value={0}>Site default (Admin → Settings)</option>
+                    <option value={99}>$99 — six-month tracks</option>
+                    <option value={499}>$499 — four-month tracks</option>
+                  </select>
+                  <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                    The "Reserve Seat — $…" figure on the home page card, the /courses card, the
+                    header menu and this course's page. Checkout preselects the same amount.
+                  </p>
                 </div>
               </div>
 

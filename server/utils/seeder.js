@@ -483,7 +483,9 @@ const autoSeedIfEmpty = async () => {
         badge: 'High Impact',
         cardTheme: 'amber',
         duration: '4 Months',
-        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
+        // Four-month tracks reserve at $499; six-month tracks keep the $99
+        // site default (Admin → Courses → Reservation fee).
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$', reservationFee: 499 },
         shortDescription: 'Lead AI product strategy, user discovery, evaluation metrics, and cross-functional ML delivery.',
         description: 'Transition into high-paying AI Product Management. Learn how to write PRDs for non-deterministic AI models, manage LLM latency vs accuracy trade-offs, evaluate hallucinations, and build AI business cases.',
         highlights: ['AI PRD Writing & Evaluation Metrics', 'LLM Cost Estimation & Unit Economics', 'Human-in-the-Loop UX Design', 'Executive Product Portfolio Defense'],
@@ -527,7 +529,8 @@ const autoSeedIfEmpty = async () => {
         badge: 'Enterprise Security',
         cardTheme: 'cyan',
         duration: '4 Months',
-        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$' },
+        // Same $499 reservation fee as the other four-month track.
+        pricing: { basePrice: 1299, discountedPrice: 499, currency: '$', reservationFee: 499 },
         shortDescription: 'Master NIST, ISO 27001, SOC 2, HIPAA, and EU AI Act compliance powered by automated audit tools.',
         description: 'Bridge legal compliance and information security. Learn how to audit enterprise tech stacks against NIST CSF, ISO 27001, SOC 2 Type II, and the new European EU AI Act regulations using AI compliance agents.',
         highlights: ['ISO 27001 & SOC 2 Type II Readiness Audits', 'EU AI Act & NIST AI RMF Governance Frameworks', 'Third-Party Vendor Risk Assessment Automation', 'CISO Advisory & Board Presentation Skills'],

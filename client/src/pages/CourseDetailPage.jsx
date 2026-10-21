@@ -17,6 +17,7 @@ import { getAlignedMicrosoftCert } from '../data/microsoftCertificates';
 import { getDetailedCourseData, findToolLogo } from '../data/courseContentData';
 import { getHeroCredential, MICROSOFT_LOGO } from '../data/heroCredentials';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { formatDepositAmount, formatSeatDeposit, resolveSeatDeposit } from '../lib/seatDeposit';
 
 export default function CourseDetailPage() {
   const { slug } = useParams();
@@ -168,6 +169,16 @@ export default function CourseDetailPage() {
   const courseTitleText = String(course?.title || '').trim();
   const toolsHeading = course?.toolsTitle
     || (/program\s*$/i.test(courseTitleText) ? courseTitleText : `${courseTitleText} Program`);
+
+  /*
+   * This page offers both seat deposits, but the program's OWN fee leads: the
+   * four-month tracks (CISSP, AI Product Manager, GRC) are quoted at $499 in
+   * Admin → Courses → Reservation fee, so $499 is the primary button and $99
+   * the alternative — the reverse of what every card linking here says.
+   */
+  const courseDeposit = formatSeatDeposit(settings, course);
+  const altDepositAmount = resolveSeatDeposit(settings, course) === 499 ? 99 : 499;
+  const altDeposit = formatDepositAmount(altDepositAmount);
 
   const whyChooseList = detailedData.whyChoose || [];
   const whoCanApplyList = detailedData.whoCanApply || [];
@@ -629,17 +640,19 @@ export default function CourseDetailPage() {
                     {/* Exactly two reservation amounts — nothing else */}
                     <div className="space-y-2.5">
                       <Link
-                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
+                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${resolveSeatDeposit(settings, course)}`}
+                        data-no-edit="true"
                         className="w-full py-3 px-4 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                       >
-                        Reserve Seat for $99
+                        {`Reserve Seat for ${courseDeposit}`}
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link
-                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
+                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${altDepositAmount}`}
+                        data-no-edit="true"
                         className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
                       >
-                        Reserve Seat for $499
+                        {`Reserve Seat for ${altDeposit}`}
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>
@@ -737,7 +750,7 @@ export default function CourseDetailPage() {
 
                     <Link
                       to={`/checkout?tier=full&courseId=${course._id}`}
-                      className="mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-600 text-white shadow-md hover:from-blue-500 hover:to-blue-500 text-sm font-bold transition-colors"
+                      className="aft-solid-primary mt-7 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-white shadow-md text-sm font-bold transition-colors"
                     >
                       Enroll in group classes <ArrowRight className="w-4 h-4" />
                     </Link>
@@ -1441,24 +1454,26 @@ export default function CourseDetailPage() {
                       <span className="text-sm font-bold text-slate-500"> / person</span>
                     </div>
                     <span className="text-xs text-slate-500">
-                      Group batch · reserve with $99 or $499 · personalized 1-on-1 from ${personalizedPrice.toLocaleString()}
+                      {`Group batch · reserve with ${formatDepositAmount(99)} or ${formatDepositAmount(499)} · personalized 1-on-1 from $${personalizedPrice.toLocaleString()}`}
                     </span>
                   </div>
 
                   <div className="space-y-3.5">
                     <Link
-                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=99`}
+                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${resolveSeatDeposit(settings, course)}`}
+                      data-no-edit="true"
                       className="w-full py-4 px-6 rounded-2xl bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white font-extrabold text-base text-center shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                     >
-                      Reserve Seat — $99
+                      {`Reserve Seat — ${courseDeposit}`}
                       <ArrowRight className="w-5 h-5" />
                     </Link>
 
                     <Link
-                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=499`}
+                      to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${altDepositAmount}`}
+                      data-no-edit="true"
                       className="w-full py-3 px-6 rounded-2xl border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white font-bold text-sm text-center transition-all flex items-center justify-center gap-2"
                     >
-                      Reserve Seat — $499
+                      {`Reserve Seat — ${altDeposit}`}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
 

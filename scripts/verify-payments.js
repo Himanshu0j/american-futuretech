@@ -897,6 +897,15 @@ const run = async () => {
   const { __test__: settingsTest } = require(path.join(__dirname, '..', 'server', 'controllers', 'settingsController'));
   const fakeReq = (headers = {}) => ({ headers, protocol: 'http', get: (name) => headers.host || '' });
 
+  // This suite sets CLIENT_URL to the Vite dev origin at the top so the booted
+  // server behaves like `npm run dev`. The three checks below test how a
+  // request's Host/proto is DERIVED into an origin, and a CLIENT_URL in the
+  // environment is by design the highest-priority override — leaving it set made
+  // them assert the fixture value (http://localhost:5173) instead. Suppress it
+  // for the derivation checks only, then restore it for everything after.
+  const savedClientUrl = process.env.CLIENT_URL;
+  delete process.env.CLIENT_URL;
+
   const proxied = settingsTest.publicApiOrigin(
     fakeReq({ host: 'americanfuturetechllc.com', 'x-forwarded-proto': 'https' }),
   );
@@ -940,6 +949,9 @@ const run = async () => {
   delete process.env.CLIENT_URL;
   check('A retired CLIENT_URL is ignored, even with a matching request host',
     retiredEnv === 'https://americanfuturetechllc.com', retiredEnv);
+
+  if (savedClientUrl === undefined) delete process.env.CLIENT_URL;
+  else process.env.CLIENT_URL = savedClientUrl;
 
   const setupShape = settingsTest.buildGatewaySetup({
     gateway: { enabled: true, mode: 'live', secretKeyEncrypted: 'v1:x', webhookSecretEncrypted: 'v1:y' },

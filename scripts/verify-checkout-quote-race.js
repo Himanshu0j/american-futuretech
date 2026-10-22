@@ -106,6 +106,15 @@ const main = async () => {
     'The Stripe submission sends the selected deposit for server pricing',
     /depositAmount: tier === 'deposit' \? depositAmount : undefined/.test(checkout),
   );
+  // The browser must never forward a figure it calculated (or a quote it is
+  // showing): the selection goes out, the server prices it. Otherwise a stale
+  // quote could still become the charge even though the summary looked right.
+  const checkoutBody = (checkout.match(/axios\.post\('\/api\/payments\/checkout'[\s\S]*?\n\s*\}\)/) || [''])[0];
+  check(
+    'The checkout request carries no client-calculated amount',
+    Boolean(checkoutBody) && !/\bamount\s*:/.test(checkoutBody) && !/quote/.test(checkoutBody),
+    checkoutBody ? 'depositAmount only' : 'checkout request not found',
+  );
 
   section('3. Server remains the price authority');
   check('Only 99/499/2499/4499 are accepted reservation amounts', /RESERVE_OPTIONS_USD = \[99, 499, 2499, 4499\]/.test(pricing));

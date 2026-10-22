@@ -40,13 +40,21 @@ Every unDraw SVG is downloaded, optimized, and programmatically color-themed to 
 
 ---
 
-## 2. Interactive Lottie Animations (MIT / Free Commercial License)
+## 2. Interactive Lottie Animations (Lottie Simple License — free commercial use)
 
-| Asset Name | Relative Path | Animation Type | Purpose | License |
+Every sourced animation below is a **vector-only** dotLottie converted to plain Lottie JSON, recoloured to the brand palette, and bundled from `src/assets` — the site never hotlinks `lottiefiles.com` (see `scripts/verify-no-hotlinks.js`). They are rendered through one wrapper, `client/src/components/LottieArt.jsx`, which lazy-loads each file as its own chunk, parks the first frame under `prefers-reduced-motion`, and reserves the layout box so nothing shifts while the JSON loads.
+
+| Asset | Path | Source (creator) | Used in | Brand treatment |
 |---|---|---|---|---|
-| `hero-coding-laptop.json` | `src/assets/animations/hero/` | Vector Keyframed Pulse | Hero Laptop Telemetry & Live Coding | MIT License / Lottie Simple License |
-| `success-celebration.json` | `src/assets/animations/learning/` | Elastic Spring Checkmark | Lesson Completion & Quiz Success | MIT License / Lottie Simple License |
-| `live-radar.json` | `src/assets/animations/careers/` | Concentric Radar Wave | Live Admissions & Hiring Pipeline Status | MIT License / Lottie Simple License |
+| `graduation-cap.json` | `src/assets/animations/hero/` | [Graduation Hat](https://lottiefiles.com/free-animation/graduation-hat-qI7xIRLRX5) — Animo Arts | Hero credential badge (`Hero.jsx`) | Cap `#F00000` / `#C81E1E`, tassel & shadow navy `#002060`–`#0B3A80` |
+| `credential-seal.json` | `src/assets/animations/certification/` | [Certificate line art](https://lottiefiles.com/free-animation/certificate-line-art-XXp81Vva5o) — AZNAF Creations | Diploma lookup (`CertificateVerificationPage.jsx`) | Line art navy `#002060` |
+| `success-check.json` | `src/assets/animations/learning/` | [Success Check](https://lottiefiles.com/free-animation/success-check-zSLSFlcAJq) — Pranav Patil | Lesson milestone marker (`LearningJourney.jsx`) | Emerald `#10B981` on mint `#D1FAE5` |
+| `search-empty.json` | `src/assets/animations/misc/` | [Empty State](https://lottiefiles.com/free-animation/empty-state-EfSeWUwwKs) — Creative Salt & Pepper | FAQ search miss (`FaqPage.jsx`), jobs board empty state (`CareersPage.jsx`) | Grey glass recoloured to navy tints `#DCE4F0`–`#A9BBD6`, handle `#002060` |
+| `hero-coding-laptop.json` | `src/assets/animations/hero/` | Hand-authored for this site | Retired — the hero badge now uses `graduation-cap` | Vector keyframed pulse |
+| `success-celebration.json` | `src/assets/animations/learning/` | Hand-authored for this site | Retired — step 04 now uses `success-check` | Elastic spring checkmark |
+| `live-radar.json` | `src/assets/animations/careers/` | Hand-authored for this site | Live hiring pipeline status (`CareersPage.jsx`) | Concentric radar wave |
+
+**Licence note.** All four sourced files come from *free* LottieFiles listings that carry the Lottie Simple License, which permits commercial use and modification without attribution; the credit above is documentation, not an obligation. Files whose listing was flagged premium were skipped during sourcing.
 
 ---
 

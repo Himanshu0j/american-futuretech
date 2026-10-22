@@ -26,6 +26,7 @@ import AIChatbox from './components/AIChatbox';
 import CookieConsent from './components/CookieConsent';
 import SiteEditor from './components/SiteEditor';
 import SiteOverridesApplier from './components/SiteOverridesApplier';
+import ScrollReveal from './components/ScrollReveal';
 import useCompanyInfo from './hooks/useCompanyInfo';
 import { ThemeModeProvider, useThemeMode } from './context/ThemeModeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -424,6 +425,11 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
+
+          {/* Scroll-linked reveal for every public page. Renders nothing and
+              only sets attributes, so the inline editor's DOM keys survive —
+              see lib/scrollReveal.js. Admin and the student LMS opt out. */}
+          <ScrollReveal />
 
           {/* Global Floating Admissions & Support Widgets (public + LMS only) */}
           <PublicFloatingWidgets />

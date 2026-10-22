@@ -34,9 +34,9 @@ import jobHuntSvg from '../assets/illustrations/careers/job-hunt.svg';
 import interviewPrepSvg from '../assets/illustrations/careers/interview-prep.svg';
 import resumeEngineeringSvg from '../assets/illustrations/careers/resume-engineering.svg';
 import jobOffersSvg from '../assets/illustrations/careers/job-offers.svg';
-import noDataSvg from '../assets/illustrations/misc/no-data.svg';
 import approvedSuccessSvg from '../assets/illustrations/misc/approved-success.svg';
 import Navbar from '../components/Navbar';
+import LottieArt from '../components/LottieArt';
 import PageBanner from '../components/PageBanner';
 import Tilt3D from '../components/Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
@@ -556,9 +556,10 @@ export default function CareersPage() {
               </div>
             ) : jobs.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
-                <div className="w-36 h-36 mx-auto">
-                  <img src={noDataSvg} alt="No matching jobs" className="w-full h-full object-contain" />
-                </div>
+                {/* "Nothing matched" is a dead end; the sourced search mark
+                    keeps it from reading like a broken page. Decorative — the
+                    heading underneath already states the problem. */}
+                <LottieArt name="search-empty" className="w-36 h-28 mx-auto" />
                 <h3 className="text-base font-display font-bold text-[color:rgb(var(--tw-ink-900))]">No job openings match your criteria</h3>
                 <p className="text-slate-500 text-xs max-w-sm mx-auto">
                   Try adjusting your search terms, resetting filters, or submit your resume directly to our Corporate Talent Pool on the right.

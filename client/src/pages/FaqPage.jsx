@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, Search, PhoneCall } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import LottieArt from '../components/LottieArt';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import LeadModal from '../components/LeadModal';
@@ -96,6 +97,7 @@ export default function FaqPage() {
           </div>
         ) : filteredFaqs.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+            <LottieArt name="search-empty" className="w-32 h-24 mx-auto mb-2" />
             <h3 className="text-base font-display font-bold text-[color:rgb(var(--tw-ink-900))] mb-1">No matching questions found</h3>
             <p className="text-slate-500 text-xs">Try an alternate search query or speak with our admissions officers directly.</p>
           </div>

@@ -197,6 +197,48 @@ const run = async () => {
   const totals = { checks: 0, passed: 0, failed: 0 };
   const failing = [];
 
+  /**
+   * Walk the page to the bottom before measuring it.
+   *
+   * The public site fades a block in the first time it enters the viewport (see
+   * client/src/lib/scrollReveal.js). axe measures a text colour against the
+   * background it can actually see behind it, and a block still at opacity 0
+   * has the page's own surface — often a photograph — behind it instead of its
+   * white card. A freshly loaded homepage therefore reported every
+   * below-the-fold paragraph as unreadable. Revealing the page first is also
+   * the truthful measurement: it audits what a visitor ends up looking at, not
+   * a frame mid-entrance.
+   *
+   * Pages without the reveal are unaffected: there is nothing armed to settle.
+   */
+  const revealWholePage = async (attempt = 1) => {
+    try {
+      await page.evaluate(async () => {
+        const slept = (ms) => new Promise((r) => setTimeout(r, ms));
+        const step = Math.max(320, Math.floor(window.innerHeight * 0.8));
+        const limit = Math.min(document.body.scrollHeight, 40000);
+        for (let y = 0, i = 0; y < limit && i < 50; y += step, i += 1) {
+          window.scrollTo(0, y);
+          await slept(110);
+        }
+        window.scrollTo(0, 0);
+        const deadline = Date.now() + 3000;
+        while (document.querySelector('.aft-rv-armed:not(.is-in)') && Date.now() < deadline) {
+          await slept(100);
+        }
+        // The last unit still has its 620 ms fade plus stagger to finish.
+        await slept(900);
+      });
+    } catch (error) {
+      // The deploy-freshness check can reload the tab once shortly after it
+      // opens (client/src/lib/deployFreshness.js). That replaces the document
+      // under us; start the walk again on the new one.
+      if (attempt >= 3) throw error;
+      await sleep(1200);
+      await revealWholePage(attempt + 1);
+    }
+  };
+
   const sweep = async (routes, label) => {
     console.log(`\n${'─'.repeat(72)}\n${label}\n${'─'.repeat(72)}`);
     for (const [name, route] of routes) {
@@ -219,6 +261,13 @@ const run = async () => {
         console.log(`  ❌ ${name} — landed on ${landedPath || '/'} instead of ${wantedPath} (route missing or protected)`);
         failing.push({ page: name, route, violations: [{ id: 'wrong-route', impact: 'critical', help: `expected ${wantedPath}, got ${landedPath || '/'}`, count: 1, sample: [] }] });
         continue;
+      }
+
+      try {
+        await revealWholePage();
+      } catch (error) {
+        // A page that refuses to scroll is still auditable as it stands.
+        console.log(`  ⚠️  ${name} — could not pre-reveal the page: ${error.message.slice(0, 60)}`);
       }
 
       const result = await page.evaluate(async (source) => {

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import LottieArt from '../components/LottieArt';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { MICROSOFT_CERTIFICATES, getAlignedMicrosoftCert } from '../data/microsoftCertificates';
@@ -163,8 +164,11 @@ export default function CertificateVerificationPage() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="w-10 h-10 border-4 border-[rgb(var(--tw-ink-900)/20%)] border-t-[rgb(var(--tw-ink-900))] rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center py-16 space-y-4" role="status" aria-live="polite">
+            {/* The wait is drawn as the credential mark itself rather than a
+                generic spinner: the seal traces itself while the registry is
+                queried. Static for reduced-motion visitors. */}
+            <LottieArt name="credential-seal" className="w-20 h-20" />
             <div className="text-xs font-mono text-gray-500">Querying Cryptographic Credential Registry...</div>
           </div>
         ) : error ? (

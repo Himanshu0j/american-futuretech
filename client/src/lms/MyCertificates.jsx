@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { MICROSOFT_CERTIFICATES, getAlignedMicrosoftCert } from '../data/microsoftCertificates';
 import CertificateModal from '../components/CertificateModal';
+import LottieArt from '../components/LottieArt';
 
 export default function MyCertificates() {
   const [certificates, setCertificates] = useState([]);
@@ -143,8 +144,12 @@ export default function MyCertificates() {
             </div>
           ) : certificates.length === 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center max-w-xl mx-auto shadow-xs">
-              <div className="w-14 h-14 mx-auto rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center text-[color:rgb(var(--tw-ink-900))] mb-3">
-                <Award className="w-7 h-7" />
+              {/* An empty state is the one place a student sees this page
+                  before earning anything — the sourced cap-and-tassel mark
+                  (brand navy + red) stands in for the generic Award glyph,
+                  inside the same sand disc so the card keeps its weight. */}
+              <div className="w-20 h-20 mx-auto rounded-full bg-[rgb(var(--tw-sand-200))] border border-[rgb(var(--tw-gold-500)/40%)] flex items-center justify-center mb-3">
+                <LottieArt name="graduation-cap" className="w-14 h-14" />
               </div>
               <h3 className="text-base font-heading font-bold text-[color:rgb(var(--tw-ink-900))] mb-1">No US Diplomas Conferred Yet</h3>
               <p className="text-slate-600 text-xs mb-4 leading-relaxed">

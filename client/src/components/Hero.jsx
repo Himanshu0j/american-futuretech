@@ -9,9 +9,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lottie } from 'lottie-react';
+import LottieArt from './LottieArt';
 import heroOnlineLearningSvg from '../assets/illustrations/hero/hero-online-learning.svg';
-import heroCodingLottie from '../assets/animations/hero/hero-coding-laptop.json';
 // Remote working professionals on the job — served from /public so the photo is
 // not bundled into the JS chunk, and cropped to this card's own aspect ratio (see
 // scratch/build-hero-image.py) so `object-cover` never eats the subject.
@@ -391,10 +390,20 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 p-1 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
-                  <img
-                    src={heroOnlineLearningSvg}
-                    alt="Online Learning Fellowship"
-                    className="w-full h-full object-contain"
+                  {/* Sourced LottieFiles mark, recoloured to the brand palette.
+                      Keeps the static illustration behind it while the chunk
+                      loads, so the badge never flashes an empty square. */}
+                  <LottieArt
+                    name="graduation-cap"
+                    eager
+                    className="w-full h-full"
+                    fallback={
+                      <img
+                        src={heroOnlineLearningSvg}
+                        alt=""
+                        className="w-full h-full object-contain"
+                      />
+                    }
                   />
                 </div>
                 <div className="text-left">
@@ -412,9 +421,6 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                 </div>
               </div>
 
-              <div className="w-8 h-8 shrink-0 flex items-center justify-center">
-                <Lottie src={heroCodingLottie} loop autoplay className="w-[26px] h-[26px]" />
-              </div>
             </motion.div>
 
                         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-left relative z-10">

@@ -18,6 +18,7 @@
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,cyan\" \"npm run server\" \"npm run client\"",
     "seed": "node server/seed.js",
     "seed:stories": "node scripts/seed-success-stories.js",
+    "set:fee": "node scripts/set-course-reservation-fee.js",
     "verify:payments": "node scripts/verify-payments.js",
     "verify:cms": "node scripts/verify-cms-settings.js",
     "verify:auth": "node scripts/verify-auth.js",
@@ -47,7 +48,8 @@
     "audit:a11y": "node scripts/audit-accessibility.js",
     "audit:browser": "node scripts/audit-live-browser.js",
     "audit:testdata": "node scripts/audit-test-data.js",
-    "verify:deposit": "node scripts/verify-seat-deposit.js"
+    "verify:deposit": "node scripts/verify-seat-deposit.js",
+    "verify:scroll-reveal": "node scripts/verify-scroll-reveal.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

@@ -135,8 +135,13 @@
      outlined with these two washes instead of the near-invisible #E6E8EC
      hairline, so a box reads as a box on any background. See the global
      box rule further down; a box opts out with the `aft-plain` class. */
-  --box-outline: rgba(2, 8, 23, 0.3);
-  --box-outline-hover: rgba(2, 8, 23, 0.62);
+  /* Refined after the client's "website bahut AI-made lag rahi hai" note: a
+     30%-black outline on every card painted the page like a wireframe. The
+     boxes are still defined (the earlier "sare boxes highlight dikhe" ask
+     stands) — the line is now brand-navy at a hairline weight, so it reads as
+     craft instead of as a placeholder. */
+  --box-outline: rgba(0, 32, 96, 0.11);
+  --box-outline-hover: rgba(0, 32, 96, 0.24);
 
   --text-strong: rgb(var(--tw-text-strong));
   --text-body: rgb(var(--tw-text-body));
@@ -424,10 +429,15 @@
    BUTTON HIERARCHY (Executive EdTech Standards)
    ═══════════════════════════════════════════════════════════════ */
 
-/* Primary Action Button (Indigo → Violet premium gradient) */
+/* Primary Action Button — solid deep brand navy.
+   It used to be a three-stop blue gradient with a coloured glow, the single
+   most "generated template" element on the page. A flat institutional navy
+   with a hairline top light and a soft neutral shadow reads as a company that
+   has a design system, and it lets the brand red stay the only accent. */
 .elms-btn-primary, .aft-btn-primary, .apple-btn-primary {
   position: relative;
-  background-image: linear-gradient(135deg, rgb(var(--tw-blue-600)) 0%, rgb(var(--tw-blue-700)) 55%, rgb(var(--tw-blue-800)) 100%);
+  background-image: none;
+  background-color: rgb(var(--tw-ink-900));
   color: #FFFFFF;
   font-family: var(--font-body);
   font-weight: 700;
@@ -439,16 +449,16 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), var(--shadow-indigo);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 10px 24px -16px rgba(0, 32, 96, 0.8);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
 }
 .elms-btn-primary:hover, .aft-btn-primary:hover, .apple-btn-primary:hover {
-  filter: saturate(115%) brightness(1.05);
+  background-color: rgb(var(--tw-ink-800));
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 14px 34px -12px rgb(var(--tw-blue-700) / 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 16px 32px -18px rgba(0, 32, 96, 0.85);
 }
 .elms-btn-primary:active, .aft-btn-primary:active, .apple-btn-primary:active {
   transform: translateY(0);
@@ -461,13 +471,16 @@
   /* Deepened from the pure #F00000: white on that red is 3.99:1 and fails WCAG
      AA (the real-browser audit flagged every red button). #DC0000 keeps the
      brand red while white text clears 4.5:1 across the whole gradient. */
-  background-image: linear-gradient(135deg, rgb(var(--tw-accent-deep)) 0%, rgb(var(--tw-accent-deeper)) 100%);
+  /* Flat brand red, not a two-stop red gradient: the accent is the one loud
+     thing on the page, and a gradient inside it made it look plasticky. */
+  background-image: none;
+  background-color: rgb(var(--tw-accent-deep));
   color: #FFFFFF;
   font-weight: 700;
   font-size: 14px;
   padding: 12px 28px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -477,9 +490,10 @@
   cursor: pointer;
 }
 .elms-btn-gold:hover {
+  background-color: rgb(var(--tw-accent-deeper));
   color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 16px 36px -14px rgb(var(--tw-gold-600) / 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 14px 30px -16px rgba(80, 10, 10, 0.55);
 }
 
 /* Secondary Action Button (Executive Clean Outline) */
@@ -938,27 +952,41 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Section kicker / eyebrow — replaces ad-hoc uppercase labels */
+/* Section kicker — an editorial label, not a pill.
+   The floating mono pill with a tinted fill was the clearest "AI template"
+   fingerprint on the site: the same rounded chip appeared above every section
+   on every page. A short brand-red rule plus letterspaced navy caps says the
+   same thing and reads like a printed prospectus. Only the surface changed —
+   every word, position and wrapping rule is untouched. */
 .section-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  gap: 0.65rem;
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--blue-600);
-  background: rgb(var(--tw-blue-600) / 0.07);
-  border: 1px solid rgb(var(--tw-blue-600) / 0.14);
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  color: rgb(var(--tw-ink-700));
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
   /* A long eyebrow (the default one names the program length and the
-     fellowships) is wider than a phone. Without these two lines the pill kept
-     its nowrap line box and ran off the right edge, cutting the last words in
-     half — the client's first screenshot. It now wraps inside the column, and
-     `max-width` is what gives it a column to wrap in. */
+     fellowships) is wider than a phone. It must wrap inside the column rather
+     than run off the right edge, and `max-width` is what gives it a column to
+     wrap in. */
   max-width: 100%;
   white-space: normal;
+}
+
+.section-eyebrow::before {
+  content: '';
+  flex: none;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(var(--tw-accent-deep));
 }
 
 /* The phone hero lays its copy across the graduation photograph (see the phone
@@ -970,28 +998,33 @@
    is near-opaque because 11px blue on white is only 5.2:1 to begin with, so
    anything more see-through drops the label under 4.5:1. */
 @media (max-width: 639px) {
+  /* The phone hero lays its copy across the graduation photograph, so the label
+     needs its own surface to stay readable. It is a flat white card with a
+     hairline — not a translucent blue pill. */
   .section-eyebrow-on-photo {
-    background: rgba(255, 255, 255, 0.96);
-    border-color: rgb(var(--tw-blue-600) / 0.3);
-    /* A wrapped two-line chip reads better as a card than as a 999px pill: the
-       fully rounded ends clip the second line's first word. */
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(0, 32, 96, 0.14);
+    border-radius: 8px;
     align-items: flex-start;
     line-height: 1.45;
-    letter-spacing: 0.1em;
-    padding: 0.45rem 0.7rem;
+    letter-spacing: 0.11em;
+    padding: 0.4rem 0.65rem;
   }
 
-  /* The dot lines up with the first line, not the chip's vertical centre. */
-  .section-eyebrow-on-photo > span:first-child {
-    margin-top: 0.35rem;
+  .section-eyebrow-on-photo::before {
+    margin-top: 0.55rem;
+    width: 16px;
   }
 }
 
 .section-eyebrow-dark {
-  color: var(--brand-red-500);
-  background: rgb(var(--tw-gold-500) / 0.1);
-  border-color: rgb(var(--tw-gold-500) / 0.22);
+  color: #FFFFFF;
+  background: transparent;
+  border-color: transparent;
+}
+
+.section-eyebrow-dark::before {
+  background: rgb(var(--tw-gold-400));
 }
 
 /* Gradient display type for hero headlines */
@@ -1331,5 +1364,116 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PUBLIC SURFACE REFINEMENT
+   "Clasy premium" pass — the client's note was that the site reads as
+   AI-generated. The cause was not one big thing but five small ones that
+   repeat on every page: a black wireframe outline on every box, mono
+   uppercase micro-labels, a gradient on every button, a technical grid behind
+   the content, and background colour from outside the brand palette. Each is
+   fixed at the rule below instead of by editing hundreds of class strings, so
+   nothing moves, nothing is rewritten, and the admin panel is untouched.
+
+   Everything here is scoped to `[data-audience="public"]`, which
+   components/ScrollReveal.jsx publishes on <html>. Admin and the student LMS
+   get `staff` and keep their working-tool density.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Micro-labels stop looking like a developer console ─────────
+   138 chips across the public site ask for `font-mono uppercase`. Monospace
+   caps at 0.1em+ tracking is the loudest template fingerprint there is: it
+   turns every card into a terminal readout. The labels keep their size,
+   weight, colour and wording — only the face and the tracking change, so a
+   price or a code still lines up (tabular figures). */
+[data-audience="public"] .font-mono {
+  font-family: var(--font-body);
+  letter-spacing: 0.045em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The inline editor is the one place on a public page that really is a tool.
+   Its own mono labels keep their face. */
+[data-site-editor-ui] .font-mono {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: normal;
+}
+
+/* ── 2. Flat, solid accent helpers ────────────────────────────────
+   A handful of high-intent CTAs still carried a two-stop gradient inline
+   (`bg-gradient-to-r from-red-500 to-red-600`). These classes flatten the
+   background without touching padding, radius or layout, so the button can be
+   converted by adding one class. */
+.aft-solid-primary {
+  background-image: none !important;
+  background-color: rgb(var(--tw-ink-900));
+}
+.aft-solid-primary:hover {
+  background-color: rgb(var(--tw-ink-800));
+}
+.aft-solid-accent {
+  background-image: none !important;
+  background-color: rgb(var(--tw-accent-deep));
+}
+.aft-solid-accent:hover {
+  background-color: rgb(var(--tw-accent-deeper));
+}
+
+/* ── 3. Decorative live-dots calm down ───────────────────────────
+   Pulsing halo dots next to static labels ("Cohort 2026", "1,200+ Fellows")
+   imply a live feed that does not exist. The dot stays as a marker; the halo
+   stops pretending to update. */
+[data-audience="public"] .animate-ping {
+  animation: none;
+  opacity: 0.45;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+   The other half of the client's request ("thoda scrolling animation hr page
+   mein"). Owned by client/src/lib/scrollReveal.js, which tags existing blocks
+   and never inserts a node — the inline editor addresses text by position, so
+   an extra wrapper would unpublish the client's own edits.
+
+   The hidden state is gated twice: the transition lives on `.aft-rv-armed`
+   and only applies while <html data-aft-reveal="on">, a flag the engine sets
+   after its observer exists and clears again if the observer ever stops
+   reporting. A visitor with no JS, a failed observer or reduced motion always
+   sees the page, never a blank block.
+   ═══════════════════════════════════════════════════════════════ */
+html[data-aft-reveal="on"] .aft-rv-armed {
+  transition-property: opacity, transform;
+  transition-duration: 0.62s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--aft-rv-i, 0) * 45ms);
+}
+
+html[data-aft-reveal="on"] .aft-rv-armed:not(.is-in) {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  /* Deliberately NOT `visibility: hidden` or `aria-hidden`: a waiting block is
+     still content. Removing it from the accessibility tree would make a screen
+     reader skip a paragraph it reaches before the visitor has scrolled there.
+     The accessibility audit therefore scrolls each page through before it
+     measures contrast, instead of this rule hiding the page from it. */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-aft-reveal="on"] .aft-rv-armed {
+    transition: none;
+  }
+  html[data-aft-reveal="on"] .aft-rv-armed:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Printing a page must never print a block mid-reveal. */
+@media print {
+  html[data-aft-reveal="on"] .aft-rv-armed:not(.is-in) {
+    opacity: 1;
+    transform: none;
   }
 }

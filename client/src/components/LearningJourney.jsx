@@ -23,8 +23,7 @@ import {
   CertifyIllustration,
   CareerReadyIllustration
 } from './illustrations/VectorIllustrations';
-import { Lottie } from 'lottie-react';
-import successLottie from '../assets/animations/learning/success-celebration.json';
+import LottieArt from './LottieArt';
 import Tilt3D, { useCard3D, motion } from './Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
@@ -573,9 +572,7 @@ export default function LearningJourney() {
                           </div>
                         </div>
                       </div>
-                      <div className="w-12 h-12 shrink-0 hidden sm:block">
-                        <Lottie src={successLottie} loop autoplay className="w-12 h-12" />
-                      </div>
+                      <LottieArt name="success-check" className="w-12 h-12 shrink-0 hidden sm:inline-flex" />
                     </div>
 
                     <div className="p-3 bg-gray-50 rounded-xl border border-gray-200/80 font-mono text-[10px] text-gray-500 break-all text-left">

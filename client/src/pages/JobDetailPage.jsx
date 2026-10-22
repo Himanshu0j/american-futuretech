@@ -446,7 +446,7 @@ export default function JobDetailPage() {
 
                   <Link
                     to={job.recommendedCourse?._id ? `/checkout?courseId=${job.recommendedCourse._id}&tier=deposit` : '/checkout?tier=deposit'}
-                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-red-500 to-red-500 hover:from-red-400 hover:to-red-400 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+                    className="aft-solid-accent w-full py-2.5 px-4 rounded-xl text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
                   >
                     <span>Reserve Seat with $99</span>
                     <ArrowRight className="w-3.5 h-3.5" />

@@ -195,7 +195,7 @@ export default function PersonalizedLearningSection({ onOpenLeadModal }) {
             <div className="space-y-3 pt-6 border-t border-slate-800">
               <Link
                 to="/checkout?tier=deposit&program=personalized"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 via-red-500 to-red-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-red-500/20 hover:from-red-400 hover:to-red-500 hover:shadow-xl hover:shadow-red-500/30 active:scale-[0.98] transition-all"
+                className="aft-solid-accent w-full flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-sm font-bold text-white shadow-[0_12px_26px_-18px_rgba(0,32,96,0.9)] hover:shadow-[0_16px_32px_-18px_rgba(0,32,96,0.85)] active:scale-[0.98] transition-all"
               >
                 <span>Reserve Personalized Seat — {depositFee}</span>
                 <ArrowRight className="w-4 h-4" />

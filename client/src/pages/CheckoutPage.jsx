@@ -11,6 +11,7 @@ import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { resolveSeatDeposit } from '../lib/seatDeposit';
+import { createQuoteGate } from '../lib/quoteGate.mjs';
 
 const POLL_INTERVAL_MS = 2500;
 const MAX_POLLS = 24; // ~60 seconds — long enough for a slow webhook or 3-D Secure step
@@ -180,6 +181,19 @@ export default function CheckoutPage() {
    * both amounts) still wins, and a choice made on this page is never undone.
    */
   const depositSyncedFor = useRef('');
+  /**
+   * Sequence number for price quotes.
+   *
+   * Two requests can be in flight at once: the first paints before the course
+   * (and therefore that course's own reservation fee) is known, and the second
+   * is sent the moment the fee arrives. Responses are not ordered, so without
+   * this guard a slow $99 answer can land after the $499 one and overwrite it —
+   * the summary and CTA then read $99 while the $499 deposit is the selected
+   * option, and the submit path sends $499. Only the newest request may write
+   * `quote`; an older response is discarded instead of repainting the price.
+   */
+  const quoteGate = useRef(null);
+  if (!quoteGate.current) quoteGate.current = createQuoteGate();
   useEffect(() => {
     if (!selectedCourseId || RESERVE_OPTIONS.includes(requestedDeposit)) return;
     if (depositSyncedFor.current === selectedCourseId) return;
@@ -195,6 +209,8 @@ export default function CheckoutPage() {
    */
   const fetchQuote = useCallback(async ({ courseId, nextTier, coupon, buyerEmail, reserve }) => {
     if (!courseId) return null;
+    const seq = quoteGate.current.begin();
+    const isCurrent = () => quoteGate.current.isCurrent(seq);
     setQuoteLoading(true);
     try {
       const res = await axios.post('/api/payments/quote', {
@@ -208,6 +224,9 @@ export default function CheckoutPage() {
         // never be reused by the same buyer across sessions.
         email: buyerEmail || undefined,
       });
+      // A newer quote already owns the screen: this response describes an
+      // amount the visitor has moved away from and must not be painted.
+      if (!isCurrent()) return null;
       if (res.data?.payments) setGatewayConfigured(Boolean(res.data.payments.configured));
       setInstallments(
         res.data?.installments?.available ? (res.data.installments.methods || []) : [],
@@ -215,10 +234,11 @@ export default function CheckoutPage() {
       setQuote(res.data.quote);
       return res.data.quote;
     } catch (err) {
+      if (!isCurrent()) return null;
       console.error('Quote failed', err);
       return null;
     } finally {
-      setQuoteLoading(false);
+      if (isCurrent()) setQuoteLoading(false);
     }
   }, [depositAmount]);
 
@@ -369,7 +389,9 @@ export default function CheckoutPage() {
       const data = err.response?.data;
       if (data?.code === 'PAYMENTS_NOT_CONFIGURED') {
         try {
-          await requestManualPaymentLink(amount || (tier === 'deposit' ? depositAmount : depositPrice));
+          // The invoice must quote the deposit that is selected, never a stale
+          // quote for the amount the visitor moved away from.
+          await requestManualPaymentLink(tier === 'deposit' ? depositAmount : (amount || depositPrice));
         } catch (leadError) {
           alert('We could not submit your request. Please contact admissions directly.');
         }
@@ -393,11 +415,24 @@ export default function CheckoutPage() {
    * fee card shows) until the server answers for this tier.
    */
   const quoteForTier = quote?.tier === tier ? quote : null;
-  const baseAmount = quoteForTier?.originalPrice ?? (
+  /**
+   * A deposit quote is only usable while it describes the deposit actually
+   * selected. Even with the sequence guard above, a quote can be the newest
+   * arrival and still describe an amount the visitor changed afterwards (they
+   * clicked $99 while the $499 request was in flight). Comparing the server's
+   * own pre-discount figure with the selection means the summary can never
+   * print a number the submit path will not charge.
+   */
+  const quoteMatchesSelection =
+    !quoteForTier ||
+    tier !== 'deposit' ||
+    Number(quoteForTier.originalPrice) === Number(depositAmount);
+  const usableQuote = quoteMatchesSelection ? quoteForTier : null;
+  const baseAmount = usableQuote?.originalPrice ?? (
     tier === 'deposit' ? depositAmount : tier === 'personalized' ? personalizedPrice : (selectedCourse?.pricing?.discountedPrice || 1899)
   );
-  const discountAmount = quoteForTier?.discountAmount ?? 0;
-  const finalAmount = quoteForTier?.amount ?? baseAmount;
+  const discountAmount = usableQuote?.discountAmount ?? 0;
+  const finalAmount = usableQuote?.amount ?? baseAmount;
 
   /**
    * What the breakdown row calls the charge.
@@ -414,7 +449,7 @@ export default function CheckoutPage() {
       : tier === 'personalized'
         ? 'Personalized 1-on-1 Mentorship Track'
         : 'Full Program Tuition';
-  const breakdownLabel = (quote?.tier === tier && quote?.label) || tierName;
+  const breakdownLabel = usableQuote?.label || tierName;
 
   /**
    * The gap between the list price and what is actually due, minus any coupon

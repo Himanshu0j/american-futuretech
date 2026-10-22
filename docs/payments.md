@@ -281,11 +281,13 @@ An environment variable always wins over a key saved in the panel.
      `checkout.session.async_payment_failed`, `checkout.session.expired`, `payment_intent.payment_failed`
 3. Save both secrets (panel or env) and press **Test connection** — it must come
    back green: key accepted, webhook registered, no missing events.
-4. `GET /api/health` must report:
-   ```json
-   "payments": { "mode": "live", "configured": true, "webhookConfigured": true, "ready": true }
-   ```
-   Admin → **Payments** shows the same status as a badge, and every settled order
+4. `GET /api/health` must report `"configured": true`, `"webhookConfigured": true`
+   and `"ready": true` under `payments`.
+   The live/test `mode` is not part of the anonymous answer any more — the public
+   endpoint no longer tells a stranger whether this deployment is holding live
+   keys (nor which database it is attached to). Sign in as an admin and send the
+   Bearer token to the same URL to get the full block, or read the badge in
+   Admin → **Payments**, which shows the same status, and every settled order
    appears in the Tuition & Billing Ledger with its Stripe reference (CSV export
    included).
 5. Test with Stripe test cards (`4242 4242 4242 4242`, any future expiry, any CVC) while in test mode, then switch to live keys.

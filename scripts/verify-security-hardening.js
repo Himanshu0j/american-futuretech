@@ -211,9 +211,27 @@ const run = async () => {
     section('3. Stripe: key separation, mode honesty and forgery attempts');
 
     const health = await request('GET', '/api/health');
-    check('A test secret key is reported as TEST mode, never LIVE', health.json?.payments?.mode === 'test', `mode=${health.json?.payments?.mode}`);
+    // The live/test mode is deliberately not public any more: it told every
+    // visitor whether this deployment was holding live keys. A signed-in admin
+    // still gets the full status, which is what this check now exercises.
+    const staffHealth = await request('GET', '/api/health', { token: adminToken });
+    check('A test secret key is reported as TEST mode, never LIVE', staffHealth.json?.payments?.mode === 'test', `mode=${staffHealth.json?.payments?.mode}`);
     check('Health reports the gateway as configured with a webhook', health.json?.payments?.configured === true && health.json?.payments?.webhookConfigured === true);
     check('Health never contains the secret key', !health.text.includes(SECRET_KEY));
+    check(
+      'Anonymous health discloses neither the payment mode nor the database target',
+      health.json?.payments?.mode === undefined
+        && health.json?.database?.host === undefined
+        && health.json?.database?.database === undefined,
+      `mode=${health.json?.payments?.mode} host=${health.json?.database?.host} db=${health.json?.database?.database}`,
+    );
+    check(
+      'An admin can still read the full deployment status',
+      staffHealth.json?.database?.mode === 'external'
+        && Boolean(staffHealth.json?.database?.database)
+        && staffHealth.json?.payments?.mode === 'test',
+      `db=${staffHealth.json?.database?.database} mode=${staffHealth.json?.payments?.mode}`,
+    );
 
     const gatewayStatus = await request('GET', '/api/settings/payment-gateway', { token: adminToken });
     check('Admin gateway status loads', gatewayStatus.status === 200, `HTTP ${gatewayStatus.status}`);

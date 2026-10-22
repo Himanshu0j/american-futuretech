@@ -1,0 +1,17 @@
+# American FutureTech — one canonical origin.
+# www and the Vercel mirror serve the same build; keeping them out of the index
+# avoids duplicate-content dilution of the primary domain.
+User-agent: *
+Allow: /
+
+# Private surfaces: never indexed, never crawled.
+Disallow: /admin
+Disallow: /student
+Disallow: /checkout
+Disallow: /api/
+# Alternate shells that render the home page under a different URL.
+Disallow: /old-ui
+Disallow: /cyber
+Disallow: /apple-ui
+
+Sitemap: https://americanfuturetechllc.com/sitemap.xml

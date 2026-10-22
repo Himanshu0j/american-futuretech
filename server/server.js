@@ -13,6 +13,8 @@ const { autoSeedIfEmpty } = require('./utils/seeder');
 const { startSmokeTestWatchdog, getSmokeTestWatchdogStatus } = require('./jobs/smokeTestWatchdog');
 const { buildCorsOptions } = require('./config/cors');
 const errorHandler = require('./middleware/errorHandler');
+const { identifyUser } = require('./middleware/auth');
+const { buildSitemap } = require('./utils/sitemap');
 
 // Resolve the JWT signing secret at boot. A missing or unsafe value never stops
 // the boot (that would take the public site down with it) — config/auth.js
@@ -150,7 +152,7 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Healthcheck — also reports whether stored content is durable across restarts
-app.get('/api/health', (req, res) => {
+app.get('/api/health', identifyUser, (req, res) => {
   const db = getDbInfo();
   const payments = getPaymentStatus();
   const warnings = [];
@@ -169,6 +171,28 @@ app.get('/api/health', (req, res) => {
   if (authStatus && authStatus.warning) warnings.push(authStatus.warning);
   if (payments.warning) warnings.push(payments.warning);
 
+  /*
+   * What a stranger may learn from this endpoint.
+   *
+   * It is a public URL: the uptime monitors, the keep-alive cron and every
+   * visitor can read it. It used to answer with the deployment's internals —
+   * the Atlas host, the database name and whether the Stripe keys are live
+   * or test — which is free reconnaissance for anyone deciding where to aim.
+   * None of that is needed to answer "is it up and is my content safe?":
+   * `connected`, `mode`, `ephemeral` and `persistedRequired` still say
+   * whether admin edits survive a restart. A signed-in admin (identifyUser)
+   * gets the full block, because they already know the target.
+   */
+  const isStaff = Boolean(
+    req.user && ['admin', 'superadmin'].includes(String(req.user.role || '').toLowerCase()),
+  );
+  const publicDatabase = ({
+    connected, readyState, mode, ephemeral, uriConfigured, persistedRequired,
+  }) => ({ connected, readyState, mode, ephemeral, uriConfigured, persistedRequired });
+  const publicPayments = ({
+    provider, configured, webhookConfigured, currency, ready, warning,
+  }) => ({ provider, configured, webhookConfigured, currency, ready, warning });
+
   // The client's stale-build check reads `build.commit` from here
   // (client/src/lib/deployFreshness.js). A cached copy of THIS answer would make
   // a fresh document look stale (or hide a real one), so it must never be stored
@@ -182,8 +206,8 @@ app.get('/api/health', (req, res) => {
     service: 'American FutureTech Enterprise Core API',
     uptimeSeconds: Math.round(process.uptime()),
     build: buildInfo,
-    database: db,
-    payments,
+    database: isStaff ? db : publicDatabase(db),
+    payments: isStaff ? payments : publicPayments(payments),
     auth: authStatus,
     // Background safety nets, so "is a stranded charge going to be refunded
     // tonight?" is answerable without reading deploy logs.
@@ -244,6 +268,26 @@ app.use('/api', (req, res) => {
     code: 'ROUTE_NOT_FOUND',
     message: `API route not found: ${req.method} ${req.originalUrl}`,
   });
+});
+
+/*
+ * /sitemap.xml — the crawler-facing index of the public site.
+ *
+ * This route has to exist. Without it the request fell through to the SPA
+ * catch-all at the bottom of this file, which answered 200 with index.html:
+ * a search engine then treats the sitemap as an HTML page and drops the
+ * submission, while nothing in the logs looks wrong. Registered before the
+ * static handler so a stale file in client/dist can never shadow it.
+ */
+app.get('/sitemap.xml', async (req, res, next) => {
+  try {
+    const xml = await buildSitemap();
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.send(xml);
+  } catch (error) {
+    return next(error);
+  }
 });
 
 // Serve uploaded static assets. The database copy is the fallback: a redeploy

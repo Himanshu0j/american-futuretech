@@ -1,14 +1,35 @@
 # Follow-up audit — 2026-10-22
 
 Read-only production audit, then isolated repairs on `staging/audit-2026-10-22`.
-**Nothing was deployed, pushed or run against live data.** Production is still on
-`367165b`.
+The repairs were later fast-forwarded into `main` and deployed on 2026-10-27 — see
+[Deployment](#deployment--2026-10-27). During the audit itself nothing was pushed
+and nothing ran against live data; production stayed on `367165b` throughout.
+
+## Deployment — 2026-10-27
+
+Approved by the owner and shipped as a fast-forward, `367165b..1d3c736` on `main`
+(five commits, 13 files). Both providers caught up within 50 s:
+
+- Vercel (site) and Render (API) both report `1d3c7365`; `npm run verify:deploy`
+  is **22/22**, including the live first-paint snapshots and the deposit allowlist.
+- `robots.txt` → `200 text/plain` (512 B); `sitemap.xml` → `200 application/xml`,
+  37 URLs.
+- Anonymous `/api/health` returns no DB host, no DB name and no payment mode;
+  `payments` is `{provider, configured, webhookConfigured, currency, ready, warning}`.
+- Live checkout against the production API: the $499 seat keeps `$499` in the
+  button, the line item and *Total Due Now* across five samples over ~6 s; the
+  $99 seat returns `$99`. No console errors; every quote `POST` answered 200.
+
+Gates run before the push, on the exact committed tree: client production build
+(with its prebuild checks), `verify:quote-race` 20/20, `verify:checkout-browser`
+9/9 against that build, `verify:security` 93/93, `verify:deposit` 45/45,
+`verify:payments` 206/206.
 
 ## Environment map (verified this session)
 
 | URL | State |
 | --- | --- |
-| `americanfuturetechllc.com` | 200, commit `367165b`, Node process uptime 7043 s, DB `american_futuretech_staging`, Stripe `live`, webhook ready |
+| `americanfuturetechllc.com` | as audited: 200, commit `367165b`, Node process uptime 7043 s, DB `american_futuretech_staging`, Stripe `live`, webhook ready — now serving `1d3c736` |
 | `www.americanfuturetechllc.com` | 200, same commit/DB, uptime 5135 s — **a second Node process** |
 | `test.americanfuturetechllc.com` | A `82.180.138.75` (Hostinger); TCP 443 accepts, TLS handshake returns `internal_error`; HTTP 80 answers **403 Forbidden (LiteSpeed)** — no app behind it |
 | `american-futuretech.vercel.app` | same commit, proxies `/api` + `/uploads` to production (`client/vercel.json`), therefore live Stripe |
@@ -94,13 +115,19 @@ No credentials for either were found in the workspace, so no attempt was made.
 
 ## Rollback
 
-No database migration, no schema change, no env change. Reverting the three
-commits (`git revert 6afa902 a706023 7154b1d`) restores the previous behaviour;
-production is unaffected until someone deploys. `client/dist` is gitignored and
-was rebuilt locally only.
+No database migration, no schema change, no env change, so a revert is the whole
+rollback. The deployed range is `367165b..1d3c736`:
 
-## Approval needed
+```bash
+git revert --no-commit 1d3c736 6afa902 a706023 7154b1d
+git commit -m "revert: undo the 2026-10-27 audit fixes"
+git push origin main   # both providers rebuild; confirm with npm run verify:deploy
+```
+
+Reverting only `7154b1d` also works if the issue is limited to sitemap/robots/health.
+`client/dist` is gitignored and is built by the provider, not committed.
+
+## Approval still needed
 
 1. Staging host/credentials (or approval of a different staging target).
-2. Approval to deploy any of these commits to production.
-3. Decision on the Vercel mirror and on consolidating `www`.
+2. Decision on the Vercel mirror and on consolidating `www`.

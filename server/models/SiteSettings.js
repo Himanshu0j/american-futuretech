@@ -622,6 +622,8 @@ const SiteSettingsSchema = new mongoose.Schema({
     whyChooseUs: { type: Boolean, default: true },
     // Added after the 2026-10-22 audit as opt-out blocks (absent = shown), so an
     // existing deployment picks them up without a settings migration.
+    popularCategories: { type: Boolean, default: true },
+    learnerVoices: { type: Boolean, default: true },
     studyAnywhere: { type: Boolean, default: true },
     mentors: { type: Boolean, default: true },
     growth: { type: Boolean, default: true },

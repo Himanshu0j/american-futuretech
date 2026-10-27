@@ -1007,6 +1007,111 @@
   }
 }
 
+/* ── Sketch furniture ──────────────────────────────────────────────
+   Graph-paper texture, ink line art that redraws itself on hover, and the
+   speech bubbles used by the learner-voices band. The reference art is a paper
+   collage, so the cards carry drawn strokes rather than another photo. */
+.aft-dotted-paper {
+  background-image: radial-gradient(rgb(var(--tw-ink-900) / 0.18) 1px, transparent 1.6px);
+  background-size: 18px 18px;
+}
+
+/* Every stroke in the category illustrations uses this, so the three cards read
+   as one hand even though the drawings are unrelated. */
+.aft-sketch {
+  fill: none;
+  stroke: rgb(var(--tw-ink-900));
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aft-sketch-accent {
+  stroke: rgb(var(--tw-gold-500));
+}
+
+/* pathLength="1" on the paths normalises the dash maths, so one keyframe draws
+   a two-centimetre tick and a full outline at the same speed. */
+.aft-sketch-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.aft-sketch-card:hover .aft-sketch-line {
+  animation: aftSketchDraw 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes aftSketchDraw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Speech bubble. The tail is a rotated square that inherits the bubble colour,
+   so a variant only has to set the background and ink once. */
+.aft-bubble {
+  --bubble-bg: #fce7e7;
+  --bubble-ink: rgb(var(--tw-ink-900));
+  position: relative;
+  border-radius: 26px;
+  padding: 1.35rem 1.4rem 1.15rem;
+  background: var(--bubble-bg);
+  color: var(--bubble-ink);
+}
+
+.aft-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 34px;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.aft-bubble--sand {
+  --bubble-bg: #fce7e7;
+}
+
+.aft-bubble--deep {
+  --bubble-bg: #8c1c1c;
+  --bubble-ink: #fff;
+}
+
+.aft-bubble--cream {
+  --bubble-bg: #fff7f2;
+  box-shadow: 0 0 0 1.5px rgb(var(--tw-ink-900) / 0.12);
+}
+
+.aft-bubble__mark {
+  color: rgb(var(--tw-gold-500));
+}
+
+.aft-bubble--deep .aft-bubble__mark {
+  color: rgb(255 255 255 / 0.55);
+}
+
+.aft-bubble__badge {
+  background: rgb(var(--tw-gold-500) / 0.14);
+  color: #8c1c1c;
+}
+
+.aft-bubble--deep .aft-bubble__badge {
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aft-sketch-card:hover .aft-sketch-line {
+    animation: none;
+  }
+}
+
 /* Diagonal Certificate Shimmer Effect */
 .shimmer-active {
   position: relative;

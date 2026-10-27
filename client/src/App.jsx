@@ -8,6 +8,8 @@ import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
 import WhyChooseUs from './components/WhyChooseUs';
+import PopularCategoriesSection from './components/PopularCategoriesSection';
+import LearnerVoicesSection from './components/LearnerVoicesSection';
 import MentorsSection from './components/MentorsSection';
 import StudyAnywhereSection from './components/StudyAnywhereSection';
 import DifferentiatorsSection from './components/DifferentiatorsSection';
@@ -235,6 +237,10 @@ function LandingPage() {
           />
         )}
 
+        {/* Sketched category cards — the fastest route from "what do you teach?"
+            to the full catalogue. */}
+        {visibility.popularCategories !== false && <PopularCategoriesSection />}
+
         {/* Dedicated 1-on-1 Personalized Learning Track ($2,199 Independent Offering) */}
         {visibility.personalizedLearning !== false && (
           <PersonalizedLearningSection onOpenLeadModal={() => handleOpenLeadModal(null)} />
@@ -267,6 +273,8 @@ function LandingPage() {
         {visibility.studyAnywhere !== false && <StudyAnywhereSection />}
         {visibility.mentors !== false && <MentorsSection />}
         {visibility.growth !== false && <GrowthSection />}
+        {/* Alumni quotes in speech bubbles, read from the CMS stories. */}
+        {visibility.learnerVoices !== false && <LearnerVoicesSection />}
         {visibility.differentiators !== false && <DifferentiatorsSection />}
         {visibility.admissionSteps !== false && <AdmissionStepsSection />}
 

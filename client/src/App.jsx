@@ -8,6 +8,11 @@ import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
 import WhyChooseUs from './components/WhyChooseUs';
+import MentorsSection from './components/MentorsSection';
+import StudyAnywhereSection from './components/StudyAnywhereSection';
+import DifferentiatorsSection from './components/DifferentiatorsSection';
+import GrowthSection from './components/GrowthSection';
+import AdmissionStepsSection from './components/AdmissionStepsSection';
 import BrandBand from './components/BrandBand';
 import CallToAction from './components/CallToAction';
 import Footer from './components/Footer';
@@ -254,6 +259,16 @@ function LandingPage() {
             It replaces the old admin-managed photo showcase, which the client
             asked to take off the homepage. */}
         <BrandBand />
+
+        {/* Flexibility, faculty and the four-pillar difference — the trust block
+            that sits between the product showcase and the FAQ. New sections are
+            opt-out through Section Visibility, so an existing site keeps them
+            until the client turns one off. */}
+        {visibility.studyAnywhere !== false && <StudyAnywhereSection />}
+        {visibility.mentors !== false && <MentorsSection />}
+        {visibility.growth !== false && <GrowthSection />}
+        {visibility.differentiators !== false && <DifferentiatorsSection />}
+        {visibility.admissionSteps !== false && <AdmissionStepsSection />}
 
         {/* Comprehensive Academic & Program FAQs */}
         {visibility.faqs !== false && (

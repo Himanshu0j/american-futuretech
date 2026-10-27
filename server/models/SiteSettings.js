@@ -620,6 +620,13 @@ const SiteSettingsSchema = new mongoose.Schema({
     tools: { type: Boolean, default: true },
     roadmap: { type: Boolean, default: true },
     whyChooseUs: { type: Boolean, default: true },
+    // Added after the 2026-10-22 audit as opt-out blocks (absent = shown), so an
+    // existing deployment picks them up without a settings migration.
+    studyAnywhere: { type: Boolean, default: true },
+    mentors: { type: Boolean, default: true },
+    growth: { type: Boolean, default: true },
+    differentiators: { type: Boolean, default: true },
+    admissionSteps: { type: Boolean, default: true },
     siteImages: { type: Boolean, default: true },
     faqs: { type: Boolean, default: true },
     callToAction: { type: Boolean, default: true },

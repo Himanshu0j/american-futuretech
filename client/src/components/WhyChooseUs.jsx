@@ -216,13 +216,33 @@ export default function WhyChooseUs() {
           
           {/* Product UI Mockup: Video Classroom & Code Lab */}
           <div className="lg:col-span-6 order-2 lg:order-1 relative">
-            {/* Floating 3D Laptop Asset */}
-            <div className="hidden sm:block absolute -top-6 -right-6 z-20 w-16 h-16 animate-float-slow pointer-events-none drop-shadow-2xl">
-              <img
-                src="/images/floating-laptop-code.webp"
-                alt="Floating 3D Neural Architecture"
-                className="w-full h-full object-contain filter drop-shadow-xl"
-              />
+            {/* Live-classroom preview. This section is about a video classroom, so
+                the artwork sits on the code panel's top-right corner like a feed
+                you can glance at. It sways, its halo breathes and its live dot
+                pulses — that is what makes a still illustration read as motion
+                instead of a screenshot pasted onto the page. */}
+            <div className="hidden sm:block absolute -top-14 -right-4 sm:-right-6 z-20 w-40 lg:w-44 pointer-events-none">
+              <div className="relative">
+                <div
+                  aria-hidden="true"
+                  className="absolute -inset-3 rounded-[26px] bg-[rgb(var(--tw-blue-700))] blur-2xl animate-classroom-glow"
+                />
+                <div className="relative rounded-2xl overflow-hidden bg-white ring-1 ring-[rgb(var(--tw-ink-900)/12%)] shadow-[0_24px_45px_-18px_rgba(15,27,17,0.55)] animate-classroom-sway">
+                  <img
+                    src="/images/mentorship-session.jpg"
+                    alt="Students working together on laptops during a live session"
+                    width="800"
+                    height="534"
+                    loading="lazy"
+                    decoding="async"
+                    className="block aspect-[4/3] w-full object-cover"
+                  />
+                  <span className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-live-dot" aria-hidden="true" />
+                    Live
+                  </span>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-2xl bg-[#0f1b11] border border-[rgb(var(--tw-blue-700))] shadow-xl overflow-hidden text-left text-white relative z-10">
@@ -234,7 +254,6 @@ export default function WhyChooseUs() {
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
                   <span className="text-[11px] font-mono text-[#FFD9D9]/80 ml-2">Classroom // PyTorch & LangChain</span>
                 </div>
-                <span className="text-[10px] bg-[rgb(var(--tw-blue-700))] px-2 py-0.5 rounded text-white font-bold">HD Live</span>
               </div>
 
               <div className="p-4 space-y-3">

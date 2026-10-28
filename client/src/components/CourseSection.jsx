@@ -241,7 +241,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           return (
           <div
             key={flagship._id || flagship.slug}
-            className="mb-6 sm:mb-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_24px_54px_-34px_rgba(0,32,96,0.5)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_30px_64px_-36px_rgba(0,32,96,0.58)] transition-all duration-300 overflow-hidden text-left group"
+            className="mb-6 sm:mb-8 rounded-3xl aft-course-cloud border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_24px_54px_-34px_rgba(0,32,96,0.5)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_30px_64px_-36px_rgba(0,32,96,0.58)] transition-all duration-300 overflow-hidden text-left group"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12">
               {/* Left Visual Column — the SAME artwork treatment the /courses
@@ -258,7 +258,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   whole visual block — frame plus cohort/faculty — is centred in
                   the column instead, giving the even breathing room the
                   /courses catalogue card already has. */}
-              <div className="lg:col-span-5 relative min-w-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800 flex flex-col justify-center">
+              <div className="lg:col-span-5 relative min-w-0 bg-gradient-to-br from-[#fff6f4] to-[#ffe9e7] dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800 flex flex-col justify-center">
                 <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800">
                   <img
                     src={getCourseCardImage(flagship)}
@@ -335,7 +335,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
                   {/* 3 Structured Curriculum Highlights — boxed and labelled,
                       matching the identity panel above so the card reads as two
                       deliberate blocks rather than one long column of text. */}
-                  <div className="mt-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 space-y-2.5">
+                  <div className="mt-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/70 backdrop-blur-xs dark:bg-slate-900/60 p-4 space-y-2.5">
                     <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
                       <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                       Curriculum Highlights

@@ -66,7 +66,7 @@ export default function MyCourses() {
           {courses.map((item) => (
             <div
               key={item.enrollmentId}
-              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[rgb(var(--tw-ink-900)/30%)] hover:shadow-md transition-all flex flex-col justify-between"
+              className="p-6 rounded-2xl aft-course-cloud border border-slate-200 hover:border-[rgb(var(--tw-ink-900)/30%)] hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">

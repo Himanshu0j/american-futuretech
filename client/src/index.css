@@ -1059,6 +1059,54 @@
   }
 }
 
+/* ── Rose cloud inside every course card ─────────────────────────
+   The client asked for the red cloud wash in the course boxes themselves, not
+   only in the bands behind them: on the home grid and the /courses catalogue a
+   card was a flat white document, so the tint stopped dead at its border and
+   the page went back to looking like paper.
+
+   Each card now carries three soft red fields — brand red (#F00000) at 17%, a
+   deeper accent at 12%, and a pale sand blush to keep the middle readable —
+   drifting slowly against each other behind the content. Alphas stay low on
+   purpose: the card still has to hold slate body copy, blue accent panels and
+   grey labels at AA contrast, so this is a wash, not a red card. */
+.aft-course-cloud {
+  position: relative;
+  isolation: isolate;
+  background-color: #fff6f5;
+  background-image:
+    radial-gradient(46% 52% at 5% -6%, rgb(var(--tw-gold-500) / 0.22), transparent 70%),
+    radial-gradient(38% 44% at 88% 4%, rgb(var(--tw-gold-500) / 0.11), transparent 72%),
+    radial-gradient(52% 58% at 104% 104%, rgb(var(--tw-accent-deep) / 0.16), transparent 72%),
+    radial-gradient(34% 40% at 20% 98%, rgb(var(--tw-sand-300) / 0.7), transparent 76%);
+  background-repeat: no-repeat;
+  animation: courseCloudDrift 26s ease-in-out infinite alternate;
+}
+
+@keyframes courseCloudDrift {
+  from {
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+  }
+  to {
+    background-position: 7% 8%, 88% 10%, 92% 90%, 13% 88%;
+  }
+}
+
+.dark .aft-course-cloud {
+  background-color: rgb(var(--tw-ink-950));
+  background-image:
+    radial-gradient(46% 52% at 5% -6%, rgb(var(--tw-gold-500) / 0.26), transparent 70%),
+    radial-gradient(38% 44% at 88% 4%, rgb(var(--tw-gold-500) / 0.14), transparent 72%),
+    radial-gradient(52% 58% at 104% 104%, rgb(var(--tw-blue-500) / 0.16), transparent 72%),
+    radial-gradient(34% 40% at 20% 98%, rgb(var(--tw-sand-300) / 0.07), transparent 76%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aft-course-cloud {
+    animation: none;
+  }
+}
+
 /* ── Sketch furniture ──────────────────────────────────────────────
    Graph-paper texture, ink line art that redraws itself on hover, and the
    speech bubbles used by the learner-voices band. The reference art is a paper

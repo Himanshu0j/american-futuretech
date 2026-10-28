@@ -277,7 +277,7 @@ export default function CoursesPage() {
                 return (
                 <div
                   key={course._id}
-                  className="elms-card text-left group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.05),0_20px_44px_-28px_rgba(0,32,96,0.38)] hover:border-[rgb(var(--tw-ink-900)/22%)] dark:hover:border-blue-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_26px_56px_-30px_rgba(0,32,96,0.45)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
+                  className="elms-card text-left group aft-course-cloud border border-slate-200 dark:border-slate-800 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.05),0_20px_44px_-28px_rgba(0,32,96,0.38)] hover:border-[rgb(var(--tw-ink-900)/22%)] dark:hover:border-blue-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_26px_56px_-30px_rgba(0,32,96,0.45)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
                 >
                   {/* Course image panel — a clean RECTANGLE beside the details on
                       desktop, a wide banner on phones, and the picture is
@@ -286,7 +286,7 @@ export default function CoursesPage() {
                       puri dikhe" report). The panel keeps a fixed 4:3 frame so
                       cards of different images still line up, and the letterbox
                       area is a soft brand tint rather than a white gap. */}
-                  <div className="relative w-full lg:w-[42%] shrink-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 lg:self-stretch flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800">
+                  <div className="relative w-full lg:w-[42%] shrink-0 bg-gradient-to-br from-[#fff6f4] to-[#ffe9e7] dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 lg:self-stretch flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800">
                     <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800">
                       {cardImage ? (
                         <img
@@ -359,7 +359,7 @@ export default function CoursesPage() {
 
                     {/* Highlights — boxed and labelled, matching the identity
                         panel above so the card reads as two deliberate blocks. */}
-                    <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 mb-5">
+                    <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/70 backdrop-blur-xs dark:bg-slate-900/60 p-4 mb-5">
                       <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-2.5">
                         <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         Curriculum Highlights

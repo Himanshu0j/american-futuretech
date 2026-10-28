@@ -188,7 +188,7 @@ export default function CourseCard({ course, settings, className = '' }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* ── Poster: the program's own artwork behind its own headline ───── */}
-        <div className="lg:col-span-4 relative min-h-[260px] lg:min-h-[330px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
+        <div className="lg:col-span-3 relative min-h-[240px] lg:min-h-[300px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
             alt=""
@@ -200,14 +200,14 @@ export default function CourseCard({ course, settings, className = '' }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[rgb(var(--tw-ink-950)/96%)] via-[rgb(var(--tw-ink-950)/88%)] to-[rgb(var(--tw-ink-900)/55%)]" />
           <div className="absolute -top-16 -right-10 w-52 h-52 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.35),transparent_70%)] blur-xl" />
 
-          <div className="relative h-full p-5 sm:p-6 flex flex-col justify-between gap-4 text-white">
+          <div className="relative h-full p-4 sm:p-5 flex flex-col justify-between gap-3 text-white">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600 text-[10px] font-bold tracking-wide shadow-lg">
-                <Sparkles className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-600 text-[9px] font-bold tracking-wide shadow-lg">
+                <Sparkles className="w-2.5 h-2.5" />
                 {course.badge || 'Admissions Open'}
               </span>
 
-              <h3 className="mt-4 text-2xl sm:text-[28px] font-black font-heading leading-[1.12] tracking-tight text-white">
+              <h3 className="mt-3 text-xl sm:text-[22px] font-black font-heading leading-[1.15] tracking-tight text-white">
                 {lead}
                 {accent && <span className="text-blue-400">{accent}</span>}
                 {tail}
@@ -216,29 +216,29 @@ export default function CourseCard({ course, settings, className = '' }) {
               {/* Hidden on phones: the details column below prints the same
                   paragraph, and repeating it read as two cards. */}
               {description && (
-                <p className="hidden lg:block mt-3 text-[13px] leading-relaxed text-white/80 line-clamp-3">
+                <p className="hidden lg:block mt-2.5 text-[11.5px] leading-relaxed text-white/80 line-clamp-4">
                   {description}
                 </p>
               )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Stacked rows, not a three-across grid: the poster column is
                   narrow now, and three columns left a wide empty navy band
                   under the headline on every card. */}
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {POSTER_FEATURES.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2.5 text-[11px] font-semibold text-white/85">
-                    <span className="w-7 h-7 shrink-0 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-                      <Icon className="w-3.5 h-3.5 text-blue-300" />
+                  <div key={label} className="flex items-center gap-2 text-[10px] font-semibold text-white/85">
+                    <span className="w-6 h-6 shrink-0 rounded-md bg-white/10 border border-white/20 flex items-center justify-center">
+                      <Icon className="w-3 h-3 text-blue-300" />
                     </span>
                     {label}
                   </div>
                 ))}
               </div>
 
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/40 bg-white/5 text-[11px] font-bold backdrop-blur-xs">
-                <CalendarDays className="w-3.5 h-3.5 text-blue-300" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/40 bg-white/5 text-[10px] font-bold backdrop-blur-xs">
+                <CalendarDays className="w-3 h-3 text-blue-300" />
                 {`${duration} Program`}
               </span>
             </div>
@@ -246,7 +246,7 @@ export default function CourseCard({ course, settings, className = '' }) {
         </div>
 
         {/* ── Details column ─────────────────────────────────────────────── */}
-        <div className="lg:col-span-8 p-5 sm:p-6 flex flex-col gap-3.5">
+        <div className="lg:col-span-9 p-4 sm:p-5 flex flex-col gap-3">
           <div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-blue-300 whitespace-nowrap">
@@ -278,7 +278,7 @@ export default function CourseCard({ course, settings, className = '' }) {
                     <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
                       <Icon className="w-4 h-4 text-white" />
                     </span>
-                    <span className="text-[12.5px] font-semibold text-slate-700 dark:text-slate-200 leading-snug pt-1">
+                    <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-200 leading-snug pt-1">
                       {highlight}
                     </span>
                   </div>
@@ -291,7 +291,7 @@ export default function CourseCard({ course, settings, className = '' }) {
                 {tools.map((tool, index) => (
                   <div
                     key={`${tool.name}-${index}`}
-                    className={`flex items-center gap-2 px-3 py-2 border-slate-200/70 dark:border-slate-700 ${
+                    className={`flex items-center gap-2 px-2.5 py-1.5 border-slate-200/70 dark:border-slate-700 ${
                       index % 2 === 0 ? 'border-r' : ''
                     } ${index < tools.length - (tools.length % 2 === 0 ? 2 : 1) ? 'border-b' : ''}`}
                   >

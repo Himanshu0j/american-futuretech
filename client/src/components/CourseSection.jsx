@@ -64,7 +64,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
 
   return (
     <section id="courses" className="aft-cloud py-12 sm:py-16 relative z-10 bg-white dark:bg-[rgb(var(--tw-ink-800))] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-10 gap-6 text-left">
           <div className="max-w-2xl">

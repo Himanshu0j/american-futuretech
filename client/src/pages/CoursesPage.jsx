@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Clock, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Search, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck } from 'lucide-react';
 import { usePublicCourses } from '../lib/publicCourses';
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
@@ -13,9 +13,10 @@ import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { compareCoursesByOrder } from '../lib/courseOrder';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { formatDepositAmount, formatSeatDeposit, lowestSeatDeposit } from '../lib/seatDeposit';
+import { formatDepositAmount, lowestSeatDeposit } from '../lib/seatDeposit';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
+import CourseCard from '../components/CourseCard';
 
 /**
  * Brand logos for some enterprise tools are no longer served by any public icon
@@ -31,20 +32,6 @@ const toolMonogram = (name) =>
     .map((word) => word[0])
     .join('')
     .toUpperCase();
-
-/**
- * Artwork fallbacks for cards whose course has no uploaded image yet. A course
- * without a picture used to render no image slot at all, which read as "this
- * card has no image" rather than "nobody has added one".
- */
-const CARD_ART_GRADIENTS = [
-  'from-[rgb(var(--tw-ink-900))] via-[#1E2A4A] to-[rgb(var(--tw-blue-700))]',
-  'from-[rgb(var(--tw-ink-900))] via-[#123B3A] to-[rgb(var(--tw-blue-700))]',
-  'from-[#1B0B2A] via-[#3B1063] to-[#7C3AED]',
-  'from-[#2A0B1B] via-[#7F1D3A] to-[#BE123C]',
-  'from-[rgb(var(--tw-ink-900))] via-[#1F2A44] to-[#0891B2]',
-  'from-[#2A200B] via-[#78350F] to-[rgb(var(--tw-gold-600))]',
-];
 
 function ToolLogo({ name, logo }) {
   const [broken, setBroken] = useState(false);
@@ -246,167 +233,10 @@ export default function CoursesPage() {
                side by side, so the next specialization always starts on the
                line below the previous one. */
             <div className="grid grid-cols-1 gap-6">
-              {filteredCourses.map((course) => {
-                // Per-course image, uploaded or linked in the CMS. Any of the
-                // three image slots the course already has will do, so a course
-                // that only got a hero image still shows a picture here.
-                const cardImage = course.cardImage || course.thumbnail || course.heroImage || '';
-                // A course with no artwork still gets a designed image panel —
-                // before this the picture simply vanished and the card looked
-                // like it had no image slot at all.
-                const artGradient = CARD_ART_GRADIENTS[
-                  Math.abs(String(course.slug || course.title || '').length) % CARD_ART_GRADIENTS.length
-                ];
-                // This program's reservation fee — its own $499 when Admin →
-                // Courses set one, otherwise the site default.
-                const courseDeposit = formatSeatDeposit(settings, course);
-                const artInitials = String(course.title || '')
-                  .split(/[\s&/]+/)
-                  .filter(Boolean)
-                  .slice(0, 3)
-                  .map((w) => w[0])
-                  .join('')
-                  .toUpperCase();
+              {filteredCourses.map((course) => (
+                <CourseCard key={course._id || course.slug} course={course} className="w-full" />
+              ))}
 
-                // Warm brand shadow, matching the home page's cards: the client
-                // asked for "thoda red shadow har box" on the catalogue too. Two
-                // layers — a close contact shadow for the card's edge and a wide,
-                // soft red bloom — so it reads as depth, not a red glow. The hover
-                // state deepens the same two layers instead of switching to a grey
-                // shadow, which used to snap the colour away under the pointer.
-                return (
-                <div
-                  key={course._id}
-                  className="elms-card text-left group aft-course-cloud border border-slate-200 dark:border-slate-800 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.05),0_20px_44px_-28px_rgba(0,32,96,0.38)] hover:border-[rgb(var(--tw-ink-900)/22%)] dark:hover:border-blue-500/40 hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_26px_56px_-30px_rgba(0,32,96,0.45)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col lg:flex-row"
-                >
-                  {/* Course image panel — a clean RECTANGLE beside the details on
-                      desktop, a wide banner on phones, and the picture is
-                      `object-contain`, so the WHOLE artwork is visible: nothing
-                      is cropped top/bottom/sides any more (the client's "image
-                      puri dikhe" report). The panel keeps a fixed 4:3 frame so
-                      cards of different images still line up, and the letterbox
-                      area is a soft brand tint rather than a white gap. */}
-                  <div className="relative w-full lg:w-[42%] shrink-0 bg-gradient-to-br from-[#fff6f4] to-[#ffe9e7] dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 lg:self-stretch flex items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800">
-                    <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800">
-                      {cardImage ? (
-                        <img
-                          src={cardImage}
-                          alt={course.title}
-                          className="absolute inset-0 w-full h-full object-contain object-center group-hover:scale-[1.02] transition-transform duration-700"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <div className={`absolute inset-0 bg-gradient-to-br ${artGradient} flex items-center justify-center`}>
-                          <span className="text-4xl font-black font-display tracking-tight text-white/85">
-                            {artInitials}
-                          </span>
-                        </div>
-                      )}
-
-                      {course.badge && (
-                        <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-[rgb(var(--tw-ink-900)/88%)] text-[color:rgb(var(--tw-gold-400))] text-[10px] font-bold uppercase tracking-wider backdrop-blur-xs">
-                          {course.badge}
-                        </span>
-                      )}
-
-                      <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-full bg-[rgb(var(--tw-ink-900)/88%)] text-white text-[11px] font-bold flex items-center gap-1.5 backdrop-blur-xs">
-                        <Clock className="w-3.5 h-3.5 text-[color:rgb(var(--tw-gold-400))]" />
-                        {course.duration || '6 Months'} · Mentor-led
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-5 sm:p-6 flex-1 min-w-0 flex flex-col justify-between">
-                  <div className="min-w-0">
-                    {/* Program identity block. The client circled this area on the
-                        live page and asked for a real box around it instead of
-                        loose text floating on white — and for that box to carry
-                        a light colour. Same treatment as the homepage card. */}
-                    <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50 via-sky-50/70 to-white p-4 shadow-xs dark:border-blue-900/50 dark:from-blue-950/40 dark:via-slate-900 dark:to-slate-900/40">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="text-[11px] font-mono text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full font-bold truncate min-w-0 max-w-[70%] border border-blue-200/50 dark:border-blue-800/50">
-                        {course.category}
-                      </span>
-                      <span className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full whitespace-nowrap border border-blue-200 dark:border-blue-800">
-                        6-Month Track
-                      </span>
-                    </div>
-
-                    <Link to={`/courses/${course.slug}`}>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
-                        {course.title}
-                      </h3>
-                    </Link>
-
-                    <p className="text-slate-700 dark:text-slate-300 text-xs mt-2 line-clamp-2 leading-relaxed">
-                      {course.shortDescription || course.description}
-                    </p>
-                    </div>
-
-                    {/* Meta details */}
-                    <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400 mt-4 mb-3 py-2 border-y border-slate-100 dark:border-slate-800">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                        <span>{course.duration || '6 Months (24 Wks)'}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-red-500 fill-red-500" />
-                        <span className="font-bold text-slate-900 dark:text-white">{course.rating || '4.9'}</span>
-                        <span className="text-slate-400">({course.reviewsCount || '320'})</span>
-                      </div>
-                    </div>
-
-                    {/* Highlights — boxed and labelled, matching the identity
-                        panel above so the card reads as two deliberate blocks. */}
-                    <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white/70 backdrop-blur-xs dark:bg-slate-900/60 p-4 mb-5">
-                      <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-2.5">
-                        <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                        Curriculum Highlights
-                      </div>
-                      <div className="space-y-1.5">
-                        {(course.highlights || ['Live Weekend Interactive Labs', '1-on-1 Faculty Mentorship', 'Accredited US Digital Credential']).slice(0, 3).map((h, i) => (
-                          <div key={i} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-                            <span>{h}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pricing and Action CTAs */}
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex items-baseline justify-between gap-2 flex-wrap mb-3">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-xl font-extrabold text-slate-900 dark:text-white font-mono">${course.pricing?.discountedPrice || 499}</span>
-                        <span className="text-xs text-slate-400 line-through font-mono">${course.pricing?.basePrice || course.pricing?.originalPrice || 1299}</span>
-                      </div>
-                      <span data-no-edit="true" className="text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                        {`Reserve with ${courseDeposit}`}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link
-                        to={`/courses/${course.slug}`}
-                        className="elms-btn-secondary !text-xs !py-2 !px-3 text-center justify-center font-bold"
-                      >
-                        Details
-                      </Link>
-                      <Link
-                        to={`/checkout?courseId=${course._id}&tier=deposit`}
-                        data-no-edit="true"
-                        className="elms-btn-primary !text-xs !py-2 !px-3 text-center justify-center font-bold"
-                      >
-                        {`Reserve ${courseDeposit} →`}
-                      </Link>
-                    </div>
-                  </div>
-                  </div>
-                </div>
-                );
-              })}
             </div>
           )}
         </section>

@@ -198,6 +198,22 @@ const CourseSchema = new mongoose.Schema({
     type: String,
     default: '6 Months',
   },
+  // ── The meta strip on the course card ──
+  // Duration · Schedule · Batch size · Mode. These are printed per program on
+  // the card the client designed, so a weekend-only cohort or a capped batch
+  // can say so instead of every card inheriting one site-wide sentence.
+  schedule: {
+    type: String,
+    default: 'Sat & Sun (2 hrs/day)',
+  },
+  batchSize: {
+    type: String,
+    default: 'Capped at 30 Fellows',
+  },
+  mode: {
+    type: String,
+    default: 'Live Online + LMS',
+  },
   pricing: {
     basePrice: { type: Number, default: 2499 },
     discountedPrice: { type: Number, default: 1899 },

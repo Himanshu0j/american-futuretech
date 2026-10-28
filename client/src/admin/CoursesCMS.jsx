@@ -101,6 +101,10 @@ export default function CoursesCMS() {
   const [badge, setBadge] = useState('Most Popular');
   const [cardTheme, setCardTheme] = useState('cyan');
   const [duration, setDuration] = useState('6 Months');
+  // Meta strip shown on the course card (Duration · Schedule · Batch · Mode).
+  const [schedule, setSchedule] = useState('Sat & Sun (2 hrs/day)');
+  const [batchSize, setBatchSize] = useState('Capped at 30 Fellows');
+  const [mode, setMode] = useState('Live Online + LMS');
   // Where this program sits in the site's running order (Admin → Courses →
   // ↑/↓ below, or this field). The homepage, the /courses catalogue and the
   // header CAREER PROGRAMS menu all read it.
@@ -195,6 +199,9 @@ export default function CoursesCMS() {
     setBadge('');
     setCardTheme('cyan');
     setDuration('6 Months');
+    setSchedule('Sat & Sun (2 hrs/day)');
+    setBatchSize('Capped at 30 Fellows');
+    setMode('Live Online + LMS');
     // A brand-new program starts at the end of the sequence rather than
     // jumping to the front of the homepage.
     setDisplayOrder(courses.length + 1);
@@ -239,6 +246,9 @@ export default function CoursesCMS() {
     setBadge(course.badge || '');
     setCardTheme(course.cardTheme || 'cyan');
     setDuration(course.duration || '6 Months');
+    setSchedule(course.schedule || 'Sat & Sun (2 hrs/day)');
+    setBatchSize(course.batchSize || 'Capped at 30 Fellows');
+    setMode(course.mode || 'Live Online + LMS');
     setDisplayOrder(course.displayOrder || 1);
     setBasePrice(course.pricing?.basePrice || 2499);
     setDiscountedPrice(course.pricing?.discountedPrice || 1899);
@@ -505,6 +515,9 @@ export default function CoursesCMS() {
       badge,
       cardTheme,
       duration,
+      schedule,
+      batchSize,
+      mode,
       displayOrder: Number(displayOrder) || 1,
       pricing: {
         basePrice: Number(basePrice),
@@ -1009,6 +1022,39 @@ export default function CoursesCMS() {
                     type="text"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Schedule</label>
+                  <input
+                    type="text"
+                    value={schedule}
+                    onChange={(e) => setSchedule(e.target.value)}
+                    placeholder="Sat & Sun (2 hrs/day)"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Batch Size</label>
+                  <input
+                    type="text"
+                    value={batchSize}
+                    onChange={(e) => setBatchSize(e.target.value)}
+                    placeholder="Capped at 30 Fellows"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Mode</label>
+                  <input
+                    type="text"
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value)}
+                    placeholder="Live Online + LMS"
                     className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs"
                   />
                 </div>

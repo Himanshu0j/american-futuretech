@@ -188,7 +188,7 @@ export default function CourseCard({ course, settings, className = '' }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* ── Poster: the program's own artwork behind its own headline ───── */}
-        <div className="lg:col-span-5 relative min-h-[320px] lg:min-h-[420px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
+        <div className="lg:col-span-4 relative min-h-[260px] lg:min-h-[330px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
             alt=""
@@ -200,14 +200,14 @@ export default function CourseCard({ course, settings, className = '' }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[rgb(var(--tw-ink-950)/96%)] via-[rgb(var(--tw-ink-950)/88%)] to-[rgb(var(--tw-ink-900)/55%)]" />
           <div className="absolute -top-16 -right-10 w-52 h-52 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.35),transparent_70%)] blur-xl" />
 
-          <div className="relative h-full p-6 sm:p-7 flex flex-col justify-between gap-6 text-white">
+          <div className="relative h-full p-5 sm:p-6 flex flex-col justify-between gap-4 text-white">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600 text-[11px] font-bold tracking-wide shadow-lg">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600 text-[10px] font-bold tracking-wide shadow-lg">
                 <Sparkles className="w-3 h-3" />
                 {course.badge || 'Admissions Open'}
               </span>
 
-              <h3 className="mt-5 text-3xl sm:text-4xl font-black font-heading leading-[1.1] tracking-tight text-white">
+              <h3 className="mt-4 text-2xl sm:text-[28px] font-black font-heading leading-[1.12] tracking-tight text-white">
                 {lead}
                 {accent && <span className="text-blue-400">{accent}</span>}
                 {tail}
@@ -216,25 +216,28 @@ export default function CourseCard({ course, settings, className = '' }) {
               {/* Hidden on phones: the details column below prints the same
                   paragraph, and repeating it read as two cards. */}
               {description && (
-                <p className="hidden lg:block mt-4 text-sm leading-relaxed text-white/80 line-clamp-3">
+                <p className="hidden lg:block mt-3 text-[13px] leading-relaxed text-white/80 line-clamp-3">
                   {description}
                 </p>
               )}
             </div>
 
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-4">
+              {/* Stacked rows, not a three-across grid: the poster column is
+                  narrow now, and three columns left a wide empty navy band
+                  under the headline on every card. */}
+              <div className="space-y-2.5">
                 {POSTER_FEATURES.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2 text-[11px] font-semibold text-white/85">
-                    <span className="w-8 h-8 shrink-0 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-blue-300" />
+                  <div key={label} className="flex items-center gap-2.5 text-[11px] font-semibold text-white/85">
+                    <span className="w-7 h-7 shrink-0 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                      <Icon className="w-3.5 h-3.5 text-blue-300" />
                     </span>
                     {label}
                   </div>
                 ))}
               </div>
 
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/40 bg-white/5 text-xs font-bold backdrop-blur-xs">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/40 bg-white/5 text-[11px] font-bold backdrop-blur-xs">
                 <CalendarDays className="w-3.5 h-3.5 text-blue-300" />
                 {`${duration} Program`}
               </span>
@@ -243,7 +246,7 @@ export default function CourseCard({ course, settings, className = '' }) {
         </div>
 
         {/* ── Details column ─────────────────────────────────────────────── */}
-        <div className="lg:col-span-7 p-5 sm:p-7 flex flex-col gap-5">
+        <div className="lg:col-span-8 p-5 sm:p-6 flex flex-col gap-3.5">
           <div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-blue-300 whitespace-nowrap">
@@ -267,15 +270,15 @@ export default function CourseCard({ course, settings, className = '' }) {
 
           {/* Highlights + tool stack share one bordered block, like the reference. */}
           <div className="rounded-2xl border border-slate-200/90 dark:border-slate-700 bg-white/75 backdrop-blur-xs dark:bg-slate-900/60 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
-            <div className="lg:col-span-7 p-4 space-y-3 lg:border-r border-slate-200/80 dark:border-slate-700">
+            <div className="lg:col-span-7 p-3.5 space-y-2.5 lg:border-r border-slate-200/80 dark:border-slate-700">
               {highlights.map((highlight, index) => {
                 const Icon = HIGHLIGHT_ICONS[index % HIGHLIGHT_ICONS.length];
                 return (
                   <div key={`${highlight}-${index}`} className="flex items-start gap-3">
-                    <span className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
+                    <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
                       <Icon className="w-4 h-4 text-white" />
                     </span>
-                    <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 leading-snug pt-1.5">
+                    <span className="text-[12.5px] font-semibold text-slate-700 dark:text-slate-200 leading-snug pt-1">
                       {highlight}
                     </span>
                   </div>
@@ -288,7 +291,7 @@ export default function CourseCard({ course, settings, className = '' }) {
                 {tools.map((tool, index) => (
                   <div
                     key={`${tool.name}-${index}`}
-                    className={`flex items-center gap-2 px-3 py-2.5 border-slate-200/70 dark:border-slate-700 ${
+                    className={`flex items-center gap-2 px-3 py-2 border-slate-200/70 dark:border-slate-700 ${
                       index % 2 === 0 ? 'border-r' : ''
                     } ${index < tools.length - (tools.length % 2 === 0 ? 2 : 1) ? 'border-b' : ''}`}
                   >
@@ -309,7 +312,7 @@ export default function CourseCard({ course, settings, className = '' }) {
           </div>
 
           {/* Duration / schedule / batch / mode */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-3 gap-x-3">
             {metaItems.map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-2 lg:border-l lg:first:border-l-0 lg:pl-3 lg:first:pl-0 border-slate-200 dark:border-slate-700">
                 <Icon className="w-4 h-4 mt-0.5 shrink-0 text-[color:rgb(var(--tw-ink-900))] dark:text-blue-300" />
@@ -322,11 +325,11 @@ export default function CourseCard({ course, settings, className = '' }) {
           </div>
 
           {/* Tuition + CTAs */}
-          <div className="mt-auto pt-5 border-t border-slate-200/80 dark:border-slate-700 flex flex-wrap lg:flex-nowrap items-end justify-between gap-4">
+          <div className="mt-auto pt-4 border-t border-slate-200/80 dark:border-slate-700 flex flex-wrap lg:flex-nowrap items-end justify-between gap-4">
             <div className="min-w-0">
               <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Tuition &amp; Reservation</div>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="text-[28px] leading-none font-black font-mono text-slate-900 dark:text-white">
+                <span className="text-2xl leading-none font-black font-mono text-slate-900 dark:text-white">
                   ${price}
                 </span>
                 {original > price && (

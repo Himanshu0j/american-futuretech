@@ -188,7 +188,7 @@ export default function CourseCard({ course, settings, className = '' }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* ── Poster: the program's own artwork behind its own headline ───── */}
-        <div className="lg:col-span-3 relative min-h-[240px] lg:min-h-[300px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
+        <div className="lg:col-span-3 relative min-h-[130px] sm:min-h-[230px] lg:min-h-[300px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
             alt=""
@@ -207,7 +207,9 @@ export default function CourseCard({ course, settings, className = '' }) {
                 {course.badge || 'Admissions Open'}
               </span>
 
-              <h3 className="mt-3 text-xl sm:text-[22px] font-black font-heading leading-[1.15] tracking-tight text-white">
+              {/* Phones print the title once, in the details column — the poster
+                  is an artwork strip there instead of a second headline. */}
+              <h3 className="hidden sm:block mt-3 text-xl sm:text-[22px] font-black font-heading leading-[1.15] tracking-tight text-white">
                 {lead}
                 {accent && <span className="text-blue-400">{accent}</span>}
                 {tail}
@@ -226,7 +228,7 @@ export default function CourseCard({ course, settings, className = '' }) {
               {/* Stacked rows, not a three-across grid: the poster column is
                   narrow now, and three columns left a wide empty navy band
                   under the headline on every card. */}
-              <div className="space-y-2">
+              <div className="hidden sm:block space-y-2">
                 {POSTER_FEATURES.map(({ icon: Icon, label }) => (
                   <div key={label} className="flex items-center gap-2 text-[10px] font-semibold text-white/85">
                     <span className="w-6 h-6 shrink-0 rounded-md bg-white/10 border border-white/20 flex items-center justify-center">
@@ -246,7 +248,7 @@ export default function CourseCard({ course, settings, className = '' }) {
         </div>
 
         {/* ── Details column ─────────────────────────────────────────────── */}
-        <div className="lg:col-span-9 p-4 sm:p-5 flex flex-col gap-3">
+        <div className="lg:col-span-9 p-4 sm:p-5 flex flex-col gap-2.5 sm:gap-3">
           <div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-blue-300 whitespace-nowrap">
@@ -264,7 +266,9 @@ export default function CourseCard({ course, settings, className = '' }) {
             </Link>
 
             {description && (
-              <p className="mt-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{description}</p>
+              <p className="mt-2 text-[13px] sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-3 sm:line-clamp-none">
+                {description}
+              </p>
             )}
           </div>
 
@@ -275,8 +279,8 @@ export default function CourseCard({ course, settings, className = '' }) {
                 const Icon = HIGHLIGHT_ICONS[index % HIGHLIGHT_ICONS.length];
                 return (
                   <div key={`${highlight}-${index}`} className="flex items-start gap-3">
-                    <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
-                      <Icon className="w-4 h-4 text-white" />
+                    <span className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                     </span>
                     <span className="text-[12px] font-semibold text-slate-700 dark:text-slate-200 leading-snug pt-1">
                       {highlight}
@@ -291,9 +295,12 @@ export default function CourseCard({ course, settings, className = '' }) {
                 {tools.map((tool, index) => (
                   <div
                     key={`${tool.name}-${index}`}
-                    className={`flex items-center gap-2 px-2.5 py-1.5 border-slate-200/70 dark:border-slate-700 ${
-                      index % 2 === 0 ? 'border-r' : ''
-                    } ${index < tools.length - (tools.length % 2 === 0 ? 2 : 1) ? 'border-b' : ''}`}
+                    className={`items-center gap-2 px-2.5 py-1.5 border-slate-200/70 dark:border-slate-700 ${
+                      /* Phones print four tools — two tidy rows — instead of
+                         three, which kept the stack shorter than the copy. */
+                      index >= 4 ? 'hidden sm:flex' : 'flex'
+                    } ${index % 2 === 0 ? 'border-r' : ''}
+                    ${index < tools.length - (tools.length % 2 === 0 ? 2 : 1) ? 'border-b' : ''}`}
                   >
                     {tool.logo ? (
                       <img src={tool.logo} alt="" className="w-5 h-5 shrink-0 object-contain" loading="lazy" decoding="async" />
@@ -329,7 +336,7 @@ export default function CourseCard({ course, settings, className = '' }) {
             <div className="min-w-0">
               <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Tuition &amp; Reservation</div>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="text-2xl leading-none font-black font-mono text-slate-900 dark:text-white">
+                <span className="text-[22px] sm:text-2xl leading-none font-black font-mono text-slate-900 dark:text-white">
                   ${price}
                 </span>
                 {original > price && (
@@ -343,11 +350,11 @@ export default function CourseCard({ course, settings, className = '' }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 shrink-0">
+            <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
               <Link
                 to={checkoutHref}
                 data-no-edit="true"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[color:rgb(var(--tw-blue-700))] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-950 transition-colors"
+                className="inline-flex flex-1 sm:flex-none justify-center items-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[color:rgb(var(--tw-blue-700))] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-950 transition-colors"
               >
                 <Clock3 className="w-3.5 h-3.5" />
                 {`Reserve with ${deposit}`}
@@ -355,7 +362,7 @@ export default function CourseCard({ course, settings, className = '' }) {
               <Link
                 to={checkoutHref}
                 data-no-edit="true"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-800))] text-white text-xs font-bold transition-colors shadow-sm"
+                className="inline-flex flex-1 sm:flex-none justify-center items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-lg bg-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-800))] text-white text-xs font-bold transition-colors shadow-sm"
               >
                 Enroll Now
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -364,7 +371,7 @@ export default function CourseCard({ course, settings, className = '' }) {
           </div>
 
           {/* The promise line the old card printed as bare text. */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="hidden sm:flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               {course.cohort || 'Next cohort enrolment open'}

@@ -79,7 +79,7 @@ export default function DifferentiatorsSection() {
                 key={title}
                 className={`text-center ${index % 2 === 1 ? 'lg:translate-y-10' : ''}`}
               >
-                <div className="aft-red-card mx-2 rounded-[22px] px-5 py-6 ring-1 ring-white/25">
+                <div className="aft-blue-card mx-2 rounded-[22px] px-5 py-6 ring-1 ring-white/25">
                   <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-transform duration-500 ease-spring hover:-translate-y-1.5 hover:rotate-3">
                     <Icon className="h-7 w-7 text-[color:rgb(var(--tw-gold-600))]" />
                   </div>

@@ -60,7 +60,7 @@ export default function LearnerVoicesSection() {
   if (!stories.length) return null;
 
   return (
-    <section id="learner-voices" className="relative overflow-hidden bg-[#fffcf9] py-14 sm:py-20">
+    <section id="learner-voices" className="aft-cloud relative overflow-hidden bg-[#fffcf9] py-14 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">

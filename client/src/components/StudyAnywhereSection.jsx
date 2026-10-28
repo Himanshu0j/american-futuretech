@@ -39,7 +39,7 @@ export default function StudyAnywhereSection() {
 
             {/* Small proof chip, floating so the band has one moving element even
                 before the visitor scrolls into the feature list. */}
-            <div className="aft-red-card absolute -bottom-5 right-4 flex items-center gap-2.5 rounded-2xl px-4 py-3 ring-1 ring-white/25 animate-float-slow sm:right-8">
+            <div className="aft-blue-card absolute -bottom-5 right-4 flex items-center gap-2.5 rounded-2xl px-4 py-3 ring-1 ring-white/25 animate-float-slow sm:right-8">
               <CheckCircle2 className="h-5 w-5 text-white" />
               <div className="text-left">
                 <div className="text-xs font-bold text-white">
@@ -67,7 +67,7 @@ export default function StudyAnywhereSection() {
               {FEATURES.map(({ icon: Icon, title, body }) => (
                 <div
                   key={title}
-                  className="aft-red-card group rounded-2xl p-5 ring-1 ring-white/25 transition-transform duration-300 hover:-translate-y-1"
+                  className="aft-blue-card group rounded-2xl p-5 ring-1 ring-white/25 transition-transform duration-300 hover:-translate-y-1"
                 >
                   <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-all duration-300 group-hover:-translate-y-1">
                     <Icon className="h-5 w-5 text-[color:rgb(var(--tw-gold-600))]" />

@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  ArrowRight,
-  Briefcase,
-  CheckCircle2,
-  Pause,
-  Play,
-  Users,
-} from 'lucide-react';
+import { ArrowRight, Briefcase, Pause, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import LottieArt from './LottieArt';
-import heroOnlineLearningSvg from '../assets/illustrations/hero/hero-online-learning.svg';
 // Remote working professionals on the job — served from /public so the photo is
 // not bundled into the JS chunk, and cropped to this card's own aspect ratio (see
 // scratch/build-hero-image.py) so `object-cover` never eats the subject.
@@ -312,20 +302,25 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
 
             {/* Trust Microcopy Ledger */}
             <div className="anim-hero-cta pt-5 w-full border-t border-hairline dark:border-slate-800">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-left pt-2">
-                <div>
-                  <div className="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-1">
+              {/* Boxed ledger: the three promises used to be bare text columns
+                  on the photograph, where the small lines had no edge to hold
+                  them. Each one is its own soft card now — pale rose surface,
+                  thin border, a shadow just deep enough to lift it off the
+                  gowns behind. */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left pt-2">
+                <div className="rounded-xl border border-[#f0d9d7] bg-[#fff9f8]/95 px-3.5 py-3 shadow-[0_10px_22px_-18px_rgba(0,32,96,0.55)] backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white font-heading">
                     <span>★ 4.9 / 5.0</span>
                   </div>
                   <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Graduate Satisfaction</div>
                 </div>
 
-                <div>
+                <div className="rounded-xl border border-[#f0d9d7] bg-[#fff9f8]/95 px-3.5 py-3 shadow-[0_10px_22px_-18px_rgba(0,32,96,0.55)] backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
                   <div className="text-sm font-bold text-slate-900 dark:text-white font-heading">100% Verifiable</div>
                   <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Accredited US Registry</div>
                 </div>
 
-                <div className="col-span-2 sm:col-span-1">
+                <div className="col-span-2 rounded-xl border border-[#f0d9d7] bg-[#fff9f8]/95 px-3.5 py-3 shadow-[0_10px_22px_-18px_rgba(0,32,96,0.55)] backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80 sm:col-span-1">
                   <div data-no-edit="true" className="text-sm font-bold text-gold-700 dark:text-gold-300 font-heading font-mono">{`${depositAmount} Deposit`}</div>
                   <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">Risk-Free Reservation</div>
                 </div>
@@ -341,89 +336,18 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
           </div>
 
           {/* ============================================================
-              RIGHT COLUMN: Layered Visual Composition & Real LMS Product Cockpit
+              RIGHT COLUMN: the promo clip, full width and nothing else.
               ============================================================ */}
           <div
-            className="lg:col-span-6 anim-hero-preview w-full relative parallax-layer pt-7"
+            className="lg:col-span-6 anim-hero-preview w-full relative parallax-layer"
             style={{ transform: `translate3d(${mousePos.x}px, ${mousePos.y}px, 0)` }}
           >
-            {/* Ambient Radial Backlight Glow */}
+            {/* Ambient backlight — blue on the left, a warm rose cloud on the
+                right, so the clip sits in a lit field rather than on white. */}
             <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 via-blue-500/10 to-transparent rounded-3xl blur-2xl -z-10 pointer-events-none" />
+            <div className="absolute -inset-6 bg-[radial-gradient(closest-side,rgba(240,0,0,0.10),transparent_78%)] blur-2xl -z-10 pointer-events-none" />
 
-            {/* Top-Left Floating Mentor Status Badge */}
-            <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-lg absolute -top-1 -left-3 z-20 animate-float-slow">
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
-                <Users className="w-4 h-4" />
-              </div>
-              <div className="text-left">
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>1-on-1 Faculty Mentorship</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                </div>
-                <div className="text-[10px] text-slate-500 font-medium">Silicon Valley Faculty Active</div>
-              </div>
-            </div>
-
-            {/* Top-Right Floating Velocity Metric Badge */}
-            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-lg absolute -top-1 -right-3 z-20 animate-float-drift">
-              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-[11px]">
-                ⚡
-              </div>
-              <div className="text-left">
-                <div className="text-[11px] font-bold text-slate-900 dark:text-white">6-Month Career Track</div>
-                <div className="text-[9px] text-slate-500 font-mono">Accelerated Placement</div>
-              </div>
-            </div>
-
-            {/* The two credential pins that used to hang off the panel's lower
-                corners (Cloud GPU Lab / Accredited US Diploma) are gone: the clip
-                is the panel's full width now, so they only sat on top of the
-                caption. The upper two pins stay — they label the fellowship and
-                the track without covering any video. */}
-
-            {/* Sourced unDraw Hero Illustration Banner */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="mt-6 mb-3 flex items-center justify-between p-3 rounded-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-md relative z-10"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 p-1 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
-                  {/* Sourced LottieFiles mark, recoloured to the brand palette.
-                      Keeps the static illustration behind it while the chunk
-                      loads, so the badge never flashes an empty square. */}
-                  <LottieArt
-                    name="graduation-cap"
-                    eager
-                    className="w-full h-full"
-                    fallback={
-                      <img
-                        src={heroOnlineLearningSvg}
-                        alt=""
-                        className="w-full h-full object-contain"
-                      />
-                    }
-                  />
-                </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black font-heading text-slate-900 dark:text-white">
-                      Silicon Valley Technology Fellowships
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-[10px] font-mono font-bold">
-                      Cohort 2026
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    6-Month Career Programs · 1-on-1 Personalized Mentoring · Production Sandboxes
-                  </div>
-                </div>
-              </div>
-
-            </motion.div>
-
-                        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-left relative z-10">
+            <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-left relative z-10">
               {/* The hero is the client's promo clip and nothing else.
 
                   On the live page the clip sat inside a fake browser window: a
@@ -433,6 +357,12 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                   and asked to go ("sirf video dekhe"), along with the four other
                   tab views that only that strip could reach — see git history if
                   they are ever wanted back.
+
+                  The badges that floated above the frame (mentorship pin, career
+                  track pin) and the fellowship strip between them are gone too:
+                  the clip is the whole visual now, with nothing stacked over it
+                  and no caption burned into its lower half. Only the pause control
+                  stays, because WCAG 2.2.2 asks for a way to stop the motion.
 
                   What is left is the panel's full width as a true 16:9 rectangle.
                   The clip is 1080x608 (already 1.78:1), so `object-cover` in this
@@ -474,28 +404,6 @@ export default function Hero({ onOpenLeadModal, onExploreCourses }) {
                     />
                   </picture>
                 )}
-
-                {/* Scrim + caption: the clip fills the panel edge to edge now, so
-                    the caption needs the gradient to stay readable over any frame.
-                    Both are pointer-events-none so they cannot swallow clicks. */}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent pointer-events-none" />
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 pointer-events-none">
-                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-wider">
-                      Live Silicon Valley Ecosystem
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-500/30 text-[10px] font-mono font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                      Active Cohort
-                    </span>
-                  </div>
-                  <h3 className="text-white font-bold text-lg sm:text-2xl font-heading drop-shadow-lg">
-                    American FutureTech Innovation Lab
-                  </h3>
-                  <p className="text-slate-200 text-xs sm:text-sm mt-1 max-w-lg">
-                    Enterprise cloud environments, dedicated workstations, and live 1-on-1 faculty coaching.
-                  </p>
-                </div>
 
                 {/* Pause / play — the clip loops, so WCAG 2.2.2 asks for a visible
                     way to stop the motion. */}

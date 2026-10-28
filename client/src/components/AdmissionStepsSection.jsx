@@ -190,7 +190,7 @@ export default function AdmissionStepsSection() {
         </div>
 
         {/* The panel swaps content; keying it on the step restarts the fade. */}
-        <div className="aft-red-card mt-10 overflow-hidden rounded-[26px] ring-1 ring-white/20">
+        <div className="aft-blue-card mt-10 overflow-hidden rounded-[26px] ring-1 ring-white/20">
           <div key={step.label} className="animate-step-in p-6 sm:p-9">
             <div className="flex flex-wrap items-center gap-3">
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-white text-[color:rgb(var(--tw-gold-600))] ring-1 ring-white/25">
@@ -216,7 +216,7 @@ export default function AdmissionStepsSection() {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 to="/register"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-heading text-sm font-bold text-[#8c1c1c] shadow-[0_16px_34px_-18px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-heading text-sm font-bold text-[#0b3168] shadow-[0_16px_34px_-18px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-white/90"
               >
                 Start registration
                 <ArrowRight className="h-4 w-4" />

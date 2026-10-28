@@ -124,7 +124,7 @@ const ART = { data: DataArt, shield: ShieldArt, cloud: CloudArt };
 
 export default function PopularCategoriesSection() {
   return (
-    <section id="popular-categories" className="bg-[#fffcf9] py-14 sm:py-20">
+    <section id="popular-categories" className="aft-cloud bg-[#fffcf9] py-14 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[32px] bg-[#faf0ee] px-4 py-10 ring-1 ring-[rgb(var(--tw-ink-900)/6%)] sm:px-8 sm:py-12">
           {/* Dotted paper texture, the way the reference art sits on graph paper. */}

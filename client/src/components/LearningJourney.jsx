@@ -230,7 +230,7 @@ export default function LearningJourney() {
   const current = steps[activeStep];
 
   return (
-    <section id="journey" className="py-12 sm:py-16 bg-[#F7F7F5] text-[#1b1b1b] relative z-10 overflow-hidden">
+    <section id="journey" className="aft-cloud py-12 sm:py-16 bg-[#F7F7F5] text-[#1b1b1b] relative z-10 overflow-hidden">
       {/* Subtle Background Accent */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[rgb(var(--tw-gold-500)/10%)] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[rgb(var(--tw-blue-700)/10%)] rounded-full blur-3xl pointer-events-none" />

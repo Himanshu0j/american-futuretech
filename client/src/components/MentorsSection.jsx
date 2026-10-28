@@ -96,7 +96,7 @@ export default function MentorsSection() {
               key={mentor.name}
               className="group w-[76%] shrink-0 snap-start sm:w-[44%] lg:w-auto"
             >
-              <div className="aft-red-card aft-lift rounded-[22px] p-2.5 ring-1 ring-white/25">
+              <div className="aft-blue-card aft-lift rounded-[22px] p-2.5 ring-1 ring-white/25">
                 <div className="relative overflow-hidden rounded-[16px] ring-1 ring-[rgb(var(--tw-ink-900)/8%)]">
                   <img
                     src={mentor.image}

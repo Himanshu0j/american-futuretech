@@ -31,7 +31,7 @@ export default function GrowthSection() {
               moves up a level, not just your certificate count.
             </p>
 
-            <dl className="aft-red-card mt-8 grid max-w-md grid-cols-2 gap-6 rounded-2xl p-5 ring-1 ring-white/25">
+            <dl className="aft-blue-card mt-8 grid max-w-md grid-cols-2 gap-6 rounded-2xl p-5 ring-1 ring-white/25">
               <div>
                 <dt className="font-heading text-2xl font-bold text-white">
                   12 yrs
@@ -94,7 +94,7 @@ export default function GrowthSection() {
                 />
               </div>
 
-              <div className="aft-red-card absolute left-[13%] top-[6%] hidden items-center gap-2 rounded-2xl px-4 py-3 ring-1 ring-white/25 animate-float-slow sm:flex">
+              <div className="aft-blue-card absolute left-[13%] top-[6%] hidden items-center gap-2 rounded-2xl px-4 py-3 ring-1 ring-white/25 animate-float-slow sm:flex">
                 <Star className="h-4 w-4 text-[#FFC86B]" />
                 <div>
                   <div className="font-heading text-xs font-bold text-white">
@@ -105,7 +105,7 @@ export default function GrowthSection() {
               </div>
             </div>
 
-            <figure className="aft-red-card relative mx-auto -mt-10 w-[92%] max-w-lg rounded-2xl p-5 ring-1 ring-white/25 sm:-mt-16 sm:ml-0 lg:-mt-14 lg:w-[86%]">
+            <figure className="aft-blue-card relative mx-auto -mt-10 w-[92%] max-w-lg rounded-2xl p-5 ring-1 ring-white/25 sm:-mt-16 sm:ml-0 lg:-mt-14 lg:w-[86%]">
               <Quote className="absolute -top-3 left-5 h-7 w-7 rounded-full bg-white p-1.5 text-[color:rgb(var(--tw-gold-600))]" />
               <blockquote className="mt-2 text-sm leading-relaxed text-white/90">
                 They did not just teach the stack. They reviewed every pull request until it was

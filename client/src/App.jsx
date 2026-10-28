@@ -7,7 +7,6 @@ import WhatIsSection from './components/WhatIsSection';
 import MetricsStrip from './components/MetricsStrip';
 import TrustMarquee from './components/TrustMarquee';
 import CourseSection from './components/CourseSection';
-import WhyChooseUs from './components/WhyChooseUs';
 import PopularCategoriesSection from './components/PopularCategoriesSection';
 import LearnerVoicesSection from './components/LearnerVoicesSection';
 import MentorsSection from './components/MentorsSection';
@@ -257,8 +256,11 @@ function LandingPage() {
           <PlacementRoadmap onOpenLeadModal={() => handleOpenLeadModal(null)} />
         )}
 
-        {/* Real Product Showcase & Architectural Depth */}
-        {visibility.whyChooseUs !== false && <WhyChooseUs />}
+        {/* The "Product & Learning Architecture" showcase that used to sit here
+            (the Turbocharge heading plus stories 01–04) was removed at the
+            client's request — the home page skips straight from the roadmap to
+            the brand band. The component file is kept because its certified
+            credential mock is the reference for the /certificate page. */}
 
         {/* Sliding brand band — the company name and the disciplines it teaches
             run past each other between the showcase and the FAQ.
@@ -280,7 +282,7 @@ function LandingPage() {
 
         {/* Comprehensive Academic & Program FAQs */}
         {visibility.faqs !== false && (
-          <section id="faqs" className="py-12 sm:py-16 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
+          <section id="faqs" className="aft-cloud py-12 sm:py-16 bg-white dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800/80 relative">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
               <FaqAccordion
                 showCategoryFilter={true}

@@ -17,9 +17,10 @@ import React from 'react';
 export default function AmbientBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      <div className="absolute -top-48 right-0 w-[720px] h-[720px] rounded-full bg-[radial-gradient(circle,rgba(0,32,96,0.05)_0%,transparent_68%)] blur-2xl" />
-      <div className="absolute top-1/3 -left-56 w-[620px] h-[620px] rounded-full bg-[radial-gradient(circle,rgba(220,0,0,0.022)_0%,transparent_70%)] blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-[560px] h-[560px] rounded-full bg-[radial-gradient(circle,rgba(0,32,96,0.035)_0%,transparent_72%)] blur-3xl" />
+      <div className="absolute -top-48 right-0 w-[720px] h-[720px] rounded-full bg-[radial-gradient(circle,rgba(0,32,96,0.06)_0%,transparent_68%)] blur-2xl" />
+      <div className="absolute top-1/4 -left-56 w-[680px] h-[680px] rounded-full bg-[radial-gradient(circle,rgba(240,0,0,0.055)_0%,transparent_70%)] blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-[560px] h-[560px] rounded-full bg-[radial-gradient(circle,rgba(0,32,96,0.04)_0%,transparent_72%)] blur-3xl" />
+      <div className="absolute bottom-1/4 left-1/3 w-[520px] h-[520px] rounded-full bg-[radial-gradient(circle,rgba(240,0,0,0.035)_0%,transparent_72%)] blur-3xl" />
     </div>
   );
 }

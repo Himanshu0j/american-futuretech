@@ -84,7 +84,7 @@ export default function PlacementRoadmap({ onOpenLeadModal }) {
   ).sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
-    <section id="placement-roadmap" className="py-12 bg-white border-t border-slate-200 relative overflow-hidden">
+    <section id="placement-roadmap" className="aft-cloud py-12 bg-white border-t border-slate-200 relative overflow-hidden">
       {/* Subtle Background Glow */}
       <div className="absolute top-1/2 -left-48 w-96 h-96 bg-[rgb(var(--tw-sand-200)/40%)] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/3 -right-48 w-96 h-96 bg-[#FEE7E7]/40 rounded-full blur-3xl pointer-events-none" />

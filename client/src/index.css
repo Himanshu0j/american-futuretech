@@ -929,10 +929,10 @@
 .aft-red-wash {
   position: relative;
   isolation: isolate;
-  background-color: #fff8f8;
+  background-color: #fff6f6;
   background-image:
-    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.10), transparent 100%),
-    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.07), transparent 100%);
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.13), transparent 100%),
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.09), transparent 100%);
   background-repeat: no-repeat;
   background-size: 62% 58%, 56% 52%;
   background-position: 2% -8%, 98% 106%;
@@ -942,10 +942,10 @@
 /* A little more presence for the bands that should read as the highlight of the
    group (the four pillars and the stepper). */
 .aft-red-wash--bold {
-  background-color: #fff5f5;
+  background-color: #fff2f2;
   background-image:
-    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.15), transparent 100%),
-    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.10), transparent 100%);
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.19), transparent 100%),
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.12), transparent 100%);
 }
 
 @keyframes redWashPan {
@@ -966,21 +966,23 @@
   }
 }
 
-/* A box sitting inside a red-washed band.
-   Deep brand red (#8c1c1c) so the box reads as the stamped, highlighted object
-   on the pale band behind it. Text on it flips to white, which is also why the
-   contrast is generous: white/85 body copy lands around 8:1 on this surface and
-   even the muted white/72 lines stay above 5:1.
+/* A box sitting inside a cloud-washed band.
+   Deep brand navy (#0b3168), not the brand red it shipped with: the client
+   asked for the highlight boxes to "match the website blue, remove the red",
+   and a navy object on a pale rose cloud is the pair the rest of the site
+   already uses (navy headers, red accents). Text on it flips to white, which
+   is also why the contrast is generous: white/88 body copy lands around 9:1 on
+   this surface and even the muted white/72 lines stay above 5:1.
 
    The motion is built from *lighter* layers only: a white sheen sweeping across
    the top and a soft shadow pooled bottom-left, so the surface looks lit from
    above rather than painted. Drifting a darker field instead would crush the
    bottom corner, which is where the muted lines sit. */
-.aft-red-card {
+.aft-blue-card {
   color: rgba(255, 255, 255, 0.88);
-  background-color: #8c1c1c;
+  background-color: #0b3168;
   background-image:
-    radial-gradient(115% 115% at 82% 6%, rgba(255, 255, 255, 0.16), transparent 62%),
+    radial-gradient(115% 115% at 82% 6%, rgba(255, 255, 255, 0.18), transparent 62%),
     radial-gradient(120% 120% at 12% 96%, rgba(0, 0, 0, 0.26), transparent 66%);
   background-repeat: no-repeat;
   background-size: 160% 160%, 150% 150%;
@@ -988,11 +990,11 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 22px 46px -26px rgba(80, 8, 8, 0.85);
-  animation: redCardDrift 16s ease-in-out infinite alternate;
+    0 22px 46px -26px rgba(8, 26, 62, 0.85);
+  animation: blueCardDrift 16s ease-in-out infinite alternate;
 }
 
-@keyframes redCardDrift {
+@keyframes blueCardDrift {
   from {
     background-position: 0% 0%, 0% 0%;
   }
@@ -1002,7 +1004,57 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aft-red-card {
+  .aft-blue-card {
+    animation: none;
+  }
+}
+
+/* ── Cloud wash for the plain white bands ─────────────────────────
+   The home page was a run of #FFFFFF / #F7F7F5 slabs between the tinted
+   bands, which read as empty rather than calm. Every one of those bands now
+   carries two very wide, very soft radial fields — a rose one and a navy one —
+   that drift against each other on a slow loop, so the page looks lit by a
+   moving sky instead of painted flat white. Alphas stay under 10%: this is a
+   background, not a colour scheme, and every heading/body colour on the site
+   was picked against a near-white surface.
+
+   Plain CSS on purpose: it has to win over the section's own `bg-white`
+   utility, and a later rule at equal specificity does that without touching
+   the markup's colours. */
+.aft-cloud {
+  position: relative;
+  isolation: isolate;
+  background-color: #fffafa;
+  background-image:
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.09), transparent 100%),
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-ink-900) / 0.06), transparent 100%);
+  background-repeat: no-repeat;
+  background-size: 58% 64%, 64% 58%;
+  background-position: 2% 4%, 100% 100%;
+  animation: cloudDrift 34s ease-in-out infinite alternate;
+}
+
+@keyframes cloudDrift {
+  0% {
+    background-position: 2% 4%, 100% 100%;
+  }
+  50% {
+    background-position: 14% 16%, 86% 84%;
+  }
+  100% {
+    background-position: 6% 10%, 94% 90%;
+  }
+}
+
+.dark .aft-cloud {
+  background-color: rgb(var(--tw-ink-950));
+  background-image:
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-gold-500) / 0.16), transparent 100%),
+    radial-gradient(closest-side at 50% 50%, rgb(var(--tw-blue-500) / 0.12), transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aft-cloud {
     animation: none;
   }
 }
@@ -1079,7 +1131,7 @@
 }
 
 .aft-bubble--deep {
-  --bubble-bg: #8c1c1c;
+  --bubble-bg: #0b3168;
   --bubble-ink: #fff;
 }
 
@@ -1098,7 +1150,7 @@
 
 .aft-bubble__badge {
   background: rgb(var(--tw-gold-500) / 0.14);
-  color: #8c1c1c;
+  color: #0b3168;
 }
 
 .aft-bubble--deep .aft-bubble__badge {

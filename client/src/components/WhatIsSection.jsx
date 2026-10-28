@@ -36,7 +36,7 @@ export default function WhatIsSection() {
   return (
     <section
       id="what-we-are"
-      className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-ink-950 relative overflow-hidden"
+      className="aft-cloud py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-ink-950 relative overflow-hidden"
     >
       {/* Faint ambient wash so the block sits in the page's premium canvas */}
       <div

@@ -17,7 +17,7 @@ export default function CallToAction({ onOpenLeadModal }) {
   const art = illustrationImageFor(settings, 'cta-launch');
 
   return (
-    <section className="py-12 sm:py-16 relative z-10 bg-[#F7F7F5] overflow-hidden">
+    <section className="aft-cloud py-12 sm:py-16 relative z-10 bg-[#F7F7F5] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Asymmetrical High-Impact CTA Container */}
         <div className="rounded-3xl bg-gradient-to-br from-[rgb(var(--tw-ink-900))] via-[rgb(var(--tw-ink-900))] to-[#0d1c10] text-[#F7F7F5] border border-[rgb(var(--tw-blue-700))] shadow-2xl aft-panel-3d aft-sheen p-6 sm:p-6 lg:p-8 relative overflow-hidden text-left">

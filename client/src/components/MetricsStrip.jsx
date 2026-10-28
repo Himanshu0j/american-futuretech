@@ -75,7 +75,7 @@ export default function MetricsStrip() {
   ];
 
   return (
-    <section id="curriculum-metrics" className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F7F5] relative overflow-hidden">
+    <section id="curriculum-metrics" className="aft-cloud py-10 sm:py-12 px-4 sm:px-6 lg:px-8 bg-[#F7F7F5] relative overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* ============================================================

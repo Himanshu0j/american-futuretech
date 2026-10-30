@@ -2,12 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  Award,
   BrainCircuit,
   Briefcase,
+  CalendarClock,
   CalendarDays,
   CheckCircle2,
   Clock3,
   FlaskConical,
+  GraduationCap,
   MonitorPlay,
   Rocket,
   Sparkles,
@@ -45,6 +48,19 @@ const POSTER_FEATURES = [
 
 /** One icon per highlight row, cycled by position. */
 const HIGHLIGHT_ICONS = [BrainCircuit, TrendingUp, Rocket];
+
+/**
+ * What every program includes — printed as the band across the bottom of the
+ * card, the way the client's reference artwork does. Same five promises on every
+ * card because they are true of every cohort, not per-program copy.
+ */
+const INCLUDED = [
+  { icon: GraduationCap, title: 'Hands-on Projects', sub: 'Build real-world experience' },
+  { icon: Briefcase, title: 'Job Assistance', sub: '200+ Hiring Partners' },
+  { icon: Users, title: 'Expert Mentorship', sub: '20+ Years Industry Experts' },
+  { icon: Award, title: 'Certification Prep', sub: 'Microsoft DP-900 & SC-900' },
+  { icon: CalendarClock, title: 'Flexible Learning', sub: 'Live + Recorded Classes' },
+];
 
 /**
  * Split a program title into ink lead + blue accent, the way the reference card
@@ -188,7 +204,7 @@ export default function CourseCard({ course, settings, className = '' }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* ── Poster: the program's own artwork behind its own headline ───── */}
-        <div className="lg:col-span-3 relative min-h-[130px] sm:min-h-[230px] lg:min-h-[300px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
+        <div className="lg:col-span-4 relative min-h-[130px] sm:min-h-[230px] lg:min-h-[300px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
             alt=""
@@ -225,14 +241,13 @@ export default function CourseCard({ course, settings, className = '' }) {
             </div>
 
             <div className="space-y-3">
-              {/* Stacked rows, not a three-across grid: the poster column is
-                  narrow now, and three columns left a wide empty navy band
-                  under the headline on every card. */}
-              <div className="hidden sm:block space-y-2">
+              {/* Three tiles across, icon above label — the poster layout the
+                  client's reference artwork uses. */}
+              <div className="hidden sm:grid grid-cols-3 gap-2">
                 {POSTER_FEATURES.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2 text-[10px] font-semibold text-white/85">
-                    <span className="w-6 h-6 shrink-0 rounded-md bg-white/10 border border-white/20 flex items-center justify-center">
-                      <Icon className="w-3 h-3 text-blue-300" />
+                  <div key={label} className="flex flex-col items-center gap-1.5 text-center text-[10px] font-semibold leading-tight text-white/85">
+                    <span className="w-8 h-8 shrink-0 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                      <Icon className="w-4 h-4 text-blue-300" />
                     </span>
                     {label}
                   </div>
@@ -248,7 +263,7 @@ export default function CourseCard({ course, settings, className = '' }) {
         </div>
 
         {/* ── Details column ─────────────────────────────────────────────── */}
-        <div className="lg:col-span-9 p-4 sm:p-5 flex flex-col gap-2.5 sm:gap-3">
+        <div className="lg:col-span-8 p-4 sm:p-5 flex flex-col gap-2.5 sm:gap-3">
           <div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-blue-300 whitespace-nowrap">
@@ -382,6 +397,24 @@ export default function CourseCard({ course, settings, className = '' }) {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* ── What every cohort includes ─────────────────────────────────────
+          The five promises from the reference artwork: five tiles across on a
+          wide card, three on a tablet. Phones keep the compact card the client
+          asked for — the same facts are already in the strip above. */}
+      <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-3 px-4 sm:px-5 py-3.5 border-t border-slate-200/90 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40">
+        {INCLUDED.map(({ icon: Icon, title, sub }) => (
+          <div key={title} className="flex items-center gap-2.5 min-w-0">
+            <span className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
+              <Icon className="w-4 h-4 text-white" />
+            </span>
+            <div className="min-w-0">
+              <div className="text-[11.5px] font-bold leading-tight text-slate-800 dark:text-slate-100">{title}</div>
+              <div className="mt-0.5 text-[10px] leading-tight text-slate-500 dark:text-slate-400">{sub}</div>
+            </div>
+          </div>
+        ))}
       </div>
     </article>
   );

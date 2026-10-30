@@ -24,50 +24,17 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
   // GRC) reserve at $499 while the six-month tracks keep the site default, so
   // one page-wide number would misquote most of the cards.
   const depositFrom = formatDepositAmount(lowestSeatDeposit(settings, courses));
-  const [activeFilter, setActiveFilter] = useState('All');
   const [activeCertIdx, setActiveCertIdx] = useState(0);
   const [selectedModalCert, setSelectedModalCert] = useState(null);
-
-  const filterCategories = [
-    'All Programs',
-    'Artificial Intelligence',
-    'Cyber Security',
-    'Cloud & DevOps'
-  ];
-
-  const filteredCourses = courses.filter((c) => {
-    if (activeFilter === 'All Programs' || activeFilter === 'All') return true;
-    if (activeFilter === 'Artificial Intelligence') {
-      return (
-        c.category?.toLowerCase().includes('intelligence') ||
-        c.title?.toLowerCase().includes('ai') ||
-        c.title?.toLowerCase().includes('data')
-      );
-    }
-    if (activeFilter === 'Cyber Security') {
-      return (
-        c.category?.toLowerCase().includes('security') ||
-        c.title?.toLowerCase().includes('cyber') ||
-        c.title?.toLowerCase().includes('hacking')
-      );
-    }
-    if (activeFilter === 'Cloud & DevOps') {
-      return (
-        c.category?.toLowerCase().includes('cloud') ||
-        c.title?.toLowerCase().includes('devops') ||
-        c.title?.toLowerCase().includes('cloud')
-      );
-    }
-    return true;
-  });
-
 
   return (
     <section id="courses" className="aft-cloud py-12 sm:py-16 relative z-10 bg-white dark:bg-[rgb(var(--tw-ink-800))] text-slate-900 dark:text-slate-100 border-t border-slate-200/60 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-10 gap-6 text-left">
-          <div className="max-w-2xl">
+        {/* Section Header — centred (client's pick). The track-filter pills that
+            used to sit on the right are gone: this page shows the full catalogue,
+            and /courses owns the category filtering. */}
+        <div className="mb-12 sm:mb-10 text-center">
+          <div className="mx-auto max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300 text-xs font-bold font-heading uppercase tracking-wider mb-3.5 shadow-xs">
               <Award className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
               <span>6-Month Career Training Programs · Dual US & Microsoft Credentials</span>
@@ -80,26 +47,6 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
             <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
               {`Curriculums engineered with Silicon Valley engineering leads. Deploy production code, defend capstone architectures, and gain lifetime alumni placement support. Reserve any track from ${depositFrom}.`}
             </p>
-          </div>
-
-          {/* Track Filter Tabs (Refined Pill Style) */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-xs">
-            {filterCategories.map((cat) => {
-              const isSelected = activeFilter === cat || (cat === 'All Programs' && activeFilter === 'All');
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveFilter(cat)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-white dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
           </div>
         </div>
 
@@ -136,7 +83,7 @@ export default function CourseSection({ onSelectCourse, onOpenSyllabusModal }) {
           </div>
         )}
 
-        {filteredCourses.map((flagship) => (
+        {courses.map((flagship) => (
           <CourseCard
             key={flagship._id || flagship.slug}
             course={flagship}

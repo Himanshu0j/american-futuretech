@@ -4,10 +4,13 @@
     <meta charset="UTF-8" />
     <!-- Tab icon = the crest mark from the header logo. The wordmark is cropped
          out ("American FutureTech" is unreadable at 16px) and the mark sits on a
-         white tile so the navy artwork stays visible on a dark tab bar. -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+         white tile so the navy artwork stays visible on a dark tab bar.
+         ?v= is bumped whenever the artwork changes: browsers cache favicons for
+         days regardless of no-cache headers, so a new URL is the only reliable
+         way to make them refetch. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=20261030" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png?v=20261030" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20261030" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>American FutureTech | Build Skills. Get Certified.</title>
     <!-- Google Fonts: Plus Jakarta Sans (display) · Inter (UI) · JetBrains Mono (labels) -->

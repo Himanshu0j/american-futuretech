@@ -7,9 +7,7 @@ import {
   Briefcase,
   CalendarClock,
   CalendarDays,
-  CheckCircle2,
   Clock3,
-  FlaskConical,
   GraduationCap,
   MonitorPlay,
   Rocket,
@@ -25,12 +23,11 @@ import { TOOL_LOGOS, findToolLogo } from '../data/courseContentData';
  * The one course card the whole site renders.
  *
  * The client sent a reference artwork and asked every program box to follow it:
- * a dark poster on the left carrying the course name, its own tagline, the three
- * program promises and the duration; and on the right the details column —
- * category eyebrow, title with the specialisation in blue, description, the
- * three curriculum highlights, the tool stack with real logos, a
- * duration/schedule/batch/mode strip, and the tuition row with the reserve and
- * enroll buttons.
+ * a dark poster on the left carrying the artwork with only its badge and
+ * duration pill, and on the right the details column — category eyebrow, title
+ * with the specialisation in blue, the three curriculum highlights, the tool
+ * stack with real logos, a duration/schedule/batch/mode strip, and the tuition
+ * row with the reserve and enroll buttons.
  *
  * Why a shared component: the home grid and the /courses catalogue used to be
  * two hand-maintained copies of the same markup, so every design change had to
@@ -39,17 +36,10 @@ import { TOOL_LOGOS, findToolLogo } from '../data/courseContentData';
  * category, highlights, tools, duration and price instead of a borrowed set.
  *
  * The artwork runs at full strength: the old card flattened the photo under a
- * 96% navy wash, so no course picture was actually visible. A gradient scrim
- * now darkens only the top and bottom edges behind the copy, leaving the middle
- * of the image readable while every line of content still shows.
+ * 96% navy wash, so no course picture was actually visible. The poster prints no
+ * duplicate headline or tagline — the details column owns that copy — so the
+ * photo only needs a soft scrim behind the badge and the duration pill.
  */
-
-/** Program promises printed on the poster — the same three for every program. */
-const POSTER_FEATURES = [
-  { icon: Briefcase, label: 'Hands-on Projects' },
-  { icon: FlaskConical, label: 'Real-world Use Cases' },
-  { icon: Sparkles, label: 'Job Assistance & Placement' },
-];
 
 /** One icon per highlight row, cycled by position. */
 const HIGHLIGHT_ICONS = [BrainCircuit, TrendingUp, Rocket];
@@ -181,7 +171,6 @@ export default function CourseCard({ course, settings, className = '' }) {
 
   const { lead, accent, tail } = splitTitle(course.title);
   const category = course.category || 'Executive Engineering Track';
-  const description = course.shortDescription || course.description || '';
   const highlights = courseHighlights(course);
   const tools = courseTools(course);
 
@@ -197,7 +186,6 @@ export default function CourseCard({ course, settings, className = '' }) {
   const checkoutHref = `/checkout?courseId=${course._id}&tier=deposit`;
 
   const metaItems = [
-    { icon: CalendarDays, label: 'Duration', value: duration },
     { icon: Clock3, label: 'Schedule', value: schedule },
     { icon: Users, label: 'Batch Size', value: batchSize },
     { icon: MonitorPlay, label: 'Mode', value: mode },
@@ -208,7 +196,7 @@ export default function CourseCard({ course, settings, className = '' }) {
       className={`aft-course-cloud group rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_24px_48px_-32px_rgba(0,32,96,0.45)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.07),0_28px_58px_-34px_rgba(0,32,96,0.55)] transition-all duration-300 text-left ${className}`}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        {/* ── Poster: the program's own artwork behind its own headline ───── */}
+        {/* ── Poster: the program's own artwork, badge and duration ────────── */}
         <div className="lg:col-span-5 relative min-h-[130px] sm:min-h-[210px] lg:min-h-[272px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
@@ -217,56 +205,21 @@ export default function CourseCard({ course, settings, className = '' }) {
             loading="lazy"
             decoding="async"
           />
-          {/* Scrim only where the copy sits: dark at the top for the headline,
-              dark at the bottom for the promises, clear across the middle so
-              the programme artwork is actually visible. */}
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,0.92)_0%,rgba(3,10,24,0.58)_24%,rgba(3,10,24,0.16)_50%,rgba(3,10,24,0.62)_74%,rgba(3,10,24,0.94)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,24,0.72)_0%,rgba(3,10,24,0.24)_48%,rgba(3,10,24,0)_70%)]" />
+          {/* Soft scrim only in the corners that hold the badge and the pill,
+              so the programme artwork itself is what the poster shows. */}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,24,0.7)_0%,rgba(3,10,24,0.3)_27%,rgba(3,10,24,0)_55%,rgba(3,10,24,0.32)_80%,rgba(3,10,24,0.78)_100%)]" />
           <div className="absolute -top-16 -right-10 w-52 h-52 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.28),transparent_70%)] blur-xl" />
 
-          <div className="relative h-full p-3.5 sm:p-4 flex flex-col justify-between gap-2.5 text-white">
-            <div>
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-600 text-[9px] font-bold tracking-wide shadow-lg">
-                <Sparkles className="w-2.5 h-2.5" />
-                {course.badge || 'Admissions Open'}
-              </span>
+          <div className="relative h-full p-3.5 sm:p-4 flex flex-col items-start justify-between gap-2.5 text-white">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-600 text-[9px] font-bold tracking-wide shadow-lg">
+              <Sparkles className="w-2.5 h-2.5" />
+              {course.badge || 'Admissions Open'}
+            </span>
 
-              {/* Phones print the title once, in the details column — the poster
-                  is an artwork strip there instead of a second headline. */}
-              <h3 className="hidden sm:block mt-2.5 text-xl sm:text-[22px] font-black font-heading leading-[1.15] tracking-tight text-white [text-shadow:0_1px_12px_rgba(3,10,24,0.55)]">
-                {lead}
-                {accent && <span className="text-blue-400">{accent}</span>}
-                {tail}
-              </h3>
-
-              {/* Hidden on phones: the details column below prints the same
-                  paragraph, and repeating it read as two cards. */}
-              {description && (
-                <p className="hidden lg:block mt-2 text-[11px] leading-relaxed text-white/85 [text-shadow:0_1px_10px_rgba(3,10,24,0.6)]">
-                  {description}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              {/* One horizontal row of icon + label, the way the reference
-                  prints its three promises across the bottom of the poster. */}
-              <div className="hidden sm:grid grid-cols-3 gap-x-3 gap-y-1.5">
-                {POSTER_FEATURES.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-1.5 text-[9.5px] font-semibold leading-tight text-white/90 [text-shadow:0_1px_8px_rgba(3,10,24,0.6)]">
-                    <span className="w-6 h-6 shrink-0 rounded-lg bg-white/15 border border-white/25 backdrop-blur-xs flex items-center justify-center">
-                      <Icon className="w-3 h-3 text-blue-200" />
-                    </span>
-                    <span className="min-w-0">{label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/40 bg-[rgb(var(--tw-ink-950)/35%)] text-[10px] font-bold backdrop-blur-xs">
-                <CalendarDays className="w-3 h-3 text-blue-300" />
-                {`${duration} Program`}
-              </span>
-            </div>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/40 bg-[rgb(var(--tw-ink-950)/45%)] text-[10px] font-bold backdrop-blur-xs">
+              <CalendarDays className="w-3 h-3 text-blue-300" />
+              {`${duration} Program`}
+            </span>
           </div>
         </div>
 
@@ -287,12 +240,6 @@ export default function CourseCard({ course, settings, className = '' }) {
                 {tail}
               </h2>
             </Link>
-
-            {description && (
-              <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-600 dark:text-slate-300">
-                {description}
-              </p>
-            )}
           </div>
 
           {/* Highlights + tool stack share one bordered block, like the reference. */}
@@ -341,8 +288,8 @@ export default function CourseCard({ course, settings, className = '' }) {
             )}
           </div>
 
-          {/* Duration / schedule / batch / mode */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-2 gap-x-2.5">
+          {/* Schedule / batch / mode — the duration is on the poster pill. */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-2.5">
             {metaItems.map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-1.5 lg:border-l lg:first:border-l-0 lg:pl-2.5 lg:first:pl-0 border-slate-200 dark:border-slate-700">
                 <Icon className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[color:rgb(var(--tw-ink-900))] dark:text-blue-300" />
@@ -391,18 +338,6 @@ export default function CourseCard({ course, settings, className = '' }) {
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
-          </div>
-
-          {/* The promise line the old card printed as bare text. */}
-          <div className="hidden sm:flex flex-wrap items-center gap-x-4 gap-y-1 text-[10.5px] text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              {course.cohort || 'Next cohort enrolment open'}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-slate-400" />
-              {course.faculty || 'Silicon Valley & Fortune 500 Faculty'}
-            </span>
           </div>
         </div>
       </div>

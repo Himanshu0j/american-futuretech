@@ -2816,8 +2816,8 @@ export default function SettingsCMS() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 p-1 flex items-center justify-center shrink-0">
-                            {tool.logoUrl ? (
-                              <img src={tool.logoUrl} alt={tool.name} className="w-6 h-6 object-contain" />
+                            {tool.logoUrl || tool.logo ? (
+                              <img src={tool.logoUrl || tool.logo} alt={tool.name} className="w-6 h-6 object-contain" />
                             ) : (
                               <Cpu className="w-5 h-5 text-slate-600" />
                             )}
@@ -2871,19 +2871,17 @@ export default function SettingsCMS() {
                             className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-sans text-xs focus:outline-none focus:border-blue-500"
                           />
                         </div>
-                        <div>
-                          <label className="block text-slate-400 uppercase mb-1">Logo URL (SVG / PNG)</label>
-                          <input
-                            type="url"
-                            value={tool.logoUrl || ''}
-                            onChange={(e) => handleUpdateTool(idx, 'logoUrl', e.target.value)}
-                            // A local path, never an external URL: the live CSP
-                            // (`img-src 'self' data:`) refuses another origin, so a
-                            // pasted CDN link would save but render as an empty tile.
-                            placeholder="/images/tools/python.svg"
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
+                        {/* Upload or paste. A local path is required, never an
+                            external URL: the live CSP (`img-src 'self' data:`)
+                            refuses another origin, so a pasted CDN link would
+                            save but render as an empty tile. */}
+                        <ImageUploadInput
+                          label="Logo Image (SVG / PNG)"
+                          value={tool.logoUrl || tool.logo || ''}
+                          onChange={(url) => handleUpdateTool(idx, 'logoUrl', url)}
+                          placeholder="/images/tools/python.svg"
+                          previewSize="w-9 h-9"
+                        />
                       </div>
                     </div>
                   ))}

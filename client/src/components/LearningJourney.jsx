@@ -26,7 +26,7 @@ import {
 import LottieArt from './LottieArt';
 import Tilt3D, { useCard3D, motion } from './Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
+import { illustrationImageFor, illustrationAltFor, isRasterArtwork } from '../data/siteImages';
 import assessSvg from '../assets/illustrations/learning/01-assess-diagnostic.svg';
 import learnSvg from '../assets/illustrations/learning/02-learn-masterclass.svg';
 import practiceSvg from '../assets/illustrations/learning/03-practice-sandbox.svg';
@@ -43,6 +43,9 @@ import careerReadySvg from '../assets/illustrations/learning/05-job-ready-career
  */
 function StepTile({ step, idx, isActive, isPast, onSelect, thumb }) {
   const StepSvg = step.Illustration;
+  // An uploaded photo has to fill the 48px tile; letterboxing a wide photo into
+  // it leaves two grey bars and looks pasted on. A drawing stays fully visible.
+  const thumbIsPhoto = isRasterArtwork(thumb);
   const card3d = useCard3D({
     delay: idx * 0.07,
     distance: 22,
@@ -92,7 +95,7 @@ function StepTile({ step, idx, isActive, isPast, onSelect, thumb }) {
             src={thumb}
             fallbackSrc={step.sourcedSvg}
             alt={step.title}
-            className="w-full h-full object-contain"
+            className={thumbIsPhoto ? 'w-full h-full object-cover rounded-md' : 'w-full h-full object-contain'}
             intensity={11}
             idle={0}
             float={false}
@@ -352,7 +355,11 @@ export default function LearningJourney() {
                         src={illustrationImageFor(settings, 'journey-assess')}
                         fallbackSrc={assessSvg}
                         alt={illustrationAltFor(settings, 'journey-assess', 'Skills Diagnostic')}
-                        className="w-36 h-36 object-contain"
+                        className={
+                          isRasterArtwork(illustrationImageFor(settings, 'journey-assess'))
+                            ? 'w-36 h-36 object-cover rounded-xl'
+                            : 'w-36 h-36 object-contain'
+                        }
                         delay={0.1}
                       />
                     </div>
@@ -623,7 +630,11 @@ export default function LearningJourney() {
                           src={illustrationImageFor(settings, 'journey-ready')}
                           fallbackSrc={careerReadySvg}
                           alt={illustrationAltFor(settings, 'journey-ready', 'Career Ready')}
-                          className="w-full h-full object-contain"
+                          className={
+                            isRasterArtwork(illustrationImageFor(settings, 'journey-ready'))
+                              ? 'w-full h-full object-cover rounded-lg'
+                              : 'w-full h-full object-contain'
+                          }
                           intensity={11}
                           idle={0}
                           float={false}

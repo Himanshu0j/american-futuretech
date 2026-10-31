@@ -33,7 +33,7 @@ import {
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
 import Tilt3D from '../components/Spatial3D';
-import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
+import { illustrationImageFor, illustrationAltFor, isRasterArtwork } from '../data/siteImages';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
@@ -69,6 +69,11 @@ export default function AboutPage() {
     : DEFAULT_LEADERSHIP;
   const pedagogy = { ...DEFAULT_PEDAGOGY, ...(settings?.pedagogy || {}) };
   const sisterCompany = { ...DEFAULT_SISTER_COMPANY, ...(settings?.sisterCompany || {}) };
+
+  // Uploaded photos are framed to fill their card; the shipped line-art stays
+  // fully visible (see isRasterArtwork in data/siteImages.js).
+  const missionArt = illustrationImageFor(settings, 'about-mission');
+  const worldwideArt = illustrationImageFor(settings, 'about-worldwide');
 
   const pedagogyIcons = { Terminal, FileCode2, Award, Shield, Rocket, Target, BookOpen };
   const pillars = [
@@ -188,10 +193,14 @@ export default function AboutPage() {
                 <div className="p-4 rounded-2xl bg-[#F7F7F5] border border-[rgb(var(--tw-blue-700)/20%)] flex items-center justify-center aft-3d-scene aft-aura">
                   <Tilt3D
                     slot="about-mission"
-                    src={illustrationImageFor(settings, 'about-mission')}
+                    src={missionArt}
                     fallbackSrc={missionGrowthSvg}
                     alt={illustrationAltFor(settings, 'about-mission', 'American FutureTech Mission & Growth')}
-                    className="w-full max-w-xs h-auto object-contain"
+                    className={
+                      isRasterArtwork(missionArt)
+                        ? 'w-full max-w-sm aspect-[4/3] object-cover rounded-xl'
+                        : 'w-full max-w-xs h-auto object-contain'
+                    }
                     delay={0.05}
                   />
                 </div>
@@ -605,10 +614,14 @@ export default function AboutPage() {
             <div className="mt-8 flex justify-center aft-3d-scene">
               <Tilt3D
                 slot="about-worldwide"
-                src={illustrationImageFor(settings, 'about-worldwide')}
+                src={worldwideArt}
                 fallbackSrc={engineeringTeamSvg}
                 alt={illustrationAltFor(settings, 'about-worldwide', 'Worldwide Tech Engineering Cohort')}
-                className="w-full max-w-md h-auto object-contain"
+                className={
+                  isRasterArtwork(worldwideArt)
+                    ? 'w-full max-w-md aspect-[16/10] object-cover rounded-2xl ring-1 ring-white/15'
+                    : 'w-full max-w-md h-auto object-contain'
+                }
                 intensity={14}
                 idle={7}
               />

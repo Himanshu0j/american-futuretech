@@ -41,7 +41,7 @@ import PageBanner from '../components/PageBanner';
 import Tilt3D from '../components/Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { DEFAULT_CAREERS_HERO } from '../data/siteContent';
-import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
+import { illustrationImageFor, illustrationAltFor, isRasterArtwork } from '../data/siteImages';
 import Footer from '../components/Footer';
 import JobCard from '../components/JobCard';
 import TrustMarquee from '../components/TrustMarquee';
@@ -374,7 +374,11 @@ export default function CareersPage() {
                       src={illustrationImageFor(settings, 'careers-network')}
                       fallbackSrc={jobHuntSvg}
                       alt={illustrationAltFor(settings, 'careers-network', 'Career Placement')}
-                      className="w-full max-w-[240px] h-auto object-contain"
+                      className={
+                        isRasterArtwork(illustrationImageFor(settings, 'careers-network'))
+                          ? 'w-full max-w-[240px] aspect-[4/5] object-cover rounded-2xl ring-1 ring-white/15 shadow-lg'
+                          : 'w-full max-w-[240px] h-auto object-contain'
+                      }
                       intensity={15}
                       idle={7}
                     />
@@ -643,7 +647,11 @@ export default function CareersPage() {
                       src={illustrationImageFor(settings, 'careers-fast-track')}
                       fallbackSrc={interviewPrepSvg}
                       alt={illustrationAltFor(settings, 'careers-fast-track', 'Fast-Track Concierge')}
-                      className="w-32 h-20 object-contain"
+                      className={
+                        isRasterArtwork(illustrationImageFor(settings, 'careers-fast-track'))
+                          ? 'w-full h-44 object-cover rounded-lg'
+                          : 'w-32 h-20 object-contain'
+                      }
                       intensity={13}
                       idle={6}
                     />

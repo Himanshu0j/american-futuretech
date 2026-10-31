@@ -6,7 +6,7 @@ import { CTAIllustration } from './illustrations/VectorIllustrations';
 import Tilt3D from './Spatial3D';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { formatSeatDeposit } from '../lib/seatDeposit';
-import { illustrationImageFor, illustrationAltFor } from '../data/siteImages';
+import { illustrationImageFor, illustrationAltFor, isRasterArtwork } from '../data/siteImages';
 
 export default function CallToAction({ onOpenLeadModal }) {
   const { settings } = useSiteSettings();
@@ -15,6 +15,9 @@ export default function CallToAction({ onOpenLeadModal }) {
   // Admin → Content → Website Images → "3D artwork": an uploaded PNG/JPG here
   // replaces the shipped drawing, an empty slot keeps it.
   const art = illustrationImageFor(settings, 'cta-launch');
+  // A photo needs a fixed frame to fill; the shipped drawing keeps its own
+  // intrinsic height so the serpent artwork is never cropped.
+  const artIsPhoto = isRasterArtwork(art);
 
   return (
     <section className="aft-cloud py-12 sm:py-16 relative z-10 bg-[#F7F7F5] overflow-hidden">
@@ -84,7 +87,11 @@ export default function CallToAction({ onOpenLeadModal }) {
                   src={art}
                   fallbackSrc={ctaLaunchSvg}
                   alt={illustrationAltFor(settings, 'cta-launch', 'Launch Your Tech Career')}
-                  className="w-full h-auto"
+                  className={
+                    artIsPhoto
+                      ? 'w-full aspect-[4/3] object-cover rounded-2xl ring-1 ring-white/15 shadow-2xl'
+                      : 'w-full h-auto'
+                  }
                   intensity={16}
                   idle={8}
                 />

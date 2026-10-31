@@ -36,7 +36,7 @@ const toolMonogram = (name) =>
 function ToolLogo({ name, logo }) {
   const [broken, setBroken] = useState(false);
   return (
-    <div className="w-12 h-12 rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex items-center justify-center p-2 mb-2">
+    <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 ring-1 ring-slate-200/80 dark:ring-slate-700/80 shadow-sm flex items-center justify-center mb-2 overflow-hidden">
       {logo && !broken ? (
         <img
           src={logo}
@@ -47,9 +47,12 @@ function ToolLogo({ name, logo }) {
           onError={() => setBroken(true)}
         />
       ) : (
+        // No mark available: a filled monogram tile instead of a pale empty
+        // square, so a lane of brands without public logos still reads as a
+        // designed row rather than a row of missing images.
         <span
           aria-hidden="true"
-          className="text-[11px] font-black font-heading tracking-tight text-slate-500 dark:text-slate-400"
+          className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] text-white text-[13px] font-black font-heading tracking-tight"
         >
           {toolMonogram(name)}
         </span>
@@ -68,6 +71,22 @@ export default function CoursesPage() {
   // sentence quotes the lowest fee and every card prints its own.
   const { settings } = useSiteSettings() || {};
   const depositFrom = formatDepositAmount(lowestSeatDeposit(settings, courses));
+
+  // Marks uploaded in Admin → Capstone & Tools, looked up by tool name. The
+  // discipline strips below ship a fixed list, so this is how a logo added for
+  // "OneTrust" (or any other tool) reaches the strip instead of only the
+  // homepage grid. Inactive rows are included on purpose: switching a tool off
+  // keeps it out of the homepage grid while its uploaded mark still illustrates
+  // the matching strip tile.
+  const adminLogoByName = React.useMemo(() => {
+    const map = new Map();
+    (settings?.capstone?.tools || []).forEach((tool) => {
+      const url = String(tool?.logoUrl || tool?.logo || '').trim();
+      const key = String(tool?.name || '').trim().toLowerCase();
+      if (url && key) map.set(key, url);
+    });
+    return map;
+  }, [settings]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   // 'featured' is the admin's own program sequence (Admin → Courses → Move
@@ -291,7 +310,10 @@ export default function CoursesPage() {
                             aria-hidden={idx >= cat.tools.length ? 'true' : undefined}
                             className="group w-[128px] sm:w-[150px] shrink-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-3 text-center hover:border-blue-500/40 hover:shadow-sm transition-all flex flex-col items-center justify-center"
                           >
-                            <ToolLogo name={tool.name} logo={tool.logo} />
+                            <ToolLogo
+                              name={tool.name}
+                              logo={adminLogoByName.get(String(tool.name).trim().toLowerCase()) || tool.logo}
+                            />
                             <span className="text-[11px] sm:text-xs font-semibold text-slate-700 dark:text-slate-300 leading-tight w-full">
                               {tool.name}
                             </span>

@@ -3,7 +3,12 @@ const mongoose = require('mongoose');
 const ToolItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, default: 'Data & AI' },
+  // `logo` is what the homepage grid reads (and what the seeded tools carry);
+  // `logoUrl` is what Admin → Capstone & Tools writes. Both are kept because
+  // mongoose silently drops fields that are not declared, which is why a logo
+  // uploaded in the CMS never reached the site.
   logo: { type: String, default: '' },
+  logoUrl: { type: String, default: '' },
   url: { type: String, default: '' },
   description: { type: String, default: '' },
   badge: { type: String, default: 'Core Standard' },

@@ -150,10 +150,15 @@ export default function ToolsSection() {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Load tools from admin settings if available, else fallback to defaults
+  // Admin → Capstone & Tools saves the uploaded mark as `logoUrl`; the seeded
+  // entries use `logo`. Reading only one of the two is why a logo added in the
+  // CMS still rendered as a two-letter tile on the live grid.
   const activeTools = (capstone.tools && capstone.tools.length > 0
     ? capstone.tools.filter(t => t.active !== false)
     : DEFAULT_TOOLS
-  ).sort((a, b) => (a.order || 0) - (b.order || 0));
+  )
+    .map((tool) => ({ ...tool, logo: tool.logo || tool.logoUrl || '' }))
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   // Extract unique categories dynamically
   const categories = ['All', ...new Set(activeTools.map(t => t.category).filter(Boolean))];

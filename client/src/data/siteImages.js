@@ -204,6 +204,23 @@ export function illustrationImageFor(settings, key) {
   return match ? String(match.image).trim() : '';
 }
 
+/**
+ * True when a slot holds a photo/bitmap rather than the line-art SVG the site
+ * ships with.
+ *
+ * The two need different framing: a drawing must stay fully visible
+ * (`object-contain`), while an uploaded photo needs to fill a fixed frame
+ * (`object-cover`) — otherwise a wide or tall photo floats in the middle of the
+ * card with dead space around it and looks pasted on.
+ */
+export function isRasterArtwork(src) {
+  const value = String(src || '').trim();
+  if (!value) return false;
+  if (/^data:image\/svg\+xml/i.test(value)) return false;
+  if (/^data:image\//i.test(value)) return true;
+  return /\.(png|jpe?g|webp|avif|gif)(?:[?#]|$)/i.test(value);
+}
+
 /** Alt text for one slot, falling back to the component's own description. */
 export function illustrationAltFor(settings, key, fallback) {
   const list = settings?.siteImages?.illustrations;

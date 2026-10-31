@@ -1,4 +1,5 @@
 import api from './api';
+import { isRasterArtwork } from '../data/siteImages';
 
 /**
  * Shared engine behind the inline website editor.
@@ -102,6 +103,18 @@ export const collectImages = () => {
  * Without this a deleted override stayed on screen until a hard reload, because
  * writing the value and forgetting it means nothing knows the original anymore.
  */
+/**
+ * An inline-editor image override replaces the slot's `src` but keeps the class
+ * the component gave that slot — so a photo dropped into an artwork slot was
+ * still framed as a drawing (object-contain) and floated in dead space. Mark a
+ * bitmap override so index.css can fill the frame; a drawing keeps contain.
+ */
+const frameArtworkOverride = (img, src) => {
+  if (!img || !img.dataset || !img.dataset.artSlot) return;
+  if (isRasterArtwork(src)) img.dataset.artPhoto = 'true';
+  else delete img.dataset.artPhoto;
+};
+
 const applied = new Map(); // key -> { kind: 'text' | 'image', node, original }
 
 const revertEntry = (key) => {
@@ -115,6 +128,7 @@ const revertEntry = (key) => {
       }
     } else if (record.node && record.node.setAttribute && record.original) {
       record.node.setAttribute('src', record.original);
+      delete record.node.dataset?.artPhoto;
     }
   } catch (err) {
     /* the node was replaced by React — nothing to restore */
@@ -269,6 +283,7 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
     }
     const original = img.dataset.siteEditorOriginalSrc;
     if (img.getAttribute('src') === entry.value) {
+      frameArtworkOverride(img, entry.value);
       if (!applied.has(key)) applied.set(key, { kind: 'image', node: img, original });
       return;
     }
@@ -287,6 +302,7 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
     }
     if (original) {
       img.setAttribute('src', entry.value);
+      frameArtworkOverride(img, entry.value);
       applied.set(key, { kind: 'image', node: img, original });
     }
   });
@@ -322,6 +338,7 @@ export const applyOverridesToDom = (text = {}, images = {}) => {
         node.dataset.siteEditorOriginalSrc = node.getAttribute('src') || '';
       }
       node.setAttribute('src', entry.value);
+      frameArtworkOverride(node, entry.value);
       applied.set(key, { kind: 'image', node, original: node.dataset.siteEditorOriginalSrc });
     });
   }

@@ -1884,3 +1884,43 @@ html[data-aft-reveal="on"] .aft-rv-armed:not(.is-in) {
     transform: none;
   }
 }
+
+/* ── Artwork slots filled through the inline editor ──────────────────────────
+   The visual editor replaces an artwork slot's `src` after React has rendered
+   it, so the image keeps the class the component gave the slot. A photo used to
+   stay object-contain — a small picture floating in a large empty frame. These
+   rules make a bitmap override fill its frame exactly like an upload through
+   Admin → Content → Website Images; the shipped SVG (no data-art-photo) keeps
+   its fully-visible contain framing. */
+[data-art-slot][data-art-photo="true"] {
+  object-fit: cover;
+  width: 100%;
+}
+
+[data-art-slot="about-mission"][data-art-photo="true"] {
+  max-width: 24rem;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+}
+
+[data-art-slot="about-worldwide"][data-art-photo="true"] {
+  max-width: 28rem;
+  aspect-ratio: 16 / 10;
+  border-radius: 1rem;
+}
+
+[data-art-slot="careers-network"][data-art-photo="true"] {
+  max-width: 15rem;
+  aspect-ratio: 4 / 5;
+  border-radius: 1rem;
+}
+
+[data-art-slot="careers-fast-track"][data-art-photo="true"] {
+  height: 11rem;
+  border-radius: 0.5rem;
+}
+
+[data-art-slot="cta-launch"][data-art-photo="true"] {
+  aspect-ratio: 4 / 3;
+  border-radius: 1rem;
+}

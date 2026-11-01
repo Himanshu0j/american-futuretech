@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Search, Star, Sparkles, BookOpen, ArrowRight, ChevronRight, ShieldCheck, Pencil } from 'lucide-react';
 import { usePublicCourses } from '../lib/publicCourses';
 import Navbar from '../components/Navbar';
 import PageBanner from '../components/PageBanner';
@@ -13,6 +13,7 @@ import TrustMarquee from '../components/TrustMarquee';
 import { DEFAULT_TOOL_CATEGORIES } from '../data/siteContent';
 import { compareCoursesByOrder } from '../lib/courseOrder';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { useAuth } from '../context/AuthContext';
 import { formatDepositAmount, lowestSeatDeposit } from '../lib/seatDeposit';
 import { Wrench } from 'lucide-react';
 import FaqAccordion from '../components/common/FaqAccordion';
@@ -62,6 +63,8 @@ function ToolLogo({ name, logo }) {
 }
 
 export default function CoursesPage() {
+  const { user } = useAuth();
+  const canEditTools = ['SUPERADMIN', 'ADMIN'].includes(String(user?.role || '').toUpperCase());
   // Same shared loader as the homepage and the header menu: the first paint uses
   // the server's snapshot, and a failed request keeps the last real list instead
   // of emptying the catalogue.
@@ -274,6 +277,15 @@ export default function CoursesPage() {
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
                 Gain hands-on proficiency with the modern toolchains and industry-standard software demanded by top technology employers.
               </p>
+              {canEditTools && (
+                <Link
+                  to="/admin/settings?tab=capstone"
+                  className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  Edit tools &amp; upload logos
+                </Link>
+              )}
             </div>
 
             <div className="space-y-8">

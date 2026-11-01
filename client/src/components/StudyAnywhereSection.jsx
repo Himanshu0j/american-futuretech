@@ -72,8 +72,14 @@ export default function StudyAnywhereSection() {
                   <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-all duration-300 group-hover:-translate-y-1">
                     <Icon className="h-5 w-5 text-[color:rgb(var(--tw-gold-600))]" />
                   </div>
-                  <h3 className="mt-3.5 font-heading text-base font-bold text-white">
-                    {title}
+                  {/* The underline is on an inline span, not the block heading:
+                      an inline box is fragmented per line, so a two-line title
+                      gets a mark under each line that stops at the text instead
+                      of running the full card width. */}
+                  <h3 className="mt-3.5 font-heading text-[17px] font-extrabold text-white">
+                    <span className="border-b-2 border-[rgb(var(--tw-gold-500)/70%)] pb-1">
+                      {title}
+                    </span>
                   </h3>
                   <p className="mt-1.5 text-sm text-white/85 leading-relaxed">{body}</p>
                 </div>

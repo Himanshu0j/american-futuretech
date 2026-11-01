@@ -5,7 +5,6 @@ import {
   Award,
   BrainCircuit,
   Briefcase,
-  CalendarClock,
   CalendarDays,
   Clock3,
   GraduationCap,
@@ -53,8 +52,15 @@ const INCLUDED = [
   { icon: GraduationCap, title: 'Hands-on Projects', sub: 'Build real-world experience' },
   { icon: Briefcase, title: 'Job Assistance', sub: '200+ Hiring Partners' },
   { icon: Users, title: 'Expert Mentorship', sub: '20+ Years Industry Experts' },
-  { icon: Award, title: 'Certification Prep', sub: 'Microsoft DP-900 & SC-900' },
-  { icon: CalendarClock, title: 'Flexible Learning', sub: 'Live + Recorded Classes' },
+  { icon: Award, title: 'Certification Prep', sub: 'Guided exam preparation' },
+  /* The four-pane mark, not the full lockup: the lockup in microsoft.svg is
+     278×60 and carries the wordmark, so at 20px tall inside a circle it read
+     as an unreadable smudge. The wordmark is already in the label beside it. */
+  {
+    image: '/images/companies/microsoft-mark.svg',
+    title: 'Microsoft Credentials',
+    sub: 'DP-900 & SC-900 Certified',
+  },
 ];
 
 /**
@@ -197,11 +203,15 @@ export default function CourseCard({ course, settings, className = '' }) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12">
         {/* ── Poster: the program's own artwork, badge and duration ────────── */}
-        <div className="lg:col-span-5 relative min-h-[130px] sm:min-h-[210px] lg:min-h-[272px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
+        {/* The poster artwork is 3:2 (800×533). Phones used to squeeze it into a
+            short 130px band with object-cover, which decapitated the artwork; the
+            box now matches the artwork's own ratio and the image is contained, so
+            nothing is cropped on any screen. */}
+        <div className="lg:col-span-5 relative aspect-[3/2] lg:aspect-auto lg:min-h-[272px] overflow-hidden bg-[rgb(var(--tw-ink-950))]">
           <img
             src={posterImage(course)}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700"
+            className="absolute inset-0 w-full h-full object-contain object-center lg:object-cover group-hover:scale-[1.03] transition-transform duration-700"
             loading="lazy"
             decoding="async"
           />
@@ -234,7 +244,7 @@ export default function CourseCard({ course, settings, className = '' }) {
             </div>
 
             <Link to={`/courses/${course.slug}`}>
-              <h2 className="mt-1.5 text-[22px] sm:text-2xl font-black font-heading text-slate-900 dark:text-white tracking-tight leading-[1.12] group-hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">
+              <h2 className="mt-1.5 text-[25px] sm:text-[28px] font-black font-heading text-slate-900 dark:text-white tracking-tight leading-[1.1] group-hover:text-[color:rgb(var(--tw-ink-900))] transition-colors">
                 {lead}
                 {accent && <span className="text-blue-600 dark:text-blue-400">{accent}</span>}
                 {tail}
@@ -347,10 +357,14 @@ export default function CourseCard({ course, settings, className = '' }) {
           wide card, three on a tablet. Phones keep the compact card the client
           asked for — the same facts are already in the strip above. */}
       <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-2 px-3.5 sm:px-4 py-2.5 border-t border-slate-200/90 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40">
-        {INCLUDED.map(({ icon: Icon, title, sub }) => (
+        {INCLUDED.map(({ icon: Icon, image, title, sub }) => (
           <div key={title} className="flex items-center gap-2 min-w-0">
-            <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm">
-              <Icon className="w-3.5 h-3.5 text-white" />
+            <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm overflow-hidden">
+              {image ? (
+                <img src={image} alt="" className="w-5 h-5 object-contain" loading="lazy" decoding="async" />
+              ) : (
+                <Icon className="w-3.5 h-3.5 text-white" />
+              )}
             </span>
             <div className="min-w-0">
               <div className="text-[10.5px] font-bold leading-tight text-slate-800 dark:text-slate-100">{title}</div>

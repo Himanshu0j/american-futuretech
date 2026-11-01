@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Clock, Star, Award, CheckCircle2, FileText, ArrowRight, Play,
-  ChevronDown, ChevronUp, Shield, Users, Sparkles, Download, PhoneCall,
+  ChevronDown, ChevronUp, Shield, Users, Download, PhoneCall,
   Calendar, Briefcase, Zap, Check, Lock, BookOpen, Layers, ZoomIn, Eye,
   ShieldCheck, MessageSquare, Monitor, GraduationCap, Mail, Sparkle,
   ExternalLink
@@ -412,7 +412,7 @@ export default function CourseDetailPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start relative z-10">
               {/* Left Column: Course Header Info */}
-              <div className="lg:col-span-8">
+              <div className="lg:col-span-12">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
                   <span className="text-xs font-bold uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))] bg-[rgb(var(--tw-sand-200))] px-3.5 py-1.5 rounded-full shadow-xs">
                     {course.category || 'Career Program'}
@@ -586,109 +586,6 @@ export default function CourseDetailPage() {
                 )}
               </div>
 
-              {/* Right Column: Sticky Enrollment Card */}
-              <div className="lg:col-span-4 lg:sticky lg:top-28">
-                <div className="rounded-3xl bg-white text-slate-800 p-6 sm:p-5 shadow-2xl border border-slate-200/80">
-                  <div className="mb-6 pb-5 border-b border-slate-100">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
-                      Career Program — Register Now
-                    </div>
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-3xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">${course.pricing?.discountedPrice || 499}</span>
-                      <span className="text-sm text-slate-500 line-through">${course.pricing?.basePrice || 1299}</span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 font-semibold mt-1">
-                      Group batch · per person · {course.duration || '6 Months'}
-                    </div>
-                    <div className="text-xs text-[color:rgb(var(--tw-blue-700))] font-bold flex items-center gap-1.5 mt-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
-                      Save ${Math.max((course.pricing?.basePrice || 1299) - (course.pricing?.discountedPrice || 499), 0)} with institutional scholarship
-                    </div>
-                    {showPersonalizedMentor && (
-                      <div className="mt-3 p-3 rounded-xl bg-[#F2F6FF] border border-[rgb(var(--tw-blue-700)/20%)]">
-                        <div className="flex items-baseline justify-between">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[color:rgb(var(--tw-blue-700))]">
-                            Personalized 1-on-1
-                          </span>
-                          <span className="text-xl font-display font-black text-[color:rgb(var(--tw-ink-900))]">
-                            ${personalizedPrice.toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
-                          Same curriculum, private mentor pace — separate fee and duration.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Flexible Deposit Box */}
-                  <div className="p-4 rounded-2xl bg-[#F2F6FF] border border-[rgb(var(--tw-gold-500)/60%)] mb-4 shadow-xs">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))]">
-                        Flexible Seat Deposit
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] text-[10px] font-black uppercase tracking-wider">
-                        Most Popular
-                      </span>
-                    </div>
-                    {/* The explanatory sentence ("Reserve your seat in the upcoming
-                        cohort today with … Remainder payable prior to start.") was
-                        removed at the client's request — it appeared on every
-                        course page and the stale inline-editor override on it had
-                        mangled the amounts. Two plain reservation amounts are all
-                        that is left. */}
-                    {/* Exactly two reservation amounts — nothing else */}
-                    <div className="space-y-2.5">
-                      <Link
-                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${resolveSeatDeposit(settings, course)}`}
-                        data-no-edit="true"
-                        className="w-full py-3 px-4 rounded-full bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-sm font-bold text-center shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                      >
-                        {`Reserve Seat for ${courseDeposit}`}
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                      <Link
-                        to={`/checkout?courseId=${course._id}&tier=deposit&deposit=${altDepositAmount}`}
-                        data-no-edit="true"
-                        className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2"
-                      >
-                        {`Reserve Seat for ${altDeposit}`}
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  <Link
-                    to={`/checkout?courseId=${course._id}&tier=full`}
-                    className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-ink-900))] hover:bg-[rgb(var(--tw-ink-900))] hover:text-white text-[color:rgb(var(--tw-ink-900))] text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
-                  >
-                    Enroll Now — ${course.pricing?.discountedPrice || 499} / Career Program
-                  </Link>
-
-                  {showPersonalizedMentor && (
-                    <Link
-                      to={`/checkout?courseId=${course._id}&tier=personalized`}
-                      className="w-full py-2.5 px-4 rounded-full border-2 border-[rgb(var(--tw-blue-700))] text-[color:rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-700))] hover:text-white text-sm font-bold text-center transition-all flex items-center justify-center gap-2 mb-3"
-                    >
-                      Enroll Now — ${personalizedPrice.toLocaleString()} / Personalized
-                    </Link>
-                  )}
-
-                  <button
-                    onClick={() => setIsLeadModalOpen(true)}
-                    className="w-full py-2 px-4 rounded-full text-slate-600 hover:text-[color:rgb(var(--tw-ink-900))] hover:bg-slate-100 text-xs font-semibold text-center transition-colors flex items-center justify-center gap-2 mb-4 cursor-pointer"
-                  >
-                    <PhoneCall className="w-3.5 h-3.5 text-[color:rgb(var(--tw-blue-700))]" />
-                    Talk to Admissions Counselor
-                  </button>
-
-                  {/* Seat Urgency Badge */}
-                  <div className="text-center py-2.5 px-3 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs font-semibold flex items-center justify-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                    {course.seatsUrgencyText || 'Only 3 seats remaining for this cohort'}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>

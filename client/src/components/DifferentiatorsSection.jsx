@@ -83,8 +83,12 @@ export default function DifferentiatorsSection() {
                   <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-transform duration-500 ease-spring hover:-translate-y-1.5 hover:rotate-3">
                     <Icon className="h-7 w-7 text-[color:rgb(var(--tw-gold-600))]" />
                   </div>
-                  <h3 className="mt-4 font-heading text-base font-bold text-white">
-                    {title}
+                  {/* Inline span so the mark follows the text on every wrapped
+                      line instead of spanning the whole card. */}
+                  <h3 className="mt-4 font-heading text-[17px] font-extrabold text-white">
+                    <span className="border-b-2 border-[rgb(var(--tw-gold-500)/70%)] pb-1">
+                      {title}
+                    </span>
                   </h3>
                   <p className="mx-auto mt-1.5 max-w-[34ch] text-sm text-white/85 leading-relaxed">
                     {body}

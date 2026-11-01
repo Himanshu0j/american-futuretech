@@ -6,6 +6,145 @@ import Navbar from '../components/Navbar';
 import TrustMarquee from '../components/TrustMarquee';
 import Footer from '../components/Footer';
 
+/** Render inline **bold** without handing the content to the HTML parser. */
+const inlineText = (text) =>
+  String(text)
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+        return (
+          <strong key={index} className="font-bold text-slate-900">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return <React.Fragment key={index}>{part}</React.Fragment>;
+    });
+
+/** Questions, key-point labels and markdown headings read as headings. */
+const isHeadingLine = (line) => {
+  const text = line.trim();
+  if (!text) return false;
+  if (/^#{1,3}\s+/.test(text)) return true;
+  if (/^\d+\.\s+.+\?$/.test(text)) return true;
+  if (text.endsWith('?') && text.length <= 140) return true;
+  if (text.endsWith(':') && text.length <= 100 && /^[A-Z0-9]/.test(text)) return true;
+  return false;
+};
+
+const HEADING_CLASS =
+  'mt-7 mb-2 rounded-r-lg border-l-4 border-[rgb(var(--tw-blue-700))] bg-blue-50/70 px-3 py-2 font-display text-base sm:text-lg font-extrabold leading-snug text-[color:rgb(var(--tw-ink-900))]';
+
+/**
+ * Tiny, safe markdown-ish renderer for blog bodies.
+ *
+ * Admin articles are authored as plain text with `###` headings, numbered
+ * points and occasional **bold** phrases. Rendering every block as a paragraph
+ * printed the hashes literally and flattened the questions the client marked as
+ * headings. This keeps the text as React nodes (never innerHTML) while giving
+ * questions, labels and markdown headings a real heading style.
+ */
+function BlogBody({ content }) {
+  const nodes = [];
+  let paragraph = [];
+  let list = null;
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    nodes.push(
+      <p key={`p-${nodes.length}`} className="text-sm sm:text-base leading-relaxed text-slate-700">
+        {inlineText(paragraph.join(' '))}
+      </p>
+    );
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (!list || !list.items.length) {
+      list = null;
+      return;
+    }
+    const Tag = list.ordered ? 'ol' : 'ul';
+    nodes.push(
+      <Tag
+        key={`list-${nodes.length}`}
+        className={`${
+          list.ordered ? 'list-decimal' : 'list-disc'
+        } space-y-1.5 pl-5 text-sm sm:text-base leading-relaxed text-slate-700 marker:text-[color:rgb(var(--tw-blue-700))]`}
+      >
+        {list.items.map((item, index) => (
+          <li key={index}>{inlineText(item)}</li>
+        ))}
+      </Tag>
+    );
+    list = null;
+  };
+
+  String(content || '')
+    .split('\n')
+    .forEach((rawLine) => {
+      const line = rawLine.trim();
+      if (!line) {
+        flushParagraph();
+        flushList();
+        return;
+      }
+
+      const heading = line.match(/^#{1,3}\s+(.+)$/);
+      if (heading) {
+        flushParagraph();
+        flushList();
+        nodes.push(
+          <h3 key={`h-${nodes.length}`} className={HEADING_CLASS}>
+            {inlineText(heading[1])}
+          </h3>
+        );
+        return;
+      }
+
+      if (isHeadingLine(line)) {
+        flushParagraph();
+        flushList();
+        nodes.push(
+          <h3 key={`h-${nodes.length}`} className={HEADING_CLASS}>
+            {inlineText(line)}
+          </h3>
+        );
+        return;
+      }
+
+      const bullet = line.match(/^[-*]\s+(.+)$/);
+      if (bullet) {
+        flushParagraph();
+        if (!list || list.ordered) {
+          flushList();
+          list = { ordered: false, items: [] };
+        }
+        list.items.push(bullet[1]);
+        return;
+      }
+
+      const ordered = line.match(/^\d+\.\s+(.+)$/);
+      if (ordered) {
+        flushParagraph();
+        if (!list || !list.ordered) {
+          flushList();
+          list = { ordered: true, items: [] };
+        }
+        list.items.push(ordered[1]);
+        return;
+      }
+
+      flushList();
+      paragraph.push(line);
+    });
+
+  flushParagraph();
+  flushList();
+
+  return <div className="space-y-4">{nodes}</div>;
+}
+
 export default function BlogDetailPage() {
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
@@ -85,6 +224,14 @@ export default function BlogDetailPage() {
             {blog.title}
           </h1>
 
+          <img
+            src={blog.coverImage || '/images/blog/default-cover.webp'}
+            alt=""
+            className="w-full aspect-[16/9] object-cover rounded-2xl border border-slate-200 mb-8"
+            loading="lazy"
+            decoding="async"
+          />
+
           <div className="flex items-center gap-4 py-4 border-y border-slate-100 mb-8">
             <div className="w-10 h-10 rounded-full bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-ink-900))] flex items-center justify-center font-bold text-sm">
               <User className="w-5 h-5 text-[color:rgb(var(--tw-blue-700))]" />
@@ -96,10 +243,8 @@ export default function BlogDetailPage() {
           </div>
 
           {/* Body Content */}
-          <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
-            {blog.content.split('\n\n').map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
+          <div className="prose max-w-none">
+            <BlogBody content={blog.content} />
           </div>
 
           {/* Tags */}

@@ -105,6 +105,15 @@ export default function BlogPage() {
                 to={`/blog/${post.slug}`}
                 className="group rounded-2xl bg-white border border-slate-200 hover:border-[rgb(var(--tw-ink-900)/40%)] transition-all flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5"
               >
+                <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
+                  <img
+                    src={post.coverImage || '/images/blog/default-cover.webp'}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
                 <div className="p-6 flex flex-col flex-1 justify-between text-left">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">

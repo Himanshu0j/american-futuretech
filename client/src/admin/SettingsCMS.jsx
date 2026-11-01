@@ -2795,7 +2795,9 @@ export default function SettingsCMS() {
                       Capstone Tools & Technologies (Live Logos)
                     </h3>
                     <p className="text-xs text-slate-400 font-mono mt-0.5">
-                      Manage visual tech logos displayed on the homepage Tools section.
+                      Logos here are matched by tool name and shown on the homepage Tools section and the
+                      Career Programs “Tools &amp; Tech Stack” lanes. Add a row named after the tool
+                      (e.g. Drata) and upload its logo to replace a missing tile.
                     </p>
                   </div>
                   <button

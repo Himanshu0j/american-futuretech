@@ -23,6 +23,7 @@ import {
   Images
 } from 'lucide-react';
 import SiteImagesCMS from './SiteImagesCMS';
+import ImageUploadInput from './components/ImageUploadInput';
 
 export default function ContentCMS() {
   const [activeTab, setActiveTab] = useState('blogs'); // 'blogs' | 'faqs' | 'stories' | 'images'
@@ -342,6 +343,13 @@ export default function ContentCMS() {
                 className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 hover:border-blue-500/40 transition-all flex flex-col justify-between"
               >
                 <div>
+                  <img
+                    src={b.coverImage || '/images/blog/default-cover.webp'}
+                    alt=""
+                    className="w-full h-28 object-cover rounded-xl border border-slate-800 mb-3"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="flex items-center justify-between text-xs font-mono text-blue-400 mb-2">
                     <span>{b.category}</span>
                     <span className="text-slate-400">{b.readTime}</span>
@@ -603,6 +611,14 @@ export default function ContentCMS() {
                         </select>
                       </div>
                     </div>
+
+                    <ImageUploadInput
+                      label="Cover Image (upload or URL)"
+                      value={blogForm.coverImage || ''}
+                      onChange={(url) => setBlogForm({ ...blogForm, coverImage: url })}
+                      placeholder="/images/blog/default-cover.webp or upload..."
+                      previewSize="w-20 h-12"
+                    />
 
                     <div>
                       <label className="block text-slate-400 uppercase mb-1">Short Excerpt (Summary)</label>

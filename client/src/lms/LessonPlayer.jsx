@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Play, CheckCircle2, ChevronRight, ChevronLeft, Download, Award,
@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import confetti from 'canvas-confetti';
 import LessonNotes from './LessonNotes';
+import { resolveVideoSource } from '../lib/videoEmbed';
 
 export default function LessonPlayer() {
   const { courseId } = useParams();
@@ -99,6 +100,12 @@ export default function LessonPlayer() {
   const nextLesson = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
 
   const isCurrentCompleted = completedLessonIds.includes(activeLesson?._id);
+
+  // Normalise whatever the instructor stored into something the browser can
+  // actually play: a YouTube/Vimeo share link becomes its embed URL, an MP4
+  // becomes a native <video>, and a site that refuses framing gets an explicit
+  // "open in a new tab" panel instead of a silent blank frame.
+  const lessonMedia = useMemo(() => resolveVideoSource(activeLesson?.videoUrl), [activeLesson?.videoUrl]);
 
   // Quiz Handling
   const handleOpenQuiz = (quiz) => {
@@ -314,18 +321,47 @@ export default function LessonPlayer() {
         <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
           {/* Video Player Box */}
           <div className="w-full bg-black aspect-video max-h-[55vh] flex items-center justify-center relative">
-            {activeLesson?.videoUrl ? (
+            {lessonMedia.kind === 'iframe' ? (
               <iframe
-                src={activeLesson.videoUrl}
+                key={lessonMedia.src}
+                src={lessonMedia.src}
                 title={activeLesson.title}
                 className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
               />
+            ) : lessonMedia.kind === 'video' ? (
+              <video
+                key={lessonMedia.src}
+                src={lessonMedia.src}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full bg-black object-contain"
+              >
+                Your browser cannot play this video.
+              </video>
+            ) : lessonMedia.kind === 'external' ? (
+              <div className="text-center p-8 text-slate-300 max-w-md">
+                <ExternalLink className="w-10 h-10 mx-auto mb-3 text-slate-500" />
+                <p className="text-sm font-semibold text-white">This video is hosted on {lessonMedia.provider}</p>
+                <p className="text-xs text-slate-400 mt-1 mb-4">
+                  That site does not allow its player to be embedded, so it opens in a new tab.
+                </p>
+                <a
+                  href={lessonMedia.src}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white text-[rgb(var(--tw-ink-900))] text-xs font-bold"
+                >
+                  Watch video <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
             ) : (
               <div className="text-center p-8 text-slate-400">
                 <Play className="w-12 h-12 mx-auto mb-2 text-slate-600" />
-                <p className="text-sm">Video content ready for playback.</p>
+                <p className="text-sm">No video attached to this lesson yet.</p>
               </div>
             )}
           </div>

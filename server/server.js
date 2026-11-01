@@ -104,8 +104,39 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Security middleware
+//
+// Frame sources are listed explicitly.
+//
+// helmet's default policy is `default-src 'self'` with NO `frame-src`, and an
+// iframe is governed by `frame-src` (falling back to `default-src`). That meant
+// every lesson and class video — YouTube, Vimeo, Loom, Google Drive, Jitsi — was
+// refused by the browser in production, so the student player sat there blank.
+// It looked like a data problem ("video lms me laga hai par student ko dikhti
+// nahi") because dev is served by Vite, which sends no CSP; only the built app
+// served by this Express process was affected.
+//
+// Only the providers the LMS can actually embed are allowed. Video files are
+// covered by `media-src` (same-origin uploads plus external CDN MP4s).
+const EMBEDDABLE_FRAME_SOURCES = [
+  "'self'",
+  'https://www.youtube.com',
+  'https://www.youtube-nocookie.com',
+  'https://player.vimeo.com',
+  'https://www.loom.com',
+  'https://drive.google.com',
+  'https://meet.jit.si',
+  'https://8x8.vc',
+];
+
 app.use(helmet({
   crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'frame-src': EMBEDDABLE_FRAME_SOURCES,
+      'media-src': ["'self'", 'https:', 'blob:'],
+    },
+  },
 }));
 
 // CORS Configuration — an explicit allowlist, never a reflected origin.

@@ -43,7 +43,16 @@ const VIDEO_FILE = /\.(mp4|webm|ogg|ogv|m4v|mov)$/i;
  * @returns {{ kind: EmbedKind, provider: string, src: string }}
  */
 export function resolveVideoSource(value) {
-  const url = parseUrl(value);
+  const raw = String(value || '').trim();
+
+  // A file shipped with the site (client/public/videos/…) is referenced as
+  // `/videos/lesson.mp4`. It has no scheme, so the URL parser rejects it — but
+  // it is same-origin media and must still play in the native <video> element.
+  if (raw.startsWith('/') && !raw.startsWith('//') && VIDEO_FILE.test(raw.split(/[?#]/)[0])) {
+    return { kind: 'video', provider: 'Video', src: raw };
+  }
+
+  const url = parseUrl(raw);
   if (!url) return { kind: 'none', provider: '', src: '' };
 
   const yt = youtubeId(url);

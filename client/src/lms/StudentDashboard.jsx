@@ -1,17 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Award, CheckCircle2, Play, Clock, ArrowRight, Sparkles, AlertCircle, Calendar } from 'lucide-react';
+import { BookOpen, Award, CheckCircle2, Play, Clock, ArrowRight, Sparkles, AlertCircle, Calendar, Radio } from 'lucide-react';
 import axios from 'axios';
 
 export default function StudentDashboard() {
   const [data, setData] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
+  const [liveClass, setLiveClass] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboard();
     fetchAnnouncements();
+    fetchLiveClass();
   }, []);
+
+  // A class that is open right now belongs at the top of the dashboard: the
+  // student should be one click from the room, not hunting through My Classes.
+  const fetchLiveClass = async () => {
+    try {
+      const res = await axios.get('/api/lms/classes');
+      const rows = res.data?.classes || [];
+      setLiveClass(rows.find((row) => row.phase === 'live' && row.canJoin) || null);
+    } catch (err) {
+      setLiveClass(null);
+    }
+  };
 
   // Notices the admin published from Admin → Academy / LMS → Communications.
   const fetchAnnouncements = async () => {
@@ -97,6 +111,28 @@ export default function StudentDashboard() {
           </Link>
         )}
       </div>
+
+      {liveClass && (
+        <Link
+          to={`/student/classes/${liveClass._id}`}
+          className="flex flex-wrap items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-left transition-colors hover:border-red-300 hover:bg-red-100/60"
+        >
+          <span className="inline-flex h-2.5 w-2.5 items-center justify-center">
+            <span className="h-2.5 w-2.5 animate-ping rounded-full bg-red-500" />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-red-700">
+              <Radio className="h-3.5 w-3.5" /> Live now
+            </div>
+            <div className="truncate text-sm font-bold text-[color:rgb(var(--tw-ink-900))]">
+              {liveClass.title} · {liveClass.batch?.name || liveClass.batch?.batchCode}
+            </div>
+          </div>
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[rgb(var(--tw-ink-900))] px-4 py-2 text-[11px] font-bold text-white">
+            Enter classroom <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      )}
 
       {/* 4 Metric Stats - Clean White Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

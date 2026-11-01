@@ -128,7 +128,10 @@ export default function ClassForm({ value, onChange }) {
             ))}
           </select>
         </Field>
-        <Field label="Meeting link" hint="Released to students only during the live window.">
+        <Field
+          label="Meeting link"
+          hint="Released only during the live window. Jitsi and YouTube Live play inside the classroom; Zoom, Meet and Teams open in their own window."
+        >
           <input
             className={inputClass}
             value={value.meetingUrl}
@@ -139,7 +142,10 @@ export default function ClassForm({ value, onChange }) {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Recording link" hint="Shown after the class ends.">
+        <Field
+          label="Recording link"
+          hint="Shown after the class ends and plays inside the student portal — YouTube, Vimeo, Loom, Google Drive and MP4 links all embed here."
+        >
           <input
             className={inputClass}
             value={value.recordingUrl}

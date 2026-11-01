@@ -145,7 +145,36 @@ const getClassDetails = async (req, res) => {
       // will appear here" instead of a false 404.
     }
 
-    return res.status(200).json({ success: true, class: presented });
+    // The classroom header names the course and batch, so send the same compact
+    // shapes the list endpoint sends. Names come from the student's own
+    // enrollment — a class id alone still cannot leak another batch's labels.
+    const enrollment = await Enrollment.findOne({ student: req.user._id, batch: session.batch })
+      .populate('course', 'title slug thumbnail')
+      .populate('batch', 'name batchCode timing')
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      class: {
+        ...presented,
+        course: enrollment?.course
+          ? {
+              _id: enrollment.course._id,
+              title: enrollment.course.title,
+              slug: enrollment.course.slug,
+              thumbnail: enrollment.course.thumbnail,
+            }
+          : null,
+        batch: enrollment?.batch
+          ? {
+              _id: enrollment.batch._id,
+              name: enrollment.batch.name,
+              batchCode: enrollment.batch.batchCode,
+              timing: enrollment.batch.timing,
+            }
+          : null,
+      },
+    });
   } catch (error) {
     return sendError(res, error);
   }

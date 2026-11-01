@@ -65,6 +65,7 @@ const StudentLayout = lazy(() => import('./lms/StudentLayout'));
 const StudentDashboard = lazy(() => import('./lms/StudentDashboard'));
 const MyCourses = lazy(() => import('./lms/MyCourses'));
 const MyClasses = lazy(() => import('./lms/MyClasses'));
+const ClassroomRoom = lazy(() => import('./lms/ClassroomRoom'));
 const MyQuizzes = lazy(() => import('./lms/MyQuizzes'));
 const MyAssignments = lazy(() => import('./lms/MyAssignments'));
 const Grades = lazy(() => import('./lms/Grades'));
@@ -408,6 +409,8 @@ export default function App() {
                 <Route path="dashboard" element={<StudentDashboard />} />
                 <Route path="courses" element={<MyCourses />} />
                 <Route path="classes" element={<MyClasses />} />
+                {/* The room a class plays in — not a link out to YouTube. */}
+                <Route path="classes/:classId" element={<ClassroomRoom />} />
                 <Route path="quizzes" element={<MyQuizzes />} />
                 <Route path="assignments" element={<MyAssignments />} />
                 <Route path="grades" element={<Grades />} />

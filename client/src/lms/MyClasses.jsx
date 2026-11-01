@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
   Video,
@@ -87,8 +88,8 @@ export default function MyClasses() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-heading font-black text-white">My Classes</h1>
         <p className="text-xs sm:text-sm text-slate-200 mt-2 max-w-2xl">
-          Every live session, recording and handout for your batch. Meeting links unlock shortly before
-          class starts and are visible only to enrolled students.
+          Every live session, recording and handout for your batch. Classes open inside this portal — the
+          meeting room, the recording and the player all stay here. Only enrolled students can enter.
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
@@ -220,32 +221,41 @@ export default function MyClasses() {
 
                 <div className="shrink-0 flex sm:flex-col items-stretch justify-center gap-2">
                   {item.canJoin && item.joinUrl ? (
+                    <Link
+                      to={`/student/classes/${item._id}`}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-xs font-bold"
+                    >
+                      <Radio className="w-3.5 h-3.5" /> Join class
+                    </Link>
+                  ) : item.recordingUrl ? (
+                    <Link
+                      to={`/student/classes/${item._id}`}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[rgb(var(--tw-ink-900))] hover:bg-black text-white text-xs font-bold"
+                    >
+                      <PlayCircle className="w-3.5 h-3.5" /> Watch in portal
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-[11px] font-semibold">
+                      <Clock className="w-3.5 h-3.5" />
+                      {item.phase === 'cancelled' ? 'Cancelled' : 'Opens before class'}
+                    </span>
+                  )}
+
+                  {item.canJoin && item.joinUrl ? (
                     <a
                       href={item.joinUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[rgb(var(--tw-blue-700))] hover:bg-[rgb(var(--tw-blue-800))] text-white text-xs font-bold"
+                      className="inline-flex items-center justify-center gap-1 text-center text-[10px] text-slate-400 hover:text-slate-600"
                     >
-                      <Radio className="w-3.5 h-3.5" /> Join class
-                    </a>
-                  ) : item.recordingUrl ? (
-                    <a
-                      href={item.recordingUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[rgb(var(--tw-ink-900))] hover:bg-black text-white text-xs font-bold"
-                    >
-                      <PlayCircle className="w-3.5 h-3.5" /> Recording
+                      Open {item.meetingPlatform && item.meetingPlatform !== 'None' ? item.meetingPlatform : 'meeting'}
+                      <ExternalLink className="w-3 h-3" />
                     </a>
                   ) : (
-                    <span className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-[11px] font-semibold">
-                      <Clock className="w-3.5 h-3.5" />
-                      {item.phase === 'cancelled' ? 'Cancelled' : 'Link opens soon'}
-                    </span>
-                  )}
-
-                  {item.meetingPlatform && item.meetingPlatform !== 'None' && (
-                    <span className="text-center text-[10px] text-slate-400">{item.meetingPlatform}</span>
+                    item.meetingPlatform &&
+                    item.meetingPlatform !== 'None' && (
+                      <span className="text-center text-[10px] text-slate-400">{item.meetingPlatform}</span>
+                    )
                   )}
                 </div>
               </div>
@@ -256,7 +266,8 @@ export default function MyClasses() {
 
       <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
         <ExternalLink className="w-3 h-3" />
-        Only classes for your enrolled batch are shown. Contact your advisor if a session is missing.
+        Only classes for your enrolled batch are shown, and the video plays inside this portal. Contact your advisor
+        if a session is missing.
       </div>
     </div>
   );

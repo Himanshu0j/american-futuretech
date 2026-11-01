@@ -1,4 +1,5 @@
 const Enrollment = require('../models/Enrollment');
+const Batch = require('../models/Batch');
 
 /**
  * Access control for student-facing content.
@@ -38,6 +39,65 @@ const checkCourseAccess = async (user, courseId) => {
   return { allowed: true, staff: false, enrollment };
 };
 
+/**
+ * Is this enrollment usable right now? A blank access window means unlimited on
+ * that side, so legacy enrollments keep their existing behaviour.
+ */
+const isEnrollmentCurrent = (enrollment, now = new Date()) => {
+  if (!enrollment || enrollment.status !== 'Active') return false;
+  const start = enrollment.accessStart ? new Date(enrollment.accessStart) : null;
+  const until = enrollment.accessUntil ? new Date(enrollment.accessUntil) : null;
+  if (start && !Number.isNaN(start.getTime()) && now < start) return false;
+  if (until && !Number.isNaN(until.getTime()) && now > until) return false;
+  return true;
+};
+
+/**
+ * Batch-level guard used by every class/recording/material read.
+ *
+ * A student must hold an Active enrollment for BOTH the course and the same
+ * batch. Checking only the course would let a 7 AM student open the 8 PM
+ * cohort's room by guessing its id.
+ */
+const checkBatchAccess = async (user, batchId) => {
+  if (!user) return { allowed: false, reason: 'UNAUTHENTICATED' };
+
+  const batch = await Batch.findById(batchId).lean();
+  if (!batch) return { allowed: false, reason: 'NOT_FOUND' };
+
+  if (canViewAnyCourse(user)) {
+    return { allowed: true, staff: true, batch, enrollment: null };
+  }
+
+  const enrollment = await Enrollment.findOne({
+    student: user._id,
+    course: batch.course,
+    batch: batch._id,
+    status: 'Active',
+  }).lean();
+
+  if (!isEnrollmentCurrent(enrollment)) {
+    return { allowed: false, reason: 'NOT_ENROLLED', batch };
+  }
+
+  return { allowed: true, staff: false, batch, enrollment };
+};
+
+const denyBatchResponse = (res, reason) => {
+  if (reason === 'NOT_FOUND') {
+    return res.status(404).json({ success: false, message: 'That class no longer exists.' });
+  }
+  if (reason === 'UNAUTHENTICATED') {
+    return res.status(401).json({ success: false, message: 'Please sign in to continue.' });
+  }
+  return res.status(403).json({
+    success: false,
+    code: 'NOT_ENROLLED',
+    message:
+      'This class belongs to a batch you are not enrolled in. Access is granted by the admissions team — please contact your advisor.',
+  });
+};
+
 const denyResponse = (res, reason, message) =>
   res.status(403).json({
     success: false,
@@ -53,5 +113,8 @@ module.exports = {
   isStaff,
   canViewAnyCourse,
   checkCourseAccess,
+  checkBatchAccess,
+  isEnrollmentCurrent,
   denyResponse,
+  denyBatchResponse,
 };

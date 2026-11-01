@@ -28,6 +28,14 @@ const EnrollmentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  // Optional access window. A blank date means "no limit on that side", so
+  // every enrollment written before these fields existed keeps working.
+  accessStart: {
+    type: Date,
+  },
+  accessUntil: {
+    type: Date,
+  },
   completedAt: {
     type: Date,
   },
@@ -42,5 +50,8 @@ const EnrollmentSchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
+
+EnrollmentSchema.index({ student: 1, batch: 1 });
+EnrollmentSchema.index({ batch: 1, status: 1 });
 
 module.exports = mongoose.model('Enrollment', EnrollmentSchema);

@@ -64,6 +64,7 @@ export default function AdminLayout() {
     // STUDENTS_* / COURSES_* / SETTINGS_* ids as a fallback), so a staff account
     // granted before the LMS permissions existed keeps its menu.
     { name: 'LMS Overview', path: '/admin/lms', icon: LayoutDashboard, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS', exact: true },
+    { name: 'LMS Portal', path: '/admin/lms/portal', icon: GraduationCap, permission: ['LMS_VIEW', 'COURSES_VIEW'], section: 'Academy / LMS' },
     { name: 'Curriculum Builder', path: '/admin/lms/curriculum', icon: BookOpen, permission: ['LMS_VIEW', 'COURSES_VIEW'], section: 'Academy / LMS' },
     { name: 'Assessments & Quizzes', path: '/admin/lms/quizzes', icon: ListChecks, permission: ['LMS_VIEW', 'COURSES_VIEW'], section: 'Academy / LMS' },
     { name: 'Enrollments & Access', path: '/admin/lms/enrollments', icon: UserPlus, permission: ['LMS_VIEW', 'STUDENTS_VIEW'], section: 'Academy / LMS' },
@@ -294,7 +295,10 @@ export default function AdminLayout() {
           <div className="flex items-center gap-2 text-left">
             <span className="text-xs font-mono text-slate-400">Executive /</span>
             <span className="text-sm font-semibold text-white">
-              {navItems.find((n) => location.pathname.startsWith(n.path))?.name || 'Admin Console'}
+              {/* Longest match wins: /admin/lms/portal must not read as /admin/lms. */}
+              {navItems
+                .filter((n) => location.pathname.startsWith(n.path))
+                .sort((a, b) => b.path.length - a.path.length)[0]?.name || 'Admin Console'}
             </span>
           </div>
 

@@ -64,6 +64,16 @@ const StudentRegister = lazy(() => import('./lms/StudentRegister'));
 const StudentLayout = lazy(() => import('./lms/StudentLayout'));
 const StudentDashboard = lazy(() => import('./lms/StudentDashboard'));
 const MyCourses = lazy(() => import('./lms/MyCourses'));
+const MyClasses = lazy(() => import('./lms/MyClasses'));
+const MyQuizzes = lazy(() => import('./lms/MyQuizzes'));
+const MyAssignments = lazy(() => import('./lms/MyAssignments'));
+const Grades = lazy(() => import('./lms/Grades'));
+const StudentCalendar = lazy(() => import('./lms/StudentCalendar'));
+const Transcript = lazy(() => import('./lms/Transcript'));
+const Notifications = lazy(() => import('./lms/Notifications'));
+const Leaderboard = lazy(() => import('./lms/Leaderboard'));
+const Badges = lazy(() => import('./lms/Badges'));
+const MyJobs = lazy(() => import('./lms/MyJobs'));
 const LessonPlayer = lazy(() => import('./lms/LessonPlayer'));
 const MyCertificates = lazy(() => import('./lms/MyCertificates'));
 const StudentPayments = lazy(() => import('./lms/StudentPayments'));
@@ -95,6 +105,9 @@ const CookieConsents = lazy(() => import('./admin/CookieConsents'));
 
 // Academy / LMS control centre
 const LmsDashboard = lazy(() => import('./admin/lms/LmsDashboard'));
+const LmsPortal = lazy(() => import('./admin/lms/LmsPortal'));
+const CourseBatches = lazy(() => import('./admin/lms/CourseBatches'));
+const BatchWorkspace = lazy(() => import('./admin/lms/BatchWorkspace'));
 const CurriculumBuilder = lazy(() => import('./admin/lms/CurriculumBuilder'));
 const AssessmentsManager = lazy(() => import('./admin/lms/AssessmentsManager'));
 const EnrollmentsManager = lazy(() => import('./admin/lms/EnrollmentsManager'));
@@ -394,6 +407,16 @@ export default function App() {
                 <Route index element={<Navigate to="/student/dashboard" replace />} />
                 <Route path="dashboard" element={<StudentDashboard />} />
                 <Route path="courses" element={<MyCourses />} />
+                <Route path="classes" element={<MyClasses />} />
+                <Route path="quizzes" element={<MyQuizzes />} />
+                <Route path="assignments" element={<MyAssignments />} />
+                <Route path="grades" element={<Grades />} />
+                <Route path="calendar" element={<StudentCalendar />} />
+                <Route path="transcript" element={<Transcript />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="leaderboard" element={<Leaderboard />} />
+                <Route path="badges" element={<Badges />} />
+                <Route path="jobs" element={<MyJobs />} />
                 <Route path="courses/:courseId/learn" element={<LessonPlayer />} />
                 <Route path="learn/:courseId" element={<LessonPlayer />} />
                 <Route path="certificates" element={<MyCertificates />} />
@@ -437,6 +460,9 @@ export default function App() {
 
                 {/* Academy / LMS control centre */}
                 <Route path="lms" element={<LmsDashboard />} />
+                <Route path="lms/portal" element={<LmsPortal />} />
+                <Route path="lms/portal/:courseId" element={<CourseBatches />} />
+                <Route path="lms/portal/:courseId/batches/:batchId" element={<BatchWorkspace />} />
                 <Route path="lms/curriculum" element={<CurriculumBuilder />} />
                 <Route path="lms/quizzes" element={<AssessmentsManager />} />
                 <Route path="lms/enrollments" element={<EnrollmentsManager />} />

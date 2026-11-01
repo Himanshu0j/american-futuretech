@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import {
   LayoutDashboard, BookOpen, Award, CreditCard, LifeBuoy,
-  User, LogOut, Menu, X, ExternalLink, GraduationCap, ChevronRight
+  User, LogOut, Menu, X, ExternalLink, GraduationCap, ChevronRight, Video,
+  ListChecks, ClipboardList, BarChart3, Briefcase, CalendarDays, ScrollText,
+  Trophy, Medal, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,6 +13,26 @@ export default function StudentLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    axios
+      .get('/api/lms/notifications')
+      .then((res) => {
+        if (alive) setUnreadNotifications(res.data?.unreadCount || 0);
+      })
+      .catch(() => {
+        // A missing inbox must never block the portal shell.
+      });
+
+    const onCount = (event) => setUnreadNotifications(Number(event.detail) || 0);
+    window.addEventListener('lms:notification-count', onCount);
+    return () => {
+      alive = false;
+      window.removeEventListener('lms:notification-count', onCount);
+    };
+  }, [user?._id]);
 
   const handleLogout = () => {
     logout();
@@ -19,6 +42,16 @@ export default function StudentLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
     { name: 'My Courses', path: '/student/courses', icon: BookOpen },
+    { name: 'My Classes', path: '/student/classes', icon: Video },
+    { name: 'Calendar', path: '/student/calendar', icon: CalendarDays },
+    { name: 'My Quizzes', path: '/student/quizzes', icon: ListChecks },
+    { name: 'Assignments', path: '/student/assignments', icon: ClipboardList },
+    { name: 'Grades & GPA', path: '/student/grades', icon: BarChart3 },
+    { name: 'Transcript', path: '/student/transcript', icon: ScrollText },
+    { name: 'Leaderboard', path: '/student/leaderboard', icon: Trophy },
+    { name: 'Badges', path: '/student/badges', icon: Medal },
+    { name: 'Notifications', path: '/student/notifications', icon: Bell },
+    { name: 'Job Openings', path: '/student/jobs', icon: Briefcase },
     { name: 'Certificates', path: '/student/certificates', icon: Award },
     { name: 'Invoices & Receipts', path: '/student/payments', icon: CreditCard },
     { name: 'Student Support', path: '/student/support', icon: LifeBuoy },
@@ -49,7 +82,7 @@ export default function StudentLayout() {
         transition-transform duration-300 lg:translate-x-0 lg:static
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div>
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Brand Header */}
           <div className="p-5 border-b border-[rgb(var(--tw-blue-700))] flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2">
@@ -100,7 +133,12 @@ export default function StudentLayout() {
                   `}
                 >
                   <Icon className="w-4 h-4 shrink-0 text-[color:rgb(var(--tw-gold-400))]" />
-                  <span>{item.name}</span>
+                  <span className="flex-1">{item.name}</span>
+                  {item.path === '/student/notifications' && unreadNotifications > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[rgb(var(--tw-gold-500))] text-[rgb(var(--tw-ink-900))] text-[9px] font-black flex items-center justify-center">
+                      {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                    </span>
+                  )}
                 </NavLink>
               );
             })}

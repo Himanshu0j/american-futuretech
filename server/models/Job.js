@@ -64,6 +64,27 @@ const JobSchema = new mongoose.Schema({
     ref: 'Course',
     default: null,
   },
+  // Jobs can be scoped to the cohorts they are relevant for. Empty means the
+  // role is open to every student (the existing public job-board behaviour).
+  targetCourses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course',
+  }],
+  targetBatches: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Batch',
+  }],
+  // Archived roles stay on record (and keep their applications) but leave the
+  // student board and the public listing.
+  isArchived: {
+    type: Boolean,
+    default: false,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+  },
   recommendedCourseTitle: {
     type: String,
     default: '',

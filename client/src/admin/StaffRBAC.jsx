@@ -37,6 +37,22 @@ import {
   ROLE_PRESETS
 } from '../constants/permissions';
 
+/*
+ * One mixed table made students look like staff: counselors and portal logins
+ * sat between administrators. Every role gets its own section instead, so the
+ * page reads as separate lists and an empty role simply disappears.
+ */
+const ROLE_SECTIONS = [
+  { role: 'SUPERADMIN', label: 'SuperAdmins', hint: 'Full platform authority' },
+  { role: 'ADMIN', label: 'Administrators', hint: 'Permission-governed staff accounts' },
+  { role: 'COUNSELOR', label: 'Counselors', hint: 'Admissions and student support' },
+  { role: 'INSTRUCTOR', label: 'Instructors', hint: 'Teaching and curriculum' },
+  { role: 'STUDENT', label: 'Students', hint: 'Portal logins — managed under Enrolled Students' },
+  { role: 'OTHER', label: 'Other accounts', hint: 'No matching staff role' },
+];
+
+const ROLE_ORDER = ROLE_SECTIONS.map((section) => section.role);
+
 export default function StaffRBAC() {
   const { user: currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('staff'); // 'staff' | 'audit'
@@ -49,7 +65,6 @@ export default function StaffRBAC() {
 
   // Search & Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('ALL');
 
   // Modals state
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -271,14 +286,24 @@ export default function StaffRBAC() {
     setFormPermissions(preset.permissions);
   };
 
-  // Filtered Users List
-  const filteredUsers = users.filter(u => {
-    const matchesSearch =
-      (u.name && u.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesRole = roleFilter === 'ALL' || (u.role && u.role.toUpperCase() === roleFilter);
-    return matchesSearch && matchesRole;
-  });
+  // Filtered Users List — sorted into role sections, never one mixed table.
+  const filteredUsers = users
+    .filter((u) => `${u.name || ''} ${u.email || ''}`.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      const aRole = String(a.role || 'OTHER').toUpperCase();
+      const bRole = String(b.role || 'OTHER').toUpperCase();
+      const aIndex = ROLE_ORDER.indexOf(ROLE_ORDER.includes(aRole) ? aRole : 'OTHER');
+      const bIndex = ROLE_ORDER.indexOf(ROLE_ORDER.includes(bRole) ? bRole : 'OTHER');
+      if (aIndex !== bIndex) return aIndex - bIndex;
+      return String(a.name || '').localeCompare(String(b.name || ''));
+    });
+
+  const roleCounts = filteredUsers.reduce((acc, user) => {
+    const role = String(user.role || 'OTHER').toUpperCase();
+    const key = ROLE_ORDER.includes(role) ? role : 'OTHER';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-6 text-left max-w-7xl pb-16 font-sans">
@@ -387,21 +412,9 @@ export default function StaffRBAC() {
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs text-slate-400 font-mono">Role:</span>
-              <select
-                aria-label="Filter staff by role"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-blue-500 cursor-pointer"
-              >
-                <option value="ALL">All Roles</option>
-                <option value="SUPERADMIN">SuperAdmin</option>
-                <option value="ADMIN">Admin</option>
-                <option value="COUNSELOR">Counselor</option>
-                <option value="INSTRUCTOR">Instructor</option>
-              </select>
-            </div>
+            <span className="text-[11px] font-mono text-slate-400">
+              Each role is listed in its own section below.
+            </span>
           </div>
 
           {/* Table */}
@@ -433,13 +446,42 @@ export default function StaffRBAC() {
                       </td>
                     </tr>
                   ) : (
-                    filteredUsers.map((member) => {
+                    filteredUsers.map((member, index) => {
                       const isSuper = (member.role || '').toUpperCase() === 'SUPERADMIN';
                       const isSelf = member._id === currentUser?.id;
                       const permissionsCount = member.permissions?.length || 0;
+                      const memberRole = String(member.role || 'OTHER').toUpperCase();
+                      const roleKey = ROLE_ORDER.includes(memberRole) ? memberRole : 'OTHER';
+                      const previousRole =
+                        index > 0
+                          ? (() => {
+                              const previous = String(filteredUsers[index - 1].role || 'OTHER').toUpperCase();
+                              return ROLE_ORDER.includes(previous) ? previous : 'OTHER';
+                            })()
+                          : '';
+                      const section =
+                        ROLE_SECTIONS.find((row) => row.role === roleKey) ||
+                        ROLE_SECTIONS[ROLE_SECTIONS.length - 1];
 
                       return (
-                        <tr key={member._id} className="hover:bg-slate-800/30 transition-colors">
+                        <React.Fragment key={member._id}>
+                          {roleKey !== previousRole && (
+                            <tr className="bg-[rgb(var(--tw-ink-950)/80%)]">
+                              <td colSpan={6} className="px-6 py-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <Shield className="w-3.5 h-3.5 text-blue-400" />
+                                  <span className="text-[11px] font-bold uppercase tracking-wider text-white">
+                                    {section.label}
+                                  </span>
+                                  <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 font-mono text-[10px] text-blue-300">
+                                    {roleCounts[roleKey] || 0}
+                                  </span>
+                                  <span className="text-[10px] text-slate-500">{section.hint}</span>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                          <tr className="hover:bg-slate-800/30 transition-colors">
                           {/* Name & Avatar */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
@@ -583,7 +625,8 @@ export default function StaffRBAC() {
                               )}
                             </div>
                           </td>
-                        </tr>
+                          </tr>
+                        </React.Fragment>
                       );
                     })
                   )}

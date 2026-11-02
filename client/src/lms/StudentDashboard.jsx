@@ -101,7 +101,11 @@ export default function StudentDashboard() {
               Active Academic Term
             </div>
             <h1 className="text-2xl sm:text-3xl font-heading font-black text-white">
-              Welcome back, <span className="highlight">{firstName}</span>
+              Welcome back,{' '}
+              {/* The highlighted pill keeps its themed background, but the
+                  inherited ink colour disappears on this dark banner — the
+                  student's name needs white text to be readable. */}
+              <span className="highlight" style={{ color: '#ffffff' }}>{firstName}</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-200 mt-2 max-w-xl leading-relaxed">
               {/* Editable in Admin → LMS Settings → Welcome message. */}

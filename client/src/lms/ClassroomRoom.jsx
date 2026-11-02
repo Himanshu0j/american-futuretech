@@ -8,6 +8,7 @@ import {
   ExternalLink,
   FileText,
   MonitorPlay,
+  Play,
   PlayCircle,
   Radio,
   RefreshCw,
@@ -52,12 +53,60 @@ const countdown = (target, now) => {
   return `${Math.max(1, minutes)}m`;
 };
 
-function StagePlayer({ item, media }) {
+/**
+ * A YouTube embed shows YouTube's own poster, logo and "Watch on YouTube"
+ * button before playback, which made the classroom look like an embedded
+ * YouTube page. For recordings we paint our own poster with a normal play
+ * button and only mount the iframe (with autoplay) after the student presses it.
+ */
+function StagePlayer({ item, media, clickToPlay = false }) {
+  const [started, setStarted] = useState(!clickToPlay);
+
+  useEffect(() => {
+    setStarted(!clickToPlay);
+  }, [clickToPlay, media?.src]);
+
   if (media?.kind === 'iframe') {
+    if (clickToPlay && !started) {
+      return (
+        <button
+          type="button"
+          onClick={() => setStarted(true)}
+          className="group absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-hidden text-center"
+          aria-label={`Play ${item.title}`}
+        >
+          {item.thumbnail ? (
+            <img src={item.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <span
+              className="absolute inset-0"
+              style={{
+                background:
+                  'radial-gradient(circle at 50% 35%, rgba(37,99,235,0.45) 0%, rgba(15,23,42,0.96) 58%, #020617 100%)',
+              }}
+            />
+          )}
+          <span className="absolute inset-0 bg-slate-950/40" />
+          <span className="relative grid h-16 w-16 place-items-center rounded-full bg-white text-[rgb(var(--tw-ink-900))] shadow-2xl transition-transform group-hover:scale-105 sm:h-20 sm:w-20">
+            <Play className="h-8 w-8 fill-current sm:h-10 sm:w-10" />
+          </span>
+          <span className="relative px-6">
+            <span className="block text-sm font-black text-white sm:text-base">{item.title}</span>
+            <span className="mt-1 block text-[11px] font-semibold text-blue-100/80">Play class recording</span>
+          </span>
+        </button>
+      );
+    }
+
+    const src =
+      clickToPlay && started
+        ? `${media.src}${media.src.includes('?') ? '&' : '?'}autoplay=1`
+        : media.src;
+
     return (
       <iframe
-        key={media.src}
-        src={media.src}
+        key={src}
+        src={src}
         title={`${item.title} — ${media.provider} player`}
         className="absolute inset-0 h-full w-full border-0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; camera; microphone; display-capture"
@@ -90,6 +139,7 @@ export default function ClassroomRoom() {
   const { classId } = useParams();
   const [item, setItem] = useState(null);
   const [batchClasses, setBatchClasses] = useState([]);
+  const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [now, setNow] = useState(() => Date.now());
@@ -98,12 +148,17 @@ export default function ClassroomRoom() {
     async ({ quiet = false } = {}) => {
       if (!quiet) setLoading(true);
       try {
-        const [detail, list] = await Promise.all([
+        const [detail, list, library] = await Promise.all([
           axios.get(`/api/lms/classes/${classId}`),
           axios.get('/api/lms/classes').catch(() => ({ data: {} })),
+          // Notes/resources published in LMS → Batch Workspace → Resources.
+          // They belong to the batch, so the classroom must surface them next
+          // to the recording instead of leaving them stranded in the API.
+          axios.get('/api/lms/resources').catch(() => ({ data: {} })),
         ]);
         setItem(detail.data?.class || null);
         setBatchClasses(list.data?.classes || []);
+        setResources(library.data?.resources || []);
         setError('');
       } catch (err) {
         if (quiet) return;
@@ -180,6 +235,25 @@ export default function ClassroomRoom() {
       .slice(0, 3);
     return { next, recent };
   }, [batchClasses, item]);
+
+  const classNotes = useMemo(() => {
+    if (!item) return [];
+    const materials = (item.materials || []).map((row) => ({
+      title: row.title,
+      url: row.url,
+      meta: [row.fileType, row.fileSize].filter(Boolean).join(' · '),
+      source: 'Class material',
+    }));
+    const batchNotes = resources
+      .filter((row) => String(row.batch?._id || '') === String(item.batch?._id || ''))
+      .map((row) => ({
+        title: row.title,
+        url: row.url,
+        meta: [row.category, row.fileType].filter(Boolean).join(' · '),
+        source: 'Batch notes',
+      }));
+    return [...materials, ...batchNotes];
+  }, [item, resources]);
 
   if (loading) {
     return (
@@ -260,7 +334,11 @@ export default function ClassroomRoom() {
 
         <div className="relative aspect-video w-full bg-black">
           {stage.media ? (
-            <StagePlayer item={item} media={stage.media} />
+            <StagePlayer
+              item={item}
+              media={stage.media}
+              clickToPlay={stage.mode === 'recording' && stage.provider === 'YouTube'}
+            />
           ) : stage.mode === 'live' ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
               <span className="relative flex h-16 w-16 items-center justify-center">
@@ -355,12 +433,12 @@ export default function ClassroomRoom() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {item.materials?.length > 0 && (
+            {classNotes.length > 0 && (
               <a
                 href="#materials"
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3.5 py-2 text-[11px] font-bold text-white hover:bg-white/10"
               >
-                <FileText className="h-3.5 w-3.5" /> {item.materials.length} material
+                <FileText className="h-3.5 w-3.5" /> {classNotes.length} notes
               </a>
             )}
             <button
@@ -399,20 +477,30 @@ export default function ClassroomRoom() {
             </p>
           </div>
 
-          {item.materials?.length > 0 && (
+          {classNotes.length > 0 && (
             <div id="materials" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
-              <h2 className="font-heading text-base font-black text-[color:rgb(var(--tw-ink-900))]">Class material</h2>
+              <h2 className="font-heading text-base font-black text-[color:rgb(var(--tw-ink-900))]">
+                Class notes & resources
+              </h2>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Notes your instructor uploaded for this class and your batch. They open beside the recording.
+              </p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {item.materials.map((material, index) => (
+                {classNotes.map((note, index) => (
                   <a
-                    key={`${material.url}-${index}`}
-                    href={material.url}
+                    key={`${note.url}-${index}`}
+                    href={note.url}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:border-slate-300"
                   >
                     <FileText className="h-4 w-4 shrink-0 text-[color:rgb(var(--tw-blue-700))]" />
-                    <span className="min-w-0 truncate">{material.title}</span>
+                    <span className="min-w-0">
+                      <span className="block truncate">{note.title}</span>
+                      <span className="block truncate text-[10px] font-normal text-slate-400">
+                        {note.meta || note.source}
+                      </span>
+                    </span>
                     <ExternalLink className="ml-auto h-3 w-3 shrink-0 text-slate-400" />
                   </a>
                 ))}

@@ -278,7 +278,7 @@ export default function StudentActivityPanel({ open, studentId, onClose, onSetPa
                           <div className="text-[10px] text-slate-500">By {row.actorName}</div>
                         )}
                       </div>
-                      <time className="shrink-0 text-[10px] text-slate-500">{dateTime(row.at)}</time>
+                      <time className="shrink-0 whitespace-nowrap text-[10px] font-medium text-white">{dateTime(row.at)}</time>
                     </li>
                   );
                 })}

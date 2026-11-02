@@ -55,6 +55,25 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  // Student access history. Written by utils/studentActivity.js on login,
+  // heartbeat and sign-out so the admin roster can show a real last-seen time
+  // instead of inferring it from the browser.
+  lastLoginAt: {
+    type: Date,
+    default: null,
+  },
+  lastLogoutAt: {
+    type: Date,
+    default: null,
+  },
+  lastSeenAt: {
+    type: Date,
+    default: null,
+  },
+  lastLoginIp: {
+    type: String,
+    default: '',
+  },
   avatar: {
     type: String,
     // Served from this site: the CSP is `img-src 'self' data:`, so a default

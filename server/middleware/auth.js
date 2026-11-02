@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const StudentSession = require('../models/StudentSession');
 const { getJwtSecret } = require('../config/auth');
 
 // `passwordChangedAt` is stamped after hashing and the replacement token is
@@ -24,6 +25,9 @@ const protect = async (req, res, next) => {
     // No fallback secret: config/auth.js throws in production when it is missing
     // or unsafe, so a forged token cannot be signed with a published key.
     const decoded = jwt.verify(token, getJwtSecret());
+    // The student-session id travels in the token as `sid`; logout and the
+    // portal heartbeat need it to close/touch exactly this login.
+    req.auth = decoded;
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
@@ -50,6 +54,31 @@ const protect = async (req, res, next) => {
         success: false,
         message: 'Your account has been deactivated. Please contact SuperAdmin.',
       });
+    }
+
+    /*
+     * A student token is only valid while its server-side login session is open.
+     * Without this, pressing Sign Out or an admin rotating the password ended
+     * the row in the activity log but the old JWT kept working until it expired
+     * — the exact opposite of what the access history claimed. Staff tokens
+     * have no `sid` and are unaffected.
+     */
+    if (String(req.user.role || '').toUpperCase() === 'STUDENT' && decoded.sid) {
+      const session = await StudentSession.findOne({
+        student: req.user._id,
+        sessionId: decoded.sid,
+        status: 'Active',
+      })
+        .select('_id')
+        .lean();
+
+      if (!session) {
+        return res.status(401).json({
+          success: false,
+          code: 'SESSION_ENDED',
+          message: 'This student session has ended. Please log in again.',
+        });
+      }
     }
 
     next();

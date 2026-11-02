@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserPlus, Plus, Trash2, Search, RefreshCw } from 'lucide-react';
 import api from '../../lib/api';
 import {
@@ -37,6 +37,19 @@ export default function EnrollmentsManager() {
   const [status, setStatus] = useState('');
   const [creating, setCreating] = useState(false);
   const [draft, setDraft] = useState({ studentId: '', courseId: '', batchId: '', status: 'Active' });
+
+  // Only this course's cohorts can be selected. Without a batch the student has
+  // course access but no classes, no batch card and no recordings — which looked
+  // like an empty student portal.
+  const courseBatches = useMemo(
+    () =>
+      batches.filter(
+        (batch) =>
+          batch.status !== 'Archived' &&
+          (!draft.courseId || String(batch.course?._id || batch.course) === String(draft.courseId)),
+      ),
+    [batches, draft.courseId],
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -97,6 +110,10 @@ export default function EnrollmentsManager() {
   const handleCreate = async () => {
     if (!draft.studentId || !draft.courseId) {
       setError('Pick both a student and a course.');
+      return;
+    }
+    if (courseBatches.length > 0 && !draft.batchId) {
+      setError('Select the student’s batch. Without it the portal has no classes or cohort card to show.');
       return;
     }
     try {
@@ -304,7 +321,9 @@ export default function EnrollmentsManager() {
             <select
               className={inputClass}
               value={draft.courseId}
-              onChange={(e) => setDraft((prev) => ({ ...prev, courseId: e.target.value }))}
+              onChange={(e) =>
+                setDraft((prev) => ({ ...prev, courseId: e.target.value, batchId: '' }))
+              }
             >
               <option value="">Select a course…</option>
               {courses.map((course) => (
@@ -315,16 +334,27 @@ export default function EnrollmentsManager() {
             </select>
           </Field>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="Batch" hint="Optional — the live cohort this student joins.">
+            <Field
+              label="Batch"
+              required={courseBatches.length > 0}
+              hint="The cohort whose classes, recordings and batch card the student sees."
+            >
               <select
                 className={inputClass}
                 value={draft.batchId}
                 onChange={(e) => setDraft((prev) => ({ ...prev, batchId: e.target.value }))}
+                disabled={!draft.courseId || courseBatches.length === 0}
               >
-                <option value="">No batch</option>
-                {batches.map((batch) => (
+                <option value="">
+                  {!draft.courseId
+                    ? 'Pick a course first'
+                    : courseBatches.length === 0
+                      ? 'This course has no batches'
+                      : 'Select a batch…'}
+                </option>
+                {courseBatches.map((batch) => (
                   <option key={batch._id} value={batch._id}>
-                    {batch.batchCode}
+                    {batch.name || batch.batchCode}
                   </option>
                 ))}
               </select>

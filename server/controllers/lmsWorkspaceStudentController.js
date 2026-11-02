@@ -18,6 +18,7 @@ const LmsResource = require('../models/LmsResource');
 const Job = require('../models/Job');
 const { currentEnrollments, allowedBatchIds } = require('../utils/lmsStudentScope');
 const { sendError } = require('../utils/apiError');
+const { recordActivity } = require('../utils/studentActivity');
 
 const isHttpUrl = (value) => {
   try {
@@ -539,6 +540,17 @@ const submitAssignment = async (req, res) => {
     const submission = existing
       ? await AssignmentSubmission.findByIdAndUpdate(existing._id, payload, { new: true })
       : await AssignmentSubmission.create(payload);
+
+    recordActivity(
+      req.user._id,
+      {
+        type: 'assignment_submitted',
+        title: `Submitted assignment: ${assignment.title}`,
+        detail: isLate ? 'Submitted after the deadline' : 'Submitted on time',
+        meta: { assignmentId: String(assignment._id), isLate },
+      },
+      req,
+    );
 
     return res.status(201).json({
       success: true,

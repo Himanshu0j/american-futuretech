@@ -2,6 +2,14 @@ import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Field, inputClass, btnGhost } from './ui';
 import { TIMEZONES } from './BatchForm';
+import UploadField from './UploadField';
+
+const humanSize = (bytes) => {
+  const size = Number(bytes) || 0;
+  if (size >= 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  if (size >= 1024) return `${Math.round(size / 1024)} KB`;
+  return `${size} B`;
+};
 
 export const emptyClass = (batchId = '', timezone = 'EST (UTC-5)') => ({
   batchId,
@@ -152,6 +160,14 @@ export default function ClassForm({ value, onChange }) {
             onChange={(e) => set('recordingUrl', e.target.value)}
             placeholder="https://…/recording.mp4"
           />
+          <div className="mt-2">
+            <UploadField
+              kind="video"
+              label="Upload recording from computer"
+              showHint
+              onUploaded={(file) => set('recordingUrl', file.url)}
+            />
+          </div>
         </Field>
         <Field label="Thumbnail URL">
           <input className={inputClass} value={value.thumbnail} onChange={(e) => set('thumbnail', e.target.value)} placeholder="/uploads/…" />
@@ -205,29 +221,41 @@ export default function ClassForm({ value, onChange }) {
         ) : (
           <div className="space-y-2">
             {value.materials.map((row, index) => (
-              <div key={index} className="grid sm:grid-cols-[1fr_1.4fr_auto] gap-2">
-                <input
-                  className={inputClass}
-                  value={row.title}
-                  onChange={(e) => updateMaterial(index, 'title', e.target.value)}
-                  placeholder="Title"
-                  aria-label={`Material ${index + 1} title`}
+              <div key={index} className="space-y-2 rounded-lg border border-white/[0.06] p-2">
+                <div className="grid sm:grid-cols-[1fr_1.4fr_auto] gap-2">
+                  <input
+                    className={inputClass}
+                    value={row.title}
+                    onChange={(e) => updateMaterial(index, 'title', e.target.value)}
+                    placeholder="Title"
+                    aria-label={`Material ${index + 1} title`}
+                  />
+                  <input
+                    className={inputClass}
+                    value={row.url}
+                    onChange={(e) => updateMaterial(index, 'url', e.target.value)}
+                    placeholder="https://… or upload a file"
+                    aria-label={`Material ${index + 1} link`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeMaterial(index)}
+                    className="p-2 rounded-lg bg-white/[0.06] hover:bg-red-500/20 text-slate-300"
+                    aria-label={`Remove material ${index + 1}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <UploadField
+                  kind="document"
+                  label={`Upload PDF / slides for material ${index + 1}`}
+                  onUploaded={(file) => {
+                    updateMaterial(index, 'url', file.url);
+                    if (!row.title?.trim()) updateMaterial(index, 'title', file.originalName || 'Learning material');
+                    updateMaterial(index, 'fileType', file.fileType || 'PDF');
+                    updateMaterial(index, 'fileSize', humanSize(file.size));
+                  }}
                 />
-                <input
-                  className={inputClass}
-                  value={row.url}
-                  onChange={(e) => updateMaterial(index, 'url', e.target.value)}
-                  placeholder="https://…"
-                  aria-label={`Material ${index + 1} link`}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeMaterial(index)}
-                  className="p-2 rounded-lg bg-white/[0.06] hover:bg-red-500/20 text-slate-300"
-                  aria-label={`Remove material ${index + 1}`}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
               </div>
             ))}
           </div>

@@ -12,6 +12,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Course = require('../models/Course');
+const Batch = require('../models/Batch');
 const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
@@ -24,6 +25,7 @@ const LmsSetting = require('../models/LmsSetting');
 const SupportTicket = require('../models/SupportTicket');
 const AuditLog = require('../models/AuditLog');
 const { sendError } = require('../utils/apiError');
+const { recordActivity } = require('../utils/studentActivity');
 
 const logAudit = async (req, action, details, entityId) => {
   try {
@@ -41,6 +43,46 @@ const logAudit = async (req, action, details, entityId) => {
 };
 
 const toId = (value) => (mongoose.Types.ObjectId.isValid(value) ? value : null);
+
+/**
+ * A batch is what turns "course access" into a visible cohort: the roster, the
+ * scheduled classes and the student's batch card all read from it. Assigning a
+ * batch here therefore has to update the student profile and the legacy roster
+ * too, not just the enrollment row.
+ */
+const attachStudentToBatch = async (student, batch, courseTitle = '') => {
+  if (!student || !batch) return;
+  student.studentDetails = student.studentDetails || {};
+  student.studentDetails.assignedBatch = batch._id;
+  await student.save();
+
+  if (!batch.enrolledStudents) batch.enrolledStudents = [];
+  const listed = batch.enrolledStudents.some(
+    (row) => String(row.email || '').toLowerCase() === String(student.email || '').toLowerCase(),
+  );
+  if (!listed) {
+    batch.enrolledStudents.push({
+      studentName: student.name,
+      email: student.email,
+      phone: student.phone || '',
+      feePaid: 0,
+      totalFee: 0,
+      paymentStatus: 'Pending',
+    });
+    await batch.save();
+  }
+
+  await recordActivity(
+    student._id,
+    {
+      type: 'enrolled',
+      title: `Added to ${batch.name || batch.batchCode}`,
+      detail: courseTitle ? `${courseTitle} · cohort assigned` : 'Cohort assigned',
+      meta: { batchId: String(batch._id) },
+    },
+    null,
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dashboard
@@ -192,14 +234,43 @@ const createEnrollment = async (req, res) => {
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
     if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
+    let batch = null;
+    if (toId(batchId)) {
+      batch = await Batch.findOne({ _id: batchId, course: course._id });
+      if (!batch) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'That batch does not belong to the selected course.' });
+      }
+    }
+
+    const nextStatus = status || 'Active';
+    if (!batch && nextStatus === 'Active') {
+      const available = await Batch.countDocuments({
+        course: course._id,
+        status: { $ne: 'Archived' },
+      });
+      if (available > 0) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Select a batch for this student. Without a cohort they cannot see classes, the batch card or recordings.',
+        });
+      }
+    }
+
     const enrollment = await Enrollment.findOneAndUpdate(
       { student: student._id, course: course._id },
       {
-        $set: { batch: toId(batchId) ? batchId : null, status: status || 'Active' },
+        $set: { batch: batch?._id || null, status: nextStatus },
         $setOnInsert: { enrolledAt: new Date() },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
+
+    if (batch) {
+      await attachStudentToBatch(student, batch, course.title);
+    }
 
     // A progress row makes the student show up on the LMS dashboard immediately.
     await Progress.findOneAndUpdate(
@@ -221,12 +292,33 @@ const createEnrollment = async (req, res) => {
 const updateEnrollment = async (req, res) => {
   try {
     const { status, batchId } = req.body || {};
+    const existing = await Enrollment.findById(req.params.id);
+    if (!existing) return res.status(404).json({ success: false, message: 'Enrollment not found' });
+
     const patch = {};
     if (status) patch.status = status;
-    if (batchId !== undefined) patch.batch = toId(batchId) ? batchId : null;
 
-    const enrollment = await Enrollment.findByIdAndUpdate(req.params.id, patch, { new: true, runValidators: true });
-    if (!enrollment) return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    let batch = null;
+    if (batchId !== undefined) {
+      if (toId(batchId)) {
+        batch = await Batch.findOne({ _id: batchId, course: existing.course });
+        if (!batch) {
+          return res
+            .status(400)
+            .json({ success: false, message: 'That batch does not belong to this enrollment\'s course.' });
+        }
+      }
+      patch.batch = batch?._id || null;
+    }
+
+    existing.set(patch);
+    const enrollment = await existing.save();
+
+    if (batch) {
+      const student = await User.findById(enrollment.student);
+      const course = await Course.findById(enrollment.course).select('title').lean();
+      if (student) await attachStudentToBatch(student, batch, course?.title || '');
+    }
 
     await logAudit(req, 'LMS_ENROLLMENT_UPDATED', `Enrollment ${enrollment._id} set to ${enrollment.status}`, enrollment._id);
     return res.status(200).json({ success: true, enrollment });

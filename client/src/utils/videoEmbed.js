@@ -13,6 +13,11 @@
 
 const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,}$/;
 
+// A video uploaded through the lesson editor is served by our own API. It has no
+// https:// scheme, but it is a file the <video> element plays directly, so it
+// must not be classified as an invalid link.
+const UPLOADED_VIDEO_PATH = /^\/api\/upload\/video\/[a-f0-9]{24}\.(mp4|webm|ogg|ogv|m4v)$/i;
+
 const youtubeIdFromUrl = (url) => {
   const host = url.hostname.toLowerCase().replace(/^www\./, '');
 
@@ -46,11 +51,15 @@ const vimeoIdFromUrl = (url) => {
 
 /**
  * @param {string} rawUrl what the admin typed
- * @returns {{ url: string, provider: 'YouTube'|'Vimeo'|'External'|'Invalid'|'None', isEmbed: boolean, warning: string }}
+ * @returns {{ url: string, provider: 'YouTube'|'Vimeo'|'Uploaded'|'External'|'Invalid'|'None', isEmbed: boolean, warning: string }}
  */
 export const parseVideoUrl = (rawUrl) => {
   const value = String(rawUrl || '').trim();
   if (!value) return { url: '', provider: 'None', isEmbed: false, warning: '' };
+
+  if (UPLOADED_VIDEO_PATH.test(value)) {
+    return { url: value, provider: 'Uploaded', isEmbed: true, warning: '' };
+  }
 
   if (!/^https:\/\//i.test(value)) {
     return {

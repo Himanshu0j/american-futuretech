@@ -17,6 +17,7 @@ const Enrollment = require('../models/Enrollment');
 const { checkBatchAccess, isEnrollmentCurrent, denyBatchResponse } = require('../utils/access');
 const { getClassWindow } = require('../utils/classWindow');
 const { sendError } = require('../utils/apiError');
+const { recordActivity } = require('../utils/studentActivity');
 
 /** The exact fields a student may receive, already gated by the window. */
 const presentClass = (session, now) => {
@@ -152,6 +153,17 @@ const getClassDetails = async (req, res) => {
       .populate('course', 'title slug thumbnail')
       .populate('batch', 'name batchCode timing')
       .lean();
+
+    recordActivity(
+      req.user._id,
+      {
+        type: 'class_opened',
+        title: `Opened classroom: ${session.title}`,
+        detail: presented.recordingUrl ? 'Watched the recording in the portal' : 'Opened the live classroom',
+        meta: { classId: String(session._id), batchId: String(session.batch) },
+      },
+      req,
+    );
 
     return res.status(200).json({
       success: true,

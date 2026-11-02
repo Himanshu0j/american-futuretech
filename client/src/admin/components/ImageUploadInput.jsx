@@ -29,6 +29,9 @@ export default function ImageUploadInput({
   placeholder = 'Enter image URL or upload from local file...',
   className = '',
   previewSize = 'w-16 h-16',
+  endpoint = '/api/upload',
+  showPresets = true,
+  previewShape = 'rounded',
 }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -55,7 +58,7 @@ export default function ImageUploadInput({
       const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-      const res = await axios.post('/api/upload', formData, { headers });
+      const res = await axios.post(endpoint, formData, { headers });
       if (res.data.success && res.data.url) {
         onChange(res.data.url);
         setPreviewError(false);
@@ -92,7 +95,7 @@ export default function ImageUploadInput({
       <div className="flex items-center gap-3">
         {/* Live Thumbnail Preview */}
         <div
-          className={`${previewSize} rounded-xl bg-slate-950 border border-slate-800 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative group`}
+          className={`${previewSize} ${previewShape === 'circle' ? 'rounded-full' : 'rounded-xl'} bg-slate-950 border border-slate-800 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative group`}
         >
           {value && !previewError ? (
             <img
@@ -161,28 +164,30 @@ export default function ImageUploadInput({
           </div>
 
           {/* Quick Presets / Authentic Asset Selector */}
-          <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-400">
-            <span className="font-mono text-slate-400 flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-blue-400" /> Presets:
-            </span>
-            {COMMON_PRESETS.slice(0, 6).map((preset) => (
-              <button
-                key={preset.name}
-                type="button"
-                onClick={() => {
-                  onChange(preset.url);
-                  setPreviewError(false);
-                }}
-                className={`px-1.5 py-0.5 rounded transition-all cursor-pointer font-mono ${
-                  value === preset.url
-                    ? 'bg-blue-600 text-white font-bold'
-                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-                }`}
-              >
-                {preset.name}
-              </button>
-            ))}
-          </div>
+          {showPresets && (
+            <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-400">
+              <span className="font-mono text-slate-400 flex items-center gap-1">
+                <Sparkles className="w-2.5 h-2.5 text-blue-400" /> Presets:
+              </span>
+              {COMMON_PRESETS.slice(0, 6).map((preset) => (
+                <button
+                  key={preset.name}
+                  type="button"
+                  onClick={() => {
+                    onChange(preset.url);
+                    setPreviewError(false);
+                  }}
+                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer font-mono ${
+                    value === preset.url
+                      ? 'bg-blue-600 text-white font-bold'
+                      : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

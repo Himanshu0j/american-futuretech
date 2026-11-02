@@ -13,6 +13,12 @@
 
 const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{6,}$/;
 
+// Videos uploaded through the LMS lesson editor are served by this app at
+// `/api/upload/video/<gridfs id>.<ext>`. They must be stored as-is — treating
+// them as "not https" and rejecting them is what made an uploaded file fail to
+// save even though the upload itself succeeded.
+const UPLOADED_VIDEO_PATH = /^\/api\/upload\/video\/[a-f0-9]{24}\.(mp4|webm|ogg|ogv|m4v)$/i;
+
 const youtubeIdFromUrl = (url) => {
   const host = url.hostname.toLowerCase().replace(/^www\./, '');
 
@@ -48,6 +54,10 @@ const vimeoIdFromUrl = (url) => {
 const normalizeVideoUrl = (rawUrl) => {
   const value = String(rawUrl || '').trim();
   if (!value) return { url: '', provider: 'None', isEmbed: false, valid: true, warning: '' };
+
+  if (UPLOADED_VIDEO_PATH.test(value)) {
+    return { url: value, provider: 'Uploaded', isEmbed: true, valid: true, warning: '' };
+  }
 
   if (!/^https:\/\//i.test(value)) {
     return {

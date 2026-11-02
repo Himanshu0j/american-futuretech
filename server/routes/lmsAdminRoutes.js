@@ -57,6 +57,7 @@ const {
   transferStudentBatch,
   markAttendance,
   getBatchAnalytics,
+  getStudentActivity,
 } = require('../controllers/lmsWorkspaceAdminController');
 const { protect, authorizeScoped } = require('../middleware/auth');
 
@@ -129,6 +130,8 @@ router.post('/students/:id/reset-password', protect, canManageEnroll, resetStude
 router.put('/students/:id/status', protect, canManageEnroll, setStudentStatus);
 router.put('/students/:id/access', protect, canManageEnroll, updateStudentAccess);
 router.put('/students/:id/transfer', protect, canManageEnroll, transferStudentBatch);
+// Full login/logout + activity history for one student (read-only).
+router.get('/students/:id/activity', protect, canView, getStudentActivity);
 
 // Batch → Attendance & analytics
 router.post('/batches/:id/attendance', protect, canManageProgress, markAttendance);

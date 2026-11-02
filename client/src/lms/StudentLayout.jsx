@@ -8,12 +8,26 @@ import {
   Trophy, Medal, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import StudentAvatar from './StudentAvatar';
 
 export default function StudentLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  // Heartbeat: the admin access log shows "active now" only while this is
+  // recent. A closed tab stops pinging, so it turns inactive by itself.
+  useEffect(() => {
+    if (!user?._id) return undefined;
+    const ping = () => axios.post('/api/auth/heartbeat').catch(() => {});
+    const warmup = window.setTimeout(ping, 8000);
+    const timer = window.setInterval(ping, 120000);
+    return () => {
+      window.clearTimeout(warmup);
+      window.clearInterval(timer);
+    };
+  }, [user?._id]);
 
   useEffect(() => {
     let alive = true;
@@ -101,17 +115,25 @@ export default function StudentLayout() {
 
           {/* Student Profile Strip */}
           <div className="p-4 border-b border-[rgb(var(--tw-blue-700))] flex items-center gap-3 bg-[rgb(var(--tw-ink-900))] text-left">
-            <img
-              // A local fallback: `img-src 'self' data:` blocks any remote
-              // avatar, so an Unsplash default here is always a broken image.
-              src={user?.avatar || '/images/avatars/default-avatar.webp'}
-              alt={user?.name || 'Student'}
-              className="w-10 h-10 rounded-full object-cover border-2 border-[rgb(var(--tw-gold-500))]"
+            <StudentAvatar
+              src={user?.avatar}
+              name={user?.name}
+              className="w-10 h-10"
+              textClassName="text-xs"
             />
             <div className="min-w-0">
-              <div className="font-display font-bold text-xs text-white truncate">{user?.name || 'Ethan Hunt'}</div>
-              <div className="text-[11px] text-blue-200/80 truncate">{user?.email || 'Enrolled student'}</div>
-              <div className="text-[10px] text-[color:rgb(var(--tw-gold-400))] font-mono mt-0.5 font-semibold">ID: {user?.enrollmentNumber || 'AFT-892144'}</div>
+              <div className="font-display font-bold text-xs text-white truncate">
+                {user?.name || 'Student'}
+              </div>
+              <div className="text-[11px] text-blue-200/80 truncate">{user?.email || ''}</div>
+              <div className="text-[10px] text-[color:rgb(var(--tw-gold-400))] font-mono mt-0.5 font-semibold">
+                ID: {user?.enrollmentNumber || user?.studentDetails?.enrollmentNumber || '—'}
+              </div>
+              {(user?.assignedBatch?.batchCode || user?.assignedBatch?.name) && (
+                <div className="text-[10px] text-blue-200/70 truncate">
+                  Batch: {user.assignedBatch.batchCode || user.assignedBatch.name}
+                </div>
+              )}
             </div>
           </div>
 

@@ -10,6 +10,7 @@ const Certificate = require('../models/Certificate');
 const Announcement = require('../models/Announcement');
 const LmsSetting = require('../models/LmsSetting');
 const { sendError } = require('../utils/apiError');
+const { recordActivity } = require('../utils/studentActivity');
 
 // @desc    Get student dashboard summary
 // @route   GET /api/lms/dashboard
@@ -196,6 +197,17 @@ const getLessonDetails = async (req, res) => {
       { upsert: true }
     );
 
+    recordActivity(
+      req.user._id,
+      {
+        type: 'lesson_opened',
+        title: 'Opened a lesson',
+        detail: lesson.title,
+        meta: { lessonId: String(lesson._id), courseId: String(lesson.course?._id || lesson.course) },
+      },
+      req,
+    );
+
     return res.status(200).json({
       success: true,
       lesson,
@@ -266,6 +278,17 @@ const completeLesson = async (req, res) => {
 
     await progress.save();
 
+    recordActivity(
+      req.user._id,
+      {
+        type: 'lesson_completed',
+        title: 'Completed a lesson',
+        detail: `${lesson.title} · course at ${percent}%`,
+        meta: { lessonId: String(lesson._id), percent },
+      },
+      req,
+    );
+
     return res.status(200).json({
       success: true,
       message: percent === 100 ? '🎉 Congratulations! You have completed this course and earned your certificate!' : 'Lesson marked complete',
@@ -329,6 +352,17 @@ const submitQuiz = async (req, res) => {
       passed,
       timeSpentSeconds: timeSpentSeconds || 60,
     });
+
+    recordActivity(
+      req.user._id,
+      {
+        type: 'quiz_submitted',
+        title: `Submitted quiz: ${quiz.title}`,
+        detail: `${scorePercent}% · ${passed ? 'Passed' : 'Not passed'}`,
+        meta: { quizId: String(quiz._id), scorePercent, passed },
+      },
+      req,
+    );
 
     return res.status(200).json({
       success: true,

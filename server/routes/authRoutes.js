@@ -11,6 +11,8 @@ const {
   deleteUser,
   resetUserPassword,
   updateProfile,
+  logout,
+  heartbeat,
 } = require('../controllers/authController');
 const { protect, checkPermission } = require('../middleware/auth');
 
@@ -46,6 +48,9 @@ router.post('/register', registerLimiter, registerStudent);
 router.post('/login', loginLimiter, login);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
+// Student portal session lifecycle. Both are no-ops for staff accounts.
+router.post('/logout', protect, logout);
+router.post('/heartbeat', protect, heartbeat);
 
 // Admin & Staff management with granular RBAC & SuperAdmin delegation
 router.get('/users', protect, checkPermission('ADMIN_MANAGEMENT_VIEW'), getAllUsers);

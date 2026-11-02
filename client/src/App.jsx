@@ -171,8 +171,19 @@ function AdminProtectedRoute({ children }) {
 }
 
 function StudentProtectedRoute({ children }) {
-  const token = localStorage.getItem('token') || localStorage.getItem('aft_admin_token');
-  if (!token) {
+  const { isAuthenticated, loading } = useAuth();
+
+  // Wait for /auth/me before rendering the portal shell. Rendering immediately
+  // showed the "Ethan Hunt" placeholder strip until the request resolved, which
+  // read as "student ka naam/photo nahi aa raha".
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center text-slate-500 font-mono text-sm">
+        Loading your classroom…
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
     return <Navigate to="/student/login" replace />;
   }
   return children;

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const SiteSettings = require('../models/SiteSettings');
@@ -8,14 +9,24 @@ const QuizAttempt = require('../models/QuizAttempt');
 const { getJwtSecret, getJwtExpire } = require('../config/auth');
 const { validatePassword, describePasswordPolicy } = require('../utils/passwords');
 const { sendError } = require('../utils/apiError');
+const {
+  isStudentUser,
+  recordActivity,
+  startStudentSession,
+  touchStudentSession,
+  endStudentSession,
+  endAllStudentSessions,
+} = require('../utils/studentActivity');
 
 // Brute-force protection thresholds (per account, on top of the per-IP route limiter).
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 const ACCOUNT_LOCK_MINUTES = 15;
 
-const generateToken = (id) => {
+const generateToken = (id, sessionId) => {
   // Signing key comes from config/auth.js — there is no hardcoded fallback.
-  return jwt.sign({ id }, getJwtSecret(), {
+  // `sid` ties a student's token to the session row the admin activity view
+  // reads; staff tokens carry no session id.
+  return jwt.sign(sessionId ? { id, sid: sessionId } : { id }, getJwtSecret(), {
     expiresIn: getJwtExpire(),
   });
 };
@@ -188,7 +199,15 @@ const login = async (req, res) => {
       await user.save();
     }
 
-    const token = generateToken(user._id);
+    // Students get a server-side session so the admin can see login/logout and
+    // whether the portal is currently open. Staff accounts are not tracked here.
+    let sessionId = null;
+    if (isStudentUser(user)) {
+      sessionId = crypto.randomUUID();
+      await startStudentSession(user, req, sessionId);
+    }
+
+    const token = generateToken(user._id, sessionId);
 
     return res.status(200).json({
       success: true,
@@ -202,6 +221,9 @@ const login = async (req, res) => {
         phone: user.phone,
         permissions: user.permissions || [],
         enrollmentNumber: user.studentDetails?.enrollmentNumber,
+        assignedBatch: user.studentDetails?.assignedBatch || null,
+        lastLoginAt: user.lastLoginAt || null,
+        lastLogoutAt: user.lastLogoutAt || null,
       },
     });
   } catch (error) {
@@ -214,16 +236,58 @@ const login = async (req, res) => {
 // @access  Private
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id)
+      .populate('studentDetails.assignedBatch', 'name batchCode timing startDate endDate instructor')
+      .lean();
     return res.status(200).json({
       success: true,
       user: {
-        ...user.toObject(),
+        ...user,
         permissions: user.permissions || [],
+        // Top-level mirrors of the student fields. The portal sidebar and the
+        // course cards read these, and after a refresh this endpoint used to
+        // return only the nested copy — so the name/ID strip fell back to the
+        // demo placeholders even though the data was there.
+        enrollmentNumber: user.studentDetails?.enrollmentNumber || '',
+        assignedBatch: user.studentDetails?.assignedBatch || null,
       },
     });
   } catch (error) {
     return sendError(res, error);
+  }
+};
+
+// @desc    Close the current student portal session
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = async (req, res) => {
+  try {
+    if (isStudentUser(req.user)) {
+      await endStudentSession(req.user._id, req.auth?.sid, 'logout');
+    }
+    return res.status(200).json({ success: true, message: 'Signed out.' });
+  } catch (error) {
+    // A failed logout record must not keep the browser signed in.
+    return res.status(200).json({ success: true, message: 'Signed out.' });
+  }
+};
+
+// @desc    Portal heartbeat — proves the student is still active right now
+// @route   POST /api/auth/heartbeat
+// @access  Private
+const heartbeat = async (req, res) => {
+  try {
+    if (!isStudentUser(req.user)) {
+      return res.status(200).json({ success: true, tracked: false });
+    }
+    const session = await touchStudentSession(req.user._id, req.auth?.sid);
+    return res.status(200).json({
+      success: true,
+      tracked: Boolean(session),
+      lastSeenAt: session?.lastSeenAt || new Date(),
+    });
+  } catch (error) {
+    return res.status(200).json({ success: true, tracked: false });
   }
 };
 
@@ -364,6 +428,17 @@ const updateUser = async (req, res) => {
 
     await user.save();
 
+    if (typeof isActive === 'boolean' && !user.isActive && targetRole === 'STUDENT') {
+      await endAllStudentSessions(user._id, 'deactivated');
+      await recordActivity(user._id, {
+        type: 'status_changed',
+        title: 'Account deactivated',
+        detail: `Deactivated by ${req.user?.name || 'an administrator'}`,
+        actorName: req.user?.name || 'Administrator',
+        actorRole: req.user?.role || '',
+      }, req);
+    }
+
     await AuditLog.create({
       actor: req.user?._id,
       actorName: req.user?.name || 'Administrator',
@@ -430,6 +505,10 @@ const deleteUser = async (req, res) => {
       };
     }
 
+    if (targetRole === 'STUDENT') {
+      await endAllStudentSessions(user._id, 'deactivated');
+    }
+
     await User.findByIdAndDelete(req.params.id);
 
     await AuditLog.create({
@@ -492,6 +571,20 @@ const resetUserPassword = async (req, res) => {
 
     user.password = newPassword;
     await user.save();
+
+    // Rotating the password also closes every open portal session, so the
+    // activity view never shows a student as online with an old credential.
+    if (String(targetRole) === 'STUDENT') {
+      await endAllStudentSessions(user._id, 'password_reset');
+      await recordActivity(user._id, {
+        type: 'password_set',
+        title: 'Password set by an administrator',
+        detail: `Set by ${req.user?.name || 'an administrator'}`,
+        actorName: req.user?.name || 'Administrator',
+        actorRole: req.user?.role || '',
+        meta: { via: 'staff-rbac' },
+      }, req);
+    }
 
     await AuditLog.create({
       actor: req.user?._id,
@@ -590,4 +683,6 @@ module.exports = {
   deleteUser,
   resetUserPassword,
   updateProfile,
+  logout,
+  heartbeat,
 };

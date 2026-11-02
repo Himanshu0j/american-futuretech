@@ -28,6 +28,8 @@ const AttendanceRecord = require('../models/AttendanceRecord');
 const LmsResource = require('../models/LmsResource');
 const Announcement = require('../models/Announcement');
 const Job = require('../models/Job');
+const StudentSession = require('../models/StudentSession');
+const { isSessionLive } = require('../utils/studentActivity');
 const JobApplication = require('../models/JobApplication');
 const AuditLog = require('../models/AuditLog');
 const { sendError } = require('../utils/apiError');
@@ -62,6 +64,17 @@ const isHttpUrl = (value) => {
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
+// Same-origin files returned by /api/upload (documents, videos) and the legacy
+// /uploads image mirror are valid material/recording URLs even though they have
+// no scheme. Rejecting them made an uploaded PDF vanish on save.
+const SAME_ORIGIN_ASSET =
+  /^\/(?:api\/upload\/(?:document|video)\/[a-f0-9]{24}(?:\.[a-z0-9]+)?|uploads\/[A-Za-z0-9._-]+)$/i;
+const isAssetUrl = (value) => {
+  if (!value) return false;
+  const raw = String(value).trim();
+  return SAME_ORIGIN_ASSET.test(raw) || isHttpUrl(raw);
+};
+
 const sanitizeMaterials = (materials) => {
   if (!Array.isArray(materials)) return undefined;
   return materials
@@ -71,7 +84,7 @@ const sanitizeMaterials = (materials) => {
       fileType: String(row?.fileType || 'PDF').trim().toUpperCase().slice(0, 12),
       fileSize: String(row?.fileSize || '').trim().slice(0, 24),
     }))
-    .filter((row) => row.title && isHttpUrl(row.url));
+    .filter((row) => row.title && isAssetUrl(row.url));
 };
 
 const DAY_ORDER = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -487,7 +500,10 @@ const getBatchWorkspace = async (req, res) => {
     const [classes, enrollments, quizzes, assignments, resources, announcements, jobs, attendanceRows] = await Promise.all([
       ClassSession.find({ batch: id }).sort({ startsAt: 1 }).lean(),
       Enrollment.find({ batch: id })
-        .populate('student', 'name email phone avatar studentDetails isActive')
+        .populate(
+          'student',
+          'name email phone avatar studentDetails isActive lastLoginAt lastLogoutAt lastSeenAt lastLoginIp',
+        )
         .sort({ createdAt: -1 })
         .lean(),
       Quiz.find({ batch: id }).sort({ createdAt: -1 }).lean(),
@@ -562,6 +578,16 @@ const getBatchWorkspace = async (req, res) => {
       : [];
     const progressMap = new Map(progressRows.map((row) => [String(row.student), row]));
 
+    // Active portal sessions are derived from the heartbeat, not from the JWT.
+    const activeSessions = studentIds.length
+      ? await StudentSession.find({ student: { $in: studentIds }, status: 'Active' })
+          .select('student lastSeenAt loginAt')
+          .lean()
+      : [];
+    const activeStudentIds = new Set(
+      activeSessions.filter((row) => isSessionLive(row)).map((row) => String(row.student)),
+    );
+
     const now = new Date();
     const upcoming = classes.filter(
       (session) => session.startsAt && session.startsAt >= now && ['Scheduled', 'Published'].includes(session.status)
@@ -630,6 +656,11 @@ const getBatchWorkspace = async (req, res) => {
               avatar: row.student.avatar,
               enrollmentNumber: row.student.studentDetails?.enrollmentNumber || '',
               isActive: row.student.isActive,
+              lastLoginAt: row.student.lastLoginAt || null,
+              lastLogoutAt: row.student.lastLogoutAt || null,
+              lastSeenAt: row.student.lastSeenAt || null,
+              lastLoginIp: row.student.lastLoginIp || '',
+              activeNow: activeStudentIds.has(String(row.student._id)),
             }
           : null,
       })),
@@ -673,8 +704,8 @@ const validateClassLinks = (payload) => {
   if (payload.meetingUrl && !isHttpUrl(payload.meetingUrl)) {
     return 'Meeting link must start with http:// or https://.';
   }
-  if (payload.recordingUrl && !isHttpUrl(payload.recordingUrl)) {
-    return 'Recording link must start with http:// or https://.';
+  if (payload.recordingUrl && !isAssetUrl(payload.recordingUrl)) {
+    return 'Upload a recording or paste a link that starts with http:// or https://.';
   }
   if (payload.startTime && !TIME_RE.test(payload.startTime)) {
     return 'Start time must look like 09:30.';

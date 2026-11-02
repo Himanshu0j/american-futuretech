@@ -1,5 +1,6 @@
 import React from 'react';
 import { Field, inputClass } from './ui';
+import ImageUploadInput from '../components/ImageUploadInput';
 
 /**
  * Create a student account and enroll it in the selected batch in one step.
@@ -43,14 +44,22 @@ export default function EnrollStudentForm({ value, onChange, credentials }) {
         </Field>
       </div>
 
-      <Field label="Profile photo URL" hint="Optional — a served image path such as /uploads/student.jpg.">
-        <input
-          className={inputClass}
+      <div>
+        <div className="mb-1.5 text-[11px] font-bold text-slate-300">Profile photo</div>
+        <ImageUploadInput
+          label="Student photo"
           value={value.avatar}
-          onChange={(e) => set('avatar', e.target.value)}
+          onChange={(next) => set('avatar', next)}
           placeholder="/images/avatars/default-avatar.webp"
+          previewSize="w-14 h-14"
+          previewShape="circle"
+          endpoint="/api/upload/image"
+          showPresets={false}
         />
-      </Field>
+        <p className="mt-1 text-[10px] text-slate-400">
+          Upload a JPG/PNG from your computer — this is the photo the student sees in the portal.
+        </p>
+      </div>
 
       <Field label="Temporary password" hint="Leave blank to generate a secure one — it is shown once after creation.">
         <input

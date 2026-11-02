@@ -54,6 +54,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Tell the API before dropping the token: the student access log needs a
+    // real "kab logout kiya" timestamp, not a session that stays open forever.
+    const currentToken = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
+    if (currentToken) {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${currentToken}` },
+        keepalive: true,
+      }).catch(() => {});
+    }
     localStorage.removeItem('aft_admin_token');
     localStorage.removeItem('token');
     setToken(null);

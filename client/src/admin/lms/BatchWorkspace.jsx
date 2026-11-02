@@ -26,6 +26,8 @@ import {
   RotateCcw,
   ArrowRightLeft,
   CalendarClock,
+  Eye,
+  KeyRound,
 } from 'lucide-react';
 import api from '../../lib/api';
 import {
@@ -51,6 +53,8 @@ import QuizForm, { emptyQuiz, toQuizDraft } from './QuizForm';
 import AssignmentForm, { emptyAssignment, toAssignmentDraft } from './AssignmentForm';
 import EnrollStudentForm, { emptyEnrollment } from './EnrollStudentForm';
 import JobForm, { emptyJob } from './JobForm';
+import UploadField from './UploadField';
+import StudentActivityPanel from './StudentActivityPanel';
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -216,6 +220,10 @@ export default function BatchWorkspace() {
   const [transferBatchId, setTransferBatchId] = useState('');
   const [savingTransfer, setSavingTransfer] = useState(false);
   const [accessBusy, setAccessBusy] = useState('');
+  const [activityStudentId, setActivityStudentId] = useState(null);
+  const [passwordRow, setPasswordRow] = useState(null);
+  const [passwordDraft, setPasswordDraft] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   // Resource state
   const [resourceOpen, setResourceOpen] = useState(false);
@@ -565,15 +573,30 @@ export default function BatchWorkspace() {
     }
   };
 
-  const resetPassword = async (row) => {
-    if (!window.confirm(`Generate a new temporary password for ${row.student?.email}?`)) return;
+  const openPassword = (row) => {
+    setPasswordRow(row);
+    setPasswordDraft('');
+    setError('');
+  };
+
+  const savePassword = async () => {
+    if (!passwordRow?.student?._id) return;
+    setSavingPassword(true);
+    setError('');
     try {
-      const res = await api.post(`/admin/lms/students/${row.student._id}/reset-password`);
+      const res = await api.post(`/admin/lms/students/${passwordRow.student._id}/reset-password`, {
+        newPassword: passwordDraft.trim(),
+      });
       setCredentials(res.data.credentials);
       setCredentialsOpen(true);
-      notify('New temporary password generated.');
+      setPasswordRow(null);
+      setPasswordDraft('');
+      notify(res.data.mode === 'custom' ? 'Password updated.' : 'New temporary password generated.');
+      await load();
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not reset the password.');
+      setError(err.response?.data?.message || 'Could not update the password.');
+    } finally {
+      setSavingPassword(false);
     }
   };
 
@@ -1282,6 +1305,7 @@ export default function BatchWorkspace() {
                     <th className="py-3 px-3">Student</th>
                     <th className="py-3 px-3">ID</th>
                     <th className="py-3 px-3">Progress</th>
+                    <th className="py-3 px-3">Last login</th>
                     <th className="py-3 px-3">Access</th>
                     <th className="py-3 px-3">Status</th>
                     <th className="py-3 px-3 text-right">Actions</th>
@@ -1310,6 +1334,18 @@ export default function BatchWorkspace() {
                         <ProgressBar percent={row.progressPercent || 0} />
                       </td>
                       <td className="py-3 px-3 text-[10px] text-slate-400">
+                        {row.student?.lastLoginAt ? (
+                          <div>
+                            <div>{fmtShortDate(row.student.lastLoginAt)}</div>
+                            <span className={row.student.activeNow ? 'text-emerald-300' : 'text-slate-500'}>
+                              {row.student.activeNow ? 'Online now' : 'Offline'}
+                            </span>
+                          </div>
+                        ) : (
+                          'Never signed in'
+                        )}
+                      </td>
+                      <td className="py-3 px-3 text-[10px] text-slate-400">
                         {row.accessUntil ? `Until ${fmtShortDate(row.accessUntil)}` : 'No expiry'}
                       </td>
                       <td className="py-3 px-3">
@@ -1322,11 +1358,20 @@ export default function BatchWorkspace() {
                           <button
                             type="button"
                             className={btnIcon}
-                            onClick={() => resetPassword(row)}
-                            title="Reset password"
-                            aria-label={`Reset password for ${row.student?.name}`}
+                            onClick={() => setActivityStudentId(row.student?._id)}
+                            title="Login history and activity"
+                            aria-label={`View access details for ${row.student?.name}`}
                           >
-                            <RotateCcw className="w-3.5 h-3.5" />
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            className={btnIcon}
+                            onClick={() => openPassword(row)}
+                            title="Change password"
+                            aria-label={`Change password for ${row.student?.name}`}
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
@@ -2044,8 +2089,23 @@ export default function BatchWorkspace() {
           <Field label="Title" required>
             <input className={inputClass} value={resourceDraft.title} onChange={(e) => setResourceDraft({ ...resourceDraft, title: e.target.value })} />
           </Field>
-          <Field label="Link" required hint="Upload the file first, then paste its /uploads/… URL.">
-            <input className={inputClass} value={resourceDraft.url} onChange={(e) => setResourceDraft({ ...resourceDraft, url: e.target.value })} placeholder="https://…" />
+          <Field label="Link" required hint="Upload a PDF/slides file from this computer, or paste an https link.">
+            <input className={inputClass} value={resourceDraft.url} onChange={(e) => setResourceDraft({ ...resourceDraft, url: e.target.value })} placeholder="https://… or upload below" />
+            <div className="mt-2">
+              <UploadField
+                kind="document"
+                label="Upload PDF / slides"
+                showHint
+                onUploaded={(file) =>
+                  setResourceDraft((prev) => ({
+                    ...prev,
+                    url: file.url,
+                    title: prev.title?.trim() ? prev.title : file.originalName || 'Batch resource',
+                    fileType: file.fileType || 'PDF',
+                  }))
+                }
+              />
+            </div>
           </Field>
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Type">
@@ -2064,6 +2124,70 @@ export default function BatchWorkspace() {
           </Field>
         </div>
       </Modal>
+
+      {/* ── Change password modal ───────────────────────────────────────────── */}
+      <Modal
+        open={Boolean(passwordRow)}
+        title="Change student password"
+        subtitle={
+          passwordRow
+            ? `${passwordRow.student?.name || 'Student'} · ${passwordRow.student?.email || ''}`
+            : ''
+        }
+        onClose={() => {
+          setPasswordRow(null);
+          setPasswordDraft('');
+        }}
+        footer={
+          <>
+            <button
+              type="button"
+              className={btnGhost}
+              onClick={() => {
+                setPasswordRow(null);
+                setPasswordDraft('');
+              }}
+              disabled={savingPassword}
+            >
+              Cancel
+            </button>
+            <button type="button" className={btnPrimary} onClick={savePassword} disabled={savingPassword}>
+              <KeyRound className="w-3.5 h-3.5" />
+              {savingPassword ? 'Updating…' : passwordDraft.trim() ? 'Set password' : 'Generate password'}
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field
+            label="New password"
+            hint="Leave blank to generate a secure temporary password. It is shown once after saving; only the hash is stored."
+          >
+            <input
+              type="text"
+              className={inputClass}
+              value={passwordDraft}
+              onChange={(e) => setPasswordDraft(e.target.value)}
+              placeholder="Leave blank to auto-generate"
+              autoComplete="new-password"
+            />
+          </Field>
+          <p className="text-[11px] text-slate-400">
+            Changing the password signs the student out of every open portal session. Tell the student the new
+            password securely — there is no self-service reset in their portal.
+          </p>
+        </div>
+      </Modal>
+
+      <StudentActivityPanel
+        open={Boolean(activityStudentId)}
+        studentId={activityStudentId}
+        onClose={() => setActivityStudentId(null)}
+        onSetPassword={(student) => {
+          setActivityStudentId(null);
+          openPassword({ student });
+        }}
+      />
 
       {/* ── Announcement modal ──────────────────────────────────────────────── */}
       <Modal

@@ -5,27 +5,18 @@ import {
   User,
   Mail,
   Phone,
-  Lock,
   ShieldCheck,
   Save,
   CheckCircle2,
-  AlertCircle,
-  KeyRound,
-  FileBadge,
-  Sparkles
+  AlertCircle
 } from 'lucide-react';
+import StudentAvatar from './StudentAvatar';
 
 export default function StudentProfile() {
   const [user, setUser] = useState(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [bio, setBio] = useState('');
-  const [avatar, setAvatar] = useState('');
-
-  // Password fields
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
@@ -46,7 +37,6 @@ export default function StudentProfile() {
         setName(u.name || '');
         setPhone(u.phone || '');
         setBio(u.bio || '');
-        setAvatar(u.avatar || '');
       }
     } catch (err) {
       console.error('Failed to load profile:', err);
@@ -57,45 +47,19 @@ export default function StudentProfile() {
     e.preventDefault();
     setFeedback({ type: '', message: '' });
 
-    if (newPassword && newPassword !== confirmPassword) {
-      setFeedback({ type: 'error', message: 'New passwords do not match.' });
-      return;
-    }
-
-    const passwordChanged = Boolean(newPassword);
-
     try {
       setSaving(true);
       const token = localStorage.getItem('token');
-      const payload = { name, phone, bio, avatar };
-      if (newPassword) {
-        payload.currentPassword = currentPassword;
-        payload.newPassword = newPassword;
-      }
-
-      const res = await axios.put('/api/auth/profile', payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.put(
+        '/api/auth/profile',
+        { name, phone, bio },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
       if (res.data.success) {
-        setFeedback({
-          type: 'success',
-          message: passwordChanged
-            ? 'Password changed. All other sessions have been signed out.'
-            : 'Profile updated successfully!',
-        });
+        setFeedback({ type: 'success', message: 'Profile updated successfully!' });
         setUser(res.data.user);
-        // update stored user in local storage
         localStorage.setItem('user', JSON.stringify(res.data.user));
-        // A password change revokes every earlier session, so keep this device
-        // signed in with the replacement token the API returns.
-        if (res.data.token) {
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('aft_admin_token', res.data.token);
-        }
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
       }
     } catch (err) {
       setFeedback({
@@ -137,9 +101,13 @@ export default function StudentProfile() {
       {/* Verified Student ID Card */}
       <div className="p-6 rounded-2xl bg-white border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#F7F7F5] border border-slate-300 flex items-center justify-center text-[color:rgb(var(--tw-ink-900))] font-black text-xl font-heading shadow-xs">
-            {name ? name.charAt(0).toUpperCase() : 'S'}
-          </div>
+          <StudentAvatar
+            src={user?.avatar}
+            name={name}
+            className="h-14 w-14"
+            rounded="rounded-2xl"
+            textClassName="text-base"
+          />
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-heading font-bold text-[color:rgb(var(--tw-ink-900))]">{name || 'Enrolled Student'}</h2>
@@ -155,7 +123,7 @@ export default function StudentProfile() {
           <div>
             <span className="text-slate-400 block uppercase tracking-wider text-[10px] font-bold">ENROLLMENT ID</span>
             <span className="text-[color:rgb(var(--tw-ink-900))] font-bold tracking-wider">
-              {user?.studentDetails?.enrollmentNumber || 'AFT-STU-8821'}
+              {user?.studentDetails?.enrollmentNumber || user?.enrollmentNumber || '—'}
             </span>
           </div>
           <div>
@@ -210,14 +178,11 @@ export default function StudentProfile() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Avatar Image URL</label>
-              <input
-                type="text"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
-                placeholder="/images/avatars/default-avatar.webp"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all"
-              />
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Profile photo</label>
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-xs text-slate-500">
+                <ShieldCheck className="h-4 w-4 text-[color:rgb(var(--tw-blue-700))]" />
+                Set by the admissions team
+              </div>
             </div>
           </div>
 
@@ -233,50 +198,17 @@ export default function StudentProfile() {
           </div>
         </div>
 
-        {/* Section 2: Security & Password */}
-        <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
+        {/* Password is admin-managed: no student-side reset/change form. */}
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
           <h3 className="text-sm font-heading font-bold text-[color:rgb(var(--tw-ink-900))] uppercase tracking-wider flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))]" />
-            Security & Password Change
+            <ShieldCheck className="w-4 h-4 text-[color:rgb(var(--tw-blue-700))]" />
+            Password & Sign-in
           </h3>
-          <p className="text-xs text-slate-500">Leave password fields blank if you do not wish to change your existing password.</p>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">Current Password</label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full md:w-1/2 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all font-mono"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">New Password</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Minimum 6 characters"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Confirm New Password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat new password"
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-[rgb(var(--tw-ink-900))] focus:bg-white transition-all font-mono"
-                />
-              </div>
-            </div>
-          </div>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Your password is managed by the academy administrator. If you have forgotten it or need a new one,
+            contact admissions — the admin will set a new password for your account. There is no self-service
+            password reset in the student portal.
+          </p>
         </div>
 
         {/* Submit */}

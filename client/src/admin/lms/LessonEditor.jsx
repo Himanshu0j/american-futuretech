@@ -1,8 +1,15 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Plus, Trash2, Save, Video, FileText, Eye } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import axios from 'axios';
+import { Plus, Trash2, Save, Video, FileText, Eye, Upload, X, AlertCircle } from 'lucide-react';
 import api from '../../lib/api';
 import { parseVideoUrl } from '../../utils/videoEmbed';
 import { Modal, Field, inputClass, btnPrimary, btnGhost, btnIcon, ErrorNote, Badge } from './ui';
+import UploadField from './UploadField';
+
+// Kept in step with server/routes/uploadRoutes.js (VIDEO_MAX_BYTES).
+const VIDEO_MAX_MB = 200;
+const VIDEO_ACCEPT = '.mp4,.webm,.ogg,.ogv,.m4v';
+const VIDEO_EXTENSIONS = ['mp4', 'webm', 'ogg', 'ogv', 'm4v'];
 
 const CONTENT_TYPES = [
   { id: 'video', label: 'Video lesson' },
@@ -35,10 +42,13 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
   const [draft, setDraft] = useState(emptyDraft(defaults));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [videoUpload, setVideoUpload] = useState({ uploading: false, progress: 0, error: '' });
+  const videoFileRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     setError('');
+    setVideoUpload({ uploading: false, progress: 0, error: '' });
     if (isEdit) {
       setDraft({
         title: lesson.title || '',
@@ -66,6 +76,63 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
       const resources = prev.resources.map((res, i) => (i === index ? { ...res, [key]: value } : res));
       return { ...prev, resources };
     });
+
+  /**
+   * Upload the video file itself. The server stores it in MongoDB GridFS, so it
+   * survives a deploy (the app directory is replaced on every Hostinger push);
+   * the returned `/api/upload/video/<id>.mp4` URL is what the lesson keeps.
+   */
+  const handleVideoFile = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (!VIDEO_EXTENSIONS.includes(ext)) {
+      setVideoUpload({ uploading: false, progress: 0, error: 'Choose an MP4, WebM, OGG or M4V video file.' });
+      event.target.value = '';
+      return;
+    }
+    if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
+      setVideoUpload({
+        uploading: false,
+        progress: 0,
+        error: `That file is ${Math.round(file.size / (1024 * 1024))} MB. The limit is ${VIDEO_MAX_MB} MB — compress it or use a YouTube/Vimeo link.`,
+      });
+      event.target.value = '';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('video', file);
+    setVideoUpload({ uploading: true, progress: 0, error: '' });
+
+    try {
+      const token = localStorage.getItem('aft_admin_token') || localStorage.getItem('token');
+      const res = await axios.post('/api/upload/video', formData, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        onUploadProgress: (progressEvent) => {
+          const total = progressEvent.total || file.size;
+          const percent = total ? Math.min(99, Math.round((progressEvent.loaded * 100) / total)) : 0;
+          setVideoUpload((prev) => ({ ...prev, progress: percent }));
+        },
+      });
+
+      if (res.data?.success && res.data.url) {
+        set('videoUrl', res.data.url);
+        setVideoUpload({ uploading: false, progress: 100, error: '' });
+      } else {
+        setVideoUpload({ uploading: false, progress: 0, error: res.data?.message || 'The upload did not finish.' });
+      }
+    } catch (err) {
+      setVideoUpload({
+        uploading: false,
+        progress: 0,
+        error: err.response?.data?.message || 'Upload failed. Check the file and try again.',
+      });
+    } finally {
+      if (videoFileRef.current) videoFileRef.current.value = '';
+    }
+  };
 
   const addResource = () => setDraft((prev) => ({ ...prev, resources: [...prev.resources, emptyResource()] }));
 
@@ -182,10 +249,75 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
             <Badge tone={video.provider === 'Invalid' ? 'rose' : video.provider === 'External' ? 'amber' : 'emerald'}>
               {video.provider === 'None' ? 'No video yet' : video.provider}
             </Badge>
-            {video.isEmbed && draft.videoUrl && <Badge tone="slate">stored as {video.url}</Badge>}
+            {video.isEmbed && draft.videoUrl && (
+              <Badge tone="slate">
+                {video.provider === 'Uploaded' ? 'stored on this server' : `stored as ${video.url}`}
+              </Badge>
+            )}
           </div>
 
           {video.warning && <p className="text-[10px] text-red-200">{video.warning}</p>}
+
+          {/* Direct file upload — no YouTube/Vimeo account needed for a recorded
+              lecture. The file goes to MongoDB GridFS through the API, so it is
+              still there after the next deploy (a deploy replaces this app's
+              directory, so a disk-only upload would vanish). */}
+          <div className="rounded-xl border border-white/10 bg-black/20 p-3 space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                ref={videoFileRef}
+                type="file"
+                accept="video/mp4,video/webm,video/ogg,video/x-m4v,.mp4,.webm,.ogg,.ogv,.m4v"
+                onChange={handleVideoFile}
+                className="hidden"
+              />
+              <button
+                type="button"
+                className={btnGhost}
+                onClick={() => videoFileRef.current?.click()}
+                disabled={videoUpload.uploading || saving}
+              >
+                <Upload className="w-3.5 h-3.5" />
+                {videoUpload.uploading
+                  ? `Uploading ${videoUpload.progress}%`
+                  : video.provider === 'Uploaded' && draft.videoUrl
+                    ? 'Replace video file'
+                    : 'Upload video file'}
+              </button>
+              <span className="text-[10px] text-slate-400">
+                MP4 / WebM / OGG · max {VIDEO_MAX_MB} MB · stored durably, survives deploys
+              </span>
+              {draft.videoUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    set('videoUrl', '');
+                    setVideoUpload({ uploading: false, progress: 0, error: '' });
+                  }}
+                  disabled={videoUpload.uploading}
+                  className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold text-red-300 hover:text-red-200"
+                >
+                  <X className="w-3 h-3" /> Remove video
+                </button>
+              )}
+            </div>
+
+            {videoUpload.uploading && (
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-blue-400 transition-all"
+                  style={{ width: `${videoUpload.progress}%` }}
+                />
+              </div>
+            )}
+
+            {videoUpload.error && (
+              <p className="flex items-start gap-1 text-[10px] text-red-200">
+                <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+                {videoUpload.error}
+              </p>
+            )}
+          </div>
 
           <Field label="Displayed duration" hint="Shown next to the lesson in the curriculum list.">
             <input
@@ -196,7 +328,20 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
             />
           </Field>
 
-          {video.isEmbed && draft.videoUrl ? (
+          {video.provider === 'Uploaded' && draft.videoUrl ? (
+            <div className="rounded-xl overflow-hidden border border-white/10 bg-black aspect-video">
+              <video
+                key={video.url}
+                src={video.url}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-contain"
+              >
+                This video could not be previewed.
+              </video>
+            </div>
+          ) : video.isEmbed && draft.videoUrl ? (
             <div className="rounded-xl overflow-hidden border border-white/10 bg-black aspect-video">
               <iframe
                 src={video.url}
@@ -234,13 +379,21 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
           />
         </Field>
 
-        <Field label="Reading / PDF link" hint="Optional external link to a slide deck or reading.">
+        <Field label="Reading / PDF" hint="Upload a PDF or slides file, or paste an https link.">
           <input
             className={inputClass}
             value={draft.pdfUrl}
             onChange={(e) => set('pdfUrl', e.target.value)}
-            placeholder="https://…/slides.pdf"
+            placeholder="https://…/slides.pdf or upload below"
           />
+          <div className="mt-2">
+            <UploadField
+              kind="document"
+              label="Upload PDF / slides from computer"
+              showHint
+              onUploaded={(file) => set('pdfUrl', file.url)}
+            />
+          </div>
         </Field>
 
         {/* ── Resources ─────────────────────────────────────────────────── */}
@@ -261,7 +414,8 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
           ) : (
             <div className="space-y-2">
               {draft.resources.map((res, index) => (
-                <div key={index} className="grid grid-cols-12 gap-2 items-center">
+                <div key={index} className="space-y-2 rounded-lg border border-white/[0.06] p-2">
+                  <div className="grid grid-cols-12 gap-2 items-center">
                   <input
                     className={`${inputClass} col-span-5`}
                     value={res.title}
@@ -290,14 +444,34 @@ export default function LessonEditor({ open, lesson, courseId, moduleId, default
                     placeholder="2 MB"
                     aria-label={`Resource ${index + 1} file size`}
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeResource(index)}
-                    className={`${btnIcon} col-span-1 justify-self-end text-red-300`}
-                    aria-label={`Remove resource ${index + 1}`}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => removeResource(index)}
+                      className={`${btnIcon} col-span-1 justify-self-end text-red-300`}
+                      aria-label={`Remove resource ${index + 1}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <UploadField
+                    kind="document"
+                    label={`Upload file for resource ${index + 1}`}
+                    onUploaded={(file) => {
+                      updateResource(index, 'url', file.url);
+                      if (!res.title?.trim()) {
+                        updateResource(index, 'title', file.originalName || 'Resource');
+                      }
+                      updateResource(index, 'fileType', file.fileType || 'PDF');
+                      const size = Number(file.size) || 0;
+                      updateResource(
+                        index,
+                        'fileSize',
+                        size >= 1024 * 1024
+                          ? `${(size / (1024 * 1024)).toFixed(1)} MB`
+                          : `${Math.max(1, Math.round(size / 1024))} KB`,
+                      );
+                    }}
+                  />
                 </div>
               ))}
             </div>

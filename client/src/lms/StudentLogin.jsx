@@ -108,12 +108,21 @@ export default function StudentLogin() {
             </button>
           </form>
 
-          <div className="mt-5 text-center text-xs text-slate-600">
-            Enrolling for the first time?{' '}
-            <Link to="/contact" className="text-[color:rgb(var(--tw-blue-700))] hover:text-[color:rgb(var(--tw-ink-900))] font-bold hover:underline">
-              Request access from admissions
-            </Link>{' '}
-            — student accounts are issued by our team.
+          <div className="mt-5 space-y-2 text-center text-xs text-slate-600">
+            <p>
+              Forgot your password? Password resets are handled by the academy administrator —{' '}
+              <Link to="/contact" className="text-[color:rgb(var(--tw-blue-700))] hover:text-[color:rgb(var(--tw-ink-900))] font-bold hover:underline">
+                contact admissions
+              </Link>
+              . There is no self-service reset.
+            </p>
+            <p>
+              Enrolling for the first time?{' '}
+              <Link to="/contact" className="text-[color:rgb(var(--tw-blue-700))] hover:text-[color:rgb(var(--tw-ink-900))] font-bold hover:underline">
+                Request access from admissions
+              </Link>{' '}
+              — student accounts are issued by our team.
+            </p>
           </div>
         </div>
 

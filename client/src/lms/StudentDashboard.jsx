@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Award, CheckCircle2, Play, Clock, ArrowRight, Sparkles, AlertCircle, Calendar, Radio } from 'lucide-react';
+import { BookOpen, Award, CheckCircle2, Play, Clock, ArrowRight, Sparkles, AlertCircle, Calendar, Radio, GraduationCap } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import StudentAvatar from './StudentAvatar';
 
 export default function StudentDashboard() {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [liveClass, setLiveClass] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchDashboard();
@@ -40,10 +44,15 @@ export default function StudentDashboard() {
 
   const fetchDashboard = async () => {
     try {
+      setError('');
       const res = await axios.get('/api/lms/dashboard');
       setData(res.data);
     } catch (err) {
       console.error('Failed to load student dashboard', err);
+      setError(
+        err.response?.data?.message ||
+          'Your enrolled programs could not be loaded. Please refresh, or contact admissions if this continues.',
+      );
     } finally {
       setLoading(false);
     }
@@ -81,24 +90,59 @@ export default function StudentDashboard() {
   const stats = data?.stats || { totalEnrolled: 0, avgProgress: 0, certificatesEarned: 0, quizzesTaken: 0 };
   const enrollments = data?.enrollments || [];
   const primaryCourse = enrollments[0];
+  const firstName = (user?.name || 'Student').trim().split(/\s+/)[0];
+  const enrollmentNumber =
+    user?.enrollmentNumber || user?.studentDetails?.enrollmentNumber || '';
+  const assignedBatch =
+    primaryCourse?.batch || user?.assignedBatch || user?.studentDetails?.assignedBatch || null;
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto w-full space-y-8">
+      {error && (
+        <div className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* Top Banner - Easy LMS Forest Green Container */}
       <div className="p-6 sm:p-8 rounded-3xl bg-[rgb(var(--tw-ink-900))] text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/30%)] text-[color:rgb(var(--tw-gold-400))] text-[11px] font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            Active Academic Term
+        <div className="flex items-start gap-4">
+          <StudentAvatar
+            src={user?.avatar}
+            name={user?.name}
+            className="h-14 w-14 sm:h-16 sm:w-16"
+            rounded="rounded-2xl"
+            textClassName="text-lg"
+          />
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgb(var(--tw-gold-500)/20%)] border border-[rgb(var(--tw-gold-500)/30%)] text-[color:rgb(var(--tw-gold-400))] text-[11px] font-bold uppercase tracking-wider mb-3">
+              <Sparkles className="w-3.5 h-3.5" />
+              Active Academic Term
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-heading font-black text-white">
+              Welcome back, <span className="highlight">{firstName}</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-200 mt-2 max-w-xl leading-relaxed">
+              {/* Editable in Admin → LMS Settings → Welcome message. */}
+              {data?.lms?.welcomeMessage ||
+                'Pick up where you left off, review recorded masterclasses, or prepare for your upcoming module assessment.'}
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-blue-100/80">
+              {enrollmentNumber && <span className="font-mono">ID: {enrollmentNumber}</span>}
+              {assignedBatch ? (
+                <span className="inline-flex items-center gap-1">
+                  <GraduationCap className="h-3.5 w-3.5 text-[color:rgb(var(--tw-gold-400))]" />
+                  {assignedBatch.name || assignedBatch.batchCode}
+                  {assignedBatch.timing ? ` · ${assignedBatch.timing}` : ''}
+                </span>
+              ) : (
+                <span className="text-[color:rgb(var(--tw-gold-400))]">
+                  No batch assigned yet — contact admissions
+                </span>
+              )}
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-heading font-black text-white">
-            Welcome to your <span className="highlight">Learning Space</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-200 mt-2 max-w-xl leading-relaxed">
-            {/* Editable in Admin → LMS Settings → Welcome message. */}
-            {data?.lms?.welcomeMessage ||
-              'Pick up where you left off, review recorded masterclasses, or prepare for your upcoming module assessment.'}
-          </p>
         </div>
 
         {primaryCourse && (
@@ -208,10 +252,17 @@ export default function StudentDashboard() {
                     {enr.course?.title}
                   </h3>
 
-                  <div className="text-xs text-slate-500 mb-4 flex items-center gap-3">
+                  <div className="text-xs text-slate-500 mb-4 flex flex-wrap items-center gap-3">
                     <span>{enr.course?.duration}</span>
                     <span>•</span>
-                    <span>Cohort: {enr.batch?.batchCode || 'WKND-Cohort'}</span>
+                    {enr.batch ? (
+                      <span>
+                        Cohort: <strong className="font-semibold text-slate-700">{enr.batch.name || enr.batch.batchCode}</strong>
+                        {enr.batch.timing ? ` · ${enr.batch.timing}` : ''}
+                      </span>
+                    ) : (
+                      <span className="text-amber-700">Batch not assigned yet — contact admissions</span>
+                    )}
                   </div>
 
                   {/* Progress Bar */}

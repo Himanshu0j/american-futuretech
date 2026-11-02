@@ -30,6 +30,17 @@ const resolveCourse = async (courseId) => {
  * - Resource rows missing a title or URL are dropped rather than failing the
  *   whole save on schema validation.
  */
+// Uploaded LMS documents are same-origin paths like
+// `/api/upload/document/<id>.pdf`; they are safe links even though they do not
+// carry an http(s) scheme.
+const SAME_ORIGIN_DOCUMENT =
+  /^\/(?:api\/upload\/document\/[a-f0-9]{24}(?:\.[a-z0-9]+)?|uploads\/[A-Za-z0-9._-]+)$/i;
+const isDocumentUrl = (value) => {
+  const raw = String(value || '').trim();
+  if (!raw) return false;
+  return /^https?:\/\//i.test(raw) || SAME_ORIGIN_DOCUMENT.test(raw);
+};
+
 const sanitizeLessonPayload = (body = {}) => {
   const payload = { ...body };
 
@@ -39,8 +50,8 @@ const sanitizeLessonPayload = (body = {}) => {
     payload.videoUrl = normalized.url;
   }
 
-  if (typeof payload.pdfUrl === 'string' && payload.pdfUrl.trim() && !/^https?:\/\//i.test(payload.pdfUrl.trim())) {
-    throw httpError(400, 'PDF links must start with http:// or https://');
+  if (typeof payload.pdfUrl === 'string' && payload.pdfUrl.trim() && !isDocumentUrl(payload.pdfUrl)) {
+    throw httpError(400, 'Upload a PDF or paste a link that starts with http:// or https://');
   }
 
   if (Array.isArray(payload.resources)) {
@@ -48,7 +59,7 @@ const sanitizeLessonPayload = (body = {}) => {
       .filter((res) => res && String(res.title || '').trim() && String(res.url || '').trim())
       // The student player renders each resource as a clickable link, so a
       // `javascript:` or `data:` URL here is stored XSS rather than a dead link.
-      .filter((res) => /^https?:\/\//i.test(String(res.url).trim()))
+      .filter((res) => isDocumentUrl(res.url))
       .map((res) => ({
         title: String(res.title).trim(),
         url: String(res.url).trim(),

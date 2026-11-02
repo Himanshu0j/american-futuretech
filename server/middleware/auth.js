@@ -28,7 +28,27 @@ const protect = async (req, res, next) => {
     // The student-session id travels in the token as `sid`; logout and the
     // portal heartbeat need it to close/touch exactly this login.
     req.auth = decoded;
-    req.user = await User.findById(decoded.id).select('-password');
+
+    /*
+     * The user row and the student-session row are independent lookups. They
+     * used to run one after the other, so every portal request paid two Atlas
+     * round trips just to authenticate; the dashboard fires several requests at
+     * once and that latency stacked visibly. Both are now issued together.
+     */
+    const [user, session] = await Promise.all([
+      User.findById(decoded.id).select('-password'),
+      decoded.sid
+        ? StudentSession.findOne({
+            student: decoded.id,
+            sessionId: decoded.sid,
+            status: 'Active',
+          })
+            .select('_id')
+            .lean()
+        : Promise.resolve(null),
+    ]);
+
+    req.user = user;
 
     if (!req.user) {
       return res.status(401).json({
@@ -64,14 +84,6 @@ const protect = async (req, res, next) => {
      * have no `sid` and are unaffected.
      */
     if (String(req.user.role || '').toUpperCase() === 'STUDENT' && decoded.sid) {
-      const session = await StudentSession.findOne({
-        student: req.user._id,
-        sessionId: decoded.sid,
-        status: 'Active',
-      })
-        .select('_id')
-        .lean();
-
       if (!session) {
         return res.status(401).json({
           success: false,

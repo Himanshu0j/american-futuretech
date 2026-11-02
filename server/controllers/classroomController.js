@@ -192,4 +192,4 @@ const getClassDetails = async (req, res) => {
   }
 };
 
-module.exports = { getMyClasses, getClassDetails };
+module.exports = { getMyClasses, getClassDetails, presentClass };

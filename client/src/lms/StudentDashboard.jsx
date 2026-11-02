@@ -15,38 +15,18 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     fetchDashboard();
-    fetchAnnouncements();
-    fetchLiveClass();
   }, []);
-
-  // A class that is open right now belongs at the top of the dashboard: the
-  // student should be one click from the room, not hunting through My Classes.
-  const fetchLiveClass = async () => {
-    try {
-      const res = await axios.get('/api/lms/classes');
-      const rows = res.data?.classes || [];
-      setLiveClass(rows.find((row) => row.phase === 'live' && row.canJoin) || null);
-    } catch (err) {
-      setLiveClass(null);
-    }
-  };
-
-  // Notices the admin published from Admin → Academy / LMS → Communications.
-  const fetchAnnouncements = async () => {
-    try {
-      const res = await axios.get('/api/lms/announcements');
-      setAnnouncements(res.data?.announcements || []);
-    } catch (err) {
-      // A missing notice board must never block the dashboard.
-      setAnnouncements([]);
-    }
-  };
 
   const fetchDashboard = async () => {
     try {
       setError('');
+      // One authenticated request now returns the stats, timetable, notices and
+      // the class that is live right now. Three separate calls used to repeat
+      // the token/user/session lookup and each waited on its own round trip.
       const res = await axios.get('/api/lms/dashboard');
       setData(res.data);
+      setAnnouncements(res.data?.announcements || []);
+      setLiveClass(res.data?.liveClass || null);
     } catch (err) {
       console.error('Failed to load student dashboard', err);
       setError(

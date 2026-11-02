@@ -376,6 +376,25 @@ const serveClientHtml = async (req, res, next) => {
   const clientDist = path.join(__dirname, '../client/dist');
   try {
     const html = readClientHtml(clientDist);
+
+    /*
+     * The student portal is an application shell, not a marketing page: it does
+     * not read the settings/overrides/course snapshots that the public site
+     * embeds for its first paint. Awaiting those three queries before sending
+     * 2.4 kB of HTML was costing every student a cold ~1.5 s (196 kB of JSON)
+     * before the JS even started downloading. Serve the plain shell here and
+     * let the portal fetch only the data it actually renders.
+     *
+     * The edge may keep this shell for 30 s, so a redeploy can lag by at most
+     * that long; the shell itself contains no user data and no settings.
+     */
+    if (req.path.startsWith('/student') || req.path === '/login' || req.path === '/register') {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('CDN-Cache-Control', 'public, max-age=30');
+      res.setHeader('Surrogate-Control', 'public, max-age=30');
+      return res.type('html').send(html);
+    }
+
     const { getBootstrapSettings, getBootstrapOverrides } = require('./controllers/settingsController');
     const { getBootstrapCourses } = require('./controllers/courseController');
     const at = Date.now();

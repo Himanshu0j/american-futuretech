@@ -1,6 +1,8 @@
 const Enrollment = require('../models/Enrollment');
 const Progress = require('../models/Progress');
-const { checkCourseAccess, denyResponse } = require('../utils/access');
+const ClassSession = require('../models/ClassSession');
+const { presentClass } = require('./classroomController');
+const { checkCourseAccess, denyResponse, isEnrollmentCurrent } = require('../utils/access');
 const Course = require('../models/Course');
 const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
@@ -18,21 +20,65 @@ const { recordActivity } = require('../utils/studentActivity');
 const getStudentDashboard = async (req, res) => {
   try {
     const studentId = req.user._id;
+    const now = new Date();
 
-    const enrollments = await Enrollment.find({ student: studentId, status: 'Active' })
-      .populate('course')
-      .populate('batch');
+    /*
+     * These five reads are independent. They used to be awaited one after the
+     * other, so the dashboard waited five Atlas round trips before rendering
+     * anything. Progress is fetched for the student and narrowed to enrolled
+     * courses below, which removes the dependency on the enrollment result.
+     */
+    const [enrollments, allProgress, certificates, attempts, settings] = await Promise.all([
+      Enrollment.find({ student: studentId, status: 'Active' }).populate('course').populate('batch'),
+      Progress.find({ student: studentId }).populate('lastAccessedLesson'),
+      Certificate.find({ student: studentId }),
+      QuizAttempt.find({ student: studentId }).sort({ createdAt: -1 }).limit(5),
+      // Admin → LMS Settings wording, so the dashboard greeting is editable without code.
+      LmsSetting.findOne(),
+    ]);
 
-    const courseIds = enrollments.map(e => e.course?._id).filter(Boolean);
+    const courseIds = enrollments.map((e) => e.course?._id).filter(Boolean);
+    const enrolledCourseIds = new Set(courseIds.map(String));
+    const progressList = allProgress.filter((row) => enrolledCourseIds.has(String(row.course)));
 
-    const progressList = await Progress.find({ student: studentId, course: { $in: courseIds } })
-      .populate('lastAccessedLesson');
+    const usable = enrollments.filter((row) => row.batch && isEnrollmentCurrent(row, now));
+    const batchIds = usable.map((row) => row.batch._id);
+    const batchIdStrings = new Set(batchIds.map(String));
+    const courseIdStrings = new Set(courseIds.map(String));
 
-    const certificates = await Certificate.find({ student: studentId });
-    const attempts = await QuizAttempt.find({ student: studentId }).sort({ createdAt: -1 }).limit(5);
+    /*
+     * The dashboard used to make two extra authenticated requests for these
+     * (announcements and live classes), each repeating the token/user/session
+     * lookup. They now ride along with the dashboard response, computed in one
+     * parallel wave after the enrollment ids are known.
+     */
+    const [announcements, sessions] = await Promise.all([
+      settings && settings.showAnnouncementsInLms === false
+        ? Promise.resolve([])
+        : Announcement.find({
+            isPublished: true,
+            $or: [
+              { audience: 'All Students' },
+              { audience: 'Course', course: { $in: courseIds } },
+              { audience: 'Batch', batch: { $in: batchIds } },
+            ],
+          })
+            .sort({ pinned: -1, createdAt: -1 })
+            .limit(20)
+            .lean(),
+      batchIds.length
+        ? ClassSession.find({
+            batch: { $in: batchIds },
+            status: { $in: ['Scheduled', 'Published', 'Completed', 'Cancelled'] },
+            $or: [{ visibleFrom: null }, { visibleFrom: { $lte: now } }],
+          })
+            .sort({ startsAt: 1 })
+            .lean()
+        : Promise.resolve([]),
+    ]);
 
-    // Admin → LMS Settings wording, so the dashboard greeting is editable without code.
-    const settings = await LmsSetting.findOne();
+    const classes = sessions.map((session) => presentClass(session, now));
+    const liveClass = classes.find((row) => row.phase === 'live' && row.canJoin) || null;
 
     // Calculate overall statistics
     const totalEnrolled = enrollments.length;
@@ -62,6 +108,14 @@ const getStudentDashboard = async (req, res) => {
       }),
       recentCertificates: certificates,
       recentQuizAttempts: attempts,
+      // The two blocks the dashboard used to fetch separately.
+      announcements: announcements.filter((row) => {
+        if (row.audience === 'All Students') return true;
+        if (row.audience === 'Course') return courseIdStrings.has(String(row.course));
+        if (row.audience === 'Batch') return batchIdStrings.has(String(row.batch));
+        return false;
+      }),
+      liveClass,
       lms: {
         welcomeMessage: settings?.welcomeMessage || '',
       },

@@ -95,6 +95,8 @@ export default function LessonPlayer() {
   };
 
   const flatLessons = getAllLessonsFlat();
+  const hasLessons = flatLessons.length > 0;
+  const moduleCount = data?.curriculum?.length || 0;
   const currentIndex = flatLessons.findIndex(l => l?._id === activeLesson?._id);
   const prevLesson = currentIndex > 0 ? flatLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < flatLessons.length - 1 ? flatLessons[currentIndex + 1] : null;
@@ -219,7 +221,11 @@ export default function LessonPlayer() {
               {data?.course?.title}
             </h1>
             <div className="text-[11px] text-slate-300 truncate">
-              Lesson {currentIndex + 1} of {flatLessons.length}: {activeLesson?.title}
+              {!hasLessons
+                ? 'No lessons published yet'
+                : activeLesson
+                  ? `Lesson ${currentIndex + 1} of ${flatLessons.length}: ${activeLesson.title}`
+                  : 'Select a lesson from the curriculum'}
             </div>
           </div>
         </div>
@@ -252,7 +258,7 @@ export default function LessonPlayer() {
         {/* Left Column: Interactive Curriculum Drawer */}
         <aside className="w-full lg:w-80 lg:shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col max-h-[40vh] lg:max-h-[calc(100vh-4rem)] overflow-y-auto shadow-xs">
           <div className="p-4 border-b border-slate-100 font-heading font-bold text-xs uppercase tracking-wider text-[color:rgb(var(--tw-ink-900))]">
-            Course Curriculum ({data?.curriculum?.length} Modules)
+            Course Curriculum ({moduleCount} {moduleCount === 1 ? 'Module' : 'Modules'})
           </div>
 
           <div className="divide-y divide-slate-100">
@@ -298,6 +304,12 @@ export default function LessonPlayer() {
                     );
                   })}
 
+                  {!mod.lessons?.length && !mod.quiz && (
+                    <p className="px-2 py-2 text-[11px] text-slate-400">
+                      No lessons in this module yet.
+                    </p>
+                  )}
+
                   {/* Module Quiz Button */}
                   {mod.quiz && (
                     <button
@@ -318,14 +330,47 @@ export default function LessonPlayer() {
         </aside>
 
         {/* Center & Right Column: Content Player & Resources */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div className={`flex-1 flex flex-col min-w-0 overflow-y-auto ${hasLessons ? '' : 'bg-white'}`}>
           {/* Video Player Box */}
-          <div className="w-full bg-black aspect-video max-h-[55vh] flex items-center justify-center relative">
-            {lessonMedia.kind === 'iframe' ? (
+          <div
+            className={
+              hasLessons
+                ? 'w-full bg-black aspect-video max-h-[55vh] flex items-center justify-center relative'
+                : 'w-full flex-1 bg-white px-6 py-10 sm:py-14 flex items-center justify-center'
+            }
+          >
+            {!hasLessons ? (
+              <div className="max-w-md text-center">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[rgb(var(--tw-sand-200))] text-[color:rgb(var(--tw-blue-700))]">
+                  <BookOpen className="h-7 w-7" />
+                </div>
+                <h2 className="text-lg font-heading font-bold text-[color:rgb(var(--tw-ink-900))]">
+                  Course content is being prepared
+                </h2>
+                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                  No lessons have been published for this course yet. The instructor&apos;s video, notes and
+                  resources will appear here once a lesson is published.
+                </p>
+                <p className="mt-2 text-[11px] text-slate-400">
+                  If a lesson was just added, make sure its <strong>Published</strong> toggle is on.
+                </p>
+                <Link
+                  to="/student/courses"
+                  className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[rgb(var(--tw-blue-700))] px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[rgb(var(--tw-blue-800))]"
+                >
+                  Back to My Courses <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            ) : !activeLesson ? (
+              <div className="text-center p-8 text-slate-300">
+                <BookOpen className="w-10 h-10 mx-auto mb-2 text-slate-500" />
+                <p className="text-sm">Select a lesson from the curriculum to start.</p>
+              </div>
+            ) : lessonMedia.kind === 'iframe' ? (
               <iframe
                 key={lessonMedia.src}
                 src={lessonMedia.src}
-                title={activeLesson.title}
+                title={activeLesson?.title || 'Lesson video'}
                 className="w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
@@ -359,12 +404,18 @@ export default function LessonPlayer() {
                 </a>
               </div>
             ) : (
-              <div className="text-center p-8 text-slate-400">
-                <Play className="w-12 h-12 mx-auto mb-2 text-slate-600" />
-                <p className="text-sm">No video attached to this lesson yet.</p>
+              <div className="text-center p-8 text-slate-300 max-w-md">
+                <BookOpen className="w-10 h-10 mx-auto mb-3 text-slate-600" />
+                <p className="text-sm font-semibold text-white">This lesson has no video attached.</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Read the lesson overview and resources below.
+                </p>
               </div>
             )}
           </div>
+
+          {/* Controls and notes only exist once a lesson is selected. */}
+          <div className={hasLessons && activeLesson ? '' : 'hidden'}>
 
           {/* Navigation Controls Bar */}
           <div className="p-4 sm:p-5 bg-white border-y border-slate-200 flex flex-wrap items-center justify-between gap-4 shadow-xs">
@@ -476,6 +527,7 @@ export default function LessonPlayer() {
                 )}
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>

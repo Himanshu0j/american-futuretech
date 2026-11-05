@@ -88,7 +88,7 @@ function StepTile({ step, idx, isActive, isPast, onSelect, thumb }) {
       </div>
 
       {/* Client artwork slot (admin can drop their own PNG here) */}
-      <div className="w-12 h-12 mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform overflow-hidden aft-3d-scene">
+      <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#f8fafc] border border-gray-100 flex items-center justify-center p-1.5 group-hover:scale-105 transition-transform overflow-hidden aft-3d-scene">
         {step.sourcedSvg ? (
           <Tilt3D
             slot={step.slot}
@@ -152,12 +152,12 @@ export default function LearningJourney() {
       id: 'learn',
       number: '02',
       title: 'LEARN',
-      tagline: 'Live Weekend Masterclasses with Silicon Valley Faculty',
+      tagline: 'Live Weekend Masterclasses with American Futuretech Faculty',
       shortDesc: 'Rigorous engineering foundations taught by practicing tech leads.',
       description:
         'Engage directly with faculty from leading North American tech firms across 24 structured weeks. Every weekend interactive masterclass is paired with asynchronous micro-lessons, architectural diagrams, and comprehensive readings designed for production mastery.',
       highlights: [
-        'Live weekend interactive lab sessions with Silicon Valley practitioners',
+        'Live weekend interactive lab sessions with practitioners',
         'Asynchronous 1080p recorded video library indexed with chapter marks',
         'Deep theory combined with immediate practical implementation'
       ],
@@ -430,7 +430,7 @@ export default function LearningJourney() {
                           Live Masterclass Studio
                         </span>
                         <div className="text-base font-bold font-heading">
-                          Interactive Weekend Labs with Silicon Valley Faculty
+                          Interactive Weekend Labs with Faculty
                         </div>
                         <div className="text-[#FFD9D9] text-xs">Production scale architecture walkthroughs</div>
                       </div>

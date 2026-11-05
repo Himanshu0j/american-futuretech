@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  Award,
   BrainCircuit,
   Briefcase,
   CalendarDays,
@@ -52,7 +51,6 @@ const INCLUDED = [
   { icon: GraduationCap, title: 'Hands-on Projects', sub: 'Build real-world experience' },
   { icon: Briefcase, title: 'Job Assistance', sub: '200+ Hiring Partners' },
   { icon: Users, title: 'Expert Mentorship', sub: '20+ Years Industry Experts' },
-  { icon: Award, title: 'Certification Prep', sub: 'Guided exam preparation' },
   /* The four-pane mark, not the full lockup: the lockup in microsoft.svg is
      278×60 and carries the wordmark, so at 20px tall inside a circle it read
      as an unreadable smudge. The wordmark is already in the label beside it. */
@@ -353,10 +351,10 @@ export default function CourseCard({ course, settings, className = '' }) {
       </div>
 
       {/* ── What every cohort includes ─────────────────────────────────────
-          The five promises from the reference artwork: five tiles across on a
-          wide card, three on a tablet. Phones keep the compact card the client
+          The four promises from the reference artwork: four tiles across on a
+          wide card, two on a tablet. Phones keep the compact card the client
           asked for — the same facts are already in the strip above. */}
-      <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-2 px-3.5 sm:px-4 py-2.5 border-t border-slate-200/90 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40">
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-2 px-3.5 sm:px-4 py-2.5 border-t border-slate-200/90 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40">
         {INCLUDED.map(({ icon: Icon, image, title, sub }) => (
           <div key={title} className="flex items-center gap-2 min-w-0">
             <span className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-[rgb(var(--tw-ink-900))] to-[rgb(var(--tw-blue-700))] flex items-center justify-center shadow-sm overflow-hidden">

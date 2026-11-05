@@ -67,9 +67,9 @@ export default function StudyAnywhereSection() {
               {FEATURES.map(({ icon: Icon, title, body }) => (
                 <div
                   key={title}
-                  className="aft-blue-card group rounded-2xl p-5 ring-1 ring-white/25 transition-transform duration-300 hover:-translate-y-1"
+                  className="aft-blue-card group rounded-2xl p-5 text-center ring-1 ring-white/25 transition-transform duration-300 hover:-translate-y-1"
                 >
-                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-all duration-300 group-hover:-translate-y-1">
+                  <div className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-white/85 ring-1 ring-[rgb(var(--tw-gold-500)/38%)] transition-all duration-300 group-hover:-translate-y-1">
                     <Icon className="h-5 w-5 text-[color:rgb(var(--tw-gold-600))]" />
                   </div>
                   {/* The underline is on an inline span, not the block heading:
@@ -81,7 +81,7 @@ export default function StudyAnywhereSection() {
                       {title}
                     </span>
                   </h3>
-                  <p className="mt-1.5 text-sm text-white/85 leading-relaxed">{body}</p>
+                  <p className="mx-auto mt-1.5 max-w-[34ch] text-sm text-white/85 leading-relaxed">{body}</p>
                 </div>
               ))}
             </div>
